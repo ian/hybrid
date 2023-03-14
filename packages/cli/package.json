@@ -1,6 +1,6 @@
 {
   "name": "hybrid",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Solidity + TypeScript Framework for Web3 Development",
   "author": "Ian Hunter <ian@ianh.xyz>",
   "homepage": "https://github.com/ian/hybrid#readme",
@@ -28,8 +28,8 @@
     "url": "https://github.com/ian/hybrid/issues"
   },
   "dependencies": {
-    "@hybrd/contracts": "^0.1.0",
-    "@hybrd/react": "^0.1.0",
+    "@hybrd/contracts": "^0.1.1",
+    "@hybrd/react": "^0.1.1",
     "bip39": "^3.1.0",
     "boxen": "^7.0.2",
     "chalk": "4.1.2",
