@@ -1,0 +1,76 @@
+{
+  "compilerOptions": {
+    // "target": "es5",
+    "target": "ESNext",
+    "outDir": "build",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "declaration": true,
+    "declarationDir": "build",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": false,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": "./src"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "build"]
+}
+
+// {
+//   "compilerOptions": {
+//     "module": "ESNext",
+//     "target": "ESNext",
+//     "outDir": "dist",
+//     "skipLibCheck": true,
+//     "esModuleInterop": true,
+//     "jsx": "react-jsx",
+//     "declaration": true,
+//     "declarationMap": true,
+//     // "declarationDir": "dist",
+//     "emitDeclarationOnly": true,
+//     "moduleResolution": "Node",
+//     "sourceMap": true,
+//     "strict": false,
+//     "lib": ["ES2017", "dom"]
+//   },
+//   "include": ["src/**/*.ts"],
+//   "exclude": ["node_modules"]
+// }
+
+// {
+//   "compilerOptions": {
+//     "strict": false,
+//     "composite": true,
+//     "rootDir": "src",
+//     "outDir": "build",
+//     "declaration": true,
+//     "declarationDir": "build",
+//     "module": "ESNext",
+//     "moduleResolution": "node",
+//     "target": "ES2019",
+//     "lib": ["es6", "dom", "es2016", "es2017", "es2021"],
+//     "sourceMap": false,
+//     "allowSyntheticDefaultImports": true,
+//     "esModuleInterop": true,
+//     "noImplicitAny": false,
+//     "jsx": "react-jsx",
+//     "skipLibCheck": true
+//   },
+//   "include": ["src/**/*"],
+//   "exclude": ["node_modules", "build", "src/**/*.test.tsx?"],
+//   "watchOptions": {
+//     "watchFile": "useFsEvents",
+//     "watchDirectory": "useFsEvents",
+//     "fallbackPolling": "dynamicPriority",
+//     "synchronousWatchDirectory": true,
+//     "excludeDirectories": ["../node_modules", "build"]
+//   }
+// }

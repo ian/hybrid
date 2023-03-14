@@ -1,0 +1,45 @@
+{
+  "name": "hybrid",
+  "private": true,
+  "scripts": {
+    "clean": "lerna run clean",
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "dev": "concurrently --raw \"yarn dev:cli\" \"yarn dev:contracts\" \"yarn dev:react\"",
+    "dev:cli": "yarn --cwd packages/cli dev",
+    "dev:contracts": "yarn --cwd packages/contracts dev",
+    "dev:react": "yarn --cwd packages/react dev",
+    "anvil": "anvil --chain-id 5 --fork-url $FORK_URL",
+    "generate": "yarn -r generate"
+  },
+  "engines": {
+    "node": "^16.19.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.4.4",
+    "@changesets/cli": "^2.22.0",
+    "@preconstruct/cli": "^2.2.1",
+    "@types/eslint": "^8.4.3",
+    "@types/node": "17.0.21",
+    "@types/prettier": "^2.6.0",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "earljs": "^0.2.3",
+    "env-cmd": "^10.1.0",
+    "eslint-plugin-react": "latest",
+    "eslint-plugin-react-hooks": "latest",
+    "ethers": "^5.6.5",
+    "lerna": "^6.4.1",
+    "prettier": "^2.6.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tslib": "^1.9.3",
+    "typescript": "^4.6.4",
+    "wagmi": "^0.10.10",
+    "yarn-version-bump": "^0.0.4"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

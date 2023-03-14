@@ -1,0 +1,34 @@
+{
+  "name": "@hybrd/contracts",
+  "author": "IanH <ian@ianh.xyz>",
+  "version": "0.0.0",
+  "description": "Hybrid Framework Smart Contracts",
+  "keywords": [
+    "hybrid",
+    "wagmi",
+    "ethers",
+    "web3",
+    "react"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf ./cache ./out",
+    "build": "forge build",
+    "dev": "nodemon --exec \"yarn build\"",
+    "test": "forge test -vvv --match-path \"test/**\"",
+    "test:verbose": "forge test -vvv --match-path \"test/**\"",
+    "test:gas": "forge test --gas-report -vv --match-path \"test/**\"",
+    "test:watch": "nodemon --exec \"yarn test\"",
+    "testdata": "tsx test/scripts/testdata.ts"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.0",
+    "erc721a": "^4.2.3",
+    "forge-std": "npm:forge-std-no-submodules"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  },
+  "gitHead": "4dc22eb383621ec5bcdb4989d123489b726af4e7"
+}
