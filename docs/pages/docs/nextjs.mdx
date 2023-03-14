@@ -1,0 +1,73 @@
+# Next.js Quickstart
+
+This quick start walks you step-by-step through everything you need to get started. It'll take approximately 5 minutes. You will learn how to:
+
+- Install and run MintDrop on your machine for local testing
+- Add MintDrop to an existing Next.js project (other frameworks are also supported)
+- Write and compile your first smart contract
+- Call functions on your smart contradct from your React components
+- Deploy your smart contract to blockchain mainnet or testnet.
+
+Let's get started.
+
+## 1. Install MintDrop
+
+```sh
+npx create mintdrop
+```
+
+## 2. Run MintDrop locally
+
+```sh
+mint dev
+```
+
+This runs MintDrop locally. We'll use this to test our smart contracts and frontend components as we write them.
+
+With this running you can visit [http://localhost:8500](http://localhost:8500) to see the development UI.
+
+See the [mint dev docs](/docs/cli/dev) for more information.
+
+## 3. Add the MintDropProvider wrapper
+
+Add the `<MintDropProvider>` component to `pages/_app.tsx`
+
+```tsx
+import { Web3Provider } from "@mintdrop/sdk"
+
+const App = ({ Component, pageProps }) => {
+	return (
+		<Web3Provider>
+			<Component {...pageProps} />
+		</Web3Provider>
+	)
+}
+
+export default App
+```
+
+## 4. Add your first React component
+
+Let's write your first reliable serverless function! Add the following to your `./pages/index.tsx` file:
+
+```tsx
+import { MintWidget } from "mintdrop/react"
+
+export default function Home() {
+	const handleMinted = (nft) => {
+		console.log("nft", nft)
+	}
+
+	return (
+		<div>
+			<MintWidget onMinted={handleMinted} />
+		</div>
+	)
+}
+```
+
+To see all React components, go to the [Components](/docs/components) section.
+
+## 5. Run Next.js
+
+Run Next.js like you would normally `next dev`.

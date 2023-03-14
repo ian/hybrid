@@ -8,18 +8,7 @@ export async function init() {
   const mdVersion = require("../../package.json").version
 
   console.log(`
-
-            ██▄
-        ▄█▄  ▀██▄
-      ▄██ ▀██   ██                    ▀▀         ▓█        ▓█
-     ██  ▄  ▀██  ██▄      ▐████▄▓██▓  ▓█ ▓████▄ ▓███  ▄██████  ▓██▌ ▄▓███▄  ▓█▓███▄
-    ▓█  ▓█▀   ██  ██      ▐█   █▌  ██ ██ ██   █▌ ▓█  ██    ██ ▓█   ▐█    ██ ██    ██
-    ██  ██    ▐█▀ ▓█      ▐█   █▌  ██ ██ ██   █▌ ▓█  ▀█▄  ▄██ ▓█   ▐█▄   ██ ██▄   ██
-    ▐█▌ ▐██▄▄▓█▀  ██       ▀   ▀▀  ▀▀ ▀▀ ▀▀   ▀   ▀▀   ▀▀▀▀▀▀ ▀▀     ▀▀▀▀   ██▀▀▀▀
-     ▀██▄       ▄█▀                                                         ██
-        ▀███████▀          The NFT Development Framework.
-
-
+Hybrid - Solidity + TypeScript Framework for Web3 Development
 Installing Hybrid v${mdVersion} ...
 `)
 
@@ -52,7 +41,7 @@ Installing Hybrid v${mdVersion} ...
   ])
 
   await spinner("Installing Hybrid dependencies", async () =>
-    cmd(pkgManager, ["add", "hybrid", "hybrid/react"], {
+    cmd(pkgManager, ["add", "hybrid"], {
       cwd
     })
   )
@@ -72,14 +61,14 @@ Installing Hybrid v${mdVersion} ...
       [cwd, "foundry.toml"].join("/"),
       `# See more config options https://github.com/foundry-rs/foundry/tree/master/config
 
-[profile.default]
-src = './contracts'
-test = './contracts'
-cache = true
-cache_path = '.hybrid/cache'
-out = '.hybrid/out'
-libs = ["node_modules"]
-gas_reports = ["*"]`
+  [profile.default]
+  src = './contracts'
+  test = './contracts'
+  cache = true
+  cache_path = '.hybrid/cache'
+  out = '.hybrid/out'
+  libs = ["node_modules"]
+  gas_reports = ["*"]`
     )
 
     await fs.mkdirSync([cwd, "contracts"].join("/"), { recursive: true })
@@ -87,60 +76,60 @@ gas_reports = ["*"]`
     await writeFile(
       [cwd, "contracts/MyNFT.sol"].join("/"),
       `// SPDX-License-Identifier: UNLICENSED
-${solidityPragma};
+  ${solidityPragma};
 
-import "erc721a/contracts/ERC721A.sol";
+  import "erc721a/contracts/ERC721A.sol";
 
-contract MyNFT is ERC721A {
-	constructor() ERC721A("My NFT", "NFT") {}
+  contract MyNFT is ERC721A {
+  	constructor() ERC721A("My NFT", "NFT") {}
 
-	// We prefer tokenIds to start at 1
-	function _startTokenId() internal pure override returns (uint256) {
-		return 1;
-	}
+  	// We prefer tokenIds to start at 1
+  	function _startTokenId() internal pure override returns (uint256) {
+  		return 1;
+  	}
 
-	function mint(uint256 quantity) external payable {
-		_mint(msg.sender, quantity);
-	}
+  	function mint(uint256 quantity) external payable {
+  		_mint(msg.sender, quantity);
+  	}
 
-	/**
-	 * @dev override both ERC721A and ERC2981
-	 */
-	function supportsInterface(
-		bytes4 interfaceId
-	) public view override(ERC721A) returns (bool) {
-		return ERC721A.supportsInterface(interfaceId);
-	}
-}
-  `
+  	/**
+  	 * @dev override both ERC721A and ERC2981
+  	 */
+  	function supportsInterface(
+  		bytes4 interfaceId
+  	) public view override(ERC721A) returns (bool) {
+  		return ERC721A.supportsInterface(interfaceId);
+  	}
+  }
+    `
     )
 
     await writeFile(
       [cwd, "contracts/MyNFT.test.sol"].join("/"),
       `// SPDX-License-Identifier: UNLICENSED
-${solidityPragma};
+  ${solidityPragma};
 
-import "forge-std/console.sol";
-import "forge-std/Test.sol";
+  import "forge-std/console.sol";
+  import "forge-std/Test.sol";
 
-import "./MyNFT.sol";
+  import "./MyNFT.sol";
 
-contract MyContractTest is Test {
-	MyNFT public mock;
+  contract MyContractTest is Test {
+  	MyNFT public mock;
 
-	function setUp() public {
-		mock = new MyNFT();
-	}
+  	function setUp() public {
+  		mock = new MyNFT();
+  	}
 
-	function testMint() public {
-		address minter = makeAddr("minter");
-		assertEq(mock.balanceOf(minter), 0);
-		vm.prank(minter);
-		mock.mint(1);
-		assertEq(mock.balanceOf(minter), 1);
-	}
-}
-  `
+  	function testMint() public {
+  		address minter = makeAddr("minter");
+  		assertEq(mock.balanceOf(minter), 0);
+  		vm.prank(minter);
+  		mock.mint(1);
+  		assertEq(mock.balanceOf(minter), 1);
+  	}
+  }
+    `
     )
   })
 
@@ -148,18 +137,21 @@ contract MyContractTest is Test {
     writeFile(
       [cwd, "hybrid.config.js"].join("/"),
       `
-module.exports = {
-  token: "1234567890",
-  chain: "${answers.chain}",
-}
-  `
+  module.exports = {
+    token: "",
+    chain: "${answers.chain}",
+  }
+    `
     )
   )
 
-  console.log()
   console.log(
     chalk.green.bold("Success!"),
     `Hybrid Installed`,
     path.relative(process.cwd(), cwd)
   )
+  console.log()
+  console.log("To get started, run", chalk.yellow.bold("hy dev"))
+  console.log()
+  console.log()
 }

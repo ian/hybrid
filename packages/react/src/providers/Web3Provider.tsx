@@ -1,20 +1,20 @@
+import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import { buildProviders } from "./helpers"
 
-import { Chain, configureChains } from "wagmi"
+import { Chain, configureChains, createClient, WagmiConfig } from "wagmi"
 import { mainnet, polygon, optimism, arbitrum } from "wagmi/chains"
 
-import { Provider as ConnectKitProvider } from "../wallets/family/Provider"
-import { Provider as RainbowKitProvider } from "../wallets/rainbow/Provider"
 import React, { useMemo } from "react"
 
-type Wallet = "connectkit" | "rainbowkit"
 type Config = {
-  address: string
-  chainId: number
+  appName?: string
   chains?: Chain[]
-  wallet: Wallet
   alchemyKey?: string
   infuraKey?: string
+
+  // Deprecated
+  address: string
+  chainId: number
 }
 
 export const Context = React.createContext<{
@@ -26,7 +26,7 @@ export const Context = React.createContext<{
 })
 
 export const Web3Provider = (props: { children: React.ReactNode } & Config) => {
-  const { children, wallet, address, chainId, ...keys } = props
+  const { appName, children, address, chainId, ...keys } = props
 
   const { chains, provider, webSocketProvider } = useMemo(() => {
     const providers = buildProviders(keys)
@@ -42,33 +42,23 @@ export const Web3Provider = (props: { children: React.ReactNode } & Config) => {
     chainId
   }
 
-  if (wallet === "connectkit") {
-    return (
-      <Context.Provider value={value}>
-        <ConnectKitProvider
-          chains={chains}
-          provider={provider}
-          webSocketProvider={webSocketProvider}
-        >
-          {children}
-        </ConnectKitProvider>
-      </Context.Provider>
-    )
-  }
+  const { connectors } = getDefaultWallets({
+    appName: appName || "Hybrid App",
+    chains
+  })
 
-  if (wallet === "rainbowkit") {
-    return (
-      <Context.Provider value={value}>
-        <RainbowKitProvider
-          chains={chains}
-          provider={provider}
-          webSocketProvider={webSocketProvider}
-        >
-          {children}
-        </RainbowKitProvider>
-      </Context.Provider>
-    )
-  }
+  const wagmiClient = createClient({
+    autoConnect: true,
+    connectors,
+    provider,
+    webSocketProvider
+  })
 
-  return <span>Unknown wallet type &quot;{wallet}&quot;</span>
+  return (
+    <Context.Provider value={value}>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
+      </WagmiConfig>
+    </Context.Provider>
+  )
 }

@@ -5,8 +5,17 @@
   "author": "Ian Hunter <ian@ianh.xyz>",
   "homepage": "https://github.com/ian/hybrid#readme",
   "license": "ISC",
-  "main": "dist/cli.js",
-  "module": "dist/cli.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "module": "./dist/index.mjs",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "bin": {
     "hy": "dist/cli.mjs",
     "hybrid": "dist/cli.mjs"

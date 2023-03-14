@@ -1,0 +1,26 @@
+# Rainbowkit + MintDrop
+
+How to use Rainbowkit as your wallet connect library:
+
+## 1. Configure Rainbowkit in MintDropProvider
+
+Edit your `pages/_app.tsx`
+
+```tsx
+import { MintdropProvider } from "mintdrop/react"
+import { Rainbowkit } from "mintdrop/rainbowkit"
+
+const config = {
+	wallet: Rainbowkit()
+}
+
+const App = ({ Component, pageProps }) => {
+	return (
+		<MintdropProvider config={config}>
+			<Component {...pageProps} />
+		</MintdropProvider>
+	)
+}
+
+export default App
+```

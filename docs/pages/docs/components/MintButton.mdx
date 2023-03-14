@@ -1,0 +1,42 @@
+# \<MintButton\>
+
+A context-aware generic MintButton for NFT smart contracts.
+
+## Usage
+
+```tsx
+import { MintButton } from "mintdrop/react"
+
+const MyComponent = () => {
+	return (
+		<>
+			<MintButton />
+		</>
+	)
+}
+
+export default App
+```
+
+import MintButtonExample from "~/examples/MintButtonExample"
+
+<MintButtonExample />
+
+## Component Props
+
+import PropList from "~/components/PropList"
+
+<PropList
+	values={[
+		{
+			name: "className",
+			type: "string",
+			desc: "html class"
+		},
+		{
+			name: "prepare",
+			type: "() => Transaction",
+			desc: "Prepare function for the mint call. By default, the transaction is mint(uint quantity)"
+		}
+	]}
+/>
