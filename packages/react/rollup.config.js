@@ -16,10 +16,17 @@ export default [
       ...Object.keys(pkg.dependencies || {}),
       ...Object.keys(pkg.peerDependencies || {})
     ],
-    output: {
-      file: pkg.exports["."].default,
-      sourcemap: true
-    },
+    output: [
+      {
+        file: pkg.exports["."].default,
+        sourcemap: true
+      },
+      {
+        file: pkg.exports["."].module,
+        sourcemap: true,
+        format: "module"
+      }
+    ],
     plugins: [
       peerDepsExternal(),
       postcss({

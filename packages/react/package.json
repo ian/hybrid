@@ -13,6 +13,8 @@
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -25,7 +27,6 @@
     },
     "./style.css": "./dist/style.css"
   },
-  "types": "./dist/index.d.ts",
   "bin": {
     "hy": "dist/cli.mjs",
     "hybrid": "dist/cli.mjs"
