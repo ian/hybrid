@@ -11,6 +11,10 @@
       "module": "./dist/index.mjs",
       "default": "./dist/index.js"
     },
+    "./client": {
+      "types": "./client/index.d.ts",
+      "default": "./client/index.js"
+    },
     "./package.json": "./package.json"
   },
   "main": "dist/index.js",
@@ -21,6 +25,7 @@
     "hybrid": "dist/cli.mjs"
   },
   "files": [
+    "client",
     "dist"
   ],
   "repository": {

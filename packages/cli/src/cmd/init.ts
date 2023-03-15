@@ -40,11 +40,18 @@ Installing Hybrid v${mdVersion} ...
     }
   ])
 
-  await spinner("Installing Hybrid dependencies", async () =>
+  await spinner("Installing Hybrid", async () => {
     cmd(pkgManager, ["add", "hybrid"], {
       cwd
     })
-  )
+
+    await writeFile(
+      cwd + "/.hybrid/.gitignore",
+      `
+cache
+out`
+    )
+  })
 
   await spinner("Adding smart contracts", async () => {
     const solidityPragma = "pragma solidity ^0.8.13"
