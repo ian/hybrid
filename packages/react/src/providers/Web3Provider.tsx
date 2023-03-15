@@ -1,14 +1,13 @@
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit"
+import { getDefaultWallets } from "@rainbow-me/rainbowkit"
 import { buildProviders } from "./helpers"
 
-import { Chain, configureChains, createClient, WagmiConfig } from "wagmi"
-import { mainnet, polygon, optimism, arbitrum } from "wagmi/chains"
+import { configureChains, createClient, WagmiConfig } from "wagmi"
+import * as Chains from "wagmi/chains"
 
 import React, { useMemo } from "react"
 
 type Config = {
   appName?: string
-  chains?: Chain[]
   alchemyKey?: string
   infuraKey?: string
 
@@ -29,9 +28,10 @@ export const Web3Provider = (props: { children: React.ReactNode } & Config) => {
   const { appName, children, address, chainId, ...keys } = props
 
   const { chains, provider, webSocketProvider } = useMemo(() => {
+    const chain = Object.values(Chains).find((chain) => chain.id === chainId)
     const providers = buildProviders(keys)
     const { chains, provider, webSocketProvider } = configureChains(
-      props.chains || [mainnet, polygon, optimism, arbitrum],
+      [chain],
       providers
     )
     return { chains, provider, webSocketProvider }
@@ -57,7 +57,8 @@ export const Web3Provider = (props: { children: React.ReactNode } & Config) => {
   return (
     <Context.Provider value={value}>
       <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
+        {/* <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider> */}
+        {children}
       </WagmiConfig>
     </Context.Provider>
   )

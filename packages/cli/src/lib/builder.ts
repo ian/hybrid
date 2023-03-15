@@ -11,10 +11,9 @@ export const writeConfig = async () => {
 export const Contracts = {
   ${contracts
     .map((c) => {
-      const name = c.replace(".sol", "")
-      return `${name}: {
-    abi: require("./out/${name}.sol/${name}.json").abi,
-    bytecode: require("./out/${name}.sol/${name}.json").bytecode.object,
+      return `${c.name}: {
+    abi: require("${c.file}").abi,
+    bytecode: require("${c.file}").bytecode.object,
   }`
     })
     .join(",\n  ")}
@@ -24,5 +23,18 @@ export const Contracts = {
 
 const listContracts = async (dir) => {
   const files = await fs.readdirSync(dir)
-  return files.filter((f) => !f.match(/(t|test)\.sol$/))
+  const filtered = files.filter((f) => !f.match(/(t|test)\.sol$/))
+  return Promise.all(
+    filtered.map((f) => {
+      const name = f.replace(".sol", "")
+      const file = `./out/${name}.sol/${name}.json`
+      // if (!fs.existsSync(process.cwd() + "/.hybrid" + file))
+      //   throw new Error(`Contract contracts/${name}.sol#${name} not found.`)
+
+      return {
+        name,
+        file
+      }
+    })
+  )
 }

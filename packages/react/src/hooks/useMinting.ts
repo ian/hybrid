@@ -1,16 +1,12 @@
 import type { TransactionResponse } from "@ethersproject/providers"
-import { Abi } from "abitype"
 import { BigNumber } from "ethers"
 import { useCallback, useState } from "react"
 import { useAsyncMemo } from "use-async-memo"
 import { useBlockNumber, useContract, useProvider, useSigner } from "wagmi"
 import { useContext } from "./internal"
+import { Contract } from "types"
 
-type Config = {
-  abi: Abi
-}
-
-export const useMinting = (config: Config) => {
+export const useMinting = (config: Contract) => {
   const { abi } = config
   const { address, chainId } = useContext()
 

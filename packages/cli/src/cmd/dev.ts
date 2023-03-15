@@ -64,37 +64,23 @@ Watching  | ${"./" + path.relative(process.cwd(), contractsDir)}
       //   break
 
       case "change":
-        if (!file.endsWith(".sol")) return
-        if (file.endsWith(".test.sol")) {
-          // console.log("Skipping test file", file)
+        if (!file.endsWith(".sol")) {
           return
-        } else {
-          // build().then(() => {
-
-          // })
-
-          const filename = path.basename(file)
-          const name = filename.replace(".sol", "")
-
-          let spinner = ora("Deploying " + name).start()
-          forgeDeploy(name, "http://localhost:8545", testnet.keys[0]).then(
-            ({ address }) => {
-              writeConfig()
-              spinner.succeed(name + " deployed to " + address)
-            }
-          )
-
-          // .then(() => readCompiled(file))
-          // .then(
-          //   ({ abi, bytecode }) =>
-          //     forgeDeploy(contract, "http://localhost:8545", key)
-          //   // deployContract({
-          //   //   privateKey: testnet.keys[0],
-          //   //   abi,
-          //   //   bytecode
-          //   // }).then(console.log)
-          // )
         }
+        if (!file.endsWith(".test.sol")) {
+          return
+        }
+
+        const filename = path.basename(file)
+        const name = filename.replace(".sol", "")
+        const spinner = ora("Deploying " + name).start()
+
+        forgeDeploy(name, "http://localhost:8545", testnet.keys[0]).then(
+          ({ address }) => {
+            writeConfig()
+            spinner.succeed(name + " deployed to " + address)
+          }
+        )
 
         break
       default:

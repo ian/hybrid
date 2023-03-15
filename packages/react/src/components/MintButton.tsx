@@ -1,27 +1,24 @@
-import { Abi } from "abitype"
-import clsx from "clsx"
 import { useMinting } from "hooks/useMinting"
 import { useConnect, useNetwork, useSigner, useSwitchNetwork } from "wagmi"
+import DefaultButton, { DefaultButtonProps } from "./DefaultButton"
+import { Contract } from "types"
 
 type MintButtonProps = {
   className?: string
-  abi: Abi
+  contract: Contract
   button?: React.FC<DefaultButtonProps>
 }
 
-const address = "0xc4001295a6f18f8F8Ca7Df1EC28c0b104E17DD99"
 const chainId = 1337
 
 const MintButton = (props: MintButtonProps) => {
-  const { button: Button = DefaultButton, className, abi } = props
+  const { button: Button = DefaultButton, className, contract } = props
   const { data: signer } = useSigner()
   const { connect, connectors } = useConnect()
   const { chain: network } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
 
-  const { isMinting, isSuccess, isError, mint, totalSupply } = useMinting({
-    abi
-  })
+  const { isMinting, isSuccess, isError, mint } = useMinting(contract)
 
   if (isMinting) {
     return (
@@ -72,39 +69,6 @@ const MintButton = (props: MintButtonProps) => {
     <Button className={className} onClick={mint}>
       Mint Now
     </Button>
-  )
-}
-
-type DefaultButtonProps = {
-  className?: string
-  intent?: "default" | "success" | "error"
-  onClick?: () => void
-  children: React.ReactNode
-  disabled?: boolean
-}
-
-const INTENTS = {
-  default: "text-white bg-blue-500",
-  success: "text-white bg-green-500",
-  error: "text-white bg-red-500"
-}
-
-const DefaultButton = (props: DefaultButtonProps) => {
-  const {
-    className = "px-8 py-3 transition-all cursor-pointer duration-250 hover:scale-[1.05] rounded-xl font-bold",
-    intent = "default",
-    onClick,
-    children,
-    disabled
-  } = props
-
-  return (
-    <button
-      className={clsx(className, INTENTS[intent], disabled && "brightness-75")}
-      onClick={onClick}
-    >
-      {children}
-    </button>
   )
 }
 

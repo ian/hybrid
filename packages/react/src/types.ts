@@ -1,90 +1,97 @@
-import { Chain } from "wagmi"
-import type { TransactionResponse } from "@ethersproject/providers"
-import type { ContractInterface, ContractReceipt } from "ethers"
+import { Abi } from "abitype"
 
-export type HybridConfig = {
-  debug?: boolean
-  address?: `0x${string}`
-  chain: Chain
-  lists?: string[]
-  signatures?: SignatureTree
+// import { Chain } from "wagmi"
+// import type { TransactionResponse } from "@ethersproject/providers"
+// import type { ContractInterface, ContractReceipt } from "ethers"
+
+export type Contract = {
+  abi: Abi
+  bytecode: string
 }
 
-export type Drop = {
-  id: string
+// export type HybridConfig = {
+//   debug?: boolean
+//   address?: `0x${string}`
+//   chain: Chain
+//   lists?: string[]
+//   signatures?: SignatureTree
+// }
 
-  title: string
-  description: string
-  maxSupply: number
+// export type Drop = {
+//   id: string
 
-  banner: string
-  logo: string
+//   title: string
+//   description: string
+//   maxSupply: number
 
-  address: string
-  chainId: number
-  abi: ContractInterface
+//   banner: string
+//   logo: string
 
-  lists: { name: string; signer: string }[]
+//   address: string
+//   chainId: number
+//   abi: ContractInterface
 
-  // @deprecated
-  groups: (Omit<AllowList, "exists"> & { name: string })[]
+//   lists: { name: string; signer: string }[]
 
-  mintPrice: number
-  maxPerWallet: number
+//   // @deprecated
+//   groups: (Omit<AllowList, "exists"> & { name: string })[]
 
-  startTime: number
-  startsAt: Date
-  endTime: number
-  endsAt: Date
-}
+//   mintPrice: number
+//   maxPerWallet: number
 
-export type Counts = {
-  maxSupply: number
-  totalSupply: number
-  remaining: number
-}
+//   startTime: number
+//   startsAt: Date
+//   endTime: number
+//   endsAt: Date
+// }
 
-export type Signature = {
-  s: string
-  n: number
-}
+// export type Counts = {
+//   maxSupply: number
+//   totalSupply: number
+//   remaining: number
+// }
 
-export type SignatureWithSigner = {
-  x: string
-} & Signature
+// export type Signature = {
+//   s: string
+//   n: number
+// }
 
-export type SignatureTree = {
-  [hashed: string]: Signature
-}
+// export type SignatureWithSigner = {
+//   x: string
+// } & Signature
 
-export type MintConfig = {
-  mintPrice: number
-  startTime: Date | false
-  endTime: Date | false
-}
+// export type SignatureTree = {
+//   [hashed: string]: Signature
+// }
 
-export type AllowList = {
-  exists: boolean
-  mintCount: number
-  mintPrice: number
-  maxPerWallet: number
-  startTime: Date
-  endTime: Date
-}
+// export type MintConfig = {
+//   mintPrice: number
+//   startTime: Date | false
+//   endTime: Date | false
+// }
 
-export type MintingEventHandlers = {
-  onTransaction?: (res: TransactionResponse) => void
-  onReceipt?: (receipt: ContractReceipt) => void
-  onSuccess?: (nfts: MintedNFTs) => void
-  onError?: (err: Error) => void
-}
+// export type AllowList = {
+//   exists: boolean
+//   mintCount: number
+//   mintPrice: number
+//   maxPerWallet: number
+//   startTime: Date
+//   endTime: Date
+// }
 
-export type MintedNFTs = {
-  owner: string
-  tokenId: string
-}[]
+// export type MintingEventHandlers = {
+//   onTransaction?: (res: TransactionResponse) => void
+//   onReceipt?: (receipt: ContractReceipt) => void
+//   onSuccess?: (nfts: MintedNFTs) => void
+//   onError?: (err: Error) => void
+// }
 
-export type MintResponse = {
-  receipt: ContractReceipt
-  nfts: MintedNFTs
-}
+// export type MintedNFTs = {
+//   owner: string
+//   tokenId: string
+// }[]
+
+// export type MintResponse = {
+//   receipt: ContractReceipt
+//   nfts: MintedNFTs
+// }
