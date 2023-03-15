@@ -1,6 +1,6 @@
 import { writeConfig } from "../lib/builder"
 import * as foundry from "../lib/foundry"
-import { spinner } from "../lib/helpers"
+import { spinner } from "../lib/util"
 
 export async function build() {
   return spinner("Building contracts...", () =>

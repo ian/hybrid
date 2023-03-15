@@ -2,7 +2,8 @@ import chalk from "chalk"
 import fs from "fs"
 import path from "path"
 import inquirer from "inquirer"
-import { cmd, spinner, writeFile } from "../lib/helpers"
+import { cmd, exec, writeFile } from "../lib/run"
+import { spinner } from "../lib/util"
 
 export async function init() {
   const mdVersion = require("../../package.json").version
@@ -45,12 +46,7 @@ Installing Hybrid v${mdVersion} ...
       cwd
     })
 
-    await writeFile(
-      cwd + "/.hybrid/.gitignore",
-      `
-cache
-out`
-    )
+    exec(`echo '.hybrid' >> .gitignore`)
   })
 
   await spinner("Adding smart contracts", async () => {

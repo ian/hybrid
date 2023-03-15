@@ -1,4 +1,4 @@
-import { SpawnOpts, cmd } from "./helpers"
+import { SpawnOpts, cmd } from "./run"
 
 export type BuildOpts = {
   // todo - add more options

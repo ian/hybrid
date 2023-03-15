@@ -1,5 +1,5 @@
-import { execSync } from "child_process"
+import { exec } from "../lib/run"
 
 export async function test() {
-  return execSync("forge test", { stdio: "inherit" })
+  return exec("forge test")
 }
