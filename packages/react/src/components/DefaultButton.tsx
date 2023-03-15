@@ -1,4 +1,5 @@
 import clsx from "clsx"
+import styles from "./DefaultButton.module.css"
 
 export type DefaultButtonProps = {
   className?: string
@@ -9,14 +10,15 @@ export type DefaultButtonProps = {
 }
 
 const INTENTS = {
-  default: "text-white bg-blue-500",
-  success: "text-white bg-green-500",
-  error: "text-white bg-red-500"
+  default: styles.DefaultButtonBase,
+  success: styles.DefaultButtonSuccess,
+  error: styles.DefaultButtonError
 }
 
 const DefaultButton = (props: DefaultButtonProps) => {
   const {
-    className = "px-8 py-3 transition-all cursor-pointer duration-250 hover:scale-[1.05] rounded-xl font-bold",
+    // className = "px-8 py-3 transition-all cursor-pointer duration-250 hover:scale-[1.05] rounded-xl font-bold",
+    className = styles.DefaultButton,
     intent = "default",
     onClick,
     children,
@@ -25,7 +27,11 @@ const DefaultButton = (props: DefaultButtonProps) => {
 
   return (
     <button
-      className={clsx(className, INTENTS[intent], disabled && "brightness-75")}
+      className={clsx(
+        className,
+        INTENTS[intent],
+        disabled && styles.DefaultButtonDisabled
+      )}
       onClick={onClick}
     >
       {children}

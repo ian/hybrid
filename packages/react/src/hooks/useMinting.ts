@@ -46,7 +46,7 @@ export const useMinting = (config: Contract) => {
       .catch((err: Error) => {
         console.error(err)
         setError(true)
-        setTimeout(() => setError(false), 3000)
+        setTimeout(() => setError(false), 1000)
       })
       .finally(() => setMinting(false))
   }, [signer, contract])

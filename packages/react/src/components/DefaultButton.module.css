@@ -1,0 +1,19 @@
+.DefaultButton {
+  @apply px-8 py-3 transition-all cursor-pointer hover:scale-[1.05] rounded-xl font-bold;
+}
+
+.DefaultButtonBase {
+  @apply text-white bg-blue-500;
+}
+
+.DefaultButtonSuccess {
+  @apply text-white bg-green-500;
+}
+
+.DefaultButtonError {
+  @apply text-white bg-red-500;
+}
+
+.DefaultButtonDisabled {
+  @apply brightness-75;
+}
