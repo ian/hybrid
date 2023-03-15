@@ -1,4 +1,4 @@
-import { useMinting } from "hooks/useMinting"
+import { useMinting } from "../hooks/useMinting"
 import { useConnect, useNetwork, useSigner, useSwitchNetwork } from "wagmi"
 import DefaultButton, { DefaultButtonProps } from "./DefaultButton"
 import { Contract } from "types"
