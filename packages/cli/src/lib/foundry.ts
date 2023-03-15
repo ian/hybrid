@@ -5,8 +5,8 @@ export type BuildOpts = {
 } & SpawnOpts
 
 export async function build(opts: BuildOpts = {}) {
-  return new Promise(async (resolve, reject) => {
-    return cmd("forge", ["build", "--force"], {
+  return new Promise((resolve, reject) => {
+    cmd("forge", ["build", "--force"], {
       ...opts,
       // hijack the stderr and reject if anything comes thru
       stderr: (msg) => reject(msg)
