@@ -60,6 +60,7 @@
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.1",
+    "@hybrd/contracts": "^0.1.2",
     "@hybrd/cli": "^0.1.2",
     "@rainbow-me/rainbowkit": "^0.12.1",
     "abitype": "^0.7.1",
