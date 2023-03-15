@@ -1,7 +1,7 @@
 import type { Options } from "tsup"
 
 const config: Options = {
-  entry: ["src/index.ts", "src/cli.ts"],
+  entry: ["src/cli.ts"],
   dts: true,
   sourcemap: true,
   format: ["cjs", "esm"]

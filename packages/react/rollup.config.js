@@ -5,6 +5,7 @@ import postcss from "rollup-plugin-postcss"
 import analyze from "rollup-plugin-analyzer"
 import { visualizer } from "rollup-plugin-visualizer"
 import { terser } from "rollup-plugin-terser"
+import hashbang from "rollup-plugin-hashbang"
 
 import pkg from "./package.json" assert { type: "json" }
 
@@ -16,11 +17,8 @@ export default [
       ...Object.keys(pkg.peerDependencies || {})
     ],
     output: {
-      file: pkg.exports["."]
-      // format: "esm",
-      // format: "cjs",
-      // sourcemap: true
-      // sourcemap: "inline"
+      file: pkg.exports["."].default,
+      sourcemap: true
     },
     plugins: [
       peerDepsExternal(),
@@ -46,5 +44,13 @@ export default [
         sourcemap: true
       })
     ]
+  },
+  {
+    input: ["./src/cli.ts"],
+    output: {
+      file: "./dist/cli.mjs",
+      sourcemap: true
+    },
+    plugins: [hashbang.default()]
   }
 ]

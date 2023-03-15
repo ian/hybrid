@@ -20,7 +20,7 @@
     "jsx": "react-jsx",
     "baseUrl": "./src"
   },
-  "include": ["src"],
+  "include": ["src", "client"],
   "exclude": ["node_modules", "build"]
 }
 
