@@ -72,7 +72,6 @@
     "moment": "^2.29.4",
     "tslib": "^2.4.1",
     "twind": "^0.16.17",
-    "use-async-memo": "^1.2.4",
     "wagmi": "^0.12.1"
   },
   "devDependencies": {
