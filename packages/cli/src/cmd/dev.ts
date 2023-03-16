@@ -20,11 +20,9 @@ export async function dev() {
   const mnemonic = bip39.generateMnemonic()
 
   const [testnet] = await Promise.all([
-    anvil(mnemonic, forkUrl).finally(() => console.log("Anvil exited"))
+    anvil(mnemonic, forkUrl)
     // @todo - some sort of dev interface
   ])
-
-  await deployAll(contractsDir, testnet)
 
   console.log()
   console.log(
@@ -52,11 +50,16 @@ Watching  | ${"./" + path.relative(process.cwd(), contractsDir)}
   console.log(testnet.keys.join("\n"))
   console.log()
 
-  chokidar.watch(contractsDir).on("all", async (event, file) => {
-    if (event === "change") {
-      await deployContract(file, testnet)
-    }
-  })
+  await deployAll(contractsDir, testnet).catch(console.error)
+
+  chokidar
+    .watch(contractsDir)
+    .on("all", async (event, file) => {
+      deployContract(file, testnet).catch(console.error)
+    })
+    .on("error", (error) => {
+      console.error("Error happened", error)
+    })
 }
 
 const checksums: { [file: string]: string } = {}
@@ -87,10 +90,10 @@ async function deployContract(file: string, blockchain) {
 
   const spinner = ora("Deploying " + name).start()
 
-  forgeDeploy(name, "http://localhost:8545", blockchain.keys[0]).then(
-    ({ address }) => {
+  await forgeDeploy(name, "http://localhost:8545", blockchain.keys[0]).then(
+    (deployment) => {
       writeConfig()
-      spinner.succeed(name + " deployed to " + address)
+      spinner.succeed(name + " deployed to " + deployment.address)
     }
   )
 }

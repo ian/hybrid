@@ -10,38 +10,38 @@ export type SpawnOpts = {
   encoding?: string
   stdout?: (data: string) => void
   stderr?: (data: string) => void
+  error?: (error: Error) => void
+  close?: (code: number) => void
 }
 
-export async function spawn(
+export function spawn(
   cmd: string,
   args: string[],
   opts: SpawnOpts = {
     encoding: "utf8"
   }
 ) {
-  return new Promise((resolve, reject) => {
-    const install = child.spawn(cmd, args, opts)
+  const install = child.spawn(cmd, args, opts)
 
-    install.stdout.on("data", (data: any) => {
-      opts.stdout?.(data.toString())
-    })
-
-    install.stderr.on("data", (data: any) => {
-      opts.stderr?.(data.toString())
-    })
-
-    install.on("error", (error: Error) => {
-      reject(error)
-    })
-
-    install.on("close", (code: number) => {
-      resolve(code)
-    })
-
-    return install
+  install.stdout.on("data", (data: any) => {
+    opts.stdout?.(data.toString())
   })
+
+  install.stderr.on("data", (data: any) => {
+    opts.stderr?.(data.toString())
+  })
+
+  install.on("error", (error: Error) => {
+    opts.error?.(error)
+  })
+
+  install.on("close", (code: number) => {
+    opts.close?.(code)
+  })
+
+  return install
 }
 
-export async function exec(cmd: string, opts: SpawnOpts = {}) {
+export function exec(cmd: string, opts: SpawnOpts = {}) {
   return child.execSync(cmd, { cwd: opts.cwd, stdio: "inherit" })
 }

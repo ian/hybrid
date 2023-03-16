@@ -1,16 +1,18 @@
-import { SpawnOpts, spawn } from "./run"
+import { ChildProcessWithoutNullStreams } from "child_process"
+import { SpawnOpts, exec, spawn } from "./run"
 
 export type BuildOpts = {
   // todo - add more options
 } & SpawnOpts
 
-export async function build(opts: BuildOpts = {}) {
+export async function forgeBuild(opts: BuildOpts = {}) {
   return new Promise((resolve, reject) => {
     spawn("forge", ["build", "--force"], {
       ...opts,
       // hijack the stderr and reject if anything comes thru
-      stderr: (msg) => reject(msg)
-    }).then(resolve)
+      stderr: (msg) => reject(msg),
+      close: resolve
+    })
   })
 }
 
@@ -18,13 +20,12 @@ export async function forgeDeploy(name: string, rpc: string, key: string) {
   const output: string[] = []
   const error: string[] = []
 
-  await spawn(
-    "forge",
-    ["create", name, `--rpc-url`, rpc, "--private-key", key],
-    {
+  await new Promise((resolve) =>
+    spawn("forge", ["create", name, `--rpc-url`, rpc, "--private-key", key], {
       stdout: (msg) => output.push(msg),
-      stderr: (err) => error.push(err)
-    }
+      stderr: (err) => error.push(err),
+      close: resolve
+    })
   )
 
   const address = output.join("").match(/Deployed to: (0x.{40})/)
@@ -37,6 +38,7 @@ export async function forgeDeploy(name: string, rpc: string, key: string) {
 }
 
 type AnvilListening = {
+  proc: ChildProcessWithoutNullStreams
   host: string
   port: string
   keys: `0x${string}`[]
@@ -47,7 +49,7 @@ export async function anvil(
   forkUrl: string
 ): Promise<AnvilListening> {
   return new Promise((resolve) => {
-    spawn(
+    const proc = spawn(
       "anvil",
       ["--mnemonic", mnemonic, "--fork-url", forkUrl, "--chain-id", "1337"],
       {
@@ -58,13 +60,15 @@ export async function anvil(
           if (listens) {
             const [host, port] = listens[1].split(":")
             resolve({
+              proc,
               host,
               port,
               keys
             })
           }
         },
-        stderr: (str) => process.stderr.write(str)
+        stderr: (str) => console.error(str),
+        error: (str) => console.error(str)
       }
     )
   })
