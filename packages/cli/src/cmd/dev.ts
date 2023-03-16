@@ -12,7 +12,7 @@ import { writeConfig } from "../lib/builder"
 // [] - switch to config object for paths
 // [] - solve sighup issue for anvil
 // [] - add a dev ui
-// [] - checksum files to avoid recompiling
+// [x] - checksum files to avoid recompiling
 
 export async function dev() {
   const contractsDir = process.cwd() + "/contracts"
@@ -23,6 +23,8 @@ export async function dev() {
     anvil(mnemonic, forkUrl).finally(() => console.log("Anvil exited"))
     // @todo - some sort of dev interface
   ])
+
+  await deployAll(contractsDir, testnet)
 
   console.log()
   console.log(
@@ -50,32 +52,23 @@ Watching  | ${"./" + path.relative(process.cwd(), contractsDir)}
   console.log(testnet.keys.join("\n"))
   console.log()
 
-  // listCompiled().then((files) => {
-  //   return files.map((file) =>
-  //     readCompiled(file).then(({ abi, bytecode }) =>
-  //       deployContract({
-  //         privateKey: testnet.keys[0],
-  //         abi,
-  //         bytecode
-  //       }).then(console.log)
-  //     )
-  //   )
-  // })
-
   chokidar.watch(contractsDir).on("all", async (event, file) => {
     if (event === "change") {
-      await fileChanged(file, testnet)
+      await deployContract(file, testnet)
     }
   })
 }
 
-// async function compileAndDeployAll() {
-
-// }
-
 const checksums: { [file: string]: string } = {}
 
-async function fileChanged(file: string, blockchain) {
+async function deployAll(contractsDir, blockchain) {
+  const files = fs.readdirSync(contractsDir)
+  for (const file of files) {
+    await deployContract(contractsDir + "/" + file, blockchain)
+  }
+}
+
+async function deployContract(file: string, blockchain) {
   const filename = path.basename(file)
   const name = filename.replace(".sol", "")
 
