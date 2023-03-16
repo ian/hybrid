@@ -73,6 +73,8 @@ Watching  | ${"./" + path.relative(process.cwd(), contractsDir)}
 
 // }
 
+const checksums: { [file: string]: string } = {}
+
 async function fileChanged(file: string, blockchain) {
   const filename = path.basename(file)
   const name = filename.replace(".sol", "")
@@ -86,7 +88,9 @@ async function fileChanged(file: string, blockchain) {
   }
 
   const checksum = await fileChecksum(file)
-  console.log({ checksum })
+  // If the file hasn't changed, no need to redeploy
+  if (checksums[file] === checksum) return
+  checksums[file] = checksum
 
   const spinner = ora("Deploying " + name).start()
 
