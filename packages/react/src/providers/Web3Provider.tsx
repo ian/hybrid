@@ -39,7 +39,12 @@ export const Web3Provider = (props: { children: React.ReactNode } & Config) => {
 
   const value = {
     address,
-    chainId
+    chainId,
+    // tbd on whether we need this. The idea is to provide this for
+    // RainbowKit/Connectkit but we may end up initiailizing that differently
+    chains,
+    provider,
+    webSocketProvider
   }
 
   const { connectors } = getDefaultWallets({
