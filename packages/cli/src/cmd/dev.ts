@@ -73,7 +73,6 @@ async function deployAll(contractsDir, blockchain) {
 
 async function deployContract(file: string, blockchain) {
   const filename = path.basename(file)
-  const name = filename.replace(".sol", "")
 
   if (!filename.endsWith(".sol")) {
     return
@@ -83,6 +82,7 @@ async function deployContract(file: string, blockchain) {
     return
   }
 
+  const name = filename.replace(".sol", "")
   const checksum = await fileChecksum(file)
   // If the file hasn't changed, no need to redeploy
   if (checksums[file] === checksum) return
