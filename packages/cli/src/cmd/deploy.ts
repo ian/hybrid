@@ -1,5 +1,4 @@
 import inquirer from "inquirer"
-import { cmd } from "../lib/run"
 import { forgeDeploy } from "../lib/foundry"
 
 export async function deploy(contract: string, target: string) {

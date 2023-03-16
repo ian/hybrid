@@ -1,4 +1,4 @@
-import { SpawnOpts, cmd } from "./run"
+import { SpawnOpts, spawn } from "./run"
 
 export type BuildOpts = {
   // todo - add more options
@@ -6,7 +6,7 @@ export type BuildOpts = {
 
 export async function build(opts: BuildOpts = {}) {
   return new Promise((resolve, reject) => {
-    cmd("forge", ["build", "--force"], {
+    spawn("forge", ["build", "--force"], {
       ...opts,
       // hijack the stderr and reject if anything comes thru
       stderr: (msg) => reject(msg)
@@ -18,10 +18,14 @@ export async function forgeDeploy(name: string, rpc: string, key: string) {
   const output: string[] = []
   const error: string[] = []
 
-  await cmd("forge", ["create", name, `--rpc-url`, rpc, "--private-key", key], {
-    stdout: (msg) => output.push(msg),
-    stderr: (err) => error.push(err)
-  })
+  await spawn(
+    "forge",
+    ["create", name, `--rpc-url`, rpc, "--private-key", key],
+    {
+      stdout: (msg) => output.push(msg),
+      stderr: (err) => error.push(err)
+    }
+  )
 
   const address = output.join("").match(/Deployed to: (0x.{40})/)
   const hash = output.join("").match(/Transaction hash: (0x.{64})/)
@@ -43,7 +47,7 @@ export async function anvil(
   forkUrl: string
 ): Promise<AnvilListening> {
   return new Promise((resolve) => {
-    cmd(
+    spawn(
       "anvil",
       ["--mnemonic", mnemonic, "--fork-url", forkUrl, "--chain-id", "1337"],
       {

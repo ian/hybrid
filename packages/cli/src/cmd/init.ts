@@ -2,7 +2,7 @@ import chalk from "chalk"
 import fs from "fs"
 import path from "path"
 import inquirer from "inquirer"
-import { cmd, exec, writeFile } from "../lib/run"
+import { exec, writeFile } from "../lib/run"
 import { spinner } from "../lib/util"
 
 export async function init() {
@@ -42,7 +42,7 @@ Installing Hybrid v${mdVersion} ...
   ])
 
   await spinner("Installing Hybrid", async () => {
-    cmd(pkgManager, ["add", "hybrid"], {
+    exec(`${pkgManager} add hybrid`, {
       cwd
     })
 
@@ -52,13 +52,11 @@ Installing Hybrid v${mdVersion} ...
   await spinner("Adding smart contracts", async () => {
     const solidityPragma = "pragma solidity ^0.8.13"
 
-    await cmd("sh", ["-c", "curl -L https://foundry.paradigm.xyz | bash"], {
+    await exec("curl -L https://foundry.paradigm.xyz | bash", {
       cwd
     })
 
-    await cmd("foundryup", [], {
-      cwd
-    })
+    await exec("foundryup", { cwd })
 
     await writeFile(
       [cwd, "foundry.toml"].join("/"),

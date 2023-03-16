@@ -1,6 +1,8 @@
 import bip39 from "bip39"
 import chokidar from "chokidar"
+import crypto from "crypto"
 import path from "path"
+import fs from "fs"
 import { anvil, forgeDeploy } from "../lib/foundry"
 import boxen from "boxen"
 import ora from "ora"
@@ -8,6 +10,9 @@ import { writeConfig } from "../lib/builder"
 
 // @todo
 // [] - switch to config object for paths
+// [] - solve sighup issue for anvil
+// [] - add a dev ui
+// [] - checksum files to avoid recompiling
 
 export async function dev() {
   const contractsDir = process.cwd() + "/contracts"
@@ -15,7 +20,7 @@ export async function dev() {
   const mnemonic = bip39.generateMnemonic()
 
   const [testnet] = await Promise.all([
-    anvil(mnemonic, forkUrl)
+    anvil(mnemonic, forkUrl).finally(() => console.log("Anvil exited"))
     // @todo - some sort of dev interface
   ])
 
@@ -57,38 +62,45 @@ Watching  | ${"./" + path.relative(process.cwd(), contractsDir)}
   //   )
   // })
 
-  chokidar.watch(contractsDir).on("all", (event, file) => {
-    switch (event) {
-      // case "add":
-      //   console.log(event, path)
-      //   break
-
-      case "change":
-        const filename = path.basename(file)
-        const name = filename.replace(".sol", "")
-
-        if (!filename.endsWith(".sol")) {
-          return
-        }
-        if (filename.endsWith(".test.sol")) {
-          return
-        }
-
-        const spinner = ora("Deploying " + name).start()
-
-        forgeDeploy(name, "http://localhost:8545", testnet.keys[0]).then(
-          ({ address }) => {
-            writeConfig()
-            spinner.succeed(name + " deployed to " + address)
-          }
-        )
-
-        break
-      default:
-        // console.log(event, path)
-        break
+  chokidar.watch(contractsDir).on("all", async (event, file) => {
+    if (event === "change") {
+      await fileChanged(file, testnet)
     }
   })
+}
+
+// async function compileAndDeployAll() {
+
+// }
+
+async function fileChanged(file: string, blockchain) {
+  const filename = path.basename(file)
+  const name = filename.replace(".sol", "")
+
+  if (!filename.endsWith(".sol")) {
+    return
+  }
+
+  if (filename.endsWith(".test.sol")) {
+    return
+  }
+
+  const checksum = await fileChecksum(file)
+  console.log({ checksum })
+
+  const spinner = ora("Deploying " + name).start()
+
+  forgeDeploy(name, "http://localhost:8545", blockchain.keys[0]).then(
+    ({ address }) => {
+      writeConfig()
+      spinner.succeed(name + " deployed to " + address)
+    }
+  )
+}
+
+async function fileChecksum(file) {
+  const str = fs.readFileSync(file).toString()
+  return crypto.createHash("md5").update(str, "utf8").digest("hex")
 }
 
 // const readCompiled = async (file: string) => {

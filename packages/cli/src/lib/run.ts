@@ -1,4 +1,4 @@
-import { execSync, spawn } from "child_process"
+import child from "child_process"
 import fs from "fs"
 
 export async function writeFile(path: string, data: string) {
@@ -12,7 +12,7 @@ export type SpawnOpts = {
   stderr?: (data: string) => void
 }
 
-export async function cmd(
+export async function spawn(
   cmd: string,
   args: string[],
   opts: SpawnOpts = {
@@ -20,7 +20,7 @@ export async function cmd(
   }
 ) {
   return new Promise((resolve, reject) => {
-    const install = spawn(cmd, args, opts)
+    const install = child.spawn(cmd, args, opts)
 
     install.stdout.on("data", (data: any) => {
       opts.stdout?.(data.toString())
@@ -37,9 +37,11 @@ export async function cmd(
     install.on("close", (code: number) => {
       resolve(code)
     })
+
+    return install
   })
 }
 
-export async function exec(cmd: string) {
-  return execSync(cmd, { stdio: "inherit" })
+export async function exec(cmd: string, opts: SpawnOpts = {}) {
+  return child.execSync(cmd, { cwd: opts.cwd, stdio: "inherit" })
 }
