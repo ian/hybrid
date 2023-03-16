@@ -64,15 +64,16 @@ Watching  | ${"./" + path.relative(process.cwd(), contractsDir)}
       //   break
 
       case "change":
-        if (!file.endsWith(".sol")) {
+        const filename = path.basename(file)
+        const name = filename.replace(".sol", "")
+
+        if (!filename.endsWith(".sol")) {
           return
         }
-        if (!file.endsWith(".test.sol")) {
+        if (filename.endsWith(".test.sol")) {
           return
         }
 
-        const filename = path.basename(file)
-        const name = filename.replace(".sol", "")
         const spinner = ora("Deploying " + name).start()
 
         forgeDeploy(name, "http://localhost:8545", testnet.keys[0]).then(
