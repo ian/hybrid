@@ -54,7 +54,7 @@ Watching  | ${"./" + path.relative(process.cwd(), contractsDir)}
 
   chokidar
     .watch(contractsDir)
-    .on("all", async (event, file) => {
+    .on("change", async (file) => {
       deployContract(file, testnet).catch(console.error)
     })
     .on("error", (error) => {
@@ -102,13 +102,3 @@ async function fileChecksum(file) {
   const str = fs.readFileSync(file).toString()
   return crypto.createHash("md5").update(str, "utf8").digest("hex")
 }
-
-// const readCompiled = async (file: string) => {
-//   const distDir = process.cwd() + "/.hybrid/out"
-//   const filename = path.basename(file)
-//   const name = filename.replace(".sol", "")
-//   const contents = await fs
-//     .readFileSync(`${distDir}/${filename}/${name}.json`)
-//     .toString()
-//   return JSON.parse(contents)
-// }
