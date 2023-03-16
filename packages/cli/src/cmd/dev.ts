@@ -10,7 +10,7 @@ import { writeConfig } from "../lib/builder"
 
 // @todo
 // [] - switch to config object for paths
-// [] - solve sighup issue for anvil
+// [x] - solve sighup issue for anvil
 // [] - add a dev ui
 // [x] - checksum files to avoid recompiling
 
