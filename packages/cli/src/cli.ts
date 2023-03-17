@@ -4,7 +4,6 @@ import { test } from "./cmd/test"
 import { dev } from "./cmd/dev"
 import { init } from "./cmd/init"
 import { deploy } from "./cmd/deploy"
-import boxen from "boxen"
 
 export function run() {
   if (process.argv[2] === "init") {
@@ -44,24 +43,7 @@ export function run() {
       .argument("<contract>", "Contract name")
       .argument("<target>", "Deploy target [test|prod]")
       .action(async (contract, target) => {
-        await deploy(contract, target).then(({ address, hash }) => {
-          console.log()
-          console.log(
-            boxen(
-              `Address: ${address}
-  Tx Hash: ${hash}`,
-              {
-                title: `Contract ${contract} Deployed to ${target}`,
-                titleAlignment: "left",
-                borderColor: "yellowBright",
-                padding: 1,
-                margin: 0.5,
-                borderStyle: "double"
-              }
-            )
-          )
-          console.log()
-        })
+        deploy(contract, target)
       })
 
     program.parse()

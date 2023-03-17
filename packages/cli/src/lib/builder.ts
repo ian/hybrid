@@ -1,7 +1,27 @@
 import fs from "fs"
 
+export const readConfig = () => {
+  const config = JSON.parse(
+    fs.readFileSync(process.cwd() + "/contracts/" + "compiled.json").toString()
+  )
+  return config
+}
+
 export const writeConfig = async () => {
   const contracts = await listContracts(process.cwd() + "/contracts")
+
+  const json = contracts.reduce((acc, c) => {
+    acc[c.name] = {
+      abi: c.abi,
+      bytecode: c.bytecode
+    }
+    return acc
+  }, {})
+
+  await fs.writeFileSync(
+    process.cwd() + "/contracts/" + "compiled.json",
+    JSON.stringify(json, null, 2)
+  )
 
   return fs.writeFileSync(
     process.cwd() + "/contracts/" + "index.ts",
