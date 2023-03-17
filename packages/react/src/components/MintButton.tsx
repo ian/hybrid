@@ -7,12 +7,18 @@ type MintButtonProps = {
   className?: string
   contract: Contract
   button?: React.FC<DefaultButtonProps>
+  amount: number
 }
 
 const chainId = 1337
 
 const MintButton = (props: MintButtonProps) => {
-  const { button: Button = DefaultButton, className, contract } = props
+  const {
+    amount = 1,
+    button: Button = DefaultButton,
+    className,
+    contract
+  } = props
   const { data: signer } = useSigner()
   const { connect, connectors } = useConnect()
   const { chain: network } = useNetwork()
@@ -66,7 +72,7 @@ const MintButton = (props: MintButtonProps) => {
   }
 
   return (
-    <Button className={className} onClick={mint}>
+    <Button className={className} onClick={() => mint(amount)}>
       Mint Now
     </Button>
   )
