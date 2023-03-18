@@ -11,7 +11,7 @@ import { writeConfig } from "../lib/config"
 // @todo
 // [] - switch to config object for paths
 // [x] - solve sighup issue for anvil
-// [] - add a dev ui
+// [x] - add a deploy ui
 // [x] - checksum files to avoid recompiling
 
 export async function dev() {
@@ -28,7 +28,6 @@ export async function dev() {
   console.log(
     boxen(
       `
-Dev UI    | http://127.0.0.1:8580
 RPC Node  | http://${testnet.host}:${testnet.port}
 ----------+----------------------
 Docs      | https://hybrid.dev
