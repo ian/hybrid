@@ -34,11 +34,9 @@ export function Web3Provider(props: { children: React.ReactNode } & Config) {
   const { appName, children, ...keys } = props
 
   const { chains, provider, webSocketProvider } = useMemo(() => {
-    const providers = buildProviders(keys)
-    console.log({ providers, SUPPORTED_CHAINS })
     const { chains, provider, webSocketProvider } = configureChains(
       SUPPORTED_CHAINS,
-      providers
+      buildProviders(keys)
     )
     return { chains, provider, webSocketProvider }
   }, [keys])
@@ -66,12 +64,7 @@ export function Web3Provider(props: { children: React.ReactNode } & Config) {
 
   return (
     <Web3Context.Provider value={contextValue}>
-      <div>
-        <WagmiConfig client={client}>
-          {/* <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider> */}
-          {children}
-        </WagmiConfig>
-      </div>
+      <WagmiConfig client={client}>{children}</WagmiConfig>
     </Web3Context.Provider>
   )
 }
