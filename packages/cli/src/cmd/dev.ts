@@ -92,7 +92,7 @@ async function deployContract(file: string, blockchain) {
 
   await forgeDeploy(name, "http://localhost:8545", blockchain.keys[0]).then(
     (deployment) => {
-      writeConfig()
+      // writeConfig()
       spinner.succeed(name + " deployed to " + deployment.address)
     }
   )

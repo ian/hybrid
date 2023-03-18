@@ -7,7 +7,14 @@ import { Abi } from "abitype"
 export type Contract = {
   abi: Abi
   bytecode: string
+  address: string
+  chainId: number
 }
+
+export type {
+  TransactionReceipt as Receipt,
+  TransactionResponse as Transaction
+} from "@ethersproject/providers"
 
 // export type HybridConfig = {
 //   debug?: boolean

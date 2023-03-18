@@ -18,7 +18,9 @@ export async function deploy(contractName: string, target: DeployTarget) {
   if (target === "prod") {
     const chainId = 1
     await deployInBrowser(contract.bytecode, chainId)
-      .then((deploy) => writeConfig(target, contractName, deploy, contract))
+      .then((deploy) =>
+        writeConfig(target, chainId, contractName, deploy, contract)
+      )
       .catch((msg) => {
         console.log(msg)
         process.exit()
@@ -26,7 +28,9 @@ export async function deploy(contractName: string, target: DeployTarget) {
   } else if (target === "test") {
     const chainId = 5
     await deployInBrowser(contract.bytecode, chainId)
-      .then((deploy) => writeConfig(target, contractName, deploy, contract))
+      .then((deploy) =>
+        writeConfig(target, chainId, contractName, deploy, contract)
+      )
       .catch((msg) => {
         console.log(msg)
         process.exit()
