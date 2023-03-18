@@ -10,7 +10,18 @@ export function createChannel() {
 // const host = "https://hybrid.dev"
 const host = "http://localhost:3000"
 
-export async function waitForDeployment(bytecode: string, chainId: number) {
+type Deployment = {
+  address: string
+  deployer: string
+  txHash: string
+  blockHash: string
+  blockNumber: number
+}
+
+export async function waitForDeployment(
+  bytecode: string,
+  chainId: number
+): Promise<Deployment> {
   return new Promise(async (resolve, reject) => {
     const server = new Server({
       cors: {
@@ -38,10 +49,10 @@ export async function waitForDeployment(bytecode: string, chainId: number) {
     })
 
     server.listen(0)
+
     // @ts-ignore - httpServer is marked as private
     // but there's no other way to get the port.
     const { port } = server.httpServer.address()
-    console.log({ port })
 
     const url = "ws://localhost:" + port
     await open(host + "/deploy?url=" + url)
