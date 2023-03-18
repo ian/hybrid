@@ -1,16 +1,9 @@
 import open from "open"
 import { Server } from "socket.io"
+import { Deployment } from "../types"
 
 // const host = "https://hybrid.dev"
 const host = "http://localhost:3000"
-
-type Deployment = {
-  address: string
-  deployer: string
-  txHash: string
-  blockHash: string
-  blockNumber: number
-}
 
 export async function waitForDeployment(
   bytecode: string,

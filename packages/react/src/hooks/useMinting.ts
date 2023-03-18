@@ -18,7 +18,6 @@ type UseMinting = {
 }
 
 export const useMinting = (config: Contract): UseMinting => {
-  const { abi } = config
   const { address, chainId } = useContext()
 
   const { data: block } = useBlockNumber()
@@ -31,7 +30,7 @@ export const useMinting = (config: Contract): UseMinting => {
 
   const contract = useContract({
     address,
-    abi
+    abi: config?.abi
   })
 
   const totalSupply: number = useAsyncMemo(() => {

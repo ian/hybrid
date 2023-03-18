@@ -3,9 +3,10 @@ import chokidar from "chokidar"
 import crypto from "crypto"
 import path from "path"
 import fs from "fs"
-import { anvil, forgeDeploy } from "../lib/foundry"
 import boxen from "boxen"
 import ora from "ora"
+
+import { anvil, forgeDeploy } from "../lib/foundry"
 import { writeConfig } from "../lib/config"
 
 // @todo

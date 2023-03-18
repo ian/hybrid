@@ -1,5 +1,7 @@
+import fs from "fs"
 import { ChildProcessWithoutNullStreams } from "child_process"
-import { SpawnOpts, exec, spawn } from "./run"
+import { SpawnOpts, spawn } from "./run"
+import { CompiledContract } from "../types"
 
 export type BuildOpts = {
   // todo - add more options
@@ -72,4 +74,17 @@ export async function anvil(
       }
     )
   })
+}
+
+export async function getArtifact(name: string): Promise<CompiledContract> {
+  const json = JSON.parse(
+    fs
+      .readFileSync(process.cwd() + `/.hybrid/out/${name}.sol/${name}.json`)
+      .toString()
+  )
+
+  return {
+    abi: json.abi,
+    bytecode: json.bytecode.object
+  }
 }
