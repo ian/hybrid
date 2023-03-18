@@ -36,6 +36,10 @@ export async function waitForDeployment(
         bytecode
       })
 
+      socket.on("tx", (arg) => {
+        // Someday we might want to show a status update
+      })
+
       // User deployed, resolve the promise
       socket.on("receipt", (arg) => {
         server.close()

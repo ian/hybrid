@@ -1,9 +1,9 @@
 import chalk from "chalk"
 import fs from "fs"
+import ora, { Ora } from "ora"
 import path from "path"
 import inquirer from "inquirer"
 import { exec, writeFile } from "../lib/run"
-import { spinner } from "../lib/util"
 
 export async function init() {
   const mdVersion = require("../../package.json").version
@@ -155,4 +155,19 @@ Installing Hybrid v${mdVersion} ...
   console.log("To get started, run", chalk.yellow.bold("hy dev"))
   console.log()
   console.log()
+}
+
+function spinner(label: string, fn: () => Promise<any>) {
+  let spinner: Ora
+  if (label) spinner = ora(label).start()
+
+  return fn()
+    .then(() => {
+      spinner?.succeed(`${label} ... DONE`)
+      return spinner
+    })
+    .catch((err) => {
+      spinner?.fail(`${label}`)
+      console.error(err)
+    })
 }

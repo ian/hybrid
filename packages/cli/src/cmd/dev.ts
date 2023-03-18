@@ -6,7 +6,7 @@ import fs from "fs"
 import { anvil, forgeDeploy } from "../lib/foundry"
 import boxen from "boxen"
 import ora from "ora"
-import { writeConfig } from "../lib/builder"
+import { writeConfig } from "../lib/config"
 
 // @todo
 // [] - switch to config object for paths

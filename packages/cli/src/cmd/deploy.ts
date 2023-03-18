@@ -1,5 +1,5 @@
 import ora from "ora"
-import { readConfig } from "../lib/builder"
+import { readConfig } from "../lib/config"
 import { waitForDeployment } from "../lib/localBridge"
 import { etherscanTxURL } from "../lib/etherscan"
 

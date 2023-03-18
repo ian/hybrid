@@ -1,9 +1,9 @@
-import { writeConfig } from "../lib/builder"
+import ora from "ora"
+import { writeConfig } from "../lib/config"
 import { forgeBuild } from "../lib/foundry"
-import { spinner } from "../lib/util"
 
 export async function build() {
-  return spinner("Building contracts...", () =>
-    forgeBuild().then(() => writeConfig())
-  )
+  const spinner = ora("Building contracts...").start()
+  await forgeBuild().then(writeConfig)
+  spinner.succeed("Building contracts... DONE")
 }
