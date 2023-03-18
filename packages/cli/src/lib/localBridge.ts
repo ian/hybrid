@@ -26,8 +26,9 @@ export async function waitForDeployment(bytecode: string, chainId: number) {
       })
 
       // User deployed, resolve the promise
-      socket.on("deploy", (arg) => {
-        resolve(arg)
+      socket.on("receipt", (arg) => {
+        server.close()
+        resolve(JSON.parse(arg))
       })
 
       //
@@ -36,9 +37,13 @@ export async function waitForDeployment(bytecode: string, chainId: number) {
       })
     })
 
-    server.listen(4001)
+    server.listen(0)
+    // @ts-ignore - httpServer is marked as private
+    // but there's no other way to get the port.
+    const { port } = server.httpServer.address()
+    console.log({ port })
 
-    const url = "ws://localhost:4001"
+    const url = "ws://localhost:" + port
     await open(host + "/deploy?url=" + url)
   })
 }

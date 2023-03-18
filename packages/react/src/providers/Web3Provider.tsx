@@ -24,7 +24,7 @@ export const Context = React.createContext<{
   chainId: undefined
 })
 
-export const Web3Provider = (props: { children: React.ReactNode } & Config) => {
+export function Web3Provider(props: { children: React.ReactNode } & Config) {
   const { appName, children, address, chainId, ...keys } = props
 
   const { chains, provider, webSocketProvider } = useMemo(() => {
