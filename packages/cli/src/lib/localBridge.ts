@@ -1,11 +1,5 @@
 import open from "open"
 import { Server } from "socket.io"
-import { v4 as uuid } from "uuid"
-
-export function createChannel() {
-  const channel = uuid()
-  return channel
-}
 
 // const host = "https://hybrid.dev"
 const host = "http://localhost:3000"
