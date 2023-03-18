@@ -185,7 +185,7 @@ contract MyContractTest is Test {
     path.relative(process.cwd(), cwd)
   )
   console.log()
-  console.log("To get started, run", chalk.yellow.bold("hy dev"))
+  console.log("To get started, run", chalk.yellow.bold("hybrid dev"))
   console.log()
   console.log()
 }
