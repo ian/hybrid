@@ -1,6 +1,6 @@
 {
   "name": "@hybrd/cli",
-  "version": "0.2.1",
+  "version": "0.3.0-alpha.0",
   "description": "Solidity + TypeScript Framework for Web3 Development",
   "author": "Ian Hunter <ian@ianh.xyz>",
   "homepage": "https://github.com/ian/hybrid#readme",
