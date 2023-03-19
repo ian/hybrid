@@ -10,16 +10,11 @@ import { nodeResolve } from "@rollup/plugin-node-resolve"
 
 import pkg from "./package.json" assert { type: "json" }
 
-// Make all non @hybrd dependencies external
-const externalDeps = Object.fromEntries(
-  Object.entries(pkg.dependencies).filter(([f]) => !f.startsWith("@hybrd"))
-)
-
 export default [
   {
     input: ["./src/index.ts"],
     external: [
-      ...Object.keys(externalDeps || {}),
+      ...Object.keys(pkg.dependencies || {}),
       ...Object.keys(pkg.peerDependencies || {})
     ],
     output: [
@@ -35,6 +30,11 @@ export default [
     ],
     plugins: [
       peerDepsExternal(),
+      nodeResolve({
+        customResolveOptions: {
+          moduleDirectories: ["packages"]
+        }
+      }),
       postcss({
         extract: "style.css",
         plugins: [autoprefixer()],
@@ -61,16 +61,13 @@ export default [
   {
     input: ["./src/cli.ts"],
     external: [
-      ...Object.keys(externalDeps || {}),
+      ...Object.keys(pkg.dependencies || {}),
       ...Object.keys(pkg.peerDependencies || {})
     ],
     output: {
       file: "./dist/cli.mjs",
       sourcemap: true
     },
-    plugins: [
-      // nodeResolve(),
-      hashbang.default()
-    ]
+    plugins: [hashbang.default()]
   }
 ]

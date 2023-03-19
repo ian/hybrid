@@ -1,14 +1,20 @@
 {
   "name": "@hybrd/utils",
-  "version": "0.3.4",
+  "version": "0.3.5-alpha.4",
   "description": "Solidity + TypeScript Framework for Web3 Development",
   "author": "Ian Hunter <ian@ianh.xyz>",
   "homepage": "https://github.com/ian/hybrid#readme",
   "license": "ISC",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "module": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist"
   ],
@@ -41,7 +47,7 @@
     "viem": "^0.1.10"
   },
   "devDependencies": {
-    "@hybrd/types": "^0.3.4",
+    "@hybrd/types": "^0.3.5-alpha.4",
     "@types/inquirer": "^9.0.3",
     "@types/node": "^18.14.6",
     "nodemon": "^2.0.21",
@@ -49,5 +55,5 @@
     "tsx": "^3.12.3",
     "typescript": "^4.9.5"
   },
-  "gitHead": "4dc22eb383621ec5bcdb4989d123489b726af4e7"
+  "gitHead": "333fbdbc25d6d69225dc7b156d66edf70e7bd66c"
 }

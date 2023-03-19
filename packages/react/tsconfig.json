@@ -21,7 +21,7 @@
     "baseUrl": "./src"
   },
   "include": ["src", "client"],
-  "exclude": ["node_modules", "build"]
+  "exclude": ["build", "coverage", "dist", "node_modules"]
 }
 
 // {

@@ -1,7 +1,7 @@
 {
   "name": "hybrid",
   "author": "IanH <ian@ianh.xyz>",
-  "version": "0.3.4",
+  "version": "0.3.5-alpha.4",
   "description": "Solidity + TypeScript Framework for Web3 Development",
   "keywords": [
     "hybrid",
@@ -13,13 +13,13 @@
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
-  "module": "dist/index.mjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "default": "./dist/index.js",
       "module": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./client": {
       "types": "./client/index.d.ts",
@@ -28,8 +28,8 @@
     "./style.css": "./dist/style.css"
   },
   "bin": {
-    "hy": "dist/cli.mjs",
-    "hybrid": "dist/cli.mjs"
+    "hy": "./dist/cli.mjs",
+    "hybrid": "./dist/cli.mjs"
   },
   "scripts": {
     "clean": "rm -rf dist .rollup.cache",
@@ -60,11 +60,10 @@
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.1",
-    "@hybrd/cli": "*",
-    "@hybrd/contracts": "*",
-    "@hybrd/types": "*",
-    "@hybrd/utils": "*",
-    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@hybrd/cli": "^0.3.5-alpha.4",
+    "@hybrd/contracts": "^0.3.5-alpha.4",
+    "@hybrd/types": "^0.3.5-alpha.4",
+    "@hybrd/utils": "^0.3.5-alpha.4",
     "abitype": "^0.7.1",
     "axios": "^1.2.2",
     "clsx": "^1.2.1",
@@ -77,6 +76,7 @@
     "wagmi": "^0.12.1"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-typescript": "^11.0.0",
     "@tanstack/react-query": "^4.3.4",
     "@testing-library/jest-dom": "^5.16.5",
@@ -95,7 +95,7 @@
     "nodemon": "^2.0.19",
     "postcss": "^8.4.18",
     "postcss-import": "^15.1.0",
-    "rollup": "^3.10.0",
+    "rollup": "^3.19.1",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-bundle-size": "^1.0.3",
     "rollup-plugin-hashbang": "^3.0.0",
@@ -116,5 +116,5 @@
     "react-dom": ">=17",
     "wagmi": "^0.6.0"
   },
-  "gitHead": "4dc22eb383621ec5bcdb4989d123489b726af4e7"
+  "gitHead": "333fbdbc25d6d69225dc7b156d66edf70e7bd66c"
 }

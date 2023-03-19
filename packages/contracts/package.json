@@ -1,7 +1,7 @@
 {
   "name": "@hybrd/contracts",
   "author": "IanH <ian@ianh.xyz>",
-  "version": "0.3.4",
+  "version": "0.3.5-alpha.4",
   "description": "Hybrid Framework Smart Contracts",
   "keywords": [
     "hybrid",
@@ -30,5 +30,5 @@
   "devDependencies": {
     "nodemon": "^2.0.19"
   },
-  "gitHead": "4dc22eb383621ec5bcdb4989d123489b726af4e7"
+  "gitHead": "333fbdbc25d6d69225dc7b156d66edf70e7bd66c"
 }
