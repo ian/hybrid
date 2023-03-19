@@ -41,6 +41,7 @@ export async function forgeDeploy(name: string, rpc: string, key: string) {
 
 type AnvilListening = {
   proc: ChildProcessWithoutNullStreams
+  chainId: number
   host: string
   port: string
   keys: `0x${string}`[]
@@ -51,9 +52,17 @@ export async function anvil(
   forkUrl: string
 ): Promise<AnvilListening> {
   return new Promise((resolve) => {
+    const chainId = 1337 // @todo - make this configurable
     const proc = spawn(
       "anvil",
-      ["--mnemonic", mnemonic, "--fork-url", forkUrl, "--chain-id", "1337"],
+      [
+        "--mnemonic",
+        mnemonic,
+        "--fork-url",
+        forkUrl,
+        "--chain-id",
+        chainId.toString()
+      ],
       {
         stdout: (str) => {
           const keys = str.match(/0x.{64}/g) as `0x${string}`[]
@@ -63,6 +72,7 @@ export async function anvil(
             const [host, port] = listens[1].split(":")
             resolve({
               proc,
+              chainId,
               host,
               port,
               keys
