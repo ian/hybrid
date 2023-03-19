@@ -7,9 +7,6 @@ import { writeConfig } from "../lib/config"
 
 export async function deploy(contractName: string, target: DeployTarget) {
   const contract = await getArtifact(contractName)
-  // const contract = artifacts[contractName]
-  // console.log(artifacts)
-
   if (!contract) {
     console.log("Contract not found:", contractName)
     process.exit()

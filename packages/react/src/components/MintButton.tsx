@@ -22,8 +22,6 @@ const MintButton = (props: MintButtonProps) => {
   const { chain: network } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
 
-  console.log("MintButton", { signer, network, contract, connect, connectors })
-
   const { isMinting, isSuccess, isError, mint } = useMinting(contract)
 
   if (isMinting) {

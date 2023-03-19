@@ -60,8 +60,6 @@ export function Web3Provider(props: { children: React.ReactNode } & Config) {
     webSocketProvider
   }
 
-  console.log("Web3Provider", { props, contextValue })
-
   return (
     <Web3Context.Provider value={contextValue}>
       <WagmiConfig client={client}>{children}</WagmiConfig>
