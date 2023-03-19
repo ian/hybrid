@@ -6,8 +6,9 @@
   "homepage": "https://github.com/ian/hybrid#readme",
   "license": "ISC",
   "type": "module",
-  "main": "./src/types.ts",
-  "types": "./src/types.ts",
+  "main": "./dist/types.cjs",
+  "module": "./dist/types.js",
+  "types": "./dist/types.d.ts",
   "files": [
     "client",
     "dist"
@@ -17,6 +18,8 @@
     "url": "git+https://github.com/ian/hybrid.git"
   },
   "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsup",
     "dev": "nodemon"
   },
   "bugs": {
@@ -27,6 +30,8 @@
   },
   "devDependencies": {
     "@types/node": "^18.14.6",
+    "nodemon": "^2.0.21",
+    "tsup": "^6.6.3",
     "typescript": "^4.9.5"
   }
 }
