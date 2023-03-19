@@ -1,4 +1,3 @@
-import ora from "ora"
 import { DeployTarget } from "@hybrd/types"
 import { etherscanTxURL } from "@hybrd/utils"
 
@@ -21,7 +20,6 @@ export async function deploy(contractName: string, target: DeployTarget) {
       )
       .catch((msg) => {
         console.log(msg)
-        process.exit()
       })
   } else if (target === "test") {
     const chainId = 5
@@ -31,18 +29,16 @@ export async function deploy(contractName: string, target: DeployTarget) {
       )
       .catch((msg) => {
         console.log(msg)
-        process.exit()
       })
   } else {
     console.log("Unknown deploy target", target)
-    process.exit()
   }
+
+  process.exit()
 }
 
 async function deployInBrowser(bytecode: string, chainId: number) {
-  const spiner = ora("Waiting for deployment in browser ...").start()
   const deployment = await waitForDeployment(bytecode, chainId)
-  spiner.succeed("Contract deployed to testnet")
 
   console.log()
   console.log("Contract:    ", deployment.address)

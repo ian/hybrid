@@ -1,15 +1,16 @@
+import ora from "ora"
 import open from "open"
 import { Server } from "socket.io"
 import { Deployment } from "@hybrd/types"
 
-// const host = "https://hybrid.dev"
-const host = "http://localhost:3000"
+const host = "https://hybrid.dev"
 
 export async function waitForDeployment(
   bytecode: string,
   chainId: number
 ): Promise<Deployment> {
   return new Promise(async (resolve, reject) => {
+    let spinner
     const server = new Server({
       cors: {
         origin: "*"
@@ -29,13 +30,14 @@ export async function waitForDeployment(
 
       // User deployed, resolve the promise
       socket.on("receipt", (arg) => {
+        spinner.succeed("Contract deployed to testnet")
         server.close()
         resolve(JSON.parse(arg))
       })
 
       //
       socket.on("disconnect", () => {
-        // reject("Window closed, try again")
+        // Should we do something here? Maybe just let them reload the window.
       })
     })
 
@@ -46,6 +48,9 @@ export async function waitForDeployment(
     const { port } = server.httpServer.address()
 
     const url = "ws://localhost:" + port
+    // console.log("Opening browser at", host + "/deploy?url=" + url)
+
+    spinner = ora("Waiting for deployment in browser ...").start()
     await open(host + "/deploy?url=" + url)
   })
 }

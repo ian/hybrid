@@ -25,16 +25,16 @@ export const writeConfig = async (
   const json = await readConfig(target)
 
   // Rewrite the config, overwriting the newly deployed contract
-  await fs.writeFileSync(
+  return fs.writeFileSync(
     process.cwd() + "/.hybrid/" + file,
     JSON.stringify(
       {
         ...json,
         [contractName]: {
           chainId: chainId,
+          ...deployment,
           abi: contract.abi,
-          bytecode: contract.bytecode,
-          ...deployment
+          bytecode: contract.bytecode
         }
       },
       null,
