@@ -13,7 +13,7 @@
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
-  "module": "dist/index.mjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -28,8 +28,8 @@
     "./style.css": "./dist/style.css"
   },
   "bin": {
-    "hy": "dist/cli.mjs",
-    "hybrid": "dist/cli.mjs"
+    "hy": "./dist/cli.mjs",
+    "hybrid": "./dist/cli.mjs"
   },
   "scripts": {
     "clean": "rm -rf dist .rollup.cache",

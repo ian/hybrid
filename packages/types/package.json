@@ -8,7 +8,7 @@
   "type": "module",
   "main": "./dist/types.cjs",
   "module": "./dist/types.js",
-  "types": "dist/types.d.ts",
+  "types": "./dist/types.d.ts",
   "exports": {
     ".": {
       "module": "./dist/types.js",
