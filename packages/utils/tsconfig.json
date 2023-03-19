@@ -10,6 +10,6 @@
     "moduleResolution": "node",
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../react/src/utils/conversion.ts"],
   "exclude": ["node_modules"]
 }

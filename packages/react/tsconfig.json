@@ -20,7 +20,12 @@
     "jsx": "react-jsx",
     "baseUrl": "./src"
   },
-  "include": ["src", "client"],
+  "include": [
+    "src",
+    "client",
+    "src/utils/conversion.ts",
+    "../utils/src/formatting.ts"
+  ],
   "exclude": ["build", "coverage", "dist", "node_modules"]
 }
 
