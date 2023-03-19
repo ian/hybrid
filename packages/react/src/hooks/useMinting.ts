@@ -17,7 +17,7 @@ type UseMinting = {
   mint: (amount: number) => Promise<TransactionReceipt | undefined>
 }
 
-export const useMinting = (config: Contract): UseMinting => {
+export const useMinting = (config: DeployedContract): UseMinting => {
   const address = config?.address
   const chainId = config?.chainId
 

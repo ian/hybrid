@@ -1,11 +1,11 @@
 import { useMinting } from "../hooks/useMinting"
 import { useConnect, useNetwork, useSigner, useSwitchNetwork } from "wagmi"
 import DefaultButton, { DefaultButtonProps } from "./DefaultButton"
-import { Contract } from "@hybrd/types"
+import { DeployedContract } from "@hybrd/types"
 
 type MintButtonProps = {
   className?: string
-  contract: Contract
+  contract: DeployedContract
   button?: React.FC<DefaultButtonProps>
   amount?: number
 }
