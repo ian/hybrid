@@ -6,7 +6,7 @@ import fs from "fs"
 import boxen from "boxen"
 import ora from "ora"
 
-import { writeConfig } from "@hybrd/utils"
+import { writeConfig } from "../lib/config"
 import { anvil, forgeDeploy, getArtifact } from "../lib/foundry"
 
 // @todo
