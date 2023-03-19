@@ -95,7 +95,7 @@
     "nodemon": "^2.0.19",
     "postcss": "^8.4.18",
     "postcss-import": "^15.1.0",
-    "rollup": "^3.10.0",
+    "rollup": "^3.19.1",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-bundle-size": "^1.0.3",
     "rollup-plugin-hashbang": "^3.0.0",

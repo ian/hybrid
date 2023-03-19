@@ -10925,6 +10925,13 @@ rollup@^3.10.0, rollup@^3.2.5:
   optionalDependencies:
     fsevents "~2.3.2"
 
+rollup@^3.19.1:
+  version "3.19.1"
+  resolved "https://registry.npmjs.org/rollup/-/rollup-3.19.1.tgz#2b3a31ac1ff9f3afab2e523fa687fef5b0ee20fc"
+  integrity sha512-lAbrdN7neYCg/8WaoWn/ckzCtz+jr70GFfYdlf50OF7387HTg+wiuiqJRFYawwSPpqfqDNYqK7smY/ks2iAudg==
+  optionalDependencies:
+    fsevents "~2.3.2"
+
 rpc-websockets@^7.5.1:
   version "7.5.1"
   resolved "https://registry.npmjs.org/rpc-websockets/-/rpc-websockets-7.5.1.tgz"

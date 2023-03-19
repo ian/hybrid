@@ -6,22 +6,22 @@ import analyze from "rollup-plugin-analyzer"
 import { visualizer } from "rollup-plugin-visualizer"
 import { terser } from "rollup-plugin-terser"
 import hashbang from "rollup-plugin-hashbang"
-// import { nodeResolve } from "@rollup/plugin-node-resolve"
+import { nodeResolve } from "@rollup/plugin-node-resolve"
 
 import pkg from "./package.json" assert { type: "json" }
-
-// Make all non @hybrd dependencies external
-const externalDeps = Object.fromEntries(
-  Object.entries(pkg.dependencies).filter(([f]) => !f.startsWith("@hybrd"))
-)
 
 export default [
   {
     input: ["./src/index.ts"],
     external: [
-      ...Object.keys(externalDeps || {}),
+      ...Object.keys(pkg.dependencies || {}),
       ...Object.keys(pkg.peerDependencies || {})
     ],
+    // external: (id) => {
+    //   return true
+    //   // if (id.startsWith("@hybrd")) return false
+    //   // return true
+    // },
     output: [
       {
         file: pkg.exports["."].default,
@@ -60,8 +60,13 @@ export default [
   },
   {
     input: ["./src/cli.ts"],
+    // external: (id) => {
+    //   return true
+    //   // if (id.startsWith("@hybrd")) return false
+    //   // return true
+    // },
     external: [
-      ...Object.keys(externalDeps || {}),
+      ...Object.keys(pkg.dependencies || {}),
       ...Object.keys(pkg.peerDependencies || {})
     ],
     output: {
