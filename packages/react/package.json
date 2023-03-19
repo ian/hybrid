@@ -17,9 +17,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "default": "./dist/index.js",
       "module": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./client": {
       "types": "./client/index.d.ts",
@@ -116,5 +116,5 @@
     "react-dom": ">=17",
     "wagmi": "^0.6.0"
   },
-  "gitHead": "4dc22eb383621ec5bcdb4989d123489b726af4e7"
+  "gitHead": "333fbdbc25d6d69225dc7b156d66edf70e7bd66c"
 }
