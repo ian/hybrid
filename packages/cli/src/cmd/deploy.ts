@@ -1,8 +1,8 @@
 import ora from "ora"
+import { DeployTarget } from "@hybrd/types"
 import { waitForDeployment } from "../lib/localBridge"
 import { etherscanTxURL } from "../lib/etherscan"
 import { getArtifact } from "../lib/foundry"
-import { DeployTarget } from "../types"
 import { writeConfig } from "../lib/config"
 
 export async function deploy(contractName: string, target: DeployTarget) {

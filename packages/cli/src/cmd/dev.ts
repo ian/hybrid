@@ -6,7 +6,7 @@ import fs from "fs"
 import boxen from "boxen"
 import ora from "ora"
 
-import { anvil, forgeDeploy } from "../lib/foundry"
+import { anvil, forgeDeploy, getArtifact } from "../lib/foundry"
 import { writeConfig } from "../lib/config"
 
 // @todo
@@ -55,7 +55,7 @@ Watching  | ${"./" + path.relative(process.cwd(), contractsDir)}
   chokidar
     .watch(contractsDir)
     .on("change", async (file) => {
-      deployContract(file, testnet).catch(console.error)
+      deployContract(file, testnet).then().catch(console.error)
     })
     .on("error", (error) => {
       console.error("Error happened", error)
@@ -91,8 +91,15 @@ async function deployContract(file: string, blockchain) {
   const spinner = ora("Deploying " + name).start()
 
   await forgeDeploy(name, "http://localhost:8545", blockchain.keys[0]).then(
-    (deployment) => {
-      // writeConfig()
+    async (deploy) => {
+      const contract = await getArtifact(name)
+      const deployment = {
+        ...deploy,
+        deployer: "0x0",
+        blockHash: "0x0",
+        blockNumber: 0
+      }
+      writeConfig("dev", blockchain.chainId, name, deployment, contract)
       spinner.succeed(name + " deployed to " + deployment.address)
     }
   )

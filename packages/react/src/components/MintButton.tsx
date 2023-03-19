@@ -1,7 +1,7 @@
 import { useMinting } from "../hooks/useMinting"
 import { useConnect, useNetwork, useSigner, useSwitchNetwork } from "wagmi"
 import DefaultButton, { DefaultButtonProps } from "./DefaultButton"
-import { Contract } from "types"
+import { Contract } from "@hybrd/types"
 
 type MintButtonProps = {
   className?: string
@@ -23,6 +23,8 @@ const MintButton = (props: MintButtonProps) => {
   const { switchNetwork } = useSwitchNetwork()
 
   const { isMinting, isSuccess, isError, mint } = useMinting(contract)
+
+  console.log({ contract })
 
   if (isMinting) {
     return (

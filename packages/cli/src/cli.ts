@@ -5,6 +5,8 @@ import { dev } from "./cmd/dev"
 import { init } from "./cmd/init"
 import { deploy } from "./cmd/deploy"
 
+export { readConfig } from "./lib/config"
+
 export function run() {
   if (process.argv[2] === "init") {
     // Handle init separately, best to not surface this in the help menu
