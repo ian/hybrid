@@ -6,8 +6,14 @@
   "homepage": "https://github.com/ian/hybrid#readme",
   "license": "ISC",
   "type": "module",
-  "module": "./dist/types.js",
-  "types": "./dist/types.d.ts",
+  "types": "dist/types.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist"
   ],

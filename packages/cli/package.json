@@ -6,10 +6,11 @@
   "homepage": "https://github.com/ian/hybrid#readme",
   "license": "ISC",
   "type": "module",
+  "types": "dist/cli.d.ts",
   "exports": {
     ".": {
       "import": "./dist/cli.js",
-      "require": "./dist/cli.js",
+      "require": "./dist/cli.cjs",
       "types": "./dist/cli.d.ts"
     },
     "./package.json": "./package.json"
