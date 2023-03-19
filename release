@@ -1,13 +1,5 @@
 #!/usr/bin/env sh
 
-declare bump="${1:-patch}"
-
-yarn install
 yarn clean
-yarn generate
 yarn build
-
-(cd packages/contracts && yarn version $bump)
-(cd packages/react && yarn version $bump)
-
-yarn --no-git-checks --filter "hybrid/*" publish
+lerna publish --force-publish
