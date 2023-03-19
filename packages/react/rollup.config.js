@@ -6,6 +6,7 @@ import analyze from "rollup-plugin-analyzer"
 import { visualizer } from "rollup-plugin-visualizer"
 import { terser } from "rollup-plugin-terser"
 import hashbang from "rollup-plugin-hashbang"
+import { nodeResolve } from "@rollup/plugin-node-resolve"
 
 import pkg from "./package.json" assert { type: "json" }
 
@@ -29,6 +30,11 @@ export default [
     ],
     plugins: [
       peerDepsExternal(),
+      nodeResolve({
+        customResolveOptions: {
+          modulePaths: ["packages/cli", "packages/types", "packages/utils"]
+        }
+      }),
       postcss({
         extract: "style.css",
         plugins: [autoprefixer()],
