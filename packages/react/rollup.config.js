@@ -32,7 +32,7 @@ export default [
       peerDepsExternal(),
       nodeResolve({
         customResolveOptions: {
-          modulePaths: ["packages/cli", "packages/types", "packages/utils"]
+          moduleDirectories: ["packages"]
         }
       }),
       postcss({
