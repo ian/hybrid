@@ -6,7 +6,7 @@ import { BigNumber } from "ethers"
 import { useCallback, useState } from "react"
 import { useBlockNumber, useContract, useProvider, useSigner } from "wagmi"
 
-import { Contract } from "types"
+import { DeployedContract } from "@hybrd/types"
 import { useAsyncMemo } from "./internal/useAsyncMemo"
 
 type UseMinting = {

@@ -3,9 +3,12 @@ import { Abi } from "abitype"
 export type CompiledContract = {
   abi: Abi
   bytecode: string
+}
+
+export type DeployedContract = {
   address: string
   chainId: number
-}
+} & CompiledContract
 
 export type DeployTarget = "test" | "prod"
 
