@@ -6,7 +6,8 @@
   "homepage": "https://github.com/ian/hybrid#readme",
   "license": "ISC",
   "type": "module",
-  "types": "./src/types.d.ts",
+  "main": "./src/types.ts",
+  "types": "./src/types.ts",
   "files": [
     "client",
     "dist"
