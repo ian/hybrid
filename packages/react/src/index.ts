@@ -6,4 +6,4 @@ export * from "./utils"
 
 export * from "@hybrd/types"
 
-export { readConfig } from "@hybrd/cli"
+export { readConfig } from "@hybrd/utils"

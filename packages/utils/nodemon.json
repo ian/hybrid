@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ignore": ["test", "dist"],
+  "ext": "js,ts,tsx,.css",
+  "exec": "yarn build"
+}
