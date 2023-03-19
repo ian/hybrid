@@ -7,7 +7,7 @@ type MintButtonProps = {
   className?: string
   contract: Contract
   button?: React.FC<DefaultButtonProps>
-  amount: number
+  amount?: number
 }
 
 const MintButton = (props: MintButtonProps) => {
