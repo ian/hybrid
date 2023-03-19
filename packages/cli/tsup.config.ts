@@ -4,7 +4,7 @@ const config: Options = {
   entry: ["src/cli.ts"],
   dts: true,
   sourcemap: true,
-  format: ["cjs", "esm"]
+  format: ["esm", "cjs"]
 }
 
 export default config
