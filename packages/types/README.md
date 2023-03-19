@@ -1,4 +1,4 @@
-# @hybrd/cli
+# @hybrd/types
 
 Solidity + TypeScript Framework for rapid Web3 development.
 
