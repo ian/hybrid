@@ -1,4 +1,4 @@
-import * as ora from "ora"
+import ora from "ora"
 import { forgeBuild } from "../lib/foundry"
 
 export async function build() {

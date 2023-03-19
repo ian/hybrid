@@ -1,8 +1,8 @@
-import * as chalk from "chalk"
-import * as fs from "fs"
-import * as ora from "ora"
+import chalk from "chalk"
+import fs from "fs"
+import ora from "ora"
 import type { Ora } from "ora"
-import * as path from "path"
+import path from "path"
 import inquirer from "inquirer"
 import { exec, writeFile } from "../lib/run"
 

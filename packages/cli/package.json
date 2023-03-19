@@ -10,7 +10,6 @@
   "exports": {
     ".": {
       "module": "./dist/cli.cjs",
-      "types": "./dist/cli.d.ts",
       "default": "./dist/cli.js"
     },
     "./package.json": "./package.json"
