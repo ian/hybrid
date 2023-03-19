@@ -1,7 +1,7 @@
 {
   "name": "@hybrd/contracts",
   "author": "IanH <ian@ianh.xyz>",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Hybrid Framework Smart Contracts",
   "keywords": [
     "hybrid",
