@@ -1,5 +1,6 @@
 import child from "child_process"
 import fs from "fs"
+import util from "node:util"
 
 export async function writeFile(path: string, data: string) {
   return fs.writeFileSync(path, data)
@@ -42,6 +43,28 @@ export function spawn(
   return install
 }
 
-export function exec(cmd: string, opts: SpawnOpts = {}) {
-  return child.execSync(cmd, { cwd: opts.cwd, stdio: "inherit" })
+type ExecOpts = {
+  cwd?: string
+  stdio?: "overlapped" | "pipe" | "ignore" | "inherit"
+}
+
+export async function exec(cmd: string, opts: ExecOpts = {}) {
+  const { cwd, stdio = "ignore" } = opts
+  // return child.execSync(cmd, { cwd, stdio })
+  return new Promise((resolve, reject) => {
+    child.exec(
+      cmd,
+      {
+        cwd
+        // stdio
+      },
+      (error: child.ExecException, stdout: string, stderr: string) => {
+        if (error) {
+          reject(error)
+        } else {
+          resolve(stdout)
+        }
+      }
+    )
+  })
 }

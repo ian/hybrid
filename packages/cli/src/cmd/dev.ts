@@ -3,15 +3,16 @@ import chokidar from "chokidar"
 import crypto from "crypto"
 import path from "path"
 import fs from "fs"
-import { anvil, forgeDeploy } from "../lib/foundry"
 import boxen from "boxen"
 import ora from "ora"
-import { writeConfig } from "../lib/builder"
+
+import { anvil, forgeDeploy } from "../lib/foundry"
+import { writeConfig } from "../lib/config"
 
 // @todo
 // [] - switch to config object for paths
 // [x] - solve sighup issue for anvil
-// [] - add a dev ui
+// [x] - add a deploy ui
 // [x] - checksum files to avoid recompiling
 
 export async function dev() {
@@ -28,7 +29,6 @@ export async function dev() {
   console.log(
     boxen(
       `
-Dev UI    | http://127.0.0.1:8580
 RPC Node  | http://${testnet.host}:${testnet.port}
 ----------+----------------------
 Docs      | https://hybrid.dev
@@ -92,7 +92,7 @@ async function deployContract(file: string, blockchain) {
 
   await forgeDeploy(name, "http://localhost:8545", blockchain.keys[0]).then(
     (deployment) => {
-      writeConfig()
+      // writeConfig()
       spinner.succeed(name + " deployed to " + deployment.address)
     }
   )

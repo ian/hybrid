@@ -10,8 +10,6 @@ type MintButtonProps = {
   amount: number
 }
 
-const chainId = 1337
-
 const MintButton = (props: MintButtonProps) => {
   const {
     amount = 1,
@@ -59,10 +57,10 @@ const MintButton = (props: MintButtonProps) => {
     )
   }
 
-  if (network?.id !== chainId && switchNetwork) {
+  if (network?.id !== contract?.chainId && switchNetwork) {
     return (
       <Button
-        onClick={() => switchNetwork(chainId)}
+        onClick={() => switchNetwork(contract?.chainId)}
         className={className}
         intent="error"
       >

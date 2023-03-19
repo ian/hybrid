@@ -1,7 +1,7 @@
 import { useContext as useReactContext } from "react"
 
-import { Context } from "../../providers/Web3Provider"
+import { Web3Context } from "../../providers/Web3Provider"
 
 export function useContext() {
-  return useReactContext(Context)
+  return useReactContext(Web3Context)
 }

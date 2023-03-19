@@ -5,7 +5,7 @@ import type {
 import { BigNumber } from "ethers"
 import { useCallback, useState } from "react"
 import { useBlockNumber, useContract, useProvider, useSigner } from "wagmi"
-import { useContext } from "./internal"
+
 import { Contract } from "types"
 import { useAsyncMemo } from "./internal/useAsyncMemo"
 
@@ -18,8 +18,8 @@ type UseMinting = {
 }
 
 export const useMinting = (config: Contract): UseMinting => {
-  const { abi } = config
-  const { address, chainId } = useContext()
+  const address = config?.address
+  const chainId = config?.chainId
 
   const { data: block } = useBlockNumber()
   const provider = useProvider({ chainId })
@@ -31,7 +31,7 @@ export const useMinting = (config: Contract): UseMinting => {
 
   const contract = useContract({
     address,
-    abi
+    abi: config?.abi
   })
 
   const totalSupply: number = useAsyncMemo(() => {

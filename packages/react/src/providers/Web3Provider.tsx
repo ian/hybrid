@@ -1,70 +1,108 @@
-import { getDefaultWallets } from "@rainbow-me/rainbowkit"
-import { buildProviders } from "./helpers"
+import { configureChains, createClient, WagmiConfig, Client } from "wagmi"
+import { mainnet, goerli, localhost } from "wagmi/chains"
 
-import { configureChains, createClient, WagmiConfig } from "wagmi"
-import * as Chains from "wagmi/chains"
+import { alchemyProvider } from "wagmi/providers/alchemy"
+import { infuraProvider } from "wagmi/providers/infura"
+import { publicProvider } from "wagmi/providers/public"
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc"
 
 import React, { useMemo } from "react"
+import { Provider } from "@ethersproject/providers"
 
 type Config = {
   appName?: string
   alchemyKey?: string
-  infuraKey?: string
-
-  // Deprecated
-  address: string
-  chainId: number
+  // infuraKey?: string
+  publicProvider?: boolean
 }
 
-export const Context = React.createContext<{
-  address: string
-  chainId: number
+export const Web3Context = React.createContext<{
+  client: Client
+  chains: any[]
+  provider: ({ chainId }: { chainId?: number }) => Provider
+  webSocketProvider: ({ chainId }: { chainId?: number }) => Provider
 }>({
-  address: undefined,
-  chainId: undefined
+  client: undefined,
+  chains: undefined,
+  provider: undefined,
+  webSocketProvider: undefined
 })
 
-export const Web3Provider = (props: { children: React.ReactNode } & Config) => {
-  const { appName, children, address, chainId, ...keys } = props
+const SUPPORTED_CHAINS = [mainnet, goerli, localhost]
+
+export function Web3Provider(props: { children: React.ReactNode } & Config) {
+  const { appName, children, ...keys } = props
 
   const { chains, provider, webSocketProvider } = useMemo(() => {
-    const chain = Object.values(Chains).find((chain) => chain.id === chainId)
-    const providers = buildProviders(keys)
     const { chains, provider, webSocketProvider } = configureChains(
-      [chain],
-      providers
+      SUPPORTED_CHAINS,
+      buildProviders(keys)
     )
     return { chains, provider, webSocketProvider }
   }, [keys])
 
-  const value = {
-    address,
-    chainId,
-    // tbd on whether we need this. The idea is to provide this for
-    // RainbowKit/Connectkit but we may end up initiailizing that differently
+  // const { connectors } = getDefaultWallets({
+  //   appName: appName || "Hybrid App",
+  //   chains
+  // })
+
+  const client = createClient({
+    autoConnect: true,
+    // connectors,
+    provider,
+    webSocketProvider
+  })
+
+  const contextValue = {
+    client,
     chains,
     provider,
     webSocketProvider
   }
 
-  const { connectors } = getDefaultWallets({
-    appName: appName || "Hybrid App",
-    chains
-  })
-
-  const wagmiClient = createClient({
-    autoConnect: true,
-    connectors,
-    provider,
-    webSocketProvider
-  })
-
   return (
-    <Context.Provider value={value}>
-      <WagmiConfig client={wagmiClient}>
-        {/* <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider> */}
-        {children}
-      </WagmiConfig>
-    </Context.Provider>
+    <Web3Context.Provider value={contextValue}>
+      <WagmiConfig client={client}>{children}</WagmiConfig>
+    </Web3Context.Provider>
   )
+}
+
+function buildProviders(config: Config) {
+  const {
+    alchemyKey,
+    // infuraKey,
+    publicProvider: usePublic = true
+  } = config
+  const providers = []
+
+  // if (alchemyKey) {
+  //   providers.push(
+  //     alchemyProvider({
+  //       apiKey: alchemyKey
+  //     })
+  //   )
+  // }
+
+  // if (infuraKey) {
+  //   providers.push(
+  //     infuraProvider({
+  //       apiKey: infuraKey
+  //     })
+  //   )
+  // }
+
+  if (usePublic) {
+    providers.push(publicProvider())
+  }
+
+  // providers.push(
+  //   jsonRpcProvider({
+  //     rpc: () => ({
+  //       http: "http://localhost:8545",
+  //       ws: "ws://localhost:8545"
+  //     })
+  //   })
+  // )
+
+  return providers
 }

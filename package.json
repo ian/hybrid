@@ -1,5 +1,5 @@
 {
-  "name": "hybrid",
+  "name": "hybrid-mono",
   "private": true,
   "scripts": {
     "clean": "lerna run clean",
