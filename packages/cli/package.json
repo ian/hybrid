@@ -1,6 +1,6 @@
 {
   "name": "@hybrd/cli",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Solidity + TypeScript Framework for Web3 Development",
   "author": "Ian Hunter <ian@ianh.xyz>",
   "homepage": "https://github.com/ian/hybrid#readme",
@@ -48,9 +48,9 @@
     "viem": "^0.1.10"
   },
   "devDependencies": {
+    "@hybrd/types": "^0.3.2",
     "@types/inquirer": "^9.0.3",
     "@types/node": "^18.14.6",
-    "@hybrd/types": "*",
     "nodemon": "^2.0.21",
     "tsup": "^6.6.3",
     "tsx": "^3.12.3",
