@@ -1,7 +1,7 @@
 import fs from "fs"
 import { CompiledContract, DeployTarget, Deployment } from "@hybrd/types"
 
-export const readConfig = async (target: DeployTarget | "dev") => {
+export const readConfig = (target: DeployTarget | "dev") => {
   const file = target === "dev" ? "cache/dev.json" : target + ".json"
   try {
     return JSON.parse(
