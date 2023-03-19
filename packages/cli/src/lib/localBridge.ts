@@ -1,3 +1,4 @@
+import { Abi } from "abitype"
 import ora from "ora"
 import open from "open"
 import { Server } from "socket.io"
@@ -6,6 +7,7 @@ import { Deployment } from "@hybrd/types"
 const host = "https://hybrid.dev"
 
 export async function waitForDeployment(
+  abi: Abi,
   bytecode: string,
   chainId: number
 ): Promise<Deployment> {
@@ -21,6 +23,7 @@ export async function waitForDeployment(
       // User connected, send them the bytecode
       socket.emit("init", {
         chainId,
+        abi,
         bytecode
       })
 

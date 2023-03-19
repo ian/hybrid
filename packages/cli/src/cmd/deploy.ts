@@ -14,7 +14,7 @@ export async function deploy(contractName: string, target: DeployTarget) {
 
   if (target === "prod") {
     const chainId = 1
-    await deployInBrowser(contract.bytecode, chainId)
+    await deployInBrowser(contract.abi, contract.bytecode, chainId)
       .then((deploy) =>
         writeConfig(target, chainId, contractName, deploy, contract)
       )
@@ -23,7 +23,7 @@ export async function deploy(contractName: string, target: DeployTarget) {
       })
   } else if (target === "test") {
     const chainId = 5
-    await deployInBrowser(contract.bytecode, chainId)
+    await deployInBrowser(contract.abi, contract.bytecode, chainId)
       .then((deploy) =>
         writeConfig(target, chainId, contractName, deploy, contract)
       )
@@ -37,8 +37,8 @@ export async function deploy(contractName: string, target: DeployTarget) {
   process.exit()
 }
 
-async function deployInBrowser(bytecode: string, chainId: number) {
-  const deployment = await waitForDeployment(bytecode, chainId)
+async function deployInBrowser(abi: Abi, bytecode: string, chainId: number) {
+  const deployment = await waitForDeployment(abi, bytecode, chainId)
 
   console.log()
   console.log("Contract:    ", deployment.address)
