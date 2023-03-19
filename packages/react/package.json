@@ -17,9 +17,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js",
       "module": "./dist/index.mjs",
-      "default": "./dist/index.js"
+      "types": "./dist/index.d.ts"
     },
     "./client": {
       "types": "./client/index.d.ts",
@@ -60,10 +60,11 @@
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.1",
-    "@hybrd/cli": "^0.3.4",
-    "@hybrd/contracts": "^0.3.4",
-    "@hybrd/types": "^0.3.4",
-    "@hybrd/utils": "^0.3.4",
+    "@hybrd/cli": "*",
+    "@hybrd/contracts": "*",
+    "@hybrd/types": "*",
+    "@hybrd/utils": "*",
+    "@rollup/plugin-node-resolve": "^15.0.1",
     "abitype": "^0.7.1",
     "axios": "^1.2.2",
     "clsx": "^1.2.1",

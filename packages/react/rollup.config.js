@@ -6,14 +6,20 @@ import analyze from "rollup-plugin-analyzer"
 import { visualizer } from "rollup-plugin-visualizer"
 import { terser } from "rollup-plugin-terser"
 import hashbang from "rollup-plugin-hashbang"
+import { nodeResolve } from "@rollup/plugin-node-resolve"
 
 import pkg from "./package.json" assert { type: "json" }
+
+// Make all non @hybrd dependencies external
+const externalDeps = Object.fromEntries(
+  Object.entries(pkg.dependencies).filter(([f]) => !f.startsWith("@hybrd"))
+)
 
 export default [
   {
     input: ["./src/index.ts"],
     external: [
-      ...Object.keys(pkg.dependencies || {}),
+      ...Object.keys(externalDeps || {}),
       ...Object.keys(pkg.peerDependencies || {})
     ],
     output: [
@@ -54,10 +60,17 @@ export default [
   },
   {
     input: ["./src/cli.ts"],
+    external: [
+      ...Object.keys(externalDeps || {}),
+      ...Object.keys(pkg.peerDependencies || {})
+    ],
     output: {
       file: "./dist/cli.mjs",
       sourcemap: true
     },
-    plugins: [hashbang.default()]
+    plugins: [
+      // nodeResolve(),
+      hashbang.default()
+    ]
   }
 ]
