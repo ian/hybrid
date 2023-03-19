@@ -9,9 +9,9 @@
   "types": "dist/cli.d.ts",
   "exports": {
     ".": {
-      "module": "./dist/cli.mjs",
+      "module": "./dist/cli.js",
       "types": "./dist/cli.d.ts",
-      "default": "./dist/cli.js"
+      "default": "./dist/cli.cjs"
     },
     "./package.json": "./package.json"
   },
