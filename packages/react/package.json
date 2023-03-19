@@ -36,7 +36,6 @@
     "build": "rollup --config rollup.config.js",
     "dev": "rollup --config rollup.config.js -w",
     "lint": "eslint src --ext .ts",
-    "anvil": "anvil --chain-id 5 --fork-url https://goerli.rpc.hybrid.dev/7a7c6b5190e0dea78399d11d6afb44ca6c9bc665",
     "test": " vitest",
     "test:ci": "yarn test:coverage && yarn test:report",
     "test:report": "c8 report --reporter=text-lcov > coverage.lcov",
