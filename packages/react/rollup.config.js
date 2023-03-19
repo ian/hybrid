@@ -66,7 +66,8 @@ export default [
     ],
     output: {
       file: "./dist/cli.mjs",
-      sourcemap: true
+      sourcemap: true,
+      format: "module"
     },
     plugins: [hashbang.default()]
   }

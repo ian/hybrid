@@ -1,10 +1,10 @@
-import bip39 from "bip39"
-import chokidar from "chokidar"
-import crypto from "crypto"
-import path from "path"
-import fs from "fs"
+import * as bip39 from "bip39"
+import * as chokidar from "chokidar"
+import * as crypto from "crypto"
+import * as path from "path"
+import * as fs from "fs"
 import boxen from "boxen"
-import ora from "ora"
+import { promise as ora } from "ora"
 
 import { writeConfig } from "../lib/config"
 import { anvil, forgeDeploy, getArtifact } from "../lib/foundry"
@@ -66,8 +66,11 @@ const checksums: { [file: string]: string } = {}
 
 async function deployAll(contractsDir, blockchain) {
   const files = fs.readdirSync(contractsDir)
+  const deployments = []
+
   for (const file of files) {
-    await deployContract(contractsDir + "/" + file, blockchain)
+    const d = await deployContract(contractsDir + "/" + file, blockchain)
+    deployments.push(d)
   }
 }
 
@@ -75,11 +78,11 @@ async function deployContract(file: string, blockchain) {
   const filename = path.basename(file)
 
   if (!filename.endsWith(".sol")) {
-    return
+    return null
   }
 
   if (filename.endsWith(".test.sol")) {
-    return
+    return null
   }
 
   const name = filename.replace(".sol", "")
@@ -90,7 +93,7 @@ async function deployContract(file: string, blockchain) {
 
   const spinner = ora("Deploying " + name).start()
 
-  await forgeDeploy(name, "http://localhost:8545", blockchain.keys[0]).then(
+  return forgeDeploy(name, "http://localhost:8545", blockchain.keys[0]).then(
     async (deploy) => {
       const contract = await getArtifact(name)
       const deployment = {

@@ -9,9 +9,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "module": "./dist/index.js",
+      "module": "./dist/index.cjs",
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.cjs"
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },

@@ -1,4 +1,4 @@
-import ora from "ora"
+import * as ora from "ora"
 import { DeployTarget } from "@hybrd/types"
 import { etherscanTxURL } from "@hybrd/utils"
 
