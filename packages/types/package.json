@@ -1,0 +1,31 @@
+{
+  "name": "@hybrd/types",
+  "version": "0.3.0",
+  "description": "Solidity + TypeScript Framework for Web3 Development",
+  "author": "Ian Hunter <ian@ianh.xyz>",
+  "homepage": "https://github.com/ian/hybrid#readme",
+  "license": "ISC",
+  "type": "module",
+  "types": "./src/types.d.ts",
+  "files": [
+    "client",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ian/hybrid.git"
+  },
+  "scripts": {
+    "dev": "nodemon"
+  },
+  "bugs": {
+    "url": "https://github.com/ian/hybrid/issues"
+  },
+  "dependencies": {
+    "abitype": "^0.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.6",
+    "typescript": "^4.9.5"
+  }
+}

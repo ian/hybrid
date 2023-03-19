@@ -1,6 +1,6 @@
 import open from "open"
 import { Server } from "socket.io"
-import { Deployment } from "../types"
+import { Deployment } from "@hybrd/types"
 
 // const host = "https://hybrid.dev"
 const host = "http://localhost:3000"

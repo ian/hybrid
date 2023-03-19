@@ -61,8 +61,9 @@
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.1",
-    "@hybrd/cli": "^0.3.0",
+    "@hybrd/cli": "^0.3.0-alpha.1",
     "@hybrd/contracts": "^0.3.0-alpha.1",
+    "@hybrd/types": "^0.3.0-alpha.1",
     "abitype": "^0.7.1",
     "axios": "^1.2.2",
     "clsx": "^1.2.1",

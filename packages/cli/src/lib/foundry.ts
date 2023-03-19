@@ -1,7 +1,7 @@
 import fs from "fs"
 import { ChildProcessWithoutNullStreams } from "child_process"
+import { CompiledContract } from "@hybrd/types"
 import { SpawnOpts, spawn } from "./run"
-import { CompiledContract } from "../types"
 
 export type BuildOpts = {
   // todo - add more options
@@ -35,7 +35,7 @@ export async function forgeDeploy(name: string, rpc: string, key: string) {
 
   return {
     address: address ? address[1] : null,
-    hash: hash ? hash[1] : null
+    txHash: hash ? hash[1] : null
   }
 }
 
