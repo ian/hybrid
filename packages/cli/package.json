@@ -6,7 +6,6 @@
   "homepage": "https://github.com/ian/hybrid#readme",
   "license": "ISC",
   "type": "module",
-  "main": "./dist/cli.cjs",
   "module": "./dist/cli.js",
   "types": "./dist/cli.d.ts",
   "files": [

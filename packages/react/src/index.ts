@@ -4,6 +4,6 @@ export * from "./components"
 export * from "./hooks"
 export * from "./utils"
 
-export * from "@hybrd/types"
+export type * from "@hybrd/types"
 
 export { readConfig } from "@hybrd/utils"

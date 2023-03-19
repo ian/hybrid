@@ -60,9 +60,9 @@
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.1",
-    "@hybrd/cli": "^0.3.4",
+    "@hybrd/cli": "*",
     "@hybrd/contracts": "^0.3.4",
-    "@hybrd/types": "^0.3.4",
+    "@hybrd/types": "*",
     "@hybrd/utils": "^0.3.4",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "abitype": "^0.7.1",
