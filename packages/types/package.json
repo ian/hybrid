@@ -1,6 +1,6 @@
 {
   "name": "@hybrd/types",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "Solidity + TypeScript Framework for Web3 Development",
   "author": "Ian Hunter <ian@ianh.xyz>",
   "homepage": "https://github.com/ian/hybrid#readme",
