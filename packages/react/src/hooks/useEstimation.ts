@@ -12,9 +12,22 @@ type Estimate = {
   eth?: number
 }
 
-export function useEstimation(dataOrFn: DataOrFn, chainId?: number) {
+const useBlockBeat = () => {
+  const [block, setBlock] = useState<number>()
+  useBlockNumber({ watch: true, onBlock: setBlock })
+
+  return block
+}
+
+type Opts = {
+  deployData: DataOrFn
+  chainId?: number
+}
+
+export function useEstimation(opts: Opts) {
+  const { deployData, chainId } = opts
   const provider = useProvider({ chainId })
-  const { data: block } = useBlockNumber({ watch: true })
+  const block = useBlockBeat()
 
   const [estimate, setEstimate] = useState<Estimate>({
     gas: undefined,
@@ -25,9 +38,11 @@ export function useEstimation(dataOrFn: DataOrFn, chainId?: number) {
 
   const buildData = useCallback(
     (provider) => {
-      return typeof dataOrFn === "function" ? dataOrFn(provider) : dataOrFn
+      return typeof deployData === "function"
+        ? deployData(provider)
+        : deployData
     },
-    [dataOrFn]
+    [deployData]
   )
 
   useEffect(() => {
