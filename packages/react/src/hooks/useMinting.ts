@@ -17,6 +17,11 @@ type UseMinting = {
   mint: (amount: number) => Promise<TransactionReceipt | undefined>
 }
 
+type MintOpts = {
+  value?: BigNumber | string
+  gasPrice?: BigNumber | number
+}
+
 export const useMinting = (config: DeployedContract): UseMinting => {
   const address = config?.address
   const chainId = config?.chainId
@@ -43,13 +48,27 @@ export const useMinting = (config: DeployedContract): UseMinting => {
   }, [contract, block])
 
   const mint = useCallback(
-    (amount: number) => {
+    async (amount: number, opts: MintOpts = {}) => {
       if (!contract) return
-
       setMinting(true)
+
+      // For localhost, we need to set the gas price manually
+      // const gasPrice = chainId === 1337 ? await signer.getGasPrice() : null
+      const {
+        value = BigNumber.from("0"),
+        // since this is a mint, lets 1.25x it and
+        // give it a better chance of going through.
+        gasPrice = await signer
+          .getGasPrice()
+          .then((res: BigNumber) => res.mul("125").div("10"))
+      } = opts
+
       return contract
         .connect(signer)
-        .mint(amount)
+        .mint(amount, {
+          value,
+          gasPrice
+        })
         .then((tx: TransactionResponse) => tx.wait())
         .then((reciept: TransactionReceipt) => {
           setSuccess(true)
@@ -63,7 +82,7 @@ export const useMinting = (config: DeployedContract): UseMinting => {
         })
         .finally(() => setMinting(false))
     },
-    [signer, contract]
+    [signer, contract, chainId]
   )
 
   return {

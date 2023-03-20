@@ -24,8 +24,6 @@ const MintButton = (props: MintButtonProps) => {
 
   const { isMinting, isSuccess, isError, mint } = useMinting(contract)
 
-  console.log({ contract })
-
   if (isMinting) {
     return (
       <Button disabled className={className}>
