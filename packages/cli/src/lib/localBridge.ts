@@ -4,9 +4,6 @@ import open from "open"
 import { Server } from "socket.io"
 import { Deployment } from "@hybrd/types"
 
-const host = "http://localhost:3000"
-// const host = "https://hybrid.dev"
-
 export async function waitForDeployment(
   abi: Abi,
   bytecode: string,
@@ -55,6 +52,7 @@ export async function waitForDeployment(
     // console.log("Opening browser at", host + "/deploy?url=" + url)
 
     spinner = ora("Waiting for deployment in browser ...").start()
+    const host = process.env.HYBRID_HOST || "https://hybrid.dev"
     await open(host + "/deploy?url=" + url)
   })
 }
