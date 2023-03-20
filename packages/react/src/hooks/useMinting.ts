@@ -54,14 +54,7 @@ export const useMinting = (config: DeployedContract): UseMinting => {
 
       // For localhost, we need to set the gas price manually
       // const gasPrice = chainId === 1337 ? await signer.getGasPrice() : null
-      const {
-        value = BigNumber.from("0"),
-        // since this is a mint, lets 1.25x it and
-        // give it a better chance of going through.
-        gasPrice = await signer
-          .getGasPrice()
-          .then((res: BigNumber) => res.mul("125").div("10"))
-      } = opts
+      const { value = BigNumber.from("0"), gasPrice } = opts
 
       return contract
         .connect(signer)
