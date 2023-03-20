@@ -1,4 +1,4 @@
-import { ethers, Signer, utils, Wallet } from "ethers"
+import { BigNumber, ethers, Signer, utils, Wallet } from "ethers"
 import { useCallback, useEffect, useState } from "react"
 import { useBlockNumber, useProvider, useWebSocketProvider } from "wagmi"
 import type { BytesLike, Deferrable } from "ethers/lib/utils"
@@ -67,17 +67,9 @@ async function getEstimate(
   provider: any,
   tx: Deferrable<ethers.providers.TransactionRequest>
 ) {
-  const gas = await provider
-    .estimateGas(tx)
-    .then((res) => res.toString())
-    .then(Number)
-
-  const gasPrice = await provider
-    .getFeeData()
-    .then((res) => res.maxFeePerGas.toString())
-    .then(Number)
-
-  const wei = gas * gasPrice
+  const gas = await provider.estimateGas(tx)
+  const gasPrice = await provider.getGasPrice()
+  const wei = gas.mul(gasPrice)
   const eth = parseFloat(utils.formatUnits(wei, "ether"))
 
   return {
