@@ -4,7 +4,8 @@ import open from "open"
 import { Server } from "socket.io"
 import { Deployment } from "@hybrd/types"
 
-const host = "https://hybrid.dev"
+const host = "http://localhost:3000"
+// const host = "https://hybrid.dev"
 
 export async function waitForDeployment(
   abi: Abi,
@@ -20,7 +21,7 @@ export async function waitForDeployment(
     })
 
     server.on("connection", (socket) => {
-      // User connected, send them the bytecode
+      // User connected, send them the abi + bytecode
       socket.emit("init", {
         chainId,
         abi,

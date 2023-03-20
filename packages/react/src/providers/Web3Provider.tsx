@@ -75,13 +75,13 @@ function buildProviders(config: Config) {
   } = config
   const providers = []
 
-  // if (alchemyKey) {
-  //   providers.push(
-  //     alchemyProvider({
-  //       apiKey: alchemyKey
-  //     })
-  //   )
-  // }
+  if (alchemyKey) {
+    providers.push(
+      alchemyProvider({
+        apiKey: alchemyKey
+      })
+    )
+  }
 
   // if (infuraKey) {
   //   providers.push(

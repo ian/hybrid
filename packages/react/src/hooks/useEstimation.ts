@@ -1,25 +1,26 @@
 import { ethers, Signer, utils, Wallet } from "ethers"
 import { useCallback, useEffect, useState } from "react"
-import { useBlockNumber, useProvider } from "wagmi"
+import { useBlockNumber, useProvider, useWebSocketProvider } from "wagmi"
 import type { BytesLike, Deferrable } from "ethers/lib/utils"
 
-type DataOrFn = BytesLike | ((signer: Signer) => BytesLike)
+type DataOrFn = BytesLike | ((signer: Signer) => BytesLike) | null
 
 type Estimate = {
-  gas: number
-  gasPrice: number
-  wei: number
-  eth: number
+  gas?: number
+  gasPrice?: number
+  wei?: number
+  eth?: number
 }
 
 export function useEstimation(dataOrFn: DataOrFn, chainId?: number) {
   const provider = useProvider({ chainId })
-  const { data: block } = useBlockNumber()
+  const { data: block } = useBlockNumber({ watch: true })
+
   const [estimate, setEstimate] = useState<Estimate>({
-    gas: null,
-    gasPrice: null,
-    wei: null,
-    eth: null
+    gas: undefined,
+    gasPrice: undefined,
+    wei: undefined,
+    eth: undefined
   })
 
   const buildData = useCallback(
@@ -32,6 +33,8 @@ export function useEstimation(dataOrFn: DataOrFn, chainId?: number) {
   useEffect(() => {
     const { address: from } = Wallet.createRandom()
     const data = buildData(provider)
+    if (!data) return
+
     getEstimate(provider, {
       data,
       from
@@ -55,12 +58,12 @@ async function getEstimate(
     .then(Number)
 
   const gasPrice = await provider
-    .getGasPrice()
-    .then((res) => res.toString())
+    .getFeeData()
+    .then((res) => res.maxFeePerGas.toString())
     .then(Number)
 
   const wei = gas * gasPrice
-  const eth = parseFloat(utils.formatEther(wei.toString()))
+  const eth = parseFloat(utils.formatUnits(wei, "ether"))
 
   return {
     gas,
