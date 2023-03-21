@@ -1,19 +1,38 @@
 import { configureChains, createClient, WagmiConfig, Client } from "wagmi"
-import { mainnet, goerli, localhost } from "wagmi/chains"
+import {
+  mainnet,
+  goerli,
+  localhost,
+  arbitrum,
+  arbitrumGoerli
+} from "wagmi/chains"
 
 import { alchemyProvider } from "wagmi/providers/alchemy"
 import { infuraProvider } from "wagmi/providers/infura"
 import { publicProvider } from "wagmi/providers/public"
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc"
 
-import React, { useMemo } from "react"
+import React, { useContext, useMemo } from "react"
 import { Provider } from "@ethersproject/providers"
 
 type Config = {
   appName?: string
   alchemyKey?: string
-  // infuraKey?: string
+  infuraKey?: string
   publicProvider?: boolean
+}
+
+export const withHybrid = (InputComponent, config: Config = {}) => {
+  return function WithHybrid(props) {
+    return (
+      <Web3Provider {...config}>
+        <InputComponent {...props} />
+      </Web3Provider>
+    )
+  }
+}
+
+export function useHybrid() {
+  return useContext(Web3Context)
 }
 
 export const Web3Context = React.createContext<{
@@ -28,7 +47,7 @@ export const Web3Context = React.createContext<{
   webSocketProvider: undefined
 })
 
-const SUPPORTED_CHAINS = [mainnet, goerli, localhost]
+const SUPPORTED_CHAINS = [mainnet, goerli, arbitrum, arbitrumGoerli, localhost]
 
 export function Web3Provider(props: { children: React.ReactNode } & Config) {
   const { appName, children, ...keys } = props
@@ -40,11 +59,6 @@ export function Web3Provider(props: { children: React.ReactNode } & Config) {
     )
     return { chains, provider, webSocketProvider }
   }, [keys])
-
-  // const { connectors } = getDefaultWallets({
-  //   appName: appName || "Hybrid App",
-  //   chains
-  // })
 
   const client = createClient({
     autoConnect: true,
@@ -68,11 +82,7 @@ export function Web3Provider(props: { children: React.ReactNode } & Config) {
 }
 
 function buildProviders(config: Config) {
-  const {
-    alchemyKey,
-    // infuraKey,
-    publicProvider: usePublic = true
-  } = config
+  const { alchemyKey, infuraKey, publicProvider: usePublic = true } = config
   const providers = []
 
   if (alchemyKey) {
@@ -83,26 +93,17 @@ function buildProviders(config: Config) {
     )
   }
 
-  // if (infuraKey) {
-  //   providers.push(
-  //     infuraProvider({
-  //       apiKey: infuraKey
-  //     })
-  //   )
-  // }
+  if (infuraKey) {
+    providers.push(
+      infuraProvider({
+        apiKey: infuraKey
+      })
+    )
+  }
 
   if (usePublic) {
     providers.push(publicProvider())
   }
-
-  // providers.push(
-  //   jsonRpcProvider({
-  //     rpc: () => ({
-  //       http: "http://localhost:8545",
-  //       ws: "ws://localhost:8545"
-  //     })
-  //   })
-  // )
 
   return providers
 }

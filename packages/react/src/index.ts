@@ -1,4 +1,4 @@
-export { Web3Provider } from "./providers/Web3Provider"
+export { Web3Provider, useHybrid } from "./providers/Web3Provider"
 
 export * from "./components"
 export * from "./hooks"
