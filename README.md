@@ -42,4 +42,4 @@ Features
 
 ## Documentation
 
-See the official [Hybrid Documentation](https://hybrid.dev) for more guides and full documentation.
+See the official [Hybrid Documentation](https://hybrid.dev/docs) for more guides and full documentation.
