@@ -9,6 +9,7 @@ export function etherscanTxURL(hash: string, chainId = 1) {
 export function etherscanHost(chainId = 1) {
   switch (chainId) {
     case 1:
+    case 1337: // for localhost lets just go to mainnet
       return `https://etherscan.io`
     case 3:
       return `https://ropsten.etherscan.io`
