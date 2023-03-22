@@ -25,6 +25,7 @@ export default function ConnectedAs(props: {
           Connect Wallet
         </button>
       )}
+
       {isConnected && (
         <span className="">
           connected as{" "}

@@ -22,12 +22,11 @@ type MintOpts = {
   gasPrice?: BigNumber | number
 }
 
-export const useMinting = (config: DeployedContract): UseMinting => {
-  const address = config?.address
-  const chainId = config?.chainId
+export const useMinting = (deployedContract: DeployedContract): UseMinting => {
+  const chainId = deployedContract?.chainId
+  const provider = useProvider({ chainId })
 
   const { data: block } = useBlockNumber()
-  const provider = useProvider({ chainId })
   const { data: signer } = useSigner({ chainId })
 
   const [isMinting, setMinting] = useState<boolean>(false)
@@ -35,8 +34,8 @@ export const useMinting = (config: DeployedContract): UseMinting => {
   const [isError, setError] = useState<boolean>(false)
 
   const contract = useContract({
-    address,
-    abi: config?.abi
+    address: deployedContract?.address,
+    abi: deployedContract?.abi
   })
 
   const totalSupply: number = useAsyncMemo(() => {
