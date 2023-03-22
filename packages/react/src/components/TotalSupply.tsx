@@ -8,7 +8,7 @@ type MintButtonProps = {
 
 const MintButton = (props: MintButtonProps) => {
   const { className, contract } = props
-  const { totalSupply } = useMinting(contract)
+  const { totalSupply } = useMinting({ contract })
 
   return <span className={className}>{totalSupply}</span>
 }

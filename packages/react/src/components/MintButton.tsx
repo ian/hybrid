@@ -22,7 +22,7 @@ const MintButton = (props: MintButtonProps) => {
   const { chain: network } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
 
-  const { isMinting, isSuccess, isError, mint } = useMinting(contract)
+  const { isMinting, isSuccess, isError, mint } = useMinting({ contract })
 
   if (isMinting) {
     return (

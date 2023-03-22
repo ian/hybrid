@@ -22,7 +22,12 @@ type MintOpts = {
   gasPrice?: BigNumber | number
 }
 
-export const useMinting = (deployedContract: DeployedContract): UseMinting => {
+type Props = {
+  contract: DeployedContract
+}
+
+export const useMinting = (props: Props): UseMinting => {
+  const { contract: deployedContract } = props
   const chainId = deployedContract?.chainId
   const provider = useProvider({ chainId })
 
