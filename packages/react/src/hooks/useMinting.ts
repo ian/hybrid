@@ -4,16 +4,14 @@ import type {
 } from "@ethersproject/providers"
 import { BigNumber } from "ethers"
 import { useCallback, useState } from "react"
-import { useBlockNumber, useContract, useProvider, useSigner } from "wagmi"
+import { useContract, useSigner } from "wagmi"
 
 import { DeployedContract } from "@hybrd/types"
-import { useAsyncMemo } from "./internal/useAsyncMemo"
 
 type UseMinting = {
   isMinting: boolean
   isSuccess: boolean
   isError: boolean
-  totalSupply: number | undefined
   mint: (amount: number) => Promise<TransactionReceipt | undefined>
 }
 
@@ -29,9 +27,6 @@ type Props = {
 export const useMinting = (props: Props): UseMinting => {
   const { contract: deployedContract } = props
   const chainId = deployedContract?.chainId
-  const provider = useProvider({ chainId })
-
-  const { data: block } = useBlockNumber()
   const { data: signer } = useSigner({ chainId })
 
   const [isMinting, setMinting] = useState<boolean>(false)
@@ -42,14 +37,6 @@ export const useMinting = (props: Props): UseMinting => {
     address: deployedContract?.address,
     abi: deployedContract?.abi
   })
-
-  const totalSupply: number = useAsyncMemo(() => {
-    if (!contract) return
-    return contract
-      .connect(provider)
-      .totalSupply()
-      .then((res: BigNumber) => res.toNumber())
-  }, [contract, block])
 
   const mint = useCallback(
     async (amount: number, opts: MintOpts = {}) => {
@@ -86,7 +73,6 @@ export const useMinting = (props: Props): UseMinting => {
     isMinting,
     isSuccess,
     isError,
-    totalSupply,
     mint
   }
 }
