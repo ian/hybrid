@@ -9,12 +9,14 @@ export function ConnectKit(
     // CK doesn't export ConnectKitProviderProps
     Parameters<typeof ConnectKitProvider>[0]
 ) {
-  const client = createWagmi(getDefaultClient(props))
-  return {
-    client,
-    // Provider
-    Provider: ({ children }: { children: React.ReactNode }) => (
-      <ConnectKitProvider {...props}>{children}</ConnectKitProvider>
-    )
-  } as WalletConnection
+  return ({ chains }) => {
+    const client = createWagmi(getDefaultClient(props))
+    return {
+      client,
+      // Provider
+      Provider: ({ children }: { children: React.ReactNode }) => (
+        <ConnectKitProvider {...props}>{children}</ConnectKitProvider>
+      )
+    } as WalletConnection
+  }
 }
