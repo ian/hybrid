@@ -12,7 +12,7 @@ const TotalSupply = (props: TotalSupplyProps) => {
   const { className, contract: deployedContract } = props
   const chainId = deployedContract?.chainId
   const provider = useProvider({ chainId })
-  const { data: block } = useBlockNumber()
+  const { data: block } = useBlockNumber({ watch: true })
 
   const contract = useContract({
     address: deployedContract?.address,
