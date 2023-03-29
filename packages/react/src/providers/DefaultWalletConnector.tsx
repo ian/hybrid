@@ -1,25 +1,22 @@
 import React from "react"
 import { configureChains, createClient, Client } from "wagmi"
 import type { WalletConnection } from "@hybrd/types"
-import { buildProviders } from "providers/helpers"
 
 export default function DefaultWalletConnector(config) {
-  return ({ chains }) => {
-    const { provider, webSocketProvider } = configureChains(
-      chains,
-      buildProviders(config)
-    )
+  const { provider, webSocketProvider } = configureChains(
+    config.chains,
+    config.providers
+  )
 
-    const client = createClient({
-      autoConnect: true,
-      // connectors,
-      provider,
-      webSocketProvider
-    })
+  const client = createClient({
+    autoConnect: true,
+    // connectors,
+    provider,
+    webSocketProvider
+  })
 
-    return {
-      client: client as Client,
-      Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>
-    } as WalletConnection
-  }
+  return {
+    client: client as Client,
+    Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>
+  } as WalletConnection
 }

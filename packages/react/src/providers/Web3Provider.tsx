@@ -9,8 +9,9 @@ import {
 
 import React, { useContext, useMemo } from "react"
 // import { Provider } from "@ethersproject/providers"
-import { WalletConnector } from "@hybrd/types"
+import { ProviderKeys, WalletConnector } from "@hybrd/types"
 import createDefaultWalletConnector from "./DefaultWalletConnector"
+import { buildProviders } from "./helpers"
 
 export type Config = {
   // appName?: string
@@ -47,34 +48,25 @@ export const Web3Context = React.createContext<{
 
 const SUPPORTED_CHAINS = [mainnet, goerli, arbitrum, arbitrumGoerli, localhost]
 
-export function Web3Provider(props: {
-  children: React.ReactNode
-  wallet: WalletConnector
-}) {
+export function Web3Provider(
+  props: {
+    children: React.ReactNode
+    wallet: WalletConnector
+  } & ProviderKeys
+) {
   console.log({ props })
 
-  const { children, wallet: createDefaultWalletConnector } = props
+  const {
+    children,
+    wallet: createWalletConnector = createDefaultWalletConnector
+  } = props
   const chains = SUPPORTED_CHAINS
+  const providers = buildProviders(props)
 
-  // const { chains, provider, webSocketProvider } = useMemo(() => {
-  //   const { chains, provider, webSocketProvider } = configureChains(
-  //     SUPPORTED_CHAINS,
-  //     buildProviders(keys)
-  //   )
-  //   return { chains, provider, webSocketProvider }
-  // }, [keys])
-
-  const { client, Provider } = createDefaultWalletConnector({
-    chains
+  const { client, Provider } = createWalletConnector({
+    chains,
+    providers
   })
-
-  // const { client, Provider } = useMemo(
-  //   () =>
-  //     createDefaultWalletConnector({
-  //       chains
-  //     }),
-  //   []
-  // )
 
   const contextValue = {
     client,

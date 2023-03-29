@@ -1,4 +1,5 @@
 import { Abi } from "abitype"
+import { providers } from "ethers"
 import { Chain, Client as WagmiClient } from "wagmi"
 
 export type CompiledContract = {
@@ -37,9 +38,11 @@ export type WalletConnection = {
   client: WagmiClient
   Provider: React.FC<WalletConnectorOpts>
 }
+
 export type WalletConnectorConfig = {
   chains: Chain[]
-} & ProviderKeys
+  providers: providers.BaseProvider[]
+}
 
 export type WalletConnector = (
   config: WalletConnectorConfig
