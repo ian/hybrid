@@ -41,6 +41,7 @@
     "yarn-version-bump": "^0.0.4"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "plugins/*"
   ]
 }
