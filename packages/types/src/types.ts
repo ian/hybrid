@@ -1,4 +1,5 @@
 import { Abi } from "abitype"
+import { Chain, Client as WagmiClient } from "wagmi"
 
 export type CompiledContract = {
   abi: Abi
@@ -24,3 +25,22 @@ export type {
   TransactionReceipt as Receipt,
   TransactionResponse as Transaction
 } from "@ethersproject/providers"
+
+export type ProviderKeys = {
+  alchemyKey?: string
+  infuraKey?: string
+  // hybridKey?: string
+}
+
+export type WalletConnectorOpts = object // todo - what config is common to all wallet plugins?
+export type WalletConnection = {
+  client: WagmiClient
+  Provider: React.FC<WalletConnectorOpts>
+}
+export type WalletConnectorConfig = {
+  chains: Chain[]
+} & ProviderKeys
+
+export type WalletConnector = (
+  config: WalletConnectorConfig
+) => WalletConnection
