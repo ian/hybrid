@@ -39,9 +39,8 @@ export function useTokenGating(props: {
       .connect(provider)
       .balanceOf(address)
       .then((res: BigNumber) => res.toNumber())
-      // .then((bal) => bal > 0)
+      .then((bal) => bal > 0)
       .then((allow) => {
-        console.log({ allow })
         setAllow(allow)
         setDeny(!allow)
       })

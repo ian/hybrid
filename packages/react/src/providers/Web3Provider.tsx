@@ -54,8 +54,6 @@ export function Web3Provider(
     wallet: WalletConnector
   } & ProviderKeys
 ) {
-  console.log({ props })
-
   const {
     children,
     wallet: createWalletConnector = createDefaultWalletConnector
