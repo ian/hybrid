@@ -1,7 +1,7 @@
 {
   "name": "hybrid",
   "author": "IanH <ian@ianh.xyz>",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "Solidity + TypeScript Framework for Web3 Development",
   "keywords": [
     "hybrid",
@@ -60,10 +60,10 @@
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.1",
-    "@hybrd/cli": "^0.4.7",
-    "@hybrd/contracts": "^0.4.7",
-    "@hybrd/types": "^0.4.7",
-    "@hybrd/utils": "^0.4.7",
+    "@hybrd/cli": "^0.4.8",
+    "@hybrd/contracts": "^0.4.8",
+    "@hybrd/types": "^0.4.8",
+    "@hybrd/utils": "^0.4.8",
     "abitype": "^0.7.1",
     "axios": "^1.2.2",
     "clsx": "^1.2.1",
