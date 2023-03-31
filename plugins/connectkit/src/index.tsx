@@ -1,6 +1,6 @@
 import React from "react"
 import { ConnectKitProvider, getDefaultClient } from "connectkit"
-import { createClient as createWagmi, configureChains } from "wagmi"
+import { createClient, configureChains } from "wagmi"
 import type { WalletConnection } from "@hybrd/types"
 
 export function ConnectKit(
@@ -15,8 +15,17 @@ export function ConnectKit(
       config.providers
     )
 
-    const client = createWagmi(
-      getDefaultClient({ ...props, chains, provider, webSocketProvider })
+    const client = createClient(
+      getDefaultClient({
+        ...props,
+        walletConnectOptions: {
+          projectId: "f6ad337056eac36bb5be7cb749b890b5",
+          version: "2"
+        },
+        chains,
+        provider,
+        webSocketProvider
+      })
     )
 
     return {

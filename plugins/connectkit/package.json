@@ -1,10 +1,11 @@
 {
   "name": "hybrid-connectkit",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "ConnectKit integration for Hybrid",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "tsc"
+    "build": "tsc",
+    "dev": "nodemon"
   },
   "author": "",
   "license": "ISC",
@@ -17,5 +18,11 @@
   "dependencies": {
     "@hybrd/types": "^0.4.8",
     "connectkit": "^1.2.1"
+  },
+  "peerDependencies": {
+    "ethers": ">=5.5.0 <6",
+    "react": "17.x || 18.x",
+    "react-dom": "17.x || 18.x",
+    "wagmi": "0.12.x"
   }
 }
