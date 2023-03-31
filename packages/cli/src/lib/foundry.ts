@@ -62,6 +62,8 @@ export async function anvil(
         forkUrl,
         "--chain-id",
         chainId.toString(),
+        "--block-time",
+        "10",
         "--base-fee",
         "0"
       ],
