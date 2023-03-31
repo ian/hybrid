@@ -17,6 +17,7 @@ const MintButton = (props: MintButtonProps) => {
     className,
     contract
   } = props
+
   const { data: signer } = useSigner()
   const { connect, connectors } = useConnect()
   const { chain: network } = useNetwork()
@@ -49,6 +50,7 @@ const MintButton = (props: MintButtonProps) => {
   }
 
   if (!signer) {
+    // todo - want to switch this to a generalized interface from our wallet connection API
     const connector = connectors[0]
     return (
       <Button className={className} onClick={() => connect({ connector })}>
