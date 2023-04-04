@@ -1,6 +1,6 @@
 import React from "react"
 import { configureChains, createClient, Client } from "wagmi"
-import type { WalletConnection } from "@hybrd/types"
+import type { WalletConnection, WalletConnectorContext } from "@hybrd/types"
 
 export default function DefaultWalletConnector(config) {
   const { provider, webSocketProvider } = configureChains(
@@ -15,8 +15,17 @@ export default function DefaultWalletConnector(config) {
     webSocketProvider
   })
 
+  const useContext = (): WalletConnectorContext => {
+    return {
+      connect: () => {
+        console.log("connect")
+      }
+    }
+  }
+
   return {
     client: client as Client,
+    useContext,
     Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>
   } as WalletConnection
 }

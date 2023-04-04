@@ -1,7 +1,7 @@
 import React from "react"
-import { ConnectKitProvider, getDefaultClient } from "connectkit"
+import { ConnectKitProvider, getDefaultClient, useModal } from "connectkit"
 import { createClient, configureChains } from "wagmi"
-import type { WalletConnection } from "@hybrd/types"
+import type { WalletConnection, WalletConnectorContext } from "@hybrd/types"
 
 export function ConnectKit(
   props: // CK doesn't export DefaultClientProps
@@ -28,8 +28,17 @@ export function ConnectKit(
       })
     )
 
+    const useContext = (): WalletConnectorContext => {
+      const { setOpen } = useModal()
+
+      return {
+        connect: () => setOpen(true)
+      }
+    }
+
     return {
       client,
+      useContext,
       Provider: ({ children }: { children: React.ReactNode }) => (
         <ConnectKitProvider {...props}>{children}</ConnectKitProvider>
       )

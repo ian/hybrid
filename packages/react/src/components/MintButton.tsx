@@ -1,3 +1,4 @@
+import { useHybridContext } from "../providers/Web3Provider"
 import { useMinting } from "../hooks/useMinting"
 import { useConnect, useNetwork, useSigner, useSwitchNetwork } from "wagmi"
 import DefaultButton, { DefaultButtonProps } from "./DefaultButton"
@@ -18,8 +19,10 @@ const MintButton = (props: MintButtonProps) => {
     contract
   } = props
 
+  const { useContext } = useHybridContext()
+  const { connect } = useContext()
+
   const { data: signer } = useSigner()
-  const { connect, connectors } = useConnect()
   const { chain: network } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
 
@@ -51,9 +54,13 @@ const MintButton = (props: MintButtonProps) => {
 
   if (!signer) {
     // todo - want to switch this to a generalized interface from our wallet connection API
-    const connector = connectors[0]
+    // const connector = connectors[0]
     return (
-      <Button className={className} onClick={() => connect({ connector })}>
+      <Button
+        className={className}
+        // onClick={() => connect({ connector })}
+        onClick={() => connect()}
+      >
         Connect Wallet
       </Button>
     )
