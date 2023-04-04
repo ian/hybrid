@@ -3,6 +3,7 @@ import styles from "./DefaultButton.module.css"
 
 export type DefaultButtonProps = {
   className?: string
+  style?: React.CSSProperties
   intent?: "default" | "success" | "error"
   onClick?: () => void
   children: React.ReactNode
@@ -19,6 +20,7 @@ const DefaultButton = (props: DefaultButtonProps) => {
   const {
     // className = "px-8 py-3 transition-all cursor-pointer duration-250 hover:scale-[1.05] rounded-xl font-bold",
     className = styles.DefaultButton,
+    style,
     intent = "default",
     onClick,
     children,
@@ -33,6 +35,7 @@ const DefaultButton = (props: DefaultButtonProps) => {
         disabled && styles.DefaultButtonDisabled
       )}
       onClick={onClick}
+      style={style}
     >
       {children}
     </button>
