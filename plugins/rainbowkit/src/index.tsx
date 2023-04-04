@@ -46,15 +46,11 @@ export function RainbowKit(props: Props) {
     return {
       client,
       useContext,
-      Provider: ({ children }: { children: React.ReactNode }) => {
-        const { openConnectModal } = useConnectModal()
-
-        return (
-          <RainbowKitProvider theme={theme} chains={chains}>
-            {children}
-          </RainbowKitProvider>
-        )
-      }
+      Provider: ({ children }: { children: React.ReactNode }) => (
+        <RainbowKitProvider theme={theme} chains={chains}>
+          {children}
+        </RainbowKitProvider>
+      )
     } as WalletConnection
   }
 }

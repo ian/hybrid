@@ -34,7 +34,7 @@
   "scripts": {
     "clean": "rm -rf dist .rollup.cache",
     "build": "rollup --config rollup.config.js",
-    "dev": "rollup --config rollup.config.js -w",
+    "dev": "nodemon",
     "lint": "eslint src --ext .ts",
     "test": " vitest",
     "test:ci": "yarn test:coverage && yarn test:report",
