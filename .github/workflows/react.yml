@@ -36,8 +36,8 @@ jobs:
           VANITY_ADDRESS: ${{ secrets.VANITY_ADDRESS }}
           VANITY_PK: ${{ secrets.VANITY_PK }}
 
-      - name: Coverage
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./packages/react/coverage.lcov
+      # - name: Coverage
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     files: ./packages/react/coverage.lcov
