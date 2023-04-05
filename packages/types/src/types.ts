@@ -36,9 +36,12 @@ export type ProviderKeys = {
 export type WalletConnectorOpts = object // todo - what config is common to all wallet plugins?
 export type WalletConnection = {
   client: WagmiClient
+  useContext: () => WalletConnectorContext
   Provider: React.FC<WalletConnectorOpts>
 }
-
+export type WalletConnectorContext = {
+  connect: () => void
+}
 export type WalletConnectorConfig = {
   chains: Chain[]
   providers: providers.BaseProvider[]

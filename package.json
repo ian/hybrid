@@ -5,14 +5,14 @@
     "clean": "lerna run clean",
     "build": "lerna run build",
     "test": "lerna run test",
-    "dev": "concurrently --raw \"yarn dev:cli\" \"yarn dev:contracts\" \"yarn dev:react\"",
+    "dev": "lerna run dev",
     "dev:cli": "yarn --cwd packages/cli dev",
     "dev:contracts": "yarn --cwd packages/contracts dev",
     "dev:connectkit": "yarn --cwd packages/connectkit dev",
     "dev:react": "yarn --cwd packages/react dev",
     "dev:types": "yarn --cwd packages/types dev",
     "dev:utils": "yarn --cwd packages/utils dev",
-    "anvil": "anvil --chain-id 5 --fork-url $FORK_URL",
+    "anvil": "anvil",
     "generate": "yarn -r generate"
   },
   "engines": {

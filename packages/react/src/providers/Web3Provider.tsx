@@ -7,9 +7,13 @@ import {
   arbitrumGoerli
 } from "wagmi/chains"
 
-import React, { useContext, useMemo } from "react"
+import React from "react"
 // import { Provider } from "@ethersproject/providers"
-import { ProviderKeys, WalletConnector } from "@hybrd/types"
+import {
+  ProviderKeys,
+  WalletConnector,
+  WalletConnectorContext
+} from "@hybrd/types"
 import createDefaultWalletConnector from "./DefaultWalletConnector"
 import { buildProviders } from "./helpers"
 
@@ -30,20 +34,18 @@ export type Config = {
 //   }
 // }
 
-export function useHybrid() {
-  return useContext(Web3Context)
+export function useHybridContext() {
+  return React.useContext(Web3Context)
 }
 
 export const Web3Context = React.createContext<{
   client: Client
   chains: any[]
-  // provider: ({ chainId }: { chainId?: number }) => Provider
-  // webSocketProvider: ({ chainId }: { chainId?: number }) => Provider
+  useContext: () => WalletConnectorContext
 }>({
   client: undefined,
-  chains: undefined
-  // provider: undefined,
-  // webSocketProvider: undefined
+  chains: undefined,
+  useContext: undefined
 })
 
 const SUPPORTED_CHAINS = [mainnet, goerli, arbitrum, arbitrumGoerli, localhost]
@@ -51,26 +53,26 @@ const SUPPORTED_CHAINS = [mainnet, goerli, arbitrum, arbitrumGoerli, localhost]
 export function Web3Provider(
   props: {
     children: React.ReactNode
-    wallet: WalletConnector
+    wallet?: WalletConnector
   } & ProviderKeys
 ) {
   const {
     children,
     wallet: createWalletConnector = createDefaultWalletConnector
   } = props
+
   const chains = SUPPORTED_CHAINS
   const providers = buildProviders(props)
 
-  const { client, Provider } = createWalletConnector({
+  const { client, useContext, Provider } = createWalletConnector({
     chains,
     providers
   })
 
   const contextValue = {
     client,
+    useContext,
     chains
-    // provider,
-    // webSocketProvider
   }
 
   return (
