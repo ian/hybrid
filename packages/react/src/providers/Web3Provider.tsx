@@ -53,7 +53,7 @@ const SUPPORTED_CHAINS = [mainnet, goerli, arbitrum, arbitrumGoerli, localhost]
 export function Web3Provider(
   props: {
     children: React.ReactNode
-    wallet: WalletConnector
+    wallet?: WalletConnector
   } & ProviderKeys
 ) {
   const {

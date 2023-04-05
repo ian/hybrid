@@ -12,7 +12,7 @@
     "dev:react": "yarn --cwd packages/react dev",
     "dev:types": "yarn --cwd packages/types dev",
     "dev:utils": "yarn --cwd packages/utils dev",
-    "anvil": "anvil --chain-id 5 --fork-url $FORK_URL",
+    "anvil": "anvil",
     "generate": "yarn -r generate"
   },
   "engines": {

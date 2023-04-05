@@ -6,13 +6,11 @@ describe("lib", () => {
   describe("etherscan", () => {
     it("etherscanHost should return proper hosts", () => {
       const hosts: string[] = []
-      for (const chainId of [1, 3, 4, 5, 137, 80001] as const) {
+      for (const chainId of [1, 5, 137, 80001] as const) {
         hosts.push(etherscanHost(chainId))
       }
       expect(hosts).toEqual([
         `https://etherscan.io`,
-        `https://ropsten.etherscan.io`,
-        `https://rinkeby.etherscan.io`,
         `https://goerli.etherscan.io`,
         `https://polygonscan.com`,
         `https://mumbai.polygonscan.com`

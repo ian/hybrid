@@ -3,7 +3,7 @@ import { useAccount } from "wagmi"
 import { useTokenGating } from "../hooks/useTokenGating"
 import { DeployedContract } from "@hybrd/types"
 import DefaultButton, { DefaultButtonProps } from "./DefaultButton"
-import { useHybridContext } from "providers/Web3Provider"
+import { useHybridContext } from "../providers/Web3Provider"
 
 type Props = {
   className?: string
