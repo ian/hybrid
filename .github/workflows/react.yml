@@ -31,7 +31,7 @@ jobs:
         run: FORK_URL=${{ secrets.FORK_URL }} yarn anvil &
 
       - name: Test
-        run: yarn --cwd packages/react test:ci
+        run: yarn --cwd packages/react test
         env:
           VANITY_ADDRESS: ${{ secrets.VANITY_ADDRESS }}
           VANITY_PK: ${{ secrets.VANITY_PK }}
