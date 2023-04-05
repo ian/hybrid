@@ -33,9 +33,10 @@ Features
 
 - Smart contract compilation and deployment using [Foundry](https://getfoundry.sh/)
 - Built-in [Wagmi](https://wagmi.sh/) and [Ethers](https://docs.ethers.org/v5/) for contract interaction.
-- Changes to your Smart Contracts are automatically deployed to local chain, and contracts updated in your views.
 - Easily connect the wallet provider of your choice: [Rainbowkit](https://www.rainbowkit.com/), [Connectkit](https://docs.family.co/connectkit), [Magic.link](https://magic.link), and more.
-- React component and hooks for working with minting, token-gating, and more.
+- <span className="text-white">Hot-contraft reloading</span> - Changes to your Smart
+  Contracts are automatically deployed locally, and updated in your frontend.
+- React component library working with minting, token-gating, and more.
 - Command line interface for building, testing, and deploying smart contracts.
 
 ... and more.
