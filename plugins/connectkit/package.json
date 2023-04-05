@@ -1,6 +1,6 @@
 {
   "name": "hybrid-connectkit",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "description": "ConnectKit integration for Hybrid",
   "scripts": {
     "clean": "rm -rf dist",
@@ -16,7 +16,7 @@
     "dist"
   ],
   "dependencies": {
-    "@hybrd/types": "^0.4.8",
+    "@hybrd/types": "^0.5.0",
     "connectkit": "^1.2.1"
   },
   "peerDependencies": {
