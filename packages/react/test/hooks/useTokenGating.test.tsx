@@ -1,6 +1,6 @@
 import React from "react"
 import { renderHook } from "@testing-library/react-hooks"
-import { useTokenGating } from "../../src/hooks/useTokenGating"
+import { useTokenGating } from "../../src/hooks"
 import { DeployedContract } from "@hybrd/types"
 import { Web3Provider } from "../../src/providers/Web3Provider"
 
@@ -16,7 +16,7 @@ test("should use counter", async () => {
     () =>
       useTokenGating({
         contract: Deployments.NFT,
-        address: "0x0"
+        address: "0x0",
       }),
     { wrapper }
   )
