@@ -43,5 +43,8 @@
   "workspaces": [
     "packages/*",
     "plugins/*"
-  ]
+  ],
+  "prettier": {
+    "semi": false
+  }
 }
