@@ -4,7 +4,7 @@ import {
   etherscanAddressURL,
   etherscanHost,
   etherscanTxURL,
-} from "@hybrd/utils";
+} from "../src/etherscan";
 
 describe("lib", () => {
   describe("etherscan", () => {

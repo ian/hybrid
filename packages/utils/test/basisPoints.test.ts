@@ -1,5 +1,5 @@
 import { it, expect, describe } from "vitest";
-import { percentToBips, bipsToPercent } from "@hybrd/utils";
+import { percentToBips, bipsToPercent } from "../src/basisPoints";
 
 describe("basisPoints", () => {
   describe("percentToBips", () => {
