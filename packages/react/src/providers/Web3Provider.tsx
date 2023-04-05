@@ -42,20 +42,10 @@ export const Web3Context = React.createContext<{
   client: Client
   chains: any[]
   useContext: () => WalletConnectorContext
-  // provider: ({ chainId }: { chainId?: number }) => Provider
-  // webSocketProvider: ({ chainId }: { chainId?: number }) => Provider
 }>({
   client: undefined,
   chains: undefined,
-  useContext: () => {
-    return {
-      connect: () => {
-        console.log("connect")
-      }
-    }
-  }
-  // provider: undefined,
-  // webSocketProvider: undefined
+  useContext: undefined
 })
 
 const SUPPORTED_CHAINS = [mainnet, goerli, arbitrum, arbitrumGoerli, localhost]
@@ -70,6 +60,7 @@ export function Web3Provider(
     children,
     wallet: createWalletConnector = createDefaultWalletConnector
   } = props
+
   const chains = SUPPORTED_CHAINS
   const providers = buildProviders(props)
 
@@ -82,11 +73,7 @@ export function Web3Provider(
     client,
     useContext,
     chains
-    // provider,
-    // webSocketProvider
   }
-
-  console.log({ contextValue })
 
   return (
     <Web3Context.Provider value={contextValue}>
