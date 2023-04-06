@@ -16,9 +16,8 @@ export default function DefaultWalletConnector(config) {
   })
 
   const wallet = (): WalletConnectorContext => {
-    const { connect, connectors } = useConnect()
     return {
-      connect: () => connect({ connector: connectors[0] }),
+      connect: () => connect({ connector: client.connector }),
     }
   }
 
