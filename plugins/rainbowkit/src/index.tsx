@@ -2,7 +2,7 @@ import {
   getDefaultWallets,
   RainbowKitProvider,
   useConnectModal,
-  Theme
+  Theme,
 } from "@rainbow-me/rainbowkit"
 
 import { configureChains, createClient } from "wagmi"
@@ -25,32 +25,32 @@ export function RainbowKit(props: Props) {
 
     const { connectors } = getDefaultWallets({
       appName: appName || "Hybrid App",
-      chains
+      chains,
     })
 
     const client = createClient({
       autoConnect: true,
       connectors,
       provider,
-      webSocketProvider
+      webSocketProvider,
     })
 
-    const useContext = (): WalletConnectorContext => {
+    const wallet = (): WalletConnectorContext => {
       const { openConnectModal } = useConnectModal()
 
       return {
-        connect: openConnectModal
+        connect: openConnectModal,
       }
     }
 
     return {
       client,
-      useContext,
+      wallet,
       Provider: ({ children }: { children: React.ReactNode }) => (
         <RainbowKitProvider theme={theme} chains={chains}>
           {children}
         </RainbowKitProvider>
-      )
+      ),
     } as WalletConnection
   }
 }

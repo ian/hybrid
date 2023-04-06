@@ -1,27 +1,27 @@
-import { WagmiConfig, Client } from "wagmi";
+import { WagmiConfig, Client } from "wagmi"
 import {
   mainnet,
   goerli,
   localhost,
   arbitrum,
   arbitrumGoerli,
-} from "wagmi/chains";
+} from "wagmi/chains"
 
-import React from "react";
+import React from "react"
 import {
   ProviderKeys,
   WalletConnector,
   WalletConnectorContext,
-} from "@hybrd/types";
-import createDefaultWalletConnector from "./DefaultWalletConnector";
-import { buildProviders } from "./helpers";
+} from "@hybrd/types"
+import createDefaultWalletConnector from "./DefaultWalletConnector"
+import { buildProviders } from "./helpers"
 
 export type Config = {
   // appName?: string
   // alchemyKey?: string
   // infuraKey?: string
   // publicProvider?: boolean
-};
+}
 
 // export const withHybrid = (InputComponent, config: Config = {}) => {
 //   return function WithHybrid(props) {
@@ -34,45 +34,45 @@ export type Config = {
 // }
 
 export function useHybridContext() {
-  return React.useContext(Web3Context);
+  return React.useContext(Web3Context)
 }
 
 export const Web3Context = React.createContext<{
-  client: Client;
-  chains: any[];
-  useContext: () => WalletConnectorContext;
+  client: Client
+  chains: any[]
+  wallet: ({ chainId }) => WalletConnectorContext
 }>({
   client: undefined,
   chains: undefined,
-  useContext: undefined,
-});
+  wallet: undefined,
+})
 
-const SUPPORTED_CHAINS = [mainnet, goerli, arbitrum, arbitrumGoerli, localhost];
+const SUPPORTED_CHAINS = [mainnet, goerli, arbitrum, arbitrumGoerli, localhost]
 
 export function Web3Provider(
   props: {
-    children: React.ReactNode;
-    wallet?: WalletConnector;
+    children: React.ReactNode
+    wallet?: WalletConnector
   } & ProviderKeys
 ) {
   const {
     children,
     wallet: createWalletConnector = createDefaultWalletConnector,
-  } = props;
+  } = props
 
-  const chains = SUPPORTED_CHAINS;
-  const providers = buildProviders(props);
+  const chains = SUPPORTED_CHAINS
+  const providers = buildProviders(props)
 
-  const { client, useContext, Provider } = createWalletConnector({
+  const { client, wallet, Provider } = createWalletConnector({
     chains,
     providers,
-  });
+  })
 
   const contextValue = {
     client,
-    useContext,
+    wallet,
     chains,
-  };
+  }
 
   return (
     <Web3Context.Provider value={contextValue}>
@@ -80,5 +80,5 @@ export function Web3Provider(
         <Provider>{children}</Provider>
       </WagmiConfig>
     </Web3Context.Provider>
-  );
+  )
 }

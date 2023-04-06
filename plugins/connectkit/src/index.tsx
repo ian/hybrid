@@ -30,7 +30,7 @@ export function ConnectKit(
       })
     )
 
-    const useContext = (): WalletConnectorContext => {
+    const wallet = (): WalletConnectorContext => {
       const { setOpen } = useModal()
 
       return {
@@ -40,7 +40,7 @@ export function ConnectKit(
 
     return {
       client,
-      useContext,
+      wallet,
       Provider: ({ children }: { children: React.ReactNode }) => (
         <ConnectKitProvider {...props}>{children}</ConnectKitProvider>
       ),

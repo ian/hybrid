@@ -1,0 +1,33 @@
+{
+  "name": "hybrid-magiclink",
+  "version": "0.5.0",
+  "description": "Magic.link integration for Hybrid",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc",
+    "dev": "nodemon"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@hybrd/types": "^0.5.0"
+  },
+  "peerDependencies": {
+    "ethers": ">=5.5.0 <6",
+    "react": "17.x || 18.x",
+    "react-dom": "17.x || 18.x",
+    "wagmi": "0.12.x"
+  }
+}
