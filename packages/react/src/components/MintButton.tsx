@@ -2,7 +2,7 @@ import { useMinting } from "../hooks/useMinting"
 import { useNetwork, useSigner, useSwitchNetwork } from "wagmi"
 import DefaultButton, { DefaultButtonProps } from "./DefaultButton"
 import { DeployedContract } from "@hybrd/types"
-import { useWallet } from "hooks"
+import { useWallet } from "../hooks"
 
 type MintButtonProps = {
   className?: string

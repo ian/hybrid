@@ -2,7 +2,7 @@ import { etherscanAddressURL, truncateEthAddress } from "@hybrd/utils"
 import clsx from "clsx"
 import { useEnsName } from "../hooks/internal"
 import { useAccount, useNetwork } from "wagmi"
-import { useWallet } from "hooks"
+import { useWallet } from "../hooks"
 
 export default function ConnectedAs(props: {
   className?: string

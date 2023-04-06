@@ -3,7 +3,7 @@ import { useAccount } from "wagmi"
 import { useTokenGating } from "../hooks/useTokenGating"
 import { DeployedContract } from "@hybrd/types"
 import DefaultButton, { DefaultButtonProps } from "./DefaultButton"
-import { useWallet } from "hooks"
+import { useWallet } from "../hooks"
 
 type Props = {
   className?: string
