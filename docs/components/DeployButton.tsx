@@ -6,7 +6,6 @@ import { useCallback, useState } from "react"
 import { useAccount, useSigner, useNetwork, useSwitchNetwork } from "wagmi"
 
 import Button from "./Button"
-import { getDeployData } from "~/lib/deploy"
 
 export type {
 	TransactionReceipt as Receipt,
@@ -53,16 +52,23 @@ export default function DeployButton(props: Props) {
 
 	if (chainId !== network?.id) {
 		return (
-			<Button className={className} intent="error" onClick={() => switchNetwork?.(chainId)}>
+			<Button
+				className={className}
+				intent="error"
+				onClick={() => switchNetwork?.(chainId)}
+			>
 				Switch Blockchain
 			</Button>
 		)
 	}
 
 	return (
-		<Button className={className} onClick={handleDeploy} disabled={!deployData || isSending}>
+		<Button
+			className={className}
+			onClick={handleDeploy}
+			disabled={!deployData || isSending}
+		>
 			{isSending ? "Deploying ..." : "Deploy to Blockchain"}
 		</Button>
 	)
 }
-

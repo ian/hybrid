@@ -1,12 +1,12 @@
 import clsx from "clsx"
-import Ribbon from "./Ribbon"
+import SoonRibbon from "./SoonRibbon"
 
 export default function Quickstarts() {
 	return (
 		<div className="grid grid-cols-3 gap-5">
 			{FRAMEWORKS.map((f) => (
 				<div key={f.name} className="relative">
-					{f.soon && <Ribbon className="absolute right-0" />}
+					{f.soon && <SoonRibbon />}
 
 					<a
 						className={clsx(

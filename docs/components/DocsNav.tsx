@@ -2,7 +2,6 @@ import clsx from "clsx"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import styles from "./DocsNav.module.css"
-import Logo from "./Logo"
 
 export default function DocsNav({
 	className,

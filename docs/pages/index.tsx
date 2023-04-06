@@ -1,7 +1,6 @@
 import Link from "next/link"
 import Logo from "~/components/Logo"
 
-import HomeHeader from "~/components/Header"
 import Footer from "~/components/HomeFooter"
 
 export default function Homepage() {
