@@ -62,6 +62,7 @@ dump.rdb
 *.lcov
 
 old/
+wip/
 
 # Temp for testing
 packages/fake-nextjs
