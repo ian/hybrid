@@ -7,7 +7,6 @@ import { useWallet } from "hooks"
 export default function ConnectedAs(props: {
   className?: string
   chainId?: number
-  disconnect?: boolean
 }) {
   const { className, chainId } = props
   const { address, isConnected } = useAccount()
@@ -16,12 +15,7 @@ export default function ConnectedAs(props: {
   const ens = useEnsName(address)
 
   return (
-    <p
-      className={clsx(
-        className,
-        "text-sm text-center flex space-x-3 items-center justify-center text-gray"
-      )}
-    >
+    <p className={clsx(className, "flex space-x-3 items-center justify-cente")}>
       {!isConnected && (
         <button onClick={() => connect()}>Connect Wallet</button>
       )}
@@ -38,17 +32,6 @@ export default function ConnectedAs(props: {
             {ens || truncateEthAddress(address as string)}
           </a>
         </span>
-      )}
-
-      {disconnect && (
-        <a
-          href={etherscanAddressURL(address, chainId || network.id)}
-          className={clsx(className, "underline")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          disconnect
-        </a>
       )}
     </p>
   )

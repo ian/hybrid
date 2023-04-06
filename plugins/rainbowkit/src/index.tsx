@@ -5,7 +5,7 @@ import {
   Theme,
 } from "@rainbow-me/rainbowkit"
 
-import { configureChains, createClient } from "wagmi"
+import { configureChains, createClient, useDisconnect } from "wagmi"
 
 import type { WalletConnection } from "@hybrd/types"
 
@@ -37,9 +37,11 @@ export function RainbowKit(props: Props) {
 
     const useWallet = () => {
       const { openConnectModal } = useConnectModal()
+      const { disconnect } = useDisconnect()
 
       return {
         connect: openConnectModal,
+        disconnect,
       }
     }
 

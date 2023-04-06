@@ -43,6 +43,9 @@ export const Web3Context = React.createContext<{
       connect: () => {
         console.error("No wallet provider found")
       },
+      disconnect: () => {
+        console.error("No wallet provider found")
+      },
     }),
   },
 })

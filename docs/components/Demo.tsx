@@ -1,4 +1,5 @@
-import { Web3Provider } from "hybrid"
+import { WalletConnector, Web3Provider } from "hybrid"
+import { DisableSSR } from "next-tools"
 import {
 	mainnet,
 	goerli,
@@ -20,24 +21,26 @@ export default function Demo({
 	})
 }: {
 	children: JSX.Element
-	wallet?: any
+	wallet?: WalletConnector
 }) {
 	return (
-		<Web3Provider
-			chains={chains}
-			wallet={wallet}
-			alchemyKey={process.env.NEXT_PUBLIC_ALCHEMY_KEY}
-		>
-			<div className="mt-10">
-				<h4 className="mb-2 text-sm uppercase text-thin">Demo</h4>
-				<div
-					style={grid}
-					className="flex items-center justify-center py-12 bg-blue-900 bg-opacity-20 rounded-xl"
-				>
-					{children}
+		<DisableSSR>
+			<Web3Provider
+				chains={chains}
+				wallet={wallet}
+				alchemyKey={process.env.NEXT_PUBLIC_ALCHEMY_KEY}
+			>
+				<div className="mt-10">
+					<h4 className="mb-2 text-sm uppercase text-thin">Demo</h4>
+					<div
+						style={grid}
+						className="flex items-center justify-center py-12 bg-blue-900 bg-opacity-20 rounded-xl"
+					>
+						{children}
+					</div>
 				</div>
-			</div>
-		</Web3Provider>
+			</Web3Provider>
+		</DisableSSR>
 	)
 }
 

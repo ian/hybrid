@@ -4,7 +4,13 @@ import {
   MagicConnectConnector,
 } from "@everipedia/wagmi-magic-connector"
 
-import { configureChains, createClient, useConnect, useProvider } from "wagmi"
+import {
+  configureChains,
+  createClient,
+  useConnect,
+  useDisconnect,
+  useProvider,
+} from "wagmi"
 
 import type { WalletConnection, WalletConnectorContext } from "@hybrd/types"
 
@@ -91,11 +97,13 @@ export const MagicLink = (props: Props) => {
 
     const useWallet = () => {
       const { connect, connectors } = useConnect()
+      const { disconnect } = useDisconnect()
+
       return {
         connect: () => {
-          console.log("CONNECT")
           connect({ connector })
         },
+        disconnect,
         // connect: () => magic.wallet.connectWithUI()
       }
     }
