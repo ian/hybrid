@@ -4,7 +4,7 @@ import React from "react"
 import {
   ProviderKeys,
   WalletConnector,
-  WalletConnectorContext,
+  WalletConnectionHooks,
 } from "@hybrd/types"
 
 import createDefaultWalletConnector from "./DefaultWalletConnector"
@@ -34,11 +34,11 @@ export function useHybridContext() {
 export const Web3Context = React.createContext<{
   client: Client
   chains: Chain[]
-  wallet: ({ chainId }) => WalletConnectorContext
+  hooks: WalletConnectionHooks
 }>({
   client: undefined,
   chains: undefined,
-  wallet: undefined,
+  hooks: undefined,
 })
 
 export function Web3Provider(
@@ -55,14 +55,14 @@ export function Web3Provider(
   } = props
 
   const providers = buildProviders(props)
-  const { client, wallet, Provider } = createWalletConnector({
+  const { client, hooks, Provider } = createWalletConnector({
     chains,
     providers,
   })
 
   const contextValue = {
     client,
-    wallet,
+    hooks,
     chains,
   }
 

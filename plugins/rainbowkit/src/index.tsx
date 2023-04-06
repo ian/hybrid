@@ -35,7 +35,7 @@ export function RainbowKit(props: Props) {
       webSocketProvider,
     })
 
-    const wallet = (): WalletConnectorContext => {
+    const useWallet = (): WalletConnectorContext => {
       const { openConnectModal } = useConnectModal()
 
       return {
@@ -45,7 +45,9 @@ export function RainbowKit(props: Props) {
 
     return {
       client,
-      wallet,
+      hooks: {
+        useWallet,
+      },
       Provider: ({ children }: { children: React.ReactNode }) => (
         <RainbowKitProvider theme={theme} chains={chains}>
           {children}

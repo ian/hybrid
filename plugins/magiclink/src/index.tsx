@@ -46,7 +46,7 @@ export function MagicLink(props: Props) {
       webSocketProvider,
     })
 
-    const useContext = (): WalletConnectorContext => {
+    const useWallet = (): WalletConnectorContext => {
       return {
         connect: () => {
           return magic.wallet.connectWithUI()
@@ -56,7 +56,9 @@ export function MagicLink(props: Props) {
 
     return {
       client,
-      useContext,
+      hooks: {
+        useWallet,
+      },
       Provider: ({ children }: { children: React.ReactNode }) => {
         magic = new Magic(apiKey, {
           network: {

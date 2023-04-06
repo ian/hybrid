@@ -24,7 +24,7 @@ export type Deployment = {
 
 export type {
   TransactionReceipt as Receipt,
-  TransactionResponse as Transaction
+  TransactionResponse as Transaction,
 } from "@ethersproject/providers"
 
 export type ProviderKeys = {
@@ -36,12 +36,19 @@ export type ProviderKeys = {
 export type WalletConnectorOpts = object // todo - what config is common to all wallet plugins?
 export type WalletConnection = {
   client: WagmiClient
-  useContext: () => WalletConnectorContext
+  hooks: WalletConnectionHooks
   Provider: React.FC<WalletConnectorOpts>
 }
+
+export type WalletConnectionHooks = {
+  useWallet: () => WalletConnectorContext
+}
+
 export type WalletConnectorContext = {
   connect: () => void
+  // disconnect: () => void // @todo
 }
+
 export type WalletConnectorConfig = {
   chains: Chain[]
   providers: providers.BaseProvider[]

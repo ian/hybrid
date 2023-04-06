@@ -22,7 +22,8 @@
     "dist"
   ],
   "dependencies": {
-    "@hybrd/types": "^0.5.0"
+    "@hybrd/types": "^0.5.0",
+    "magic-sdk": "^16.1.0"
   },
   "peerDependencies": {
     "ethers": ">=5.5.0 <6",

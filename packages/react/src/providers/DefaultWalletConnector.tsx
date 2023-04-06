@@ -15,7 +15,8 @@ export default function DefaultWalletConnector(config) {
     webSocketProvider,
   })
 
-  const wallet = (): WalletConnectorContext => {
+  const useWallet = (): WalletConnectorContext => {
+    const { connect } = useConnect()
     return {
       connect: () => connect({ connector: client.connector }),
     }
@@ -23,7 +24,9 @@ export default function DefaultWalletConnector(config) {
 
   return {
     client: client as Client,
-    wallet,
+    hooks: {
+      useWallet,
+    },
     Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   } as WalletConnection
 }
