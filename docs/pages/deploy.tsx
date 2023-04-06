@@ -1,7 +1,8 @@
 import { useRouter } from "next/router"
 import { useMemo, useState } from "react"
 import { useSigner } from "wagmi"
-import { etherscanTxURL } from "hybrid"
+import { Web3Provider, etherscanTxURL } from "hybrid"
+import { RainbowKit } from "hybrid-rainbowkit"
 import Confetti from "~/components/Confetti"
 import DeployButton, { Transaction, Receipt } from "~/components/DeployButton"
 import DeployEstimates from "~/components/DeployEstimates"
@@ -15,7 +16,11 @@ type Config = {
 	chainId: number
 }
 
-export default function DeployPage() {
+const wallet = RainbowKit({
+	appName: "Hybrid Deployments"
+})
+
+function Deployment() {
 	const [config, setConfig] = useState<Config>()
 	const { data: signer } = useSigner({ chainId: config?.chainId })
 	const [receipt, setReceipt] = useState<Receipt>()
@@ -119,5 +124,13 @@ export default function DeployPage() {
 				</div>
 			</div>
 		</div>
+	)
+}
+
+export default function DeployPage() {
+	return (
+		<Web3Provider wallet={wallet}>
+			<Deployment />
+		</Web3Provider>
 	)
 }
