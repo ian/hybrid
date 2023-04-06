@@ -10,14 +10,14 @@
   "author": "",
   "license": "ISC",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "dist/connectkit.js",
+  "types": "./dist/connectkit.d.ts",
   "files": [
     "dist"
   ],
   "dependencies": {
     "@hybrd/types": "^0.5.1",
-    "connectkit": "^1.2.1"
+    "connectkit": "^1.2.2"
   },
   "peerDependencies": {
     "ethers": ">=5.5.0 <6",

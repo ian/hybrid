@@ -1,4 +1,4 @@
-import { WagmiConfig, Client, Chain } from "wagmi"
+import { WagmiConfig, Client, Chain, mainnet, goerli } from "wagmi"
 
 import React from "react"
 import {
@@ -38,7 +38,13 @@ export const Web3Context = React.createContext<{
 }>({
   client: undefined,
   chains: undefined,
-  hooks: undefined,
+  hooks: {
+    useWallet: () => ({
+      connect: () => {
+        console.error("No wallet provider found")
+      },
+    }),
+  },
 })
 
 export function Web3Provider(
@@ -50,7 +56,7 @@ export function Web3Provider(
 ) {
   const {
     children,
-    chains,
+    chains = [mainnet, goerli],
     wallet: createWalletConnector = createDefaultWalletConnector,
   } = props
 

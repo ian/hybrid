@@ -41,10 +41,10 @@ export type WalletConnection = {
 }
 
 export type WalletConnectionHooks = {
-  useWallet: () => WalletConnectorContext
+  useWallet: () => UseWallet
 }
 
-export type WalletConnectorContext = {
+export type UseWallet = {
   connect: () => void
   // disconnect: () => void // @todo
 }

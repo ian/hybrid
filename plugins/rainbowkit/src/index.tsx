@@ -7,7 +7,7 @@ import {
 
 import { configureChains, createClient } from "wagmi"
 
-import type { WalletConnection, WalletConnectorContext } from "@hybrd/types"
+import type { WalletConnection } from "@hybrd/types"
 
 type Props = {
   appName?: string
@@ -35,7 +35,7 @@ export function RainbowKit(props: Props) {
       webSocketProvider,
     })
 
-    const useWallet = (): WalletConnectorContext => {
+    const useWallet = () => {
       const { openConnectModal } = useConnectModal()
 
       return {

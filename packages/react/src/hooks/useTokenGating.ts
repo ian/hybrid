@@ -22,10 +22,7 @@ export function useTokenGating(props: {
   const [allow, setAllow] = useState<boolean>()
   const [deny, setDeny] = useState<boolean>()
 
-  const contract = useContract({
-    address: deployedContract?.address,
-    abi: deployedContract?.abi
-  })
+  const contract = useContract(deployedContract)
 
   useEffect(() => {
     if (!deployedContract) {
@@ -56,6 +53,6 @@ export function useTokenGating(props: {
     isLoading: isLoading,
     address,
     allow,
-    deny
+    deny,
   }
 }

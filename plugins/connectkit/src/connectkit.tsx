@@ -1,7 +1,7 @@
 import React from "react"
 import { ConnectKitProvider, getDefaultClient, useModal } from "connectkit"
 import { createClient, configureChains } from "wagmi"
-import type { WalletConnection, WalletConnectorContext } from "@hybrd/types"
+import type { WalletConnection } from "@hybrd/types"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 
 export * from "connectkit"
@@ -47,7 +47,7 @@ export function ConnectKit(
       webSocketProvider,
     })
 
-    const useWallet = (): WalletConnectorContext => {
+    const useWallet = () => {
       const { setOpen } = useModal()
 
       return {

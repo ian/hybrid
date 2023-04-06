@@ -13,11 +13,7 @@ const TotalSupply = (props: TotalSupplyProps) => {
   const chainId = deployedContract?.chainId
   const provider = useProvider({ chainId })
   const { data: block } = useBlockNumber({ watch: true })
-
-  const contract = useContract({
-    address: deployedContract?.address,
-    abi: deployedContract?.abi
-  })
+  const contract = useContract(deployedContract)
 
   const totalSupply: number = useAsyncMemo(() => {
     if (!contract) return

@@ -1,27 +1,26 @@
-import React from "react"
 import { useHybridContext } from "../providers/Web3Provider"
-
-export type UseWallet = {
-  connect: () => void
-}
+import type { UseWallet } from "@hybrd/types"
 
 export type UseWalletProps = { chainId?: number }
 
 export function useWallet(props?: UseWalletProps): UseWallet {
   const { chainId } = props || {}
 
-  const [context, setContext] = React.useState<UseWallet>({
-    connect: () => {},
-  })
+  const { hooks } = useHybridContext()
+  const wallet = hooks.useWallet()
 
-  const { wallet } = useHybridContext()
+  // const [context, setContext] = React.useState<UseWallet>({
+  //   connect: () => {},
+  // })
+
+  // console.log({ useHybridContext })
+  // console.log({ hooks })
 
   // Some of the wallet provideers don't like to be loaded on the server.
   // So we only create the context on the client.
-  React.useEffect(() => {
-    const context = wallet({ chainId })
-    setContext(context)
-  }, [wallet, chainId])
+  // React.useEffect(() => {
+  //   setContext(context)
+  // }, [hooks.useWallet, chainId])
 
-  return context
+  return wallet
 }
