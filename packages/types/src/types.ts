@@ -46,7 +46,7 @@ export type WalletConnectionHooks = {
 
 export type UseWallet = {
   connect: () => void
-  // disconnect: () => void // @todo
+  disconnect: () => void
 }
 
 export type WalletConnectorConfig = {

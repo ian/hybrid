@@ -27,7 +27,7 @@ export type Config = {
 //   }
 // }
 
-export function useHybridContext() {
+export function useWeb3() {
   return React.useContext(Web3Context)
 }
 

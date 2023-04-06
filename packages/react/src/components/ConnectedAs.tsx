@@ -1,15 +1,17 @@
 import { etherscanAddressURL, truncateEthAddress } from "@hybrd/utils"
 import clsx from "clsx"
 import { useEnsName } from "../hooks/internal"
-import { useAccount, useConnect, useNetwork } from "wagmi"
+import { useAccount, useNetwork } from "wagmi"
+import { useWallet } from "hooks"
 
 export default function ConnectedAs(props: {
   className?: string
   chainId?: number
+  disconnect?: boolean
 }) {
   const { className, chainId } = props
   const { address, isConnected } = useAccount()
-  const { connect, connectors } = useConnect()
+  const { connect } = useWallet()
   const { chain: network } = useNetwork()
   const ens = useEnsName(address)
 
@@ -21,9 +23,7 @@ export default function ConnectedAs(props: {
       )}
     >
       {!isConnected && (
-        <button onClick={() => connect({ connector: connectors[0] })}>
-          Connect Wallet
-        </button>
+        <button onClick={() => connect()}>Connect Wallet</button>
       )}
 
       {isConnected && (
@@ -38,6 +38,17 @@ export default function ConnectedAs(props: {
             {ens || truncateEthAddress(address as string)}
           </a>
         </span>
+      )}
+
+      {disconnect && (
+        <a
+          href={etherscanAddressURL(address, chainId || network.id)}
+          className={clsx(className, "underline")}
+          target="_blank"
+          rel="noreferrer"
+        >
+          disconnect
+        </a>
       )}
     </p>
   )

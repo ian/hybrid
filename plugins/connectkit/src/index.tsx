@@ -2,7 +2,6 @@ import React from "react"
 import { ConnectKitProvider, getDefaultClient, useModal } from "connectkit"
 import { createClient, configureChains } from "wagmi"
 import type { WalletConnection } from "@hybrd/types"
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 
 export * from "connectkit"
 
@@ -20,32 +19,12 @@ export const ConnectKit = (
 
     const client = createClient(
       getDefaultClient({
-        ...props,
-        // walletConnectOptions: {
-        //   showQrModal: false,
-        //   projectId: "f6ad337056eac36bb5be7cb749b890b5",
-        //   version: "2",
-        // },
         chains,
         provider,
         webSocketProvider,
+        ...props,
       })
     )
-
-    // const client = createClient({
-    //   // autoConnect: true,
-    //   connectors: [
-    //     new WalletConnectConnector({
-    //       chains,
-    //       options: {
-    //         showQrModal: true,
-    //         projectId: "f6ad337056eac36bb5be7cb749b890b5",
-    //       },
-    //     }),
-    //   ],
-    //   provider,
-    //   webSocketProvider,
-    // })
 
     const useWallet = () => {
       const { setOpen } = useModal()
