@@ -1,0 +1,82 @@
+# Next.js Quickstart
+
+This quick start walks you step-by-step through everything you need to get started. It'll take approximately 5 minutes.
+
+Let's get started.
+
+## 1. Install hybrid
+
+```sh
+npx hybrid init
+```
+
+You'll be asked which blockchain you want to use. Hybrid supports many EVM-based blockchains:
+
+- <a href="https://ethereum.org/" target="_blank">
+  	Ethereum
+  </a>
+- <a href="https://polygon.technology/" target="_blank">
+  	Polygon
+  </a>
+- <a href="https://arbitrum.io/" target="_blank">
+  	Arbitrum
+  </a>
+- <a href="https://www.optimism.io/" target="_blank">
+  	Optimism
+  </a>
+- <a href="https://base.org/" target="_blank">
+  	Base
+  </a>
+
+We're adding more Chains soon. Feel free to request new chains in the <a href="https://discord.gg/CfrVhsVhfc" target="_blank">Support room on Discord</a>.
+
+## 2. Add Web3Provider
+
+Add the `<Web3Provider>` component to `pages/_app.tsx`
+
+```tsx
+import { Web3Provider } from "hybrid"
+
+const App = ({ Component, pageProps }) => {
+	return (
+		<Web3Provider>
+			<Component {...pageProps} />
+		</Web3Provider>
+	)
+}
+
+export default App
+```
+
+## 3. Use hybrid in your React components
+
+Add the following to your `./pages/index.tsx` file:
+
+```tsx
+import { MintButton } from "hybrid"
+import { Deployments } from "~/.hybrid/client"
+
+export default function Home() {
+	return (
+		<div>
+			<MintButton contract={Contracts.MyNFT} />
+		</div>
+	)
+}
+```
+
+To learn more about `<MintButton>`, go to the [MintButton](/docs/components/MintButton) docs.
+
+## 4. Run Hybrid locally
+
+```sh
+hybrid dev
+```
+
+This runs Hybrid locally. We'll use this to test our smart contracts and frontend components as we write them.
+
+See the [hybrid dev docs](/docs/cli#dev) for more information.
+
+## 5. Run Next.js
+
+Run Next.js like you would normally `next dev`.

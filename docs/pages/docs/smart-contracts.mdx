@@ -1,0 +1,31 @@
+# Smart Contracts
+
+Hybrid uses <a href="https://book.getfoundry.sh/" target="_blank">Foundry</a> for contract compiliation. While there were a few choices here, including writing from scratch, the toolset that Foundry offers is superb.
+
+One of the main advantages of Foundry is that all tests are written in Solidity (versus JavaScript). This let's a developer work exclusively in Solidity for both smart contract development AND testing.
+
+Hybrid stores all contracts in `./contracts`.
+
+```ml
+./contracts
+├─ MyContract.sol - Your main solidity contract
+├─ MyContract.test.sol - Tests for your solidity contract
+```
+
+## Using separate contracts/src and contracts/test directories.
+
+Lots of developers like to separate contract source files from test files.
+
+To do this, edit your `foundry.toml` file and change:
+
+```toml
+src = './contracts'
+test = './contracts'
+```
+
+to
+
+```toml
+src = './contracts/src'
+test = './contracts/test'
+```

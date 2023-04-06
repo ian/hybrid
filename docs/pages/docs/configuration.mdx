@@ -1,0 +1,27 @@
+# Project Structure
+
+After running `npx hybrid init`, your project will have:
+
+## `hybrid.config.js`
+
+The main hybrid config file. Details coming soon.
+
+## `foundry.toml`
+
+Foundry's main configuration file. See [foundry.toml Reference](https://book.getfoundry.sh/reference/config/) for more details.
+
+## Deploy Configuration
+
+Hybrid manages all configuration automatically, there is no need to make changes to these files.
+
+```ml
+./hybrid
+├─ client.ts - The TypeScript client
+├─ test.json - Stores config for test chain
+├─ prod.json - Stores config for prod chain
+├─ cache
+│  ├─ dev.json — Development cache
+├─ out
+│  ├─ ... Foundry compiled contracts
+```
+

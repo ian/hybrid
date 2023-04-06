@@ -1,0 +1,32 @@
+# \<MintButton\>
+
+A context-aware generic MintButton for NFT smart contracts.
+
+## Usage
+
+```tsx
+import { TotalSupply } from "hybrid"
+import { Deployments } from "~/.hybrid/client"
+
+const MyComponent = () => {
+	return (
+		<p>
+			A total of
+			<TotalSupply contract={Deployments.NFT} /> NFTs have been minted.
+		</p>
+	)
+}
+
+export default App
+```
+
+import { TotalSupply } from "hybrid"
+import { Deployments } from "~/.hybrid/client"
+import Demo from "~/components/Demo"
+
+<Demo>
+	<p>
+		A total of
+		<TotalSupply contract={Deployments.NFT} /> NFTs have been minted.
+	</p>
+</Demo>

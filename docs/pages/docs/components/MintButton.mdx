@@ -1,0 +1,73 @@
+# \<MintButton\>
+
+A context-aware generic MintButton for NFT smart contracts.
+
+## Usage
+
+```tsx
+import { MintButton } from "hybrid"
+import { Deployments } from "~/.hybrid/client"
+
+const MyComponent = () => {
+	return (
+		<>
+			<MintButton contract={Deployments.NFT} />
+		</>
+	)
+}
+
+export default App
+```
+
+<details>
+	<summary className="cursor-pointer p-2">Show Smart Contract Code</summary>
+	```solidity
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
+
+import "erc721a/contracts/ERC721A.sol"
+
+contract NFT is ERC721A {
+constructor() ERC721A("My NFT", "NFT") {}
+
+    	function _startTokenId() internal pure override returns (uint256) {
+    		return 1;
+    	}
+
+    	function mint(uint256 quantity) external payable {
+    		_mint(msg.sender, quantity);
+    	}
+
+}
+
+```
+</details>
+
+import MintButtonDemo from "~/demo/MintButtonDemo"
+
+<MintButtonDemo />
+
+## Component Props
+
+import PropList from "~/components/PropList"
+
+<PropList
+	values={[
+		{
+			name: "className",
+			type: "string",
+			desc: "html class (optional)"
+		},
+		{
+			name: "contract",
+			type: "DeployedContract",
+			desc: "Deployed contract details, imported from hybrid Deployments object"
+		},
+		{
+			name: "amount",
+			type: "number",
+			desc: "amount of tokens to mint (default 1)"
+		},
+	]}
+/>
+```

@@ -1,0 +1,16 @@
+.DocsHeader {
+	@apply fixed top-0 z-40 w-full backdrop-blur-xl;
+}
+
+.DocsLayout {
+	@apply min-h-screen max-w-6xl mx-auto px-5;
+}
+
+.DocsLayout code {
+	@apply text-base p-1.5 my-1 bg-blue-900 bg-opacity-50 text-white rounded align-baseline;
+}
+
+.DocsLayout pre code {
+	@apply p-5 bg-blue-900 bg-opacity-50 text-white rounded-xl block text-base;
+	tab-size: 2;
+}

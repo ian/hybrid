@@ -1,0 +1,30 @@
+# \<TokenGate\>
+
+Allows control over content based on token ownership.
+
+## Usage
+
+```tsx
+import { TokenGate } from "hybrid"
+import { Deployments } from "~/.hybrid/client"
+
+const MyComponent = () => {
+	return (
+		<TokenGate contract={Deployments.NFT}>
+			<p className="text-green">✅ Token Owned. You're allowed to see this.</p>
+		</TokenGate>
+	)
+}
+
+export default App
+```
+
+import { TokenGate } from "hybrid"
+import { Deployments } from "~/.hybrid/client"
+import Demo from "~/components/Demo"
+
+<Demo>
+	<TokenGate contract={Deployments.NFT}>
+		<p className="text-green">✅ Token Owned. You're allowed to see this.</p>
+	</TokenGate>
+</Demo>

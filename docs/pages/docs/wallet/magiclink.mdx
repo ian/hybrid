@@ -1,0 +1,50 @@
+# Rainbowkit + Hybrid
+
+How to use [Magic Link Connect](https://magic.link/connect) as your wallet connect library:
+
+## 1. Install Magic Link
+
+```sh
+npm add hybrid-magiclink
+```
+
+View the full instructions on [RainbowKit Docs](https://www.rainbowkit.com/docs/installation#manual-setup)
+
+## 2. Configure MagicLink wallet and send to Web3Provider
+
+Edit your `pages/_app.tsx`
+
+```tsx
+import { Web3Provider } from "hybrid"
+import { MagicLink } from "hybrid-magiclink"
+
+const wallet = MagicLink({})
+
+const App = ({ Component, pageProps }) => {
+	return (
+		<Web3Provider wallet={wallet}>
+			<Component {...pageProps} />
+		</Web3Provider>
+	)
+}
+
+export default App
+```
+
+## 3. Use MagicLink connect in your dapp:
+
+```tsx
+const MyComponent = () => {
+	return (
+		<div>
+			<ConnectButton />
+		</div>
+	)
+}
+
+export default App
+```
+
+import MagicLinkDemo from "~/demo/MagicLinkDemo"
+
+<MagicLinkDemo />

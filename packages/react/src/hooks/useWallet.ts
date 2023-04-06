@@ -1,14 +1,7 @@
-import { useHybridContext } from "../providers/Web3Provider"
-
-type UseWallet = {
-  connect: () => void
-}
+import { useWeb3 } from "../providers/Web3Provider"
+import type { UseWallet } from "@hybrd/types"
 
 export function useWallet(): UseWallet {
-  const { useContext } = useHybridContext()
-  const { connect } = useContext()
-
-  return {
-    connect,
-  }
+  const { hooks } = useWeb3()
+  return hooks.useWallet()
 }

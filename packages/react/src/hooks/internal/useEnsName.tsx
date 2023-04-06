@@ -11,7 +11,7 @@ export function useEnsName(address: `0x${string}`) {
   useEffect(() => {
     if (!address) return
     provider.lookupAddress(address).then(setENS)
-  }, [name, provider])
+  }, [address, provider])
 
   return ens
 }

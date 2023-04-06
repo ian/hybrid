@@ -3,7 +3,7 @@ import { useAccount } from "wagmi"
 import { useTokenGating } from "../hooks/useTokenGating"
 import { DeployedContract } from "@hybrd/types"
 import DefaultButton, { DefaultButtonProps } from "./DefaultButton"
-import { useHybridContext } from "../providers/Web3Provider"
+import { useWallet } from "../hooks"
 
 type Props = {
   className?: string
@@ -22,11 +22,10 @@ const TokenGate: React.FC<Props> = ({
   contract,
   button: Button = DefaultButton,
   loading: loadingComponent = <p>Loading</p>,
-  deny: denyComponent = <p>You must own a token to view this content.</p>
+  deny: denyComponent = <p>You must own a token to view this content.</p>,
 }: Props) => {
   const { address } = useAccount()
-  const { useContext } = useHybridContext()
-  const { connect } = useContext()
+  const { connect } = useWallet()
 
   const { isLoading, allow } = useTokenGating({ address, contract })
 

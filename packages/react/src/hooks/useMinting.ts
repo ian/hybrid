@@ -1,6 +1,6 @@
 import type {
   TransactionReceipt,
-  TransactionResponse
+  TransactionResponse,
 } from "@ethersproject/providers"
 import { BigNumber } from "ethers"
 import { useCallback, useState } from "react"
@@ -33,10 +33,7 @@ export const useMinting = (props: Props): UseMinting => {
   const [isSuccess, setSuccess] = useState<boolean>(false)
   const [isError, setError] = useState<boolean>(false)
 
-  const contract = useContract({
-    address: deployedContract?.address,
-    abi: deployedContract?.abi
-  })
+  const contract = useContract(deployedContract)
 
   const mint = useCallback(
     async (amount: number, opts: MintOpts = {}) => {
@@ -51,7 +48,7 @@ export const useMinting = (props: Props): UseMinting => {
         .connect(signer)
         .mint(amount, {
           value,
-          gasPrice
+          gasPrice,
         })
         .then((tx: TransactionResponse) => tx.wait())
         .then((reciept: TransactionReceipt) => {
@@ -73,6 +70,6 @@ export const useMinting = (props: Props): UseMinting => {
     isMinting,
     isSuccess,
     isError,
-    mint
+    mint,
   }
 }

@@ -1,8 +1,8 @@
-import { useHybridContext } from "../providers/Web3Provider"
 import { useMinting } from "../hooks/useMinting"
 import { useNetwork, useSigner, useSwitchNetwork } from "wagmi"
 import DefaultButton, { DefaultButtonProps } from "./DefaultButton"
 import { DeployedContract } from "@hybrd/types"
+import { useWallet } from "../hooks"
 
 type MintButtonProps = {
   className?: string
@@ -19,8 +19,7 @@ const MintButton = (props: MintButtonProps) => {
     contract,
   } = props
 
-  const { useContext } = useHybridContext()
-  const { connect } = useContext()
+  const { connect } = useWallet()
 
   const { data: signer } = useSigner()
   const { chain: network } = useNetwork()
