@@ -28,22 +28,24 @@ pragma solidity ^0.8.13;
 import "erc721a/contracts/ERC721A.sol"
 
 contract NFT is ERC721A {
-		constructor() ERC721A("My NFT", "NFT") {}
+constructor() ERC721A("My NFT", "NFT") {}
 
-		function _startTokenId() internal pure override returns (uint256) {
-			return 1;
-		}
+    	function _startTokenId() internal pure override returns (uint256) {
+    		return 1;
+    	}
 
-		function mint(uint256 quantity) external payable {
-			_mint(msg.sender, quantity);
-		}
+    	function mint(uint256 quantity) external payable {
+    		_mint(msg.sender, quantity);
+    	}
+
 }
+
 ```
 </details>
 
-import MintButtonExample from "~/examples/MintButtonExample"
+import MintButtonDemo from "~/demo/MintButtonDemo"
 
-<MintButtonExample />
+<MintButtonDemo />
 
 ## Component Props
 
@@ -68,3 +70,4 @@ import PropList from "~/components/PropList"
 		},
 	]}
 />
+```

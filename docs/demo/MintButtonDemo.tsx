@@ -3,7 +3,7 @@ import { Deployments } from "~/.hybrid/client"
 
 import Demo from "~/components/Demo"
 
-const MintButtonExample = () => {
+const MintButtonDemo = () => {
 	return (
 		<Demo>
 			<MintButton contract={Deployments.NFT} />
@@ -11,4 +11,4 @@ const MintButtonExample = () => {
 	)
 }
 
-export default MintButtonExample
+export default MintButtonDemo
