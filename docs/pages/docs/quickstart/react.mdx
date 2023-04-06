@@ -1,0 +1,60 @@
+# React Quickstart
+
+This quick start walks you step-by-step through everything you need to get started. It'll take approximately 5 minutes.
+
+Let's get started.
+
+## 1. Install hybrid
+
+```sh
+npx hybrid init
+```
+
+## 2. Add the Web3Provider
+
+Add the `<Web3Provider>` component to `src/index.js` file.
+
+```jsx
+import { Web3Provider } from "hybrid"
+
+root.render(
+	<React.StrictMode>
+		<Web3Provider>
+			<App />
+		</Web3Provider>
+	</React.StrictMode>
+)
+```
+
+## 4. Use hybrid in your React components
+
+Add the following to your `./pages/index.tsx` file:
+
+```tsx
+import { MintButton } from "hybrid"
+import { Deployments } from "~/.hybrid/client"
+
+export default function Home() {
+	return (
+		<div>
+			<MintButton contract={Contracts.MyNFT} />
+		</div>
+	)
+}
+```
+
+To learn more about `<MintButton>`, go to the [MintButton](/docs/components/MintButton) docs.
+
+## 2. Run Hybrid locally
+
+```sh
+hybrid dev
+```
+
+This runs Hybrid locally. We'll use this to test our smart contracts and frontend components as we write them.
+
+See the [hybrid dev docs](/docs/cli#dev) for more information.
+
+## 5. Run `npm start`
+
+Starts the development server like you would normally.

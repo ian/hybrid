@@ -1,0 +1,73 @@
+# Deployments 
+
+Hybrid will manage all your deployment configurations for you - no configuration files are necessary to maintain.
+
+To deploy to testnet or mainnet, run:
+
+```sh
+hybrid deploy NFT test
+```
+
+Once you have deployed the contract, hybrid will write the necessary deployment configurations to your hybrid config directory, default location is `./.hybrid`
+
+```sh
+❯ hybrid deploy NFT test
+⠹ Waiting for deployment in browser ...
+```
+
+When you run `hybrid deploy ContractName <stage>`, hybrid will open a browser to proceed with the contract deployment. 
+
+<img src="/deployment/ready.png" className="h-96 mx-auto" />
+
+From here, use any wallet you'd like to deploy the contract. No more managing private keys from the command line!
+
+After the contract is deployed, hybrid will automatically update your deployment configuration.
+
+```sh
+✔ Contract deployed to testnet
+
+Contract:     0x41a29980e1a92e4b7d8AE815Fd24200550227803
+Transaction:  0x189079135c6f5664a5ba007a2b98af1254034337ea62c06c17db13d55a4b5073
+Block Num:    0x41a29980e1a92e4b7d8AE815Fd24200550227803
+View on Etherscan: https://goerli.etherscan.io/tx/0x189079135c6f5664a5ba007a2b98af1254034337ea62c06c17db13d55a4b5073
+```
+
+## Choosing a Deployment Stage
+
+By default, hybrid will use:
+
+### In Production
+
+For production environments (i.e. when `NODE_ENV` === "production"), hybrid will determine the stage from:
+
+- The value of `HYBRID_ENV` or `NEXT_PUBLIC_HYBRID_ENV`
+- If no value set, `prod` chain.
+
+### In Development
+
+- The value of `HYBRID_ENV` or `NEXT_PUBLIC_HYBRID_ENV`
+- If no value set, `local` testnet node (i.e. `http://localhost:8545`)
+
+
+## Deploying to Testnet
+
+Based on your choice of blockchain during initialization, hybrid will use the testnet version of the chain for deployment.
+
+To deploy:
+
+```
+hybrid deploy <contract> test
+```
+
+Then set `HYBRID_ENV=test` or `NEXT_PUBLIC_HYBRID_ENV=test` in your `.env` file or on your hosting provider's Environment Variables.
+
+## Deploying to Mainnet
+
+To deploy:
+
+```
+hybrid deploy <contract> prod
+```
+
+In most cases, no configuration in production is necessary. Depending on your hosting provider you might have to set `HYBRID_ENV=prod` or `NEXT_PUBLIC_HYBRID_ENV=prod` environment variables to force hybrid to use production.
+

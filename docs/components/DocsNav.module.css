@@ -1,0 +1,13 @@
+.DocsNav li a,
+.DocsNav li code {
+	@apply text-gray-500;
+}
+
+.DocsNavItemActive,
+.DocsNavItemActive * {
+	@apply text-white !important;
+}
+
+.DocsNav code {
+	@apply p-0 bg-transparent;
+}

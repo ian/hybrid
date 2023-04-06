@@ -6,12 +6,12 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 
 export * from "connectkit"
 
-export function ConnectKit(
+export const ConnectKit = (
   props: // CK doesn't export DefaultClientProps
   Parameters<typeof getDefaultClient>[0] &
     // CK doesn't export ConnectKitProviderProps
     Parameters<typeof ConnectKitProvider>[0]
-) {
+) => {
   return (config) => {
     const { provider, webSocketProvider, chains } = configureChains(
       config.chains,
@@ -33,7 +33,7 @@ export function ConnectKit(
     // )
 
     const client = createClient({
-      autoConnect: true,
+      // autoConnect: true,
       connectors: [
         new WalletConnectConnector({
           chains,

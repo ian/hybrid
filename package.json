@@ -3,8 +3,9 @@
   "private": true,
   "scripts": {
     "clean": "lerna run clean",
-    "build": "lerna run build",
+    "build": "lerna run build --ignore docs",
     "test": "lerna run test",
+    "docs": "yarn --cwd docs dev",
     "dev": "lerna run dev",
     "dev:cli": "yarn --cwd packages/cli dev",
     "dev:contracts": "yarn --cwd packages/contracts dev",
@@ -41,6 +42,7 @@
     "yarn-version-bump": "^0.0.4"
   },
   "workspaces": [
+    "docs",
     "packages/*",
     "plugins/*"
   ],

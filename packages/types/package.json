@@ -33,7 +33,7 @@
     "abitype": "^0.7.1"
   },
   "peerDependencies": {
-    "wagmi": "^0.12.1"
+    "wagmi": "^0.12.8"
   },
   "devDependencies": {
     "@types/node": "^18.14.6",

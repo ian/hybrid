@@ -1,0 +1,73 @@
+@import "hybrid/style.css";
+@import "@rainbow-me/rainbowkit/styles.css";
+
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code&family=Space+Mono&family=Work+Sans:wght@100;300;400&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+	background: #06050a;
+	background-image: url("/bg.svg");
+	background-size: cover;
+}
+
+body {
+	@apply text-gray-400 text-base font-sans tracking-wide;
+}
+tracking-normal main a {
+	@apply text-blue-500 underline;
+}
+
+main ul {
+	@apply list-disc ml-5;
+}
+
+main h1,
+main h2,
+main h3 {
+	@apply font-serif font-black text-white tracking-wide;
+}
+
+main h1 {
+	@apply text-3xl font-black text-white tracking-wide;
+}
+
+main h2 {
+	@apply text-xl font-semibold text-white;
+	margin-top: 2rem !important;
+}
+
+main h2 a {
+	@apply text-white no-underline hover:underline;
+}
+
+main h3 {
+	@apply text-lg font-medium text-gray-100;
+}
+
+main h3 a {
+	@apply text-white no-underline hover:underline;
+}
+
+main p a,
+main ul a {
+	@apply text-white underline;
+}
+
+code {
+	@apply p-1.5 my-1 bg-blue-500 bg-opacity-20 text-white rounded-xl align-baseline;
+}
+
+.code-sm pre code {
+	@apply text-sm !important;
+}
+
+.highlighted {
+	@apply bg-blue-200 bg-opacity-30;
+}
+
+blockquote {
+	@apply border-l-4 border-green bg-green-500 bg-opacity-10 pl-3 py-2;
+}

@@ -1,0 +1,43 @@
+.CornerRibbon {
+	position: relative;
+	z-index: 10;
+}
+
+.CornerRibbonInner {
+	/* Displayed at the top left corner */
+	right: 0px;
+	position: absolute;
+	top: 0px;
+
+	/* Size */
+	height: 4rem;
+	width: 4rem;
+
+	/* Hide the part of its children which is displayed outside */
+	overflow: hidden;
+}
+
+.CornerRibbonContent {
+	/* Position */
+	position: absolute;
+	//left: 1rem;
+	//top: 1rem;
+	top: -0.5rem;
+	right: -0.5rem;
+	//right: 1rem;
+
+	/* Size */
+	height: 1.5rem;
+	width: 5.656rem;
+
+	/* Displayed diagonally */
+	transform: translate(12px, 20px) rotate(45deg);
+
+	/* Background color */
+	@apply bg-blue-700;
+
+	/* Centerize the text content */
+	text-align: center;
+
+	@apply flex justify-center items-center text-sm text-gray-200;
+}
