@@ -7,13 +7,13 @@ Hook to provide minting capabilities for Hybrid contracts.
 ```tsx
 import { useAccount } from "wagmi"
 import { useTokenGating } from "hybrid"
-import { Deployments } from "~/.hybrid/client"
+import { Deployments } from "hybrid/client"
 
 const Component = () => {
 	const { address } = useAccount()
-	const { isLoading, allow, deny } = useTokenGating({ 
-		address, 
-		contract: Deployments.NFT 
+	const { isLoading, allow, deny } = useTokenGating({
+		address,
+		contract: Deployments.NFT
 	})
 
 	return (
