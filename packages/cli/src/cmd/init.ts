@@ -7,33 +7,7 @@ import inquirer from "inquirer"
 import { exec, writeFile } from "../lib/run"
 
 export async function init() {
-  const mdVersion = require("../../package.json").version
-
-  // generated via https://ascii-generator.site
-  console.log(`
-  ..................................................
-  ..................................................
-  ...........%########......%########...............
-  ..........#=-:::::::+....*=-:::::::*..............
-  .........*===-:::::::=..*===-:::::::+.............
-  ........+=====-:::::::=+=====-:::::::=............
-  ........+=======-:::::::-=====-:::::::=%..........
-  .........+=======-:::::::------::::::::-%.........
-  ..........*=======-:::::::::::::::::::::-#........
-  ...........*=======-----------------------%.......
-  ..........#+++++++=----------------------#........
-  .........*+++++++=---------------------=%.........
-  ........*+++++++--------+++++++-------=...........
-  ........*++++++-------=*++++++-------+............
-  .........#+++=-------+..*+++=-------+.............
-  ..........#+=-------*....#+=-------*..............
-  ...........%########......%#######%...............
-  ..................................................
-  ..................................................
-
-  Hybrid - v${mdVersion}
-  Solidity + TypeScript Framework for Web3 Development
-`)
+  opener()
 
   if (!fs.existsSync("./package.json")) {
     console.error(
@@ -58,14 +32,14 @@ export async function init() {
         "Polygon",
         "Arbitrum",
         "Binance Smart Chain",
-        "Base"
-      ]
-    }
+        "Base",
+      ],
+    },
   ])
 
   await spinner("Installing Hybrid", async () => {
     exec(`${pkgManager} add hybrid`, {
-      cwd
+      cwd,
     })
 
     await fs.mkdirSync(path.join(cwd, ".hybrid"), { recursive: true })
@@ -97,75 +71,23 @@ out
 
     writeFile(
       path.join(cwd, ".hybrid", "README.md"),
-      `
-# Hybrid Production Runtime 
-
-Make sure to commit this directory to your repository. It contains 
-the compiled contracts and the deployment information.
-
-### .gitignore
-
-There's a gitignore file in here, don't commit the following directories:
-
-- cache
-- out
-
-`
+      fs.readFileSync("../templates/client.d.ts").toString()
     )
 
     writeFile(
-      path.join(cwd, ".hybrid", "client.ts"),
-      `
-// Runtime client library for Hybrid apps
+      path.join(cwd, ".hybrid", "client.js"),
+      fs.readFileSync("../templates/client.js").toString()
+    )
 
-let target
-
-if (process.env.NODE_ENV === "production") {
-  // in prod, use HYBRID_ENV or default to prod
-  if (
-    process.env.HYBRID_ENV === "test" ||
-    process.env.NEXT_PUBLIC_HYBRID_ENV === "test"
-  ) {
-    target = "test"
-  } else {
-    target = "prod"
-  }
-} else {
-  // allow HYBRID_ENV to override dev
-  target = process.env.HYBRID_ENV || process.env.NEXT_PUBLIC_HYBRID_ENV || "dev"
-}
-
-type DeployedContract = {
-  address: string
-  chainId: number
-  txHash: string
-  blockHash: string
-  blockNumber: number
-  abi: any[]
-  bytecode: string
-}
-
-let contents = {}
-
-try {
-  if (target === "dev") {
-    contents = require("./cache/dev.json")
-  } else {
-    contents = require("./" + target + ".json")
-  }
-} catch (err) {
-  console.log("Error loading deployments for target " + target)
-  console.error(err)
-}
-
-export const Deployments: Record<string, DeployedContract> = contents
-`
+    writeFile(
+      path.join(cwd, ".hybrid", "client.d.ts"),
+      fs.readFileSync("../templates/client.d.ts").toString()
     )
   })
 
   await spinner("Installing foundry", async () => {
     await exec("curl -L https://foundry.paradigm.xyz | bash", {
-      cwd
+      cwd,
     })
 
     await exec("foundryup", { cwd })
@@ -186,67 +108,16 @@ gas_reports = ["*"]`
   })
 
   await spinner("Adding smart contracts", async () => {
-    const solidityPragma = "pragma solidity ^0.8.13"
-
     await fs.mkdirSync(path.join(cwd, "contracts"), { recursive: true })
 
     await writeFile(
       [cwd, "contracts/MyNFT.sol"].join("/"),
-      `// SPDX-License-Identifier: UNLICENSED
-${solidityPragma};
-
-import "erc721a/contracts/ERC721A.sol";
-
-contract MyNFT is ERC721A {
-  constructor() ERC721A("My NFT", "NFT") {}
-
-  // We prefer tokenIds to start at 1
-  function _startTokenId() internal pure override returns (uint256) {
-    return 1;
-  }
-
-  function mint(uint256 quantity) external payable {
-    _mint(msg.sender, quantity);
-  }
-
-  /**
-   * .dev override both ERC721A and ERC2981
-   */
-  function supportsInterface(
-    bytes4 interfaceId
-  ) public view override(ERC721A) returns (bool) {
-    return ERC721A.supportsInterface(interfaceId);
-  }
-}
-    `
+      fs.readFileSync("../templates/contracts/ERC721/NFT.sol").toString()
     )
 
     await writeFile(
       [cwd, "contracts/MyNFT.test.sol"].join("/"),
-      `// SPDX-License-Identifier: UNLICENSED
-${solidityPragma};
-
-import "forge-std/console.sol";
-import "forge-std/Test.sol";
-
-import "./MyNFT.sol";
-
-contract MyContractTest is Test {
-  MyNFT public mock;
-
-  function setUp() public {
-    mock = new MyNFT();
-  }
-
-  function testMint() public {
-    address minter = makeAddr("minter");
-    assertEq(mock.balanceOf(minter), 0);
-    vm.prank(minter);
-    mock.mint(1);
-    assertEq(mock.balanceOf(minter), 1);
-  }
-}
-    `
+      fs.readFileSync("../templates/contracts/ERC721/NFT.test.sol").toString()
     )
   })
 
@@ -274,4 +145,36 @@ function spinner(label: string, fn: () => Promise<any>) {
       spinner?.fail(`${label}`)
       console.error(err)
     })
+}
+
+function opener() {
+  const { version } = JSON.parse(
+    fs.readFileSync(__dirname + "/../../package.json").toString()
+  )
+
+  // generated via https://ascii-generator.site
+  console.log(`
+  ..................................................
+  ..................................................
+  ...........%########......%########...............
+  ..........#=-:::::::+....*=-:::::::*..............
+  .........*===-:::::::=..*===-:::::::+.............
+  ........+=====-:::::::=+=====-:::::::=............
+  ........+=======-:::::::-=====-:::::::=%..........
+  .........+=======-:::::::------::::::::-%.........
+  ..........*=======-:::::::::::::::::::::-#........
+  ...........*=======-----------------------%.......
+  ..........#+++++++=----------------------#........
+  .........*+++++++=---------------------=%.........
+  ........*+++++++--------+++++++-------=...........
+  ........*++++++-------=*++++++-------+............
+  .........#+++=-------+..*+++=-------+.............
+  ..........#+=-------*....#+=-------*..............
+  ...........%########......%#######%...............
+  ..................................................
+  ..................................................
+
+  Hybrid - v${version}
+  Solidity + TypeScript Framework for Web3 Development
+`)
 }

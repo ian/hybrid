@@ -17,16 +17,6 @@ if (process.env.NODE_ENV === "production") {
 	target = process.env.HYBRID_ENV || process.env.NEXT_PUBLIC_HYBRID_ENV || "dev"
 }
 
-type DeployedContract = {
-	address: string
-	chainId: number
-	txHash: string
-	blockHash: string
-	blockNumber: number
-	abi: any[]
-	bytecode: string
-}
-
 let contents = {}
 
 try {
@@ -40,4 +30,4 @@ try {
 	console.error(err)
 }
 
-export const Deployments: Record<string, DeployedContract> = contents
+export const Deployments = contents

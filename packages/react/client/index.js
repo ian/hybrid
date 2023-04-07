@@ -1,3 +1,1 @@
-module.exports = {
-  ...require("contracts/index")
-}
+export { Deployments } from "/.hybrid/client"
