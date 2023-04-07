@@ -15,8 +15,6 @@ export default function DocsNav({
 
 	return (
 		<nav className={clsx(styles.DocsNav, className)} style={style}>
-			{/* <Link href="/"><Logo className="mb-5" /></Link> */}
-
 			{NAV.map(({ label, links }) => (
 				<ul className="mb-5" key={label}>
 					<p className="mb-1 text-xs font-medium text-gray-700 uppercase">
@@ -26,13 +24,9 @@ export default function DocsNav({
 					{links.map(({ label, href }, i) => (
 						<li className="mb-1 mr-6" key={`DocsNav-${i}`}>
 							<Link
-								className={
-									clsx(router.asPath === href && styles.DocsNavItemActive)
-
-									// router.asPath === href
-									// 	? "text-blue-500 font-bold"
-									// 	: "text-gray-400 hover:text-gray-100"
-								}
+								className={clsx(
+									router.asPath === href && styles.DocsNavItemActive
+								)}
 								href={href}
 							>
 								{label}
@@ -108,11 +102,11 @@ const NAV = [
 			// },
 			{
 				label: "dev",
-				href: "/docs/cli#dev"
+				href: "/docs/cli/dev"
 			},
 			{
 				label: "deploy",
-				href: "/docs/cli#deploy"
+				href: "/docs/cli/deploy"
 			}
 		]
 	},

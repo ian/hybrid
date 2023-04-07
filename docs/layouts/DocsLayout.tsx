@@ -11,11 +11,11 @@ export default function DocsLayout({
 		<>
 			<Header className={styles.DocsHeader} />
 			<section className={styles.DocsLayout}>
-				<div className="flex flex-col-reverse gap-10 mx-auto sm:flex-row">
+				<div className="flex flex-col-reverse gap-10 pt-24 mx-auto sm:flex-row">
 					<div className="">
-						<DocsNav className="w-[180px] sticky top-20" />
+						<DocsNav className="w-[180px] sticky top-24" />
 					</div>
-					<main className="w-full pt-20 space-y-5 sm:pb-20">{children}</main>
+					<main className="w-full space-y-5 sm:pb-20">{children}</main>
 				</div>
 			</section>
 		</>
