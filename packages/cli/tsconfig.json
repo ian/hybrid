@@ -3,14 +3,14 @@
     "rootDir": "src",
     "outDir": "./dist",
     "strict": false,
-    "target": "es6",
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "node16",
     "sourceMap": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "templates"],
   "exclude": ["node_modules"]
 }

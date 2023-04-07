@@ -15,7 +15,8 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "templates"
   ],
   "repository": {
     "type": "git",

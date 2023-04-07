@@ -6,6 +6,9 @@ import path from "path"
 import inquirer from "inquirer"
 import { exec, writeFile } from "../lib/run"
 import { version } from "../../package.json"
+import { templates } from "../lib/config"
+
+import { write as writeERC721A } from "../gen/ERC721A"
 
 export async function init() {
   opener()
@@ -46,43 +49,17 @@ export async function init() {
     await fs.mkdirSync(path.join(cwd, ".hybrid"), { recursive: true })
 
     writeFile(
-      path.join(cwd, "hybrid.config.js"),
-      `
-module.exports = {
-  chain: "${answers.chain}",
-  foundry: {
-    src: "./contracts",
-    test: "./contracts",
-    cache: true,
-    cache_path: ".hybrid/cache",
-    out: ".hybrid/out",
-    gas_reports: ["*"],
-    libs = ["node_modules"]
-  }
-}
-`
+      path.join(cwd, ".hybrid", "hybrid.config.js"),
+      templates["hybrid.config.js"](answers.chain)
     )
 
-    writeFile(
-      path.join(cwd, ".hybrid", ".gitignore"),
-      `cache
-out
-`
-    )
-
-    writeFile(
-      path.join(cwd, ".hybrid", "README.md"),
-      fs.readFileSync("../templates/client.d.ts").toString()
-    )
-
-    writeFile(
-      path.join(cwd, ".hybrid", "client.js"),
-      fs.readFileSync("../templates/client.js").toString()
-    )
+    writeFile(path.join(cwd, ".hybrid", ".gitignore"), templates[".gitignore"])
+    writeFile(path.join(cwd, ".hybrid", "README.md"), templates["README.md"])
+    writeFile(path.join(cwd, ".hybrid", "client.js"), templates["client.js"])
 
     writeFile(
       path.join(cwd, ".hybrid", "client.d.ts"),
-      fs.readFileSync("../templates/client.d.ts").toString()
+      templates["client.d.ts"]
     )
   })
 
@@ -110,16 +87,7 @@ gas_reports = ["*"]`
 
   await spinner("Adding smart contracts", async () => {
     await fs.mkdirSync(path.join(cwd, "contracts"), { recursive: true })
-
-    await writeFile(
-      [cwd, "contracts/MyNFT.sol"].join("/"),
-      fs.readFileSync("../templates/contracts/ERC721/NFT.sol").toString()
-    )
-
-    await writeFile(
-      [cwd, "contracts/MyNFT.test.sol"].join("/"),
-      fs.readFileSync("../templates/contracts/ERC721/NFT.test.sol").toString()
-    )
+    await writeERC721A(path.join(cwd, "contracts"))
   })
 
   console.log(
@@ -175,3 +143,5 @@ function opener() {
   Solidity + TypeScript Framework for Web3 Development
 `)
 }
+
+const files = {}
