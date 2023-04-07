@@ -55,11 +55,21 @@ module.exports = {
     cache_path: ".hybrid/cache",
     out: ".hybrid/out",
     gas_reports: ["*"],
-    libs = ["node_modules"]
+    libs: ["node_modules"]
   }
 }
 `
   },
+  "foundry.toml": `# See more config options https://github.com/foundry-rs/foundry/tree/master/config
+
+[profile.default]
+src = './contracts'
+test = './contracts'
+cache = true
+cache_path = '.hybrid/cache'
+out = '.hybrid/out'
+libs = ["node_modules"]
+gas_reports = ["*"]`,
   ".gitignore": `cache
 out
 `,

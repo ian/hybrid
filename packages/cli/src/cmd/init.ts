@@ -27,19 +27,22 @@ export async function init() {
     : "npm"
 
   const cwd = process.cwd()
+  const chains = {
+    Ethereum: "ethereum",
+    Polygon: "polygon",
+    Arbitrum: "arbitrum",
+    "Binance Smart Chain": "bsc",
+    Base: "base",
+  }
   const answers = await inquirer.prompt([
     {
       name: "chain",
       type: "list",
-      choices: [
-        "Ethereum",
-        "Polygon",
-        "Arbitrum",
-        "Binance Smart Chain",
-        "Base",
-      ],
+      choices: Object.keys(chains),
     },
   ])
+
+  const chain = chains[answers.chain]
 
   await spinner("Installing Hybrid", async () => {
     exec(`${pkgManager} add hybrid`, {
@@ -49,8 +52,8 @@ export async function init() {
     await fs.mkdirSync(path.join(cwd, ".hybrid"), { recursive: true })
 
     writeFile(
-      path.join(cwd, ".hybrid", "hybrid.config.js"),
-      templates["hybrid.config.js"](answers.chain)
+      path.join(cwd, "hybrid.config.js"),
+      templates["hybrid.config.js"](chain)
     )
 
     writeFile(path.join(cwd, ".hybrid", ".gitignore"), templates[".gitignore"])
@@ -69,20 +72,7 @@ export async function init() {
     })
 
     await exec("foundryup", { cwd })
-
-    await writeFile(
-      [cwd, "foundry.toml"].join("/"),
-      `# See more config options https://github.com/foundry-rs/foundry/tree/master/config
-
-[profile.default]
-src = './contracts'
-test = './contracts'
-cache = true
-cache_path = '.hybrid/cache'
-out = '.hybrid/out'
-libs = ["node_modules"]
-gas_reports = ["*"]`
-    )
+    await writeFile([cwd, "foundry.toml"].join("/"), templates["foundry.toml"])
   })
 
   await spinner("Adding smart contracts", async () => {
@@ -90,14 +80,15 @@ gas_reports = ["*"]`
     await writeERC721A(path.join(cwd, "contracts"))
   })
 
+  console.log()
   console.log(
     chalk.green.bold("Success!"),
     `Hybrid Installed`,
     path.relative(process.cwd(), cwd)
   )
+
   console.log()
   console.log("To get started, run", chalk.yellow.bold("hybrid dev"))
-  console.log()
   console.log()
 }
 

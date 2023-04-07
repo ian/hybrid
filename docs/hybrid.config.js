@@ -1,6 +1,6 @@
 
 module.exports = {
-  chain: "Ethereum",
+  chain: "ethereum",
   foundry: {
     src: "./contracts",
     test: "./contracts",
@@ -8,6 +8,6 @@ module.exports = {
     cache_path: ".hybrid/cache",
     out: ".hybrid/out",
     gas_reports: ["*"],
-    libs = ["node_modules"]
+    libs: ["node_modules"]
   }
 }
