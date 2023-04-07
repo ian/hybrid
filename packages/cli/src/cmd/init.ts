@@ -5,6 +5,7 @@ import type { Ora } from "ora"
 import path from "path"
 import inquirer from "inquirer"
 import { exec, writeFile } from "../lib/run"
+import { version } from "../../package.json"
 
 export async function init() {
   opener()
@@ -148,10 +149,6 @@ function spinner(label: string, fn: () => Promise<any>) {
 }
 
 function opener() {
-  const { version } = JSON.parse(
-    fs.readFileSync(__dirname + "/../../package.json").toString()
-  )
-
   // generated via https://ascii-generator.site
   console.log(`
   ..................................................
