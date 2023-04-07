@@ -1,0 +1,5 @@
+{
+	"name": ".hybrid/client",
+	"main": "client.js",
+	"types": "client.d.ts"
+}

@@ -56,6 +56,10 @@ export async function init() {
       templates["hybrid.config.js"](chain)
     )
 
+    writeFile(
+      path.join(cwd, ".hybrid", "package.json"),
+      templates["package.json"]
+    )
     writeFile(path.join(cwd, ".hybrid", ".gitignore"), templates[".gitignore"])
     writeFile(path.join(cwd, ".hybrid", "README.md"), templates["README.md"])
     writeFile(path.join(cwd, ".hybrid", "client.js"), templates["client.js"])
