@@ -17,7 +17,8 @@ export default function Homepage() {
 							building decentralized EVM applications. */}
 							{/* Web3 Framework for building React EVM Applications in
 							Solidity + TypeScript. */}
-							Web3 Framework for building React EVM Applications
+							{/* Web3 Framework for building React EVM Applications */}
+							Highly opinionated, Solidity + React Web3 development framework.
 						</p>
 						{/* <div className="pb-2">
 							<code className="px-5 py-3">npx hybrid init</code>
