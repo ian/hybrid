@@ -9,6 +9,7 @@ import { version } from "../../package.json"
 import { templates } from "../lib/config"
 
 import { write as writeERC721A } from "../gen/ERC721A"
+import { CHAIN_NAMES, labelToChain } from "../lib/chains"
 
 export async function init() {
   opener()
@@ -27,22 +28,14 @@ export async function init() {
     : "npm"
 
   const cwd = process.cwd()
-  const chains = {
-    Ethereum: "ethereum",
-    Polygon: "polygon",
-    Arbitrum: "arbitrum",
-    "Binance Smart Chain": "bsc",
-    Base: "base",
-  }
+
   const answers = await inquirer.prompt([
     {
       name: "chain",
       type: "list",
-      choices: Object.keys(chains),
+      choices: CHAIN_NAMES,
     },
   ])
-
-  const chain = chains[answers.chain]
 
   await spinner("Installing Hybrid", async () => {
     exec(`${pkgManager} add hybrid`, {
@@ -53,7 +46,7 @@ export async function init() {
 
     writeFile(
       path.join(cwd, "hybrid.config.js"),
-      templates["hybrid.config.js"](chain)
+      templates["hybrid.config.js"](answers.chain)
     )
 
     writeFile(
@@ -96,14 +89,14 @@ export async function init() {
   console.log()
 }
 
-function spinner(label: string, fn: () => Promise<any>) {
+function spinner<T>(label: string, fn: () => Promise<T>) {
   let spinner: Ora
   if (label) spinner = ora(label).start()
 
   return fn()
-    .then(() => {
+    .then((res) => {
       spinner?.succeed(`${label} ... DONE`)
-      return spinner
+      return res
     })
     .catch((err) => {
       spinner?.fail(`${label}`)
@@ -138,5 +131,3 @@ function opener() {
   Solidity + TypeScript Framework for Web3 Development
 `)
 }
-
-const files = {}
