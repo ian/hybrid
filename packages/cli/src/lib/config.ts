@@ -48,17 +48,14 @@ export const templates = {
     return `
 module.exports = {
   chain: "${chain}",
-  foundry: {
-    src: "./contracts",
-    test: "./contracts",
-    cache: true,
-    cache_path: ".hybrid/cache",
-    out: ".hybrid/out",
-    gas_reports: ["*"],
-    libs: ["node_modules"]
-  }
 }
-`
+    `
+    // foundry: "./foundry.toml",
+    // anvil: {
+    //   chainId: 1337,
+    //   blockTime: 10,
+    //   baseFee: 0
+    // }
   },
   "foundry.toml": `# See more config options https://github.com/foundry-rs/foundry/tree/master/config
 
