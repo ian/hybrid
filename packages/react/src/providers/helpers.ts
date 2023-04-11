@@ -2,15 +2,16 @@ import { alchemyProvider } from "wagmi/providers/alchemy"
 import { infuraProvider } from "wagmi/providers/infura"
 import { publicProvider } from "wagmi/providers/public"
 import type { ProviderKeys } from "@hybrd/types"
+import { hybridProvider } from "./hybridProvider"
 
 export function buildProviders(config: ProviderKeys) {
-  const { alchemyKey, infuraKey } = config
+  const { alchemyKey, infuraKey, hybridKey } = config
   const providers = []
 
   if (alchemyKey) {
     providers.push(
       alchemyProvider({
-        apiKey: alchemyKey
+        apiKey: alchemyKey,
       })
     )
   }
@@ -18,13 +19,16 @@ export function buildProviders(config: ProviderKeys) {
   if (infuraKey) {
     providers.push(
       infuraProvider({
-        apiKey: infuraKey
+        apiKey: infuraKey,
       })
     )
   }
 
-  // TODO - add hybrid provider
-  // providers.push(hybridProvider())
+  providers.push(
+    hybridProvider({
+      apiKey: hybridKey,
+    })
+  )
 
   providers.push(publicProvider())
 
