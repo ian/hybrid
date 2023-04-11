@@ -2,30 +2,14 @@ import { WagmiConfig, Client, Chain, mainnet, goerli } from "wagmi"
 
 import React from "react"
 import {
-  ProviderKeys,
+  ProviderConfig,
   WalletConnector,
   WalletConnectionHooks,
 } from "@hybrd/types"
 
 import createDefaultWalletConnector from "./DefaultWalletConnector"
-import { buildProviders } from "./helpers"
-
-export type Config = {
-  // appName?: string
-  // alchemyKey?: string
-  // infuraKey?: string
-  // publicProvider?: boolean
-}
-
-// export const withHybrid = (InputComponent, config: Config = {}) => {
-//   return function WithHybrid(props) {
-//     return (
-//       <Web3Provider {...config}>
-//         <InputComponent {...props} />
-//       </Web3Provider>
-//     )
-//   }
-// }
+import { publicProvider } from "wagmi/providers/public"
+import { hybridProvider } from "./hybridProvider"
 
 export function useWeb3() {
   return React.useContext(Web3Context)
@@ -50,23 +34,37 @@ export const Web3Context = React.createContext<{
   },
 })
 
+function buildProviders(config: ProviderConfig) {
+  const { hybridKey } = config
+  const providers = []
+
+  providers.push(
+    hybridProvider({
+      apiKey: hybridKey,
+    })
+  )
+
+  providers.push(publicProvider())
+
+  return providers
+}
+
 export function Web3Provider(
   props: {
     children: React.ReactNode
     chains?: Chain[]
     wallet?: WalletConnector
-  } & ProviderKeys
+  } & ProviderConfig
 ) {
   const {
     children,
-    chains = [mainnet, goerli],
+    chains = [undefined, mainnet, goerli],
     wallet: createWalletConnector = createDefaultWalletConnector,
   } = props
 
-  const providers = buildProviders(props)
   const { client, hooks, Provider } = createWalletConnector({
     chains,
-    providers,
+    providers: buildProviders(props),
   })
 
   const contextValue = {
@@ -83,3 +81,15 @@ export function Web3Provider(
     </Web3Context.Provider>
   )
 }
+
+// I really want to support an HOC its cleaner in some cases.
+//
+// export const withHybrid = (InputComponent, config: Config = {}) => {
+//   return function WithHybrid(props) {
+//     return (
+//       <Web3Provider {...config}>
+//         <InputComponent {...props} />
+//       </Web3Provider>
+//     )
+//   }
+// }

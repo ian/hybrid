@@ -6,6 +6,7 @@ export const CHAINS = {
   arbitrum: [Chains.arbitrum, Chains.arbitrumGoerli],
   optimism: [Chains.optimism, Chains.optimismGoerli],
   base: [undefined, Chains.baseGoerli],
+  localhost: [Chains.localhost, Chains.localhost],
 }
 
 export const CHAIN_NAMES = Object.keys(CHAINS) //.map(([_, v]) => v)
