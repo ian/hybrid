@@ -6,5 +6,5 @@ test = './contracts'
 cache = true
 cache_path = '.hybrid/cache'
 out = '.hybrid/out'
-libs = ["node_modules"]
+libs = ["node_modules", "../node_modules"]
 gas_reports = ["*"]
