@@ -85,7 +85,7 @@ function Deployment() {
 			<div className="z-10 flex flex-col w-full max-w-5xl py-6 mx-auto">
 				<div className="max-w-md mx-auto space-y-5">
 					<div className="flex items-center justify-center space-x-2">
-						<img src="/hybrid.svg" className="w-16" />
+						<img src="/hybrid.svg" className="w-16" alt="Hybrid logo" />
 						{/* <h1 className="font-mono text-2xl font-black">hybrid</h1> */}
 					</div>
 

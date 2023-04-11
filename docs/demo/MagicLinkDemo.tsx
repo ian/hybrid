@@ -5,17 +5,7 @@ import { ConnectKit } from "hybrid-connectkit"
 
 const MagicLinkButton = () => {
 	const { connect } = useWallet()
-	console.log(connect)
-	return (
-		<Button
-			onClick={
-				() => connect()
-				// console.log
-			}
-		>
-			Connect Wallet
-		</Button>
-	)
+	return <Button onClick={() => connect()}>Connect Wallet</Button>
 }
 
 export default function MagicLinkDemo() {
