@@ -1,6 +1,17 @@
 import { useRouter } from "next/router"
 import { useMemo, useState } from "react"
 import { useSigner } from "wagmi"
+import {
+	mainnet,
+	goerli,
+	polygon,
+	polygonMumbai,
+	arbitrum,
+	arbitrumGoerli,
+	optimism,
+	optimismGoerli,
+	baseGoerli
+} from "wagmi/chains"
 import { Web3Provider, etherscanTxURL } from "hybrid"
 import { RainbowKit } from "hybrid-rainbowkit"
 import Confetti from "~/components/Confetti"
@@ -127,9 +138,21 @@ function Deployment() {
 	)
 }
 
+const chains = [
+	mainnet,
+	goerli,
+	polygon,
+	polygonMumbai,
+	arbitrum,
+	arbitrumGoerli,
+	optimism,
+	optimismGoerli,
+	baseGoerli
+]
+
 export default function DeployPage() {
 	return (
-		<Web3Provider wallet={wallet}>
+		<Web3Provider chains={chains} wallet={wallet}>
 			<Deployment />
 		</Web3Provider>
 	)

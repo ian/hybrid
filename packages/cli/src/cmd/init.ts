@@ -9,7 +9,7 @@ import { version } from "../../package.json"
 import { templates } from "../lib/config"
 
 import { write as writeERC721A } from "../gen/ERC721A"
-import { CHAIN_NAMES, labelToChain } from "../lib/chains"
+import { CHAIN_NAMES } from "@hybrd/utils"
 
 export async function init() {
   opener()
