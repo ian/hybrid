@@ -6,7 +6,7 @@ import fs from "fs"
 import boxen from "boxen"
 import ora from "ora"
 
-import { writeConfig } from "../lib/config"
+import { writeDeployment } from "../lib/config"
 import { anvil, forgeDeploy, getArtifact } from "../lib/foundry"
 
 // @todo
@@ -21,7 +21,7 @@ export async function dev() {
   const mnemonic = bip39.generateMnemonic()
 
   const [testnet] = await Promise.all([
-    anvil(mnemonic, forkUrl)
+    anvil(mnemonic, forkUrl),
     // @todo - some sort of dev interface
   ])
 
@@ -41,7 +41,7 @@ Watching  | ${"./" + path.relative(process.cwd(), contractsDir)}
 
         padding: 1,
         margin: 0.5,
-        borderStyle: "double"
+        borderStyle: "double",
       }
     )
   )
@@ -100,9 +100,9 @@ async function deployContract(file: string, blockchain) {
         ...deploy,
         deployer: "0x0",
         blockHash: "0x0",
-        blockNumber: 0
+        blockNumber: 0,
       }
-      writeConfig("dev", blockchain.chainId, name, deployment, contract)
+      writeDeployment("dev", blockchain.chainId, name, deployment, contract)
       spinner.succeed(name + " deployed to " + deployment.address)
     }
   )

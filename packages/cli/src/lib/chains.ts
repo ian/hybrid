@@ -20,6 +20,28 @@ export const CHAINS = {
 
 export const CHAIN_NAMES = Object.keys(CHAINS) //.map(([_, v]) => v)
 
+export const chainForStage = (
+  chainName: keyof typeof CHAINS,
+  stage: "test" | "prod"
+) => {
+  const chains = CHAINS[chainName]
+  if (!chains) throw new Error("Unknown chain: " + chainName)
+  const [test, prod] = chains
+
+  switch (stage) {
+    case "test":
+      return test
+
+    case "prod":
+      return prod
+
+    default:
+      throw new Error(
+        "Unknown deploy stage: " + stage + " (expected test|prod)"
+      )
+  }
+}
+
 // export * from "wagmi/chains";
 
 // export function chainName(chainId: number | string) {

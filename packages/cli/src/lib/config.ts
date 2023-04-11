@@ -1,7 +1,17 @@
 import fs from "fs"
 import { CompiledContract, DeployTarget, Deployment } from "@hybrd/types"
 
-export const readConfig = (target: DeployTarget | "dev") => {
+export const readConfig = () => {
+  try {
+    return JSON.parse(
+      fs.readFileSync(process.cwd() + "/hybrid.config.js").toString()
+    )
+  } catch {
+    return {}
+  }
+}
+
+export const readDeployment = (target: DeployTarget | "dev") => {
   const file = target === "dev" ? "cache/dev.json" : target + ".json"
   try {
     return JSON.parse(
@@ -12,7 +22,7 @@ export const readConfig = (target: DeployTarget | "dev") => {
   }
 }
 
-export const writeConfig = async (
+export const writeDeployment = async (
   target: DeployTarget | "dev",
   chainId: number,
   contractName: string,
@@ -22,7 +32,7 @@ export const writeConfig = async (
   const file = target === "dev" ? "cache/dev.json" : target + ".json"
 
   // Load the existing config
-  const json = await readConfig(target)
+  const json = await readDeployment(target)
 
   // Rewrite the config, overwriting the newly deployed contract
   return fs.writeFileSync(
