@@ -1,12 +1,13 @@
 import fs from "fs"
 import { CompiledContract, DeployTarget, Deployment } from "@hybrd/types"
 
-export const readConfig = () => {
+export const readConfig = async () => {
   try {
-    return JSON.parse(
-      fs.readFileSync(process.cwd() + "/hybrid.config.js").toString()
-    )
-  } catch {
+    const modulePath = process.cwd() + "/hybrid.config.js"
+    const module = await import(modulePath)
+    return module.default
+  } catch (err) {
+    console.error(err)
     return {}
   }
 }

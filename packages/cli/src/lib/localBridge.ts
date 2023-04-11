@@ -41,15 +41,14 @@ export async function waitForDeployment(
       })
     })
 
-    server.listen(0)
-
     // @ts-ignore - httpServer is marked as private
     // but there's no other way to get the port.
-    const { port } = server.httpServer.address()
-    // const port = 8580
-
+    // const { port } = server.httpServer.address()
+    const port = 8580
     const url = "ws://localhost:" + port
     // console.log("Opening browser at", host + "/deploy?url=" + url)
+
+    server.listen(port)
 
     const host = process.env.HYBRID_HOST || "https://hybrid.dev"
     open(host + "/deploy?url=" + url)

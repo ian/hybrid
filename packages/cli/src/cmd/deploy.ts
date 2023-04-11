@@ -14,7 +14,7 @@ export async function deploy(contractName: string, target: DeployTarget) {
     process.exit()
   }
 
-  const config = readConfig()
+  const config = await readConfig()
   const chain = chainForStage(config.chain, target)
 
   await deployInBrowser(contract.abi, contract.bytecode, chain.id)
