@@ -9,12 +9,12 @@ export async function waitForDeployment(
   bytecode: string,
   chainId: number
 ): Promise<Deployment> {
-  return new Promise(async (resolve, reject) => {
-    let spinner
+  return new Promise((resolve) => {
+    const spinner = ora("Waiting for deployment in browser ...").start()
     const server = new Server({
       cors: {
-        origin: "*"
-      }
+        origin: "*",
+      },
     })
 
     server.on("connection", (socket) => {
@@ -22,12 +22,11 @@ export async function waitForDeployment(
       socket.emit("init", {
         chainId,
         abi,
-        bytecode
+        bytecode,
       })
 
-      socket.on("tx", (arg) => {
-        // Someday we might want to show a status update
-      })
+      // Someday we might want to show a status update
+      // socket.on("tx", (arg) => {})
 
       // User deployed, resolve the promise
       socket.on("receipt", (arg) => {
@@ -47,12 +46,12 @@ export async function waitForDeployment(
     // @ts-ignore - httpServer is marked as private
     // but there's no other way to get the port.
     const { port } = server.httpServer.address()
+    // const port = 8580
 
     const url = "ws://localhost:" + port
     // console.log("Opening browser at", host + "/deploy?url=" + url)
 
-    spinner = ora("Waiting for deployment in browser ...").start()
     const host = process.env.HYBRID_HOST || "https://hybrid.dev"
-    await open(host + "/deploy?url=" + url)
+    open(host + "/deploy?url=" + url)
   })
 }

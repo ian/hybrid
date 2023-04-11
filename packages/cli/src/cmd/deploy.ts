@@ -5,6 +5,7 @@ import { waitForDeployment } from "../lib/localBridge"
 import { readConfig, writeDeployment } from "../lib/config"
 import { getArtifact } from "../lib/foundry"
 import { chainForStage } from "../lib/chains"
+import { Abi } from "abitype"
 
 export async function deploy(contractName: string, target: DeployTarget) {
   const contract = await getArtifact(contractName)
