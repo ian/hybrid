@@ -30,22 +30,24 @@ const FRAMEWORKS = [
 	{
 		name: "Next.js",
 		description: "The React Framework for Production",
-		url: "/docs/quickstart/nextjs",
-		image: <img src="/docs/nextjs.svg" alt="Next.js" className="h-8" />
+		url: "/quickstart/nextjs",
+		image: (
+			<img src="/docs/quickstart/nextjs.svg" alt="Next.js" className="h-8" />
+		)
 	},
 	{
 		name: "React",
 		description:
 			"Get started with React in a new or existing Create React App project.",
-		url: "/docs/quickstart/react",
-		image: <img src="/docs/react.svg" alt="React" className="h-7" />
+		url: "/quickstart/react",
+		image: <img src="/docs/quickstart/react.svg" alt="React" className="h-7" />
 	},
 	{
 		name: "React Native",
 		description:
 			"Use Hybrid with Expo to build Web3-enabled React Native apps.",
 		// url: "/docs/quickstart/expo",
-		image: <img src="/docs/expo.svg" alt="Remix" className="h-6" />,
+		image: <img src="/docs/quickstart/expo.svg" alt="Remix" className="h-6" />,
 		soon: true
 	}
 	// {

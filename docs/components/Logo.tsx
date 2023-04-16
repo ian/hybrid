@@ -13,7 +13,7 @@ export default function Logo({
 	return (
 		<span className="flex items-center space-x-2">
 			<img
-				src="/hybrid.svg"
+				src="/docs/hybrid.svg"
 				alt="Hybrid Logo"
 				className={clsx(className, sizeToClass(size))}
 			/>
