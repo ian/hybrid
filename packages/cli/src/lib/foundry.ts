@@ -13,7 +13,7 @@ export async function forgeBuild(opts: BuildOpts = {}) {
       ...opts,
       // hijack the stderr and reject if anything comes thru
       stderr: (msg) => reject(msg),
-      close: resolve
+      close: resolve,
     })
   })
 }
@@ -26,7 +26,7 @@ export async function forgeDeploy(name: string, rpc: string, key: string) {
     spawn("forge", ["create", name, `--rpc-url`, rpc, "--private-key", key], {
       stdout: (msg) => output.push(msg),
       stderr: (err) => error.push(err),
-      close: resolve
+      close: resolve,
     })
   )
 
@@ -35,7 +35,7 @@ export async function forgeDeploy(name: string, rpc: string, key: string) {
 
   return {
     address: address ? address[1] : null,
-    txHash: hash ? hash[1] : null
+    txHash: hash ? hash[1] : null,
   }
 }
 
@@ -65,7 +65,7 @@ export async function anvil(
         "--block-time",
         "10",
         "--base-fee",
-        "0"
+        "0",
       ],
       {
         stdout: (str) => {
@@ -79,12 +79,12 @@ export async function anvil(
               chainId,
               host,
               port,
-              keys
+              keys,
             })
           }
         },
         stderr: (str) => console.error(str),
-        error: (str) => console.error(str)
+        error: (str) => console.error(str),
       }
     )
   })
@@ -99,6 +99,6 @@ export async function getArtifact(name: string): Promise<CompiledContract> {
 
   return {
     abi: json.abi,
-    bytecode: json.bytecode.object
+    bytecode: json.bytecode.object,
   }
 }

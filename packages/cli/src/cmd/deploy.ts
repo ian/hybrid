@@ -1,9 +1,10 @@
 import { DeployTarget } from "@hybrd/types"
-import { etherscanTxURL } from "@hybrd/utils"
+import { etherscanTxURL, chainForStage } from "@hybrd/utils"
 
 import { waitForDeployment } from "../lib/localBridge"
-import { writeConfig } from "../lib/config"
+import { readConfig, writeDeployment } from "../lib/config"
 import { getArtifact } from "../lib/foundry"
+import { Abi } from "abitype"
 
 export async function deploy(contractName: string, target: DeployTarget) {
   const contract = await getArtifact(contractName)
@@ -12,27 +13,16 @@ export async function deploy(contractName: string, target: DeployTarget) {
     process.exit()
   }
 
-  if (target === "prod") {
-    const chainId = 1
-    await deployInBrowser(contract.abi, contract.bytecode, chainId)
-      .then((deploy) =>
-        writeConfig(target, chainId, contractName, deploy, contract)
-      )
-      .catch((msg) => {
-        console.log(msg)
-      })
-  } else if (target === "test") {
-    const chainId = 5
-    await deployInBrowser(contract.abi, contract.bytecode, chainId)
-      .then((deploy) =>
-        writeConfig(target, chainId, contractName, deploy, contract)
-      )
-      .catch((msg) => {
-        console.log(msg)
-      })
-  } else {
-    console.log("Unknown deploy target", target)
-  }
+  const config = await readConfig()
+  const chain = chainForStage(config.chain, target)
+
+  await deployInBrowser(contract.abi, contract.bytecode, chain.id)
+    .then((deploy) =>
+      writeDeployment(target, chain.id, contractName, deploy, contract)
+    )
+    .catch((msg) => {
+      console.log(msg)
+    })
 
   process.exit()
 }

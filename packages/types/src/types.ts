@@ -27,10 +27,8 @@ export type {
   TransactionResponse as Transaction,
 } from "@ethersproject/providers"
 
-export type ProviderKeys = {
-  alchemyKey?: string
-  infuraKey?: string
-  // hybridKey?: string
+export type ProviderConfig = {
+  hybridKey?: string
 }
 
 export type WalletConnectorOpts = object // todo - what config is common to all wallet plugins?

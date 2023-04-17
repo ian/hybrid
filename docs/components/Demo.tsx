@@ -25,11 +25,7 @@ export default function Demo({
 }) {
 	return (
 		<DisableSSR>
-			<Web3Provider
-				chains={chains}
-				wallet={wallet}
-				alchemyKey={process.env.NEXT_PUBLIC_ALCHEMY_KEY}
-			>
+			<Web3Provider chains={chains} wallet={wallet}>
 				<div className="mt-10">
 					<h4 className="mb-2 text-sm uppercase text-thin">Demo</h4>
 					<div

@@ -1,7 +1,18 @@
 import fs from "fs"
 import { CompiledContract, DeployTarget, Deployment } from "@hybrd/types"
 
-export const readConfig = (target: DeployTarget | "dev") => {
+export const readConfig = async () => {
+  try {
+    const modulePath = process.cwd() + "/hybrid.config.js"
+    const module = await import(modulePath)
+    return module.default
+  } catch (err) {
+    console.error(err)
+    return {}
+  }
+}
+
+export const readDeployment = (target: DeployTarget | "dev") => {
   const file = target === "dev" ? "cache/dev.json" : target + ".json"
   try {
     return JSON.parse(
@@ -12,7 +23,7 @@ export const readConfig = (target: DeployTarget | "dev") => {
   }
 }
 
-export const writeConfig = async (
+export const writeDeployment = async (
   target: DeployTarget | "dev",
   chainId: number,
   contractName: string,
@@ -22,7 +33,7 @@ export const writeConfig = async (
   const file = target === "dev" ? "cache/dev.json" : target + ".json"
 
   // Load the existing config
-  const json = await readConfig(target)
+  const json = await readDeployment(target)
 
   // Rewrite the config, overwriting the newly deployed contract
   return fs.writeFileSync(
@@ -48,17 +59,14 @@ export const templates = {
     return `
 module.exports = {
   chain: "${chain}",
-  foundry: {
-    src: "./contracts",
-    test: "./contracts",
-    cache: true,
-    cache_path: ".hybrid/cache",
-    out: ".hybrid/out",
-    gas_reports: ["*"],
-    libs: ["node_modules"]
-  }
 }
-`
+    `
+    // foundry: "./foundry.toml",
+    // anvil: {
+    //   chainId: 1337,
+    //   blockTime: 10,
+    //   baseFee: 0
+    // }
   },
   "foundry.toml": `# See more config options https://github.com/foundry-rs/foundry/tree/master/config
 

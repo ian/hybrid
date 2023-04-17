@@ -1,4 +1,4 @@
-import { chainName } from "hybrid"
+import { getChainById } from "hybrid"
 import { useEstimation } from "~/hooks/useEstimation"
 
 type Props = {
@@ -12,7 +12,7 @@ export default function DeployEstimates({ chainId, estimate }: Props) {
 			<div className="flex items-start justify-between">
 				<label>Blockchain</label>
 				<div>
-					<p>{chainName(chainId)}</p>
+					<p>{getChainById(chainId)?.name}</p>
 				</div>
 			</div>
 			<div className="flex items-start justify-between">
