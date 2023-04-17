@@ -17,7 +17,7 @@ export const chainForStage = (
 ) => {
   const chains = CHAINS[chainName]
   if (!chains) throw new Error("Unknown chain: " + chainName)
-  const [test, prod] = chains
+  const [prod, test] = chains
 
   switch (stage) {
     case "test":
