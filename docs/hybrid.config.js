@@ -1,3 +1,3 @@
 module.exports = {
-	chain: "polygon"
+	chain: "ethereum"
 }
