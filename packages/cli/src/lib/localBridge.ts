@@ -41,12 +41,8 @@ export async function waitForDeployment(
       })
     })
 
-    // @ts-ignore - httpServer is marked as private
-    // but there's no other way to get the port.
-    // const { port } = server.httpServer.address()
     const port = 8581
     const url = "ws://localhost:" + port
-    // console.log("Opening browser at", host + "/deploy?url=" + url)
 
     server.listen(port)
 
