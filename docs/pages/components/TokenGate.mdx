@@ -8,9 +8,16 @@ Allows control over content based on token ownership.
 import { TokenGate } from "hybrid"
 import { Deployments } from "hybrid/client"
 
+const Loading = <p>LOading ...</p>
+const Denied = <p>Access Denied</p>
+
 const MyComponent = () => {
 	return (
-		<TokenGate contract={Deployments.NFT}>
+		<TokenGate
+			contract={Deployments.NFT}
+			loading={<Loading />}
+			deny={<Denied />}
+		>
 			<p className="text-green">✅ Token Owned. You're allowed to see this.</p>
 		</TokenGate>
 	)
