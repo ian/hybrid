@@ -58,7 +58,7 @@ export function Web3Provider(
 ) {
   const {
     children,
-    chains = [undefined, mainnet, goerli],
+    chains = [mainnet, goerli],
     wallet: createWalletConnector = createDefaultWalletConnector,
   } = props
 

@@ -16,7 +16,7 @@ export function hybridProvider<TChain extends Chain = Chain>({
 > {
   return jsonRpcProvider({
     rpc: (chain) => {
-      const chainName = chain.network
+      const chainName = chain?.network || "mainnet"
       const http = `https://rpc.hybrid.dev/${chainName}/${apiKey || ""}`
       const webSocket = `wss://rpc.hybrid.dev/${chainName}/${apiKey || ""}`
 
