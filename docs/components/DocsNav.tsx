@@ -45,19 +45,19 @@ const NAV = [
 		links: [
 			{
 				label: "Introduction",
-				href: "/docs"
+				href: "/"
 			},
 			{
 				label: "Smart Contracts",
-				href: "/docs/smart-contracts"
+				href: "/smart-contracts"
 			},
 			{
 				label: "Deployment",
-				href: "/docs/deployment"
+				href: "/deployment"
 			},
 			{
 				label: "Configuration",
-				href: "/docs/configuration"
+				href: "/configuration"
 			}
 
 			// {
@@ -77,11 +77,11 @@ const NAV = [
 		links: [
 			{
 				label: "Next.js",
-				href: "/docs/quickstart/nextjs"
+				href: "/quickstart/nextjs"
 			},
 			{
 				label: "React",
-				href: "/docs/quickstart/react"
+				href: "/quickstart/react"
 			}
 			// {
 			// 	label: "Remix",
@@ -102,11 +102,11 @@ const NAV = [
 			// },
 			{
 				label: "dev",
-				href: "/docs/cli/dev"
+				href: "/cli/dev"
 			},
 			{
 				label: "deploy",
-				href: "/docs/cli/deploy"
+				href: "/cli/deploy"
 			}
 		]
 	},
@@ -128,7 +128,7 @@ const NAV = [
 		links: [
 			{
 				label: "Connectkit",
-				href: "/docs/wallet/connectkit"
+				href: "/wallet/connectkit"
 			},
 			// {
 			// 	label: "Magic Link",
@@ -136,7 +136,7 @@ const NAV = [
 			// },
 			{
 				label: "Rainbowkit",
-				href: "/docs/wallet/rainbowkit"
+				href: "/wallet/rainbowkit"
 			}
 		]
 	},
@@ -145,19 +145,19 @@ const NAV = [
 		links: [
 			{
 				label: "<ConnectedAs />",
-				href: "/docs/components/ConnectedAs"
+				href: "/components/ConnectedAs"
 			},
 			{
 				label: "<MintButton />",
-				href: "/docs/components/MintButton"
+				href: "/components/MintButton"
 			},
 			{
 				label: "<TokenGate />",
-				href: "/docs/components/TokenGate"
+				href: "/components/TokenGate"
 			},
 			{
 				label: "<TotalSupply />",
-				href: "/docs/components/TotalSupply"
+				href: "/components/TotalSupply"
 			}
 		]
 	},
@@ -174,11 +174,11 @@ const NAV = [
 			// },
 			{
 				label: "useMinting",
-				href: "/docs/hooks/useMinting"
+				href: "/hooks/useMinting"
 			},
 			{
 				label: "useTokenGating",
-				href: "/docs/hooks/useTokenGating"
+				href: "/hooks/useTokenGating"
 			}
 		]
 	}

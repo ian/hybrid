@@ -5,20 +5,12 @@ import type { AppProps } from "next/app"
 import { useRouter } from "next/router"
 
 import DocsLayout from "~/layouts/DocsLayout"
-import AppLayout from "~/layouts/AppLayout"
 
 function App({ Component, pageProps }: AppProps) {
 	const router = useRouter()
 
 	if (router.pathname === "/_error") {
 		return <Component {...pageProps} />
-	}
-
-	let Layout
-	if (router.pathname.startsWith("/docs")) {
-		Layout = DocsLayout
-	} else {
-		Layout = AppLayout
 	}
 
 	return (
@@ -57,9 +49,9 @@ function App({ Component, pageProps }: AppProps) {
 					src="https://plausible.io/js/script.js"
 				/>
 			</Head>
-			<Layout>
+			<DocsLayout>
 				<Component {...pageProps} />
-			</Layout>
+			</DocsLayout>
 		</>
 	)
 }
