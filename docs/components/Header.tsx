@@ -34,7 +34,7 @@ const LINKS = [
 		icon: <RiTwitterFill className="mr-1 hover:text-white" size={28} />
 	},
 	{
-		href: "https://discord.gg/CfrVhsVhfc",
+		href: "https://discord.gg/AcJFXZ9Mfk",
 		// label: "Discord",
 		icon: <RiDiscordFill className="mr-1 hover:text-white" size={28} />
 	}

@@ -36,7 +36,7 @@ const Footer = () => {
 				Twitter
 			</Link>
 			<Link
-				href="https://discord.gg/CfrVhsVhfc"
+				href="https://discord.gg/AcJFXZ9Mfk"
 				target="_blank"
 				className="flex items-center no-underline hover:underline"
 			>
