@@ -20,7 +20,7 @@ const Footer = () => {
 				<NPMVersion />
 			</Link>
 			<Link
-				href="https://github.com/ian/hybrid"
+				href="https://github.com/hybridhq/hybrid"
 				target="_blank"
 				className="flex items-center no-underline hover:underline"
 			>

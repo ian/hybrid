@@ -18,4 +18,4 @@ Check out the following places for more wagmi-related content:
 
 - Join the discussions on [Discord](https://discord.gg/CfrVhsVhfc)
 - Follow [@hybrid\_\_dev](https://twitter.com/hybrid__dev) on Twitter for project updates
-- Contribute or fork on [GitHub](https://github.com/ian/hybrid)
+- Contribute or fork on [GitHub](https://github.com/hybridhq/hybrid)

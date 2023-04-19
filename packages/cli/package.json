@@ -3,7 +3,7 @@
   "version": "0.7.1",
   "description": "Solidity + TypeScript Framework for Web3 Development",
   "author": "Ian Hunter <ian@ianh.xyz>",
-  "homepage": "https://github.com/ian/hybrid#readme",
+  "homepage": "https://github.com/hybridhq/hybrid#readme",
   "license": "ISC",
   "type": "module",
   "types": "./dist/cli.d.ts",
@@ -20,7 +20,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ian/hybrid.git"
+    "url": "git+https://github.com/hybridhq/hybrid.git"
   },
   "scripts": {
     "clean": "rm -rf dist",
@@ -28,7 +28,7 @@
     "dev": "nodemon"
   },
   "bugs": {
-    "url": "https://github.com/ian/hybrid/issues"
+    "url": "https://github.com/hybridhq/hybrid/issues"
   },
   "dependencies": {
     "abitype": "^0.7.1",

@@ -24,7 +24,7 @@ const HomeHeader = ({ className }: { className?: string }) => {
 
 const LINKS = [
 	{
-		href: "https://github.com/ian/hybrid",
+		href: "https://github.com/hybridhq/hybrid",
 		// label: "Github",
 		icon: <RiGithubFill className="mr-1 hover:text-white" size={28} />
 	},
