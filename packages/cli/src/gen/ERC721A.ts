@@ -7,7 +7,7 @@ export async function write(cwd: string) {
 pragma solidity ^0.8.13;
 import "erc721a/contracts/ERC721A.sol";
 
-contract NFT is ERC721A {
+contract MyNFT is ERC721A {
     constructor() ERC721A("My NFT", "NFT") {}
 
     // We prefer tokenIds to start at 1
@@ -39,13 +39,13 @@ pragma solidity ^0.8.13;
 import "forge-std/console.sol";
 import "forge-std/Test.sol";
 
-import "./NFT.sol";
+import "./MyNFT.sol";
 
 contract NFTTest is Test {
-    NFT public mock;
+    MyNFT public mock;
 
     function setUp() public {
-        mock = new NFT();
+        mock = new MyNFT();
     }
 
     function testMint() public {
