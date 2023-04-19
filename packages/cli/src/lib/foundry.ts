@@ -63,7 +63,7 @@ export async function anvil(
         "--chain-id",
         chainId.toString(),
         "--block-time",
-        "10",
+        "1",
         "--base-fee",
         "0",
       ],

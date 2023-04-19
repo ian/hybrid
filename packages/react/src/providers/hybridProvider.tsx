@@ -16,6 +16,13 @@ export function hybridProvider<TChain extends Chain = Chain>({
 > {
   return jsonRpcProvider({
     rpc: (chain) => {
+      if (chain.network === "localhost") {
+        return {
+          http: "http://localhost:8545",
+          webSocket: "ws://localhost:8545",
+        }
+      }
+
       const chainName = chain?.network || "mainnet"
       const http =
         process.env.NEXT_PUBLIC_HYBRID_RPC_HTTP ||
