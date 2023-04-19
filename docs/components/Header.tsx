@@ -5,7 +5,7 @@ import { IoMdClose } from "react-icons/io"
 import React from "react"
 import { RiDiscordFill, RiGithubFill, RiTwitterFill } from "react-icons/ri"
 
-const HomeHeader = ({ className }: { className?: string }) => {
+const Header = ({ className }: { className?: string }) => {
 	return (
 		<div className={className}>
 			<nav className="flex flex-wrap items-center justify-between max-w-6xl p-5 mx-auto">
@@ -116,4 +116,4 @@ const MobileMenu = () => {
 	)
 }
 
-export default HomeHeader
+export default Header
