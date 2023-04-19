@@ -39,6 +39,7 @@
     "test": "vitest"
   },
   "files": [
+    "client/*",
     "dist/*",
     "README.md"
   ],
