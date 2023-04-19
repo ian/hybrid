@@ -1,6 +1,6 @@
 import * as Chains from "wagmi/chains"
 
-export const CHAINS = {
+export const CHAINS_PAIRS = {
   ethereum: [Chains.mainnet, Chains.goerli],
   polygon: [Chains.polygon, Chains.polygonMumbai],
   arbitrum: [Chains.arbitrum, Chains.arbitrumGoerli],
@@ -8,14 +8,16 @@ export const CHAINS = {
   base: [undefined, Chains.baseGoerli],
   localhost: [Chains.localhost, Chains.localhost],
 }
-
-export const CHAIN_NAMES = Object.keys(CHAINS) //.map(([_, v]) => v)
+export const CHAINS = Object.values(CHAINS_PAIRS)
+  .flat()
+  .filter((f) => f)
+export const CHAIN_NAMES = Object.keys(CHAINS_PAIRS) //.map(([_, v]) => v)
 
 export const chainForStage = (
-  chainName: keyof typeof CHAINS,
+  chainName: keyof typeof CHAINS_PAIRS,
   stage: "test" | "prod"
 ) => {
-  const chains = CHAINS[chainName]
+  const chains = CHAINS_PAIRS[chainName]
   if (!chains) throw new Error("Unknown chain: " + chainName)
   const [prod, test] = chains
 
