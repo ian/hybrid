@@ -38,7 +38,7 @@ export async function init() {
   ])
 
   await spinner("Installing Hybrid", async () => {
-    exec(`${pkgManager} add hybrid`, {
+    exec(`${pkgManager} add hybrid wagmi ethers@5`, {
       cwd,
     })
 
