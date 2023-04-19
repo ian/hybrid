@@ -1,6 +1,6 @@
 {
   "name": "hybrid-rainbowkit",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "RainbowKit integration for Hybrid",
   "scripts": {
     "clean": "rm -rf dist",
@@ -23,7 +23,7 @@
     "dist"
   ],
   "dependencies": {
-    "@hybrd/types": "^0.7.3",
+    "@hybrd/types": "^0.7.4",
     "@rainbow-me/rainbowkit": "^0.12.5"
   },
   "peerDependencies": {
