@@ -41,7 +41,7 @@ const Footer = () => {
 				className="flex items-center no-underline hover:underline"
 			>
 				<RiDiscordFill className="mr-1" size={18} />
-				Community
+				Discord
 			</Link>
 		</footer>
 	)
