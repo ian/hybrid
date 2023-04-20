@@ -6,6 +6,7 @@
   "homepage": "https://github.com/hybridhq/hybrid#readme",
   "license": "ISC",
   "type": "module",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {

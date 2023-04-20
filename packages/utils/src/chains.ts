@@ -8,9 +8,6 @@ export const CHAINS_PAIRS = {
   base: [undefined, Chains.baseGoerli],
   localhost: [Chains.localhost, Chains.localhost],
 }
-export const CHAINS = Object.values(CHAINS_PAIRS)
-  .flat()
-  .filter((f) => f)
 export const CHAIN_NAMES = Object.keys(CHAINS_PAIRS) //.map(([_, v]) => v)
 
 export const chainForStage = (
