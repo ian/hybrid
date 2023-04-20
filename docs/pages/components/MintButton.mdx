@@ -43,9 +43,13 @@ constructor() ERC721A("My NFT", "NFT") {}
 ```
 </details>
 
-import MintButtonDemo from "~/demo/MintButtonDemo"
+import { MintButton } from "hybrid"
+import Demo from "~/components/Demo"
+import { Deployments } from "../../.hybrid/client"
 
-<MintButtonDemo />
+<Demo>
+	<MintButton contract={Deployments.NFT} />
+</Demo>
 
 ## Component Props
 
