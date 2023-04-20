@@ -1,4 +1,4 @@
-import { WagmiConfig, Client, Chain, mainnet, goerli } from "wagmi"
+import { WagmiConfig, Client, Chain } from "wagmi"
 
 import React from "react"
 import {
