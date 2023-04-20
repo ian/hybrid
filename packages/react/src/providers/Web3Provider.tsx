@@ -44,6 +44,7 @@ export const Web3Context = React.createContext<{
   chains: undefined,
   hooks: {
     useWallet: () => ({
+      account: undefined,
       isLoading: true,
       isConnected: undefined,
       connect: async () => {
