@@ -21,10 +21,6 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./client": {
-      "types": "./client/index.d.ts",
-      "default": "./client/index.js"
-    },
     "./style.css": "./dist/style.css"
   },
   "bin": {
