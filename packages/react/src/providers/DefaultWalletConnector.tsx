@@ -1,5 +1,12 @@
 import React from "react"
-import { configureChains, createClient, Client, useConnect } from "wagmi"
+import {
+  configureChains,
+  createClient,
+  Client,
+  useConnect,
+  useDisconnect,
+  useAccount,
+} from "wagmi"
 import type { WalletConnection } from "@hybrd/types"
 
 export default function DefaultWalletConnector(config) {
@@ -16,9 +23,20 @@ export default function DefaultWalletConnector(config) {
   })
 
   const useWallet = () => {
-    const { connect } = useConnect()
+    const { address, isConnected } = useAccount()
+    const { isLoading, connectAsync } = useConnect()
+    const { disconnectAsync } = useDisconnect()
+
     return {
-      connect: () => connect({ connector: client.connector }),
+      account: address,
+      isLoading,
+      isConnected,
+      connect: () => {
+        connectAsync({ connector: client.connector })
+      },
+      disconnect: () => {
+        disconnectAsync()
+      },
     }
   }
 

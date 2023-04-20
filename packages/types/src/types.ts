@@ -1,4 +1,5 @@
 import { Abi } from "abitype"
+import { Address } from "@wagmi/core"
 import { providers } from "ethers"
 import { Chain, Client as WagmiClient } from "wagmi"
 
@@ -43,6 +44,9 @@ export type WalletConnectionHooks = {
 }
 
 export type UseWallet = {
+  readonly account: Address | undefined
+  readonly isLoading: boolean
+  readonly isConnected: boolean
   connect: () => void
   disconnect: () => void
 }

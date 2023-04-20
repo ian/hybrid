@@ -1,7 +1,7 @@
 import React from "react"
 import { ConnectKitProvider, getDefaultClient, useModal } from "connectkit"
-import { createClient, configureChains, useDisconnect } from "wagmi"
-import type { WalletConnection } from "@hybrd/types"
+import { createClient, configureChains, useDisconnect, useAccount } from "wagmi"
+import type { UseWallet, WalletConnection } from "@hybrd/types"
 
 export * from "connectkit"
 
@@ -26,12 +26,18 @@ export const ConnectKit = (
       })
     )
 
-    const useWallet = () => {
+    const useWallet = (): UseWallet => {
+      const { address: account, isConnected } = useAccount()
       const { setOpen } = useModal()
       const { disconnect } = useDisconnect()
 
       return {
-        connect: () => setOpen(true),
+        account,
+        isConnected,
+        isLoading: false,
+        connect: async () => {
+          setOpen(true)
+        },
         disconnect,
       }
     }

@@ -8,7 +8,7 @@ import {
 } from "@hybrd/types"
 import * as Chains from "wagmi/chains"
 
-import createDefaultWalletConnector from "./DefaultWalletConnector"
+import DefaultWalletConnector from "./DefaultWalletConnector"
 import { publicProvider } from "wagmi/providers/public"
 import { hybridProvider } from "./hybridProvider"
 
@@ -44,11 +44,13 @@ export const Web3Context = React.createContext<{
   chains: undefined,
   hooks: {
     useWallet: () => ({
-      connect: () => {
-        console.error("No wallet provider found")
+      isLoading: true,
+      isConnected: undefined,
+      connect: async () => {
+        throw new Error("No wallet provider found")
       },
-      disconnect: () => {
-        console.error("No wallet provider found")
+      disconnect: async () => {
+        throw new Error("No wallet provider found")
       },
     }),
   },
@@ -79,7 +81,7 @@ export function Web3Provider(
   const {
     children,
     chains = DEFAULT_CHAINS,
-    wallet: createWalletConnector = createDefaultWalletConnector,
+    wallet: createWalletConnector = DefaultWalletConnector,
   } = props
 
   const { client, hooks, Provider } = createWalletConnector({
