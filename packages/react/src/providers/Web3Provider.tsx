@@ -6,15 +6,34 @@ import {
   WalletConnector,
   WalletConnectionHooks,
 } from "@hybrd/types"
+import * as Chains from "wagmi/chains"
 
 import createDefaultWalletConnector from "./DefaultWalletConnector"
 import { publicProvider } from "wagmi/providers/public"
 import { hybridProvider } from "./hybridProvider"
-import { CHAINS } from "@hybrd/utils"
 
 export function useWeb3() {
   return React.useContext(Web3Context)
 }
+
+const DEFAULT_CHAINS = [
+  Chains.mainnet,
+  Chains.goerli,
+  //
+  Chains.polygon,
+  Chains.polygonMumbai,
+  //
+  Chains.arbitrum,
+  Chains.arbitrumGoerli,
+  //
+  Chains.optimism,
+  Chains.optimismGoerli,
+  //
+  // Chains.goerli, # when deployed
+  Chains.baseGoerli,
+  //
+  Chains.localhost,
+]
 
 export const Web3Context = React.createContext<{
   client: Client
@@ -59,7 +78,7 @@ export function Web3Provider(
 ) {
   const {
     children,
-    chains = CHAINS,
+    chains = DEFAULT_CHAINS,
     wallet: createWalletConnector = createDefaultWalletConnector,
   } = props
 
