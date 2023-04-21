@@ -1,3 +1,2 @@
-export * from "./useMinting";
-export * from "./useTokenGating";
-export * from "./useWallet";
+export * from "./useTokenGating"
+export * from "./useWallet"

@@ -1,4 +1,5 @@
 import { Abi } from "abitype"
+import { Address } from "@wagmi/core"
 import { providers } from "ethers"
 import { Chain, Client as WagmiClient } from "wagmi"
 
@@ -8,7 +9,7 @@ export type CompiledContract = {
 }
 
 export type DeployedContract = {
-  address: string
+  address: `0x${string}`
   chainId: number
 } & CompiledContract
 
@@ -20,6 +21,11 @@ export type Deployment = {
   txHash: string
   blockHash: string
   blockNumber: number
+}
+
+export type SendTransactionResult = {
+  hash: `0x${string}`
+  wait: providers.TransactionResponse["wait"]
 }
 
 export type {
@@ -43,6 +49,9 @@ export type WalletConnectionHooks = {
 }
 
 export type UseWallet = {
+  readonly account: Address | undefined
+  readonly isLoading: boolean
+  readonly isConnected: boolean
   connect: () => void
   disconnect: () => void
 }

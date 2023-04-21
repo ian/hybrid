@@ -148,16 +148,16 @@ const NAV = [
 				href: "/components/ConnectedAs"
 			},
 			{
-				label: "<MintButton />",
-				href: "/components/MintButton"
+				label: "<ContractRead />",
+				href: "/components/ContractRead"
+			},
+			{
+				label: "<ContractWrite />",
+				href: "/components/ContractWrite"
 			},
 			{
 				label: "<TokenGate />",
 				href: "/components/TokenGate"
-			},
-			{
-				label: "<TotalSupply />",
-				href: "/components/TotalSupply"
 			}
 		]
 	},
