@@ -11,7 +11,14 @@ import { Deployments } from "../.hybrid/client"
 const MyComponent = () => {
 	return (
 		<>
-			<ContractWrite contract={Deployments.NFT} />
+			<ContractWrite
+				contract={Deployments.NFT}
+				prepare={{
+					functionName: "mint",
+					args: [1]
+				}}
+				timeout={2000}
+			/>
 		</>
 	)
 }
@@ -43,6 +50,7 @@ constructor() ERC721A("My NFT", "NFT") {}
 ```
 </details>
 
+import clsx from "clsx"
 import { ContractWrite } from "hybrid"
 import { Deployments } from "../../.hybrid/client"
 import Demo from "~/components/Demo"
@@ -50,11 +58,13 @@ import Demo from "~/components/Demo"
 <Demo>
 	<ContractWrite
 		contract={Deployments.NFT}
+		timeout={2000}
 		prepare={{
 			functionName: "mint",
 			args: [1]
 		}}
-		timeout={2000} />
+		render={({ isLoading, isError, isSuccess, ...rest }) => <button className={clsx(isSuccess ? "bg-green hover:bg-green-600" : isError ? "bg-red hover:bg-red-600" : "bg-blue hover:bg-blue-600", "rounded-full text-white px-5 py-2")} disabled={isLoading || isError || isSuccess} {...rest}>{isLoading ? "Minting ..." : isError ? "Error" : isSuccess ? "Success" : "Mint Now"}</button>}
+		 />
 </Demo>
 
 ## Component Props
