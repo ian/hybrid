@@ -8,6 +8,29 @@ A context-aware generic ContractWrite for NFT smart contracts.
 import { ContractWrite } from "hybrid"
 import { Deployments } from "../.hybrid/client"
 
+const MintButton = ({ isLoading, isError, isSuccess, ...rest }) => (
+	<button
+		className={clsx(
+			isSuccess
+				? "bg-green hover:bg-green-600"
+				: isError
+				? "bg-red hover:bg-red-600"
+				: "bg-blue hover:bg-blue-600",
+			"rounded-full text-white px-5 py-2"
+		)}
+		disabled={isLoading || isError || isSuccess}
+		{...rest}
+	>
+		{isLoading
+			? "Minting ..."
+			: isError
+			? "Error"
+			: isSuccess
+			? "Success"
+			: "Mint Now"}
+	</button>
+)
+
 const MyComponent = () => {
 	return (
 		<>
@@ -17,6 +40,7 @@ const MyComponent = () => {
 					functionName: "mint",
 					args: [1]
 				}}
+				render={MintButton}
 				timeout={2000}
 			/>
 		</>
