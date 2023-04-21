@@ -61,12 +61,14 @@ const ContractWrite = (props: ContractWriteProps) => {
     useContractWrite(config)
 
   const call = useCallback(() => {
-    writeAsync().finally(() => {
-      if (timeout)
-        setTimeout(() => {
-          reset()
-        }, timeout)
-    })
+    writeAsync()
+      .then((res) => res.wait())
+      .finally(() => {
+        if (timeout)
+          setTimeout(() => {
+            reset()
+          }, timeout)
+      })
   }, [writeAsync, reset])
 
   if (!wallet.isConnected) {
