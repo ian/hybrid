@@ -14,10 +14,10 @@ type ButtonProps = {
   isSuccess: boolean
 } & React.HTMLAttributes<HTMLButtonElement>
 
-type ContractContractWriteProps = {
-  render?: (props: ButtonProps) => JSX.Element
+type ContractWriteProps = {
   contract: DeployedContract
   prepare: Omit<Parameters<typeof usePrepareContractWrite>, "abi" | "address">
+  render?: (props: ButtonProps) => JSX.Element
   timeout?: number
 } & React.HTMLAttributes<HTMLButtonElement>
 
@@ -37,7 +37,7 @@ const DefaultButton = (props: ButtonProps) => {
   )
 }
 
-const ContractWrite = (props: ContractContractWriteProps) => {
+const ContractWrite = (props: ContractWriteProps) => {
   const {
     render: Button = DefaultButton,
     contract,

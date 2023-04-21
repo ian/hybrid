@@ -1,0 +1,45 @@
+# \<ContractWrite\>
+
+A context-aware generic ContractWrite for NFT smart contracts.
+
+## Usage
+
+```tsx
+import { ContractRead } from "hybrid"
+import { Deployments } from "../.hybrid/client"
+
+const MyComponent = () => {
+	return (
+		<p>
+			A total of
+			<ContractRead
+				contract={Deployments.NFT}
+				prepare={{
+					functionName: "totalSupply",
+					watch: true
+				}}
+			/> NFTs have been minted.
+		</p>
+	)
+}
+
+export default MyComponent
+```
+
+import { ContractRead } from "hybrid"
+import { Deployments } from "../../.hybrid/client"
+import Demo from "~/components/Demo"
+
+<Demo>
+	<p>
+		A total of
+		<ContractRead
+			contract={Deployments.NFT}
+			prepare={{
+				functionName: "totalSupply",
+				watch: true
+			}}
+			render={(res) => res.data?.toNumber()}
+		/> NFTs have been minted.
+	</p>
+</Demo>
