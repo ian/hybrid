@@ -1,0 +1,37 @@
+# useMinting
+
+Hook to provide access to the wallet connection
+
+## Usage
+
+```tsx
+import { useWallet } from "hybrid"
+import { Deployments } from "../.hybrid/client"
+
+const Component = () => {
+	const { isConnected, connect, disconnect } = useWallet()
+
+	return (
+		<div>
+			{!isConnected ? (
+				<button onClick={connect}>Connect</button>
+			) : (
+				<ConnectedAs />
+				<button onClick={disconnect}>Disconnect</button>
+			)}
+		</div>
+	)
+}
+```
+
+## Returns
+
+```json
+{
+  account: Address | undefined;
+	isLoading: boolean;
+	isConnected: boolean;
+	connect: () => void;
+	disconnect: () => void;
+}
+```

@@ -173,13 +173,13 @@ const NAV = [
 			// 	href: "/docs/hooks/useCounts"
 			// },
 			{
-				label: "useMinting",
-				href: "/hooks/useMinting"
-			},
-			{
-				label: "useTokenGating",
-				href: "/hooks/useTokenGating"
+				label: "useWallet",
+				href: "/hooks/useWallet"
 			}
+			// {
+			// 	label: "useTokenGating",
+			// 	href: "/hooks/useTokenGating"
+			// }
 		]
 	}
 ]
