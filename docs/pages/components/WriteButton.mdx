@@ -1,17 +1,17 @@
-# \<WriteButton\>
+# \<ContractWrite\>
 
-A context-aware generic WriteButton for NFT smart contracts.
+A context-aware generic ContractWrite for NFT smart contracts.
 
 ## Usage
 
 ```tsx
-import { WriteButton } from "hybrid"
+import { ContractWrite } from "hybrid"
 import { Deployments } from "../.hybrid/client"
 
 const MyComponent = () => {
 	return (
 		<>
-			<WriteButton contract={Deployments.NFT} />
+			<ContractWrite contract={Deployments.NFT} />
 		</>
 	)
 }
@@ -43,12 +43,12 @@ constructor() ERC721A("My NFT", "NFT") {}
 ```
 </details>
 
-import { WriteButton } from "hybrid"
+import { ContractWrite } from "hybrid"
 import { Deployments } from "../../.hybrid/client"
 import Demo from "~/components/Demo"
 
 <Demo>
-	<WriteButton
+	<ContractWrite
 		contract={Deployments.NFT}
 		prepare={{
 			functionName: "mint",

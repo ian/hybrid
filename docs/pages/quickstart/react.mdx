@@ -31,19 +31,19 @@ root.render(
 Add the following to your `./pages/index.tsx` file:
 
 ```tsx
-import { WriteButton } from "hybrid"
+import { ContractWrite } from "hybrid"
 import { Deployments } from "../.hybrid/client"
 
 export default function Home() {
 	return (
 		<div>
-			<WriteButton contract={Contracts.MyNFT} />
+			<ContractWrite contract={Contracts.MyNFT} />
 		</div>
 	)
 }
 ```
 
-To learn more about `<WriteButton>`, go to the [WriteButton](/docs/components/WriteButton) docs.
+To learn more about `<ContractWrite>`, go to the [ContractWrite](/docs/components/ContractWrite) docs.
 
 ## 2. Run Hybrid locally
 
