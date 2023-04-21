@@ -69,8 +69,6 @@ const WriteButton = (props: ContractWriteButtonProps) => {
     })
   }, [writeAsync, reset])
 
-  console.log({ isLoading, isSuccess, isError })
-
   if (!wallet.isConnected) {
     return (
       <Button
