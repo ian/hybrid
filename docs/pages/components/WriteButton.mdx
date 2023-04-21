@@ -1,17 +1,17 @@
-# \<MintButton\>
+# \<WriteButton\>
 
-A context-aware generic MintButton for NFT smart contracts.
+A context-aware generic WriteButton for NFT smart contracts.
 
 ## Usage
 
 ```tsx
-import { MintButton } from "hybrid"
+import { WriteButton } from "hybrid"
 import { Deployments } from "../.hybrid/client"
 
 const MyComponent = () => {
 	return (
 		<>
-			<MintButton contract={Deployments.NFT} />
+			<WriteButton contract={Deployments.NFT} />
 		</>
 	)
 }
@@ -43,12 +43,18 @@ constructor() ERC721A("My NFT", "NFT") {}
 ```
 </details>
 
-import { MintButton } from "hybrid"
-import Demo from "~/components/Demo"
+import { WriteButton } from "hybrid"
 import { Deployments } from "../../.hybrid/client"
+import Demo from "~/components/Demo"
 
 <Demo>
-	<MintButton contract={Deployments.NFT} />
+	<WriteButton
+		contract={Deployments.NFT}
+		prepare={{
+			functionName: "mint",
+			args: [1]
+		}}
+		timeout={2000} />
 </Demo>
 
 ## Component Props

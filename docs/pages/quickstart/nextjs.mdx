@@ -53,19 +53,19 @@ export default App
 Add the following to your `./pages/index.tsx` file:
 
 ```tsx
-import { MintButton } from "hybrid"
+import { WriteButton } from "hybrid"
 import { Deployments } from "../.hybrid/client"
 
 export default function Home() {
 	return (
 		<div>
-			<MintButton contract={Deployments.MyNFT} />
+			<WriteButton contract={Deployments.MyNFT} />
 		</div>
 	)
 }
 ```
 
-To learn more about `<MintButton>`, go to the [MintButton](/docs/components/MintButton) docs.
+To learn more about `<WriteButton>`, go to the [WriteButton](/docs/components/WriteButton) docs.
 
 ## 4. Run Hybrid locally
 

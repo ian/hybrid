@@ -148,8 +148,8 @@ const NAV = [
 				href: "/components/ConnectedAs"
 			},
 			{
-				label: "<MintButton />",
-				href: "/components/MintButton"
+				label: "<WriteButton />",
+				href: "/components/WriteButton"
 			},
 			{
 				label: "<TokenGate />",

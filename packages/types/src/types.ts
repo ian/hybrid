@@ -9,7 +9,7 @@ export type CompiledContract = {
 }
 
 export type DeployedContract = {
-  address: string
+  address: `0x${string}`
   chainId: number
 } & CompiledContract
 
@@ -21,6 +21,11 @@ export type Deployment = {
   txHash: string
   blockHash: string
   blockNumber: number
+}
+
+export type SendTransactionResult = {
+  hash: `0x${string}`
+  wait: providers.TransactionResponse["wait"]
 }
 
 export type {
