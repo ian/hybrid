@@ -6,7 +6,7 @@ import {
 } from "wagmi"
 import { DeployedContract } from "@hybrd/types"
 import { useWallet } from "../hooks"
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 
 type ButtonProps = {
   isError: boolean
@@ -46,8 +46,11 @@ const ContractWrite = (props: ContractWriteProps) => {
     ...rest
   } = props
 
-  const wallet = useWallet()
+  const [isLoading, setLoading] = useState(false)
+  const [isSuccess, setSuccess] = useState(false)
+  const [isError, setError] = useState(false)
 
+  const wallet = useWallet()
   const { chain: network } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
 
@@ -57,13 +60,30 @@ const ContractWrite = (props: ContractWriteProps) => {
     ...prepare,
   })
 
-  const { isLoading, isSuccess, isError, writeAsync, reset } =
-    useContractWrite(config)
+  const { writeAsync } = useContractWrite(config)
+
+  const reset = () => {
+    setLoading(false)
+    setSuccess(false)
+    setError(false)
+  }
 
   const call = useCallback(() => {
-    writeAsync()
-      .then((res) => res.wait())
+    setLoading(true)
+    return writeAsync()
+      .then((res) => {
+        return res.wait()
+      })
+      .then(() => {
+        setSuccess(true)
+      })
+      .catch((err) => {
+        console.error(err)
+        setError(true)
+      })
       .finally(() => {
+        setLoading(false)
+
         if (timeout)
           setTimeout(() => {
             reset()
