@@ -3,7 +3,7 @@ import Logo from "./Logo"
 import clsx from "clsx"
 import { IoMdClose } from "react-icons/io"
 import React from "react"
-import { RiDiscordFill, RiGithubFill, RiTwitterFill } from "react-icons/ri"
+import { RiGithubFill, RiTwitterFill } from "react-icons/ri"
 
 const Header = ({ className }: { className?: string }) => {
 	return (
