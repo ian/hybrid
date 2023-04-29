@@ -13,7 +13,6 @@
     <img src="https://img.shields.io/npm/dm/hybrid?colorA=21262d&colorB=161b22&label=npm&logo=npm" alt="Downloads per month">
   </a>
   <a href="https://github.com/hybridhq/hybrid/actions/workflows/react.yml"><img alt="Build Status" src="https://github.com/hybridhq/hybrid/actions/workflows/react.yml/badge.svg"/></a>
-  <a href="https://discord.gg/AcJFXZ9Mfk"><img alt="Join our Discord!" src="https://img.shields.io/discord/1086070487400063018.svg?colorA=21262d&colorB=161b22&label=discord&logo=discord&style=flat"/></a>
 <br/>
 
 </div>
