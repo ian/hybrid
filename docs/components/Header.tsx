@@ -32,11 +32,6 @@ const LINKS = [
 		href: "https://twitter.com/hybrid__dev",
 		// label: "Twitter",
 		icon: <RiTwitterFill className="mr-1 hover:text-white" size={28} />
-	},
-	{
-		href: "https://discord.gg/AcJFXZ9Mfk",
-		// label: "Discord",
-		icon: <RiDiscordFill className="mr-1 hover:text-white" size={28} />
 	}
 ]
 

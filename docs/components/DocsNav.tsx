@@ -61,11 +61,6 @@ const NAV = [
 			}
 
 			// {
-			// 	label: "Discord",
-			// 	href: "https://discord.gg/AcJFXZ9Mfk",
-			// 	target: "_blank"
-			// },
-			// {
 			// 	label: "Twitter",
 			// 	href: "https://twitter.com/hybrid__dev",
 			// 	target: "_blank"
