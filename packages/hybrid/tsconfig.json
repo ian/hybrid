@@ -1,0 +1,13 @@
+{
+	"extends": "@hybrd/tsconfig/base.json",
+	"compilerOptions": {
+		"rootDir": ".",
+		"target": "ES2020",
+		"lib": ["ES2020"],
+		"outDir": "dist",
+		"isolatedModules": false,
+		"noEmit": false
+	},
+	"include": ["src/**/*", "scripts/**/*"],
+	"exclude": ["node_modules", "dist"]
+}

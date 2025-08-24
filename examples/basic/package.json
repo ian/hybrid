@@ -1,0 +1,26 @@
+{
+	"name": "agent",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "tsx watch src/agent.ts",
+		"start": "tsx src/agent.ts",
+		"build": "tsc",
+		"clean": "rm -rf .turbo dist",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome lint --unsafe .",
+		"lint:fix": "biome lint --write --unsafe .",
+		"format": "biome format --write ."
+	},
+	"dependencies": {
+		"@openrouter/ai-sdk-provider": "catalog:ai",
+		"hybrid": "workspace:*",
+		"zod": "catalog:stack"
+	},
+	"devDependencies": {
+		"@hybrd/biome": "workspace:*",
+		"@hybrd/tsconfig": "workspace:*",
+		"@types/node": "catalog:stack"
+	}
+}

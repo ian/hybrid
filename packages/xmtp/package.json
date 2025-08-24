@@ -1,0 +1,46 @@
+{
+	"name": "@hybrd/xmtp",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./src/index.ts",
+			"types": "./src/index.ts"
+		}
+	},
+	"scripts": {
+		"clean": "rm -rf .turbo",
+		"gen:keys": "tsx scripts/generate-keys.ts",
+		"register": "tsx scripts/register-wallet.ts",
+		"revoke": "tsx scripts/revoke-installations.ts",
+		"revoke:all": "tsx scripts/revoke-all-installations.ts",
+		"enhanced:demo": "tsx scripts/enhanced-connection-example.ts",
+		"test:messages": "tsx scripts/test-message-reception.ts",
+		"refresh:identity": "tsx scripts/refresh-identity.ts",
+		"custom:storage": "tsx scripts/custom-storage-example.ts",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome lint --unsafe",
+		"lint:fix": "biome lint --write --unsafe",
+		"format": "biome format --write"
+	},
+	"dependencies": {
+		"@coinbase/coinbase-sdk": "^0.22.0",
+		"@xmtp/content-type-group-updated": "2.0.2",
+		"@xmtp/content-type-reaction": "2.0.2",
+		"@xmtp/content-type-reply": "2.0.2",
+		"@xmtp/content-type-text": "2.0.2",
+		"@xmtp/content-type-transaction-reference": "2.0.2",
+		"@xmtp/content-type-wallet-send-calls": "2.0.0",
+		"@xmtp/node-sdk": "^4.0.1",
+		"jsonwebtoken": "^9.0.2",
+		"uint8arrays": "^5.1.0",
+		"viem": "^2.22.17"
+	},
+	"devDependencies": {
+		"@hybrd/biome": "workspace:*",
+		"@hybrd/tsconfig": "workspace:*",
+		"@types/jsonwebtoken": "^9.0.7",
+		"@types/node": "catalog:stack",
+		"vitest": "^3.2.4"
+	}
+}

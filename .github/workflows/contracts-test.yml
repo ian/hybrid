@@ -1,0 +1,54 @@
+name: Contracts Test
+on:
+  push:
+    paths:
+      - 'apps/contracts/**'
+      - '.github/workflows/contracts-test.yml'
+
+jobs:
+  contracts-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/contracts
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run Forge build
+        run: forge build --sizes
+
+      - name: Run Forge tests
+        run: pnpm test
+
+      - name: Run Forge coverage
+        run: forge coverage --report lcov --ir-minimum
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: apps/contracts/lcov.info
+          flags: contracts
+          name: contracts-coverage
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        continue-on-error: true 

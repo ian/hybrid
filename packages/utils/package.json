@@ -1,0 +1,27 @@
+{
+	"name": "@hybrd/utils",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		}
+	},
+	"scripts": {
+		"lint": "biome lint --unsafe",
+		"lint:fix": "biome lint --write --unsafe",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"date-fns": "4.1.0",
+		"mime": "^4.0.7",
+		"remark": "^15.0.1",
+		"strip-markdown": "^6.0.0",
+		"uuid": "11.0.5"
+	},
+	"devDependencies": {
+		"@hybrd/biome": "workspace:*",
+		"@hybrd/tsconfig": "workspace:*",
+		"@types/node": "catalog:stack"
+	}
+}

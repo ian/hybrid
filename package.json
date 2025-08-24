@@ -1,0 +1,28 @@
+{
+	"name": "hybrid",
+	"author": "Ian Hunter <ian@01.studio>",
+	"license": "ISC",
+	"description": "",
+	"private": true,
+	"engines": {
+		"node": "22"
+	},
+	"packageManager": "pnpm@9.15.5",
+	"scripts": {
+		"build": "turbo run build --ui stream",
+		"clean": "pnpm -r clean",
+		"nuke": "find . -name 'node_modules' -type d -exec rm -rf {} +",
+		"generate": "pnpm -r generate",
+		"test": "turbo run test --ui stream",
+		"lint": "turbo run lint --continue --ui stream",
+		"lint:fix": "turbo run lint:fix --continue --ui stream",
+		"typecheck": "turbo run typecheck --ui stream",
+		"release": "pnpm build && pnpm -r publish --force --access public --no-git-checks"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"tsx": "4.19.3",
+		"turbo": "2.5.0",
+		"typescript": "5.8.3"
+	}
+}

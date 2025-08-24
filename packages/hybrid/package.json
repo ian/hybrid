@@ -1,0 +1,52 @@
+{
+	"name": "hybrid",
+	"version": "1.0.0",
+	"type": "module",
+	"bin": {
+		"hybrid": "./dist/src/cli.js",
+		"hy": "./dist/src/cli.js"
+	},
+	"exports": {
+		".": {
+			"import": "./src/index.ts",
+			"types": "./src/index.ts"
+		},
+		"./ponder": {
+			"import": "./src/ponder/index.ts",
+			"types": "./src/ponder/index.ts"
+		}
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf .turbo dist",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome lint --unsafe",
+		"lint:fix": "biome lint --write --unsafe",
+		"format": "biome format --write"
+	},
+	"dependencies": {
+		"@coinbase/agentkit": "^0.6.2",
+		"@coinbase/agentkit-vercel-ai-sdk": "^0.1.0",
+		"@coinbase/coinbase-sdk": "^0.22.0",
+		"@hono/node-server": "^1.13.5",
+		"@hybrd/utils": "workspace:*",
+		"@hybrd/xmtp": "workspace:*",
+		"@upstash/qstash": "2.7.22",
+		"ai": "^5.0.15",
+		"eta": "^3.5.0",
+		"hono": "catalog:stack",
+		"jsonwebtoken": "^9.0.2",
+		"tsx": "^4.19.2",
+		"uint8arrays": "^5.1.0",
+		"viem": "^2.33.3",
+		"wagmi": "^2.15.6",
+		"zod": "catalog:stack"
+	},
+	"devDependencies": {
+		"@hybrd/biome": "workspace:*",
+		"@hybrd/tsconfig": "workspace:*",
+		"@types/jsonwebtoken": "^9.0.7",
+		"@types/node": "catalog:stack",
+		"vitest": "^3.2.4"
+	}
+}

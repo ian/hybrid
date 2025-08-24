@@ -1,0 +1,62 @@
+{
+	"$schema": "https://turborepo.org/schema.json",
+	"ui": "tui",
+	"tasks": {
+		"build": {
+			"dependsOn": [
+				"^build"
+			],
+			"outputs": [
+				".cache/tsbuildinfo.json",
+				".react-email/**",
+				"dist/**"
+			]
+		},
+		"dev": {
+			"dependsOn": [
+				"^dev"
+			],
+			"cache": false,
+			"persistent": false
+		},
+		"test": {},
+		"format": {
+			"outputs": [
+				".cache/.format"
+			],
+			"outputLogs": "new-only"
+		},
+		"lint": {
+			"outputs": [
+				".cache/.lint"
+			]
+		},
+		"lint:fix": {
+			"outputs": [
+				".cache/.lint"
+			]
+		},
+		"typecheck": {
+			"dependsOn": [
+				"^build"
+			],
+			"outputs": [
+				".cache/tsbuildinfo.json"
+			]
+		},
+		"clean": {
+			"cache": false
+		}
+	},
+	"globalEnv": [
+		"CONTRACT_ADDRESS",
+		"NETWORK_ENV",
+		"TUNNEL_URL",
+		"XMTP_ENV"
+	],
+	"globalPassThroughEnv": [
+		"*_ENV",
+		"CI",
+		"VERCEL_*"
+	]
+}
