@@ -1,6 +1,6 @@
-# Hybrid - Agent Framework for Commerce-Connected XMTP Agents
+# Hybrid - Agent Framework for XMTP
 
-An open-source agent framework for building commerce-connected conversational agents on XMTP. Hybrid enables developers to create AI agents that can handle transactions, manage digital assets, and provide commerce experiences through natural messaging interfaces.
+An open-source agent framework for building conversational AI agents on XMTP. Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
 
 ## 🏗️ Architecture
 
@@ -16,50 +16,81 @@ hybrid/
     └── xmtp/         # XMTP client and messaging utilities
 ```
 
-### Key Features
+## 📝 Core Example
 
-- **Agent Framework**: Extensible framework for building conversational agents
-- **XMTP Integration**: Native support for XMTP messaging protocol
-- **Commerce-Connected**: Built-in tools for blockchain transactions and asset management
-- **TypeScript First**: Full TypeScript support with type-safe APIs
-- **Plugin System**: Modular architecture for extending agent capabilities
-- **Production Ready**: Scalable message processing for production environments
+Here's a basic agent implementation using Hybrid:
 
-## 🤖 Agent Framework Overview
+```typescript
+import { createOpenRouter } from "@openrouter/ai-sdk-provider"
+import { Agent, MessageListenerConfig, Reaction } from "hybrid"
 
-### How It Works
+export const openrouter = createOpenRouter({
+	apiKey: process.env.OPENROUTER_API_KEY
+})
 
-The Hybrid agent framework enables natural, conversation-based commerce interactions through XMTP:
+const agent = new Agent({
+	name: "Basic Agent",
+	model: openrouter("x-ai/grok-4"),
+	instructions:
+		"You are a XMTP agent that responds to messages and reactions. Try and be as conversational as possible."
+})
 
-1. **Message Processing**: Agents listen for and process incoming XMTP messages
-2. **Tool Execution**: Built-in and custom tools handle blockchain transactions and commerce operations
-3. **Context Management**: Maintain conversation context and user state across message threads
-4. **Response Generation**: Generate intelligent responses based on user requests and tool results
+// We don't want the agent to respond to every message, this shows how to filter for only replies.
+const replyOnlyFilter: MessageListenerConfig["filter"] = async ({ message }) => {
+	const isReply = contentTypeId === "reply"
 
-### Example Agent Interaction
+	if (isReply) {
+		return true
+  }
 
+	return false
+}
+
+agent.listen({
+	port: process.env.PORT || "8454",
+	filter: replyOnlyFilter
+})
 ```
-User: "Send 10 USDC to 0x1234...abcd"
-Agent: "✅ Transaction initiated!
-     📋 Amount: 10 USDC
-     👤 Recipient: 0x1234...abcd
-     🔗 Tx Hash: 0x5678...efgh
 
-     Your transaction is being processed on the blockchain."
+This example shows how Hybrid handles message filtering, AI integration, and XMTP listening - all in just a few lines of code.
 
-User: "What's my USDC balance?"
-Agent: "💰 Your current USDC balance is 150.75"
+## 📦 Installation
+
+Getting started with Hybrid is simple:
+
+### 1. Install the package
+
+```bash
+pnpm install hybrid
+```  
+
+### 2. Initialize your project
+
+```bash
+npx hybrid init
 ```
 
-### Core Capabilities
+This creates all the necessary files and configuration for your agent.
 
-Agents can handle:
-- **Token Transfers**: Send and receive ERC20 tokens
-- **Balance Queries**: Check wallet balances and transaction history
-- **Commerce Operations**: Handle payments, purchases, and transactions
-- **Custom Tools**: Extend functionality with custom commerce logic
+### 3. Generate XMTP keys
 
-## 🚀 Getting Started
+```bash
+npx hybrid gen:keys
+```
+
+This generates secure wallet and encryption keys for your XMTP agent.
+
+### 4. Start developing
+
+```bash
+npx hybrid dev
+```
+
+Your agent will start listening for XMTP messages and you're ready to build!
+
+## 🔧 Developing Locally
+
+If you want to work with the source code or contribute to Hybrid:
 
 ### Prerequisites
 
@@ -87,23 +118,9 @@ OPENROUTER_API_KEY="your_openai_api_key"
 WALLET_KEY="0x..."  # Private key for XMTP agent
 ENCRYPTION_KEY="..."  # Database encryption key
 XMTP_ENV="dev"  # dev, production
-
-# Coinbase AgentKit (for commerce operations)
-CDP_PROJECT_ID="your_project_id"
-CDP_API_KEY_ID="your_api_key_id"
-CDP_API_KEY_SECRET="your_api_key_secret"
-CDP_WALLET_SECRET="your_wallet_secret"
 ```
 
-### 3. Generate XMTP Keys
-
-```bash
-pnpm gen:keys
-```
-
-This will generate secure wallet and encryption keys for your XMTP agent.
-
-### 4. Start Development Server
+### 3. Start Development Server
 
 ```bash
 # Start the agent
@@ -111,29 +128,6 @@ pnpm dev
 ```
 
 This starts the agent at http://localhost:3001 and begins listening for XMTP messages.
-
-## 📱 Usage
-
-### Agent Interactions
-
-1. **Send Messages**: Users send XMTP messages to your agent
-2. **Natural Language**: Agents understand natural language commerce requests
-3. **Tool Execution**: Built-in tools handle blockchain operations automatically
-4. **Response Generation**: Agents provide clear, actionable responses
-
-Example conversation:
-```
-User: "Send 5 USDC to vitalik.eth"
-Agent: "✅ Transaction initiated!
-     📋 Amount: 5 USDC
-     👤 Recipient: vitalik.eth
-     🔗 Tx Hash: 0x1234...abcd
-
-     Your transaction is being processed."
-
-User: "What's the price of ETH?"
-Agent: "📈 Current ETH price: $3,245.67"
-```
 
 ## 🛠️ Development
 
@@ -156,17 +150,19 @@ pnpm gen:keys               # Generate XMTP keys
 
 ### Project Structure
 
+Hybrid is designed as a framework for developers to build XMTP agents:
+
 #### Basic Example (`examples/basic`)
-- **Message Processing**: Handle incoming XMTP messages
-- **Tool System**: Execute commerce and blockchain operations
-- **AI Integration**: Natural language understanding and response generation
-- **Context Management**: Maintain conversation state and user context
+- **Message Processing**: Handle incoming XMTP messages with custom filters
+- **AI Integration**: Connect any AI model for natural language understanding
+- **Agent Configuration**: Simple setup with instructions and behavior
+- **XMTP Listening**: Built-in server to listen for messages on any port
 
 #### Core Packages
 - **hybrid/**: Main agent framework library
   - Agent runtime and plugin system
-  - Tool definitions and execution
-  - XMTP message handling
+  - Type-safe message handling
+  - Flexible filtering and processing
 - **utils/**: Common utilities and helpers
   - Array, string, and object utilities
   - Storage and date helpers
@@ -181,23 +177,32 @@ pnpm gen:keys               # Generate XMTP keys
 - **Core**: Node.js, TypeScript, pnpm workspace
 - **Messaging**: XMTP Protocol for decentralized messaging
 - **AI**: OpenRouter API for natural language processing
-- **Commerce**: Coinbase AgentKit for blockchain operations
 - **Development**: Biome for linting and formatting
 
 ## 🔧 Configuration
 
 ### Agent Configuration
 
-Configure your agent behavior in `examples/basic/src/agent.ts`:
+Configure your agent behavior with simple, type-safe options:
 
 ```typescript
-// Agent configuration options
-const agentConfig = {
-  name: "Commerce Agent",
-  description: "AI-powered commerce assistant",
-  model: "gpt-4",
-  temperature: 0.7,
-  maxTokens: 1000
+const agent = new Agent({
+  name: "My Custom Agent",
+  model: openrouter("x-ai/grok-4"), // Any AI model
+  instructions: "You are a helpful XMTP agent. Be conversational and friendly."
+})
+```
+
+### Message Filtering
+
+Control which messages your agent responds to:
+
+```typescript
+const filter: MessageListenerConfig["filter"] = async ({ message }) => {
+  // Custom logic for filtering messages
+  // Return true to process, false to ignore
+  const content = message.content?.toString()?.toLowerCase()
+  return content?.includes("@myagent") || content?.includes("help")
 }
 ```
 
@@ -207,88 +212,79 @@ Key environment variables for agent operation:
 
 ```env
 # Required
-OPENROUTER_API_KEY="your_openai_api_key"
-WALLET_KEY="0x..."  # XMTP wallet private key
-XMTP_ENV="dev"  # dev or production
+OPENROUTER_API_KEY="your_openai_api_key"  # For AI integration
+WALLET_KEY="0x..."                        # XMTP wallet private key
+XMTP_ENV="dev"                           # dev or production
 
-# Optional - for Coinbase AgentKit integration
-CDP_PROJECT_ID="your_project_id"
-CDP_API_KEY_ID="your_api_key_id"
-CDP_API_KEY_SECRET="your_api_key_secret"
+# Optional
+PORT="8454"                              # Port for the agent server
+ENCRYPTION_KEY="..."                     # For secure data encryption
 ```
 
 ## 🚀 Deployment
 
-### Agent Deployment
+Deploy your Hybrid agent anywhere Node.js runs:
 
-Deploy your agent to any Node.js hosting provider:
+### Build and Deploy
 
 1. **Build the project**:
 ```bash
 pnpm build
 ```
 
-2. **Deploy to your preferred provider**:
-   - Heroku
-   - DigitalOcean App Platform
+2. **Deploy to any Node.js hosting provider**:
    - Vercel
+   - Railway
+   - Render
+   - Heroku
+   - DigitalOcean
    - AWS Lambda
    - Google Cloud Functions
-   - Any other Node.js hosting service
 
-### Environment Setup
+### Environment Variables
 
-Ensure all environment variables are set in your deployment environment:
-- `OPENROUTER_API_KEY`
-- `WALLET_KEY`
-- `XMTP_ENV`
-- `ENCRYPTION_KEY`
+Make sure these environment variables are configured in your deployment:
+- `OPENROUTER_API_KEY` - Your AI API key
+- `WALLET_KEY` - XMTP wallet private key
+- `XMTP_ENV` - dev or production
+- `PORT` - Port for the agent server (optional)
 
 ## 🧪 Testing
 
-### Unit Tests
+### Run Tests
 
 ```bash
 pnpm test
 ```
 
-### Integration Tests
-
-```bash
-# Test XMTP message processing
-pnpm test:integration
-```
-
 ### Manual Testing
 
-1. Start local development environment: `pnpm dev`
-2. Send XMTP messages to your agent
-3. Test commerce operations (token transfers, balance checks)
-4. Verify natural language understanding
+1. Start your agent: `pnpm dev`
+2. Send XMTP messages to test your agent's responses
+3. Verify your custom filters and AI integration work as expected
 
 ## 📚 API Reference
 
-### Agent Framework
+### Core Classes
 
-#### Core Classes
-- **HybridAgent**: Main agent class for message processing
-- **Tool**: Base class for creating custom commerce tools
-- **XMTPClient**: Client for XMTP message handling
+- **Agent**: Main agent class for creating and configuring XMTP agents
+- **MessageListenerConfig**: Configuration for message filtering and processing
+- **Reaction**: Type for handling XMTP reactions
 
-#### Key Methods
+### Key Methods
+
+- `agent.listen()`: Start listening for XMTP messages with custom filters
+- `filter()`: Define which messages your agent should respond to
 - `processMessage()`: Handle incoming XMTP messages
-- `executeTool()`: Execute commerce operations
 - `sendResponse()`: Send responses back to users
-- `getBalance()`: Check wallet balances
-- `transfer()`: Execute token transfers
 
-### Built-in Tools
+### Message Types
 
-The framework includes built-in tools for:
-- **Token Operations**: Transfer, balance checking, approvals
-- **Price Feeds**: Get current cryptocurrency prices
-- **Address Resolution**: Resolve ENS names and addresses
-- **Transaction Monitoring**: Track transaction status
+Hybrid supports all XMTP message types:
+- **Text Messages**: Standard text content
+- **Reactions**: 👍, ❤️, and custom reactions
+- **Replies**: Threaded conversations
+- **Custom Content**: Any XMTP-supported content type
 
 ## 🤝 Contributing
 

@@ -4,10 +4,13 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"default": "./src/index.ts"
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
 		}
 	},
 	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf .turbo dist",
 		"lint": "biome lint --unsafe",
 		"lint:fix": "biome lint --write --unsafe",
 		"typecheck": "tsc --noEmit"

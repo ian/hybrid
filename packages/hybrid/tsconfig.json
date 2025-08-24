@@ -6,7 +6,8 @@
 		"lib": ["ES2020"],
 		"outDir": "dist",
 		"isolatedModules": false,
-		"noEmit": false
+		"noEmit": false,
+		"declaration": true
 	},
 	"include": ["src/**/*", "scripts/**/*"],
 	"exclude": ["node_modules", "dist"]

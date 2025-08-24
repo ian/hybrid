@@ -8,12 +8,12 @@
 	},
 	"exports": {
 		".": {
-			"import": "./src/index.ts",
-			"types": "./src/index.ts"
+			"import": "./dist/src/index.js",
+			"types": "./dist/src/index.d.ts"
 		},
 		"./ponder": {
-			"import": "./src/ponder/index.ts",
-			"types": "./src/ponder/index.ts"
+			"import": "./dist/src/ponder/index.js",
+			"types": "./dist/src/ponder/index.d.ts"
 		}
 	},
 	"scripts": {
