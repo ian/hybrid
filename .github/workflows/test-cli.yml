@@ -70,7 +70,7 @@ jobs:
           grep '"name": "test-agent-cli"' package.json
           grep '"version": "0.1.0"' package.json
           grep '"dev": "tsx --watch src/agent.ts"' package.json
-          grep '"keys": "npx hybrid gen:keys"' package.json
+          grep '"keys": "hybrid gen:keys"' package.json
         working-directory: test-project
 
       - name: Verify README has correct project name
@@ -184,8 +184,6 @@ jobs:
 
       - name: Test complete workflow
         run: |
-          cd demo-project
-
           # Test key generation
           export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
           node /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js gen:keys

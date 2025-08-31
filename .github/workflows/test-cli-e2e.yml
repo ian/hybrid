@@ -157,19 +157,11 @@ jobs:
         run: |
           cd /tmp/e2e-test/e2e-test-project
 
-          # Verify vitest config structure
-          node -e "
-            const vitestConfig = require('./vitest.config.ts');
-            if (!vitestConfig.test) {
-              console.error('Missing test config');
-              process.exit(1);
-            }
-            if (vitestConfig.test.environment !== 'node') {
-              console.error('Wrong environment:', vitestConfig.test.environment);
-              process.exit(1);
-            }
-            console.log('✅ Vitest config is valid');
-          "
+          # Verify vitest config has correct content
+          grep 'import.*defineConfig.*vitest/config' vitest.config.ts
+          grep 'environment.*node' vitest.config.ts
+          grep 'globals.*true' vitest.config.ts
+          echo "✅ Vitest config is valid"
 
       - name: Test .gitignore content
         run: |

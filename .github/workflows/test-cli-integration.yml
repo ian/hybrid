@@ -63,7 +63,7 @@ jobs:
           grep '"name": "integration-test"' package.json
           grep '"type": "module"' package.json
           grep '"dev": "tsx --watch src/agent.ts"' package.json
-          grep '"keys": "npx hybrid gen:keys"' package.json
+          grep '"keys": "hybrid gen:keys"' package.json
 
           # Verify README has correct title
           grep '^# integration-test$' README.md
