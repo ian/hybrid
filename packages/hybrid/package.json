@@ -17,7 +17,7 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc && npm run post-build",
+		"build": "tsc && pnpm run post-build",
 		"post-build": "node scripts/fix-imports.js && cp -r templates dist/",
 		"clean": "rm -rf .turbo dist",
 		"typecheck": "tsc --noEmit",
