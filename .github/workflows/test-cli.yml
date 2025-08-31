@@ -169,7 +169,8 @@ jobs:
       - name: Test CLI as npx command
         run: |
           cd /tmp/cli-test
-          # Simulate npx by using the built CLI
+          # Simulate npx by using the built CLI with proper NODE_PATH
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
           node /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js init demo-project
 
           # Verify project was created
@@ -187,6 +188,7 @@ jobs:
           cd demo-project
 
           # Test key generation
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
           node /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js gen:keys
           grep "WALLET_KEY=0x" .env
 

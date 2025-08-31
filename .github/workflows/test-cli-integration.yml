@@ -40,6 +40,8 @@ jobs:
       - name: Generate project with CLI
         run: |
           cd /tmp/hybrid-cli-test
+          # Set NODE_PATH to include the hybrid package dependencies
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
           node /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js init integration-test
 
       - name: Verify project structure and files
@@ -69,6 +71,8 @@ jobs:
       - name: Generate keys
         run: |
           cd /tmp/hybrid-cli-test/integration-test
+          # Set NODE_PATH to include the hybrid package dependencies
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
           node /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js gen:keys
 
           # Verify keys were generated
@@ -139,6 +143,7 @@ jobs:
           cd /tmp/hybrid-cli-test
 
           # Test with spaces and special characters
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
           node /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js init "My Amazing Agent!"
           test -d my-amazing-agent
           grep '"name": "my-amazing-agent"' my-amazing-agent/package.json
@@ -159,6 +164,7 @@ jobs:
           echo "existing content" > existing-dir/file.txt
 
           # This should fail
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
           if node /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js init existing-dir 2>/dev/null; then
             echo "ERROR: Should have failed when directory is not empty"
             exit 1

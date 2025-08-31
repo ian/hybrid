@@ -41,24 +41,22 @@ jobs:
         run: |
           cd /tmp/e2e-test
 
-          # Copy the built CLI as if it were installed via npm
-          mkdir -p node_modules/.bin
-          cp /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js node_modules/.bin/hybrid
-          chmod +x node_modules/.bin/hybrid
-
-          # Also create the 'hy' alias
-          ln -s hybrid node_modules/.bin/hy
+          # Create a package.json to install the hybrid package
+          echo '{"name": "e2e-test-env", "private": true}' > package.json
+          
+          # Install the built hybrid package from local path
+          npm install /home/runner/work/hybrid/hybrid/packages/hybrid
 
       - name: Test CLI as installed package
         run: |
           cd /tmp/e2e-test
 
           # Test both 'hybrid' and 'hy' commands
-          ./node_modules/.bin/hybrid --help
-          ./node_modules/.bin/hy --help
+          npx hybrid --help
+          npx hy --help
 
           # Test project creation
-          ./node_modules/.bin/hybrid init e2e-test-project
+          npx hybrid init e2e-test-project
 
       - name: Verify generated project
         run: |
@@ -85,7 +83,7 @@ jobs:
           cd /tmp/e2e-test/e2e-test-project
 
           # Use the installed CLI
-          ../node_modules/.bin/hybrid gen:keys
+          npx hybrid gen:keys
 
           # Verify keys were generated
           grep "WALLET_KEY=0x" .env
@@ -211,13 +209,13 @@ jobs:
           cd /tmp/e2e-test
 
           # Test various project names
-          ../node_modules/.bin/hybrid init "Test Agent 123!"
+          npx hybrid init "Test Agent 123!"
           test -d test-agent-123
           grep '"name": "test-agent-123"' test-agent-123/package.json
           rm -rf test-agent-123
 
           # Test single character
-          ../node_modules/.bin/hybrid init "A"
+          npx hybrid init "A"
           test -d a
           grep '"name": "a"' a/package.json
           rm -rf a
@@ -227,12 +225,12 @@ jobs:
           cd /tmp/e2e-test
 
           # Create one final project and verify everything works together
-          ./node_modules/.bin/hybrid init final-integration-test
+          npx hybrid init final-integration-test
 
           cd final-integration-test
 
           # Generate keys
-          ../node_modules/.bin/hybrid gen:keys
+          npx hybrid gen:keys
 
           # Verify the complete setup
           test -f package.json
