@@ -12,7 +12,7 @@ const agent = new Agent({
 		"You are a XMTP agent that responds to messages and reactions. Try and be as conversational as possible."
 })
 
-const filter: MessageListenerConfig["filter"] = async ({ message }) => {
+const filter: MessageListenerConfig["filter"] = async ({ message }: { message: any }) => {
 	const messageContent = message.content?.toString()
 	const contentTypeId = message.contentType?.typeId
 	const isMessage = contentTypeId === "text"

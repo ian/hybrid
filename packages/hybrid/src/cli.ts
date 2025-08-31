@@ -155,7 +155,11 @@ async function initializeProject() {
 	}
 
 	// Sanitize project name for package.json and directory
-	const sanitizedName = projectName.toLowerCase().replace(/[^a-z0-9-]/g, "-")
+	const sanitizedName = projectName
+		.toLowerCase()
+		.replace(/[^a-z0-9-]/g, "-") // Replace invalid chars with dashes
+		.replace(/-+/g, "-") // Collapse multiple dashes
+		.replace(/^-|-$/g, "") // Remove leading/trailing dashes
 
 	// Create project directory
 	const currentDir = process.cwd()

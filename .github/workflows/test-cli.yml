@@ -91,7 +91,7 @@ jobs:
       - name: Test interactive project creation
         run: |
           cd ..
-          echo -e "\n" | node ../packages/hybrid/dist/src/cli.js init
+          echo -e "\n" | node packages/hybrid/dist/src/cli.js init
         working-directory: test-project
 
       - name: Verify interactive project creation
