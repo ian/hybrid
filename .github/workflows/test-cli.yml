@@ -185,7 +185,7 @@ jobs:
         run: |
           # Test key generation
           export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
-          node /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js gen:keys
+          node "$GITHUB_WORKSPACE/packages/hybrid/dist/src/cli.js" gen:keys
           grep "WALLET_KEY=0x" .env
 
           # Test that all scripts are defined
