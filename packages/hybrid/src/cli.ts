@@ -214,11 +214,13 @@ async function initializeProject() {
 	console.log("✅ Created src directory")
 
 	// Copy source files
-	templateFiles.forEach(async ({ src, dest }) => {
-		const templatePath = join(templatesDir, src)
-		const destPath = join(projectDir, dest)
-		await copyTemplate(templatePath, destPath, variables)
-	})
+	await Promise.all(
+		templateFiles.map(async ({ src, dest }) => {
+			const templatePath = join(templatesDir, src)
+			const destPath = join(projectDir, dest)
+			await copyTemplate(templatePath, destPath, variables)
+		})
+	)
 
 	// Copy agent.ts to src directory
 	const agentTemplatePath = join(templatesDir, "agent.ts")
