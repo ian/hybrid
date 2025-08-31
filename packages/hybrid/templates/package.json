@@ -26,6 +26,7 @@
 	"devDependencies": {
 		"@types/node": "^22.0.0",
 		"vitest": "^3.2.4",
+		"@biomejs/biome": "^1.9.4",
 		"@hybrd/biome": "workspace:*",
 		"@hybrd/tsconfig": "workspace:*"
 	},
