@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { readFile, readdir, writeFile } from "fs/promises"
-import { dirname, extname, join } from "path"
-import { fileURLToPath } from "url"
+import { readFile, readdir, writeFile } from "node:fs/promises"
+import { dirname, extname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
