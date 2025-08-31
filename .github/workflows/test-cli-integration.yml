@@ -84,7 +84,7 @@ jobs:
       - name: Install project dependencies
         run: |
           cd /tmp/hybrid-cli-test/integration-test
-          npm install
+          pnpm install
 
           # Verify node_modules was created
           test -d node_modules
