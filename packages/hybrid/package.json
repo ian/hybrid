@@ -33,7 +33,7 @@
 		"@hybrd/utils": "workspace:*",
 		"@hybrd/xmtp": "workspace:*",
 		"@upstash/qstash": "2.7.22",
-		"ai": "^5.0.15",
+		"ai": "^5.0.28",
 		"eta": "^3.5.0",
 		"hono": "catalog:stack",
 		"jsonwebtoken": "^9.0.2",
