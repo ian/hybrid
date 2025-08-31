@@ -18,7 +18,7 @@
 	},
 	"scripts": {
 		"build": "tsc && pnpm run post-build",
-		"post-build": "node scripts/fix-imports.js && cp -r templates dist/",
+		"post-build": "cp -r templates dist/",
 		"clean": "rm -rf .turbo dist",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",
