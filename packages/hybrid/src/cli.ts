@@ -154,13 +154,13 @@ async function initializeProject() {
 		}
 	}
 
-	// Sanitize project name for package.json
+	// Sanitize project name for package.json and directory
 	const sanitizedName = projectName.toLowerCase().replace(/[^a-z0-9-]/g, "-")
 
 	// Create project directory
 	const currentDir = process.cwd()
 	const projectDir =
-		projectName === "." ? currentDir : join(currentDir, projectName)
+		projectName === "." ? currentDir : join(currentDir, sanitizedName)
 
 	// Check if directory already exists and is not empty
 	if (projectName !== ".") {
@@ -168,7 +168,7 @@ async function initializeProject() {
 			const existingFiles = await readdir(projectDir)
 			if (existingFiles.length > 0) {
 				console.log(
-					`❌ Directory "${projectName}" already exists and is not empty`
+					`❌ Directory "${sanitizedName}" already exists and is not empty`
 				)
 				console.log(
 					"Please choose a different name or remove the existing directory"
@@ -183,7 +183,7 @@ async function initializeProject() {
 	// Create project directory
 	try {
 		await mkdir(projectDir, { recursive: true })
-		console.log(`📁 Created project directory: ${projectName}`)
+		console.log(`📁 Created project directory: ${sanitizedName}`)
 	} catch (error) {
 		console.error("❌ Failed to create project directory:", error)
 		process.exit(1)
@@ -229,7 +229,7 @@ async function initializeProject() {
 	console.log("\n🎉 Hybrid project created successfully!")
 	console.log(`\n📂 Project created in: ${projectDir}`)
 	console.log("\n📋 Next steps:")
-	console.log(`1. cd ${projectName}`)
+	console.log(`1. cd ${sanitizedName}`)
 	console.log("2. npm install")
 	console.log("3. Get your OpenRouter API key from https://openrouter.ai/keys")
 	console.log("4. Add your API key to the OPENROUTER_API_KEY in .env")
