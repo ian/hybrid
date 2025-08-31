@@ -76,7 +76,7 @@ jobs:
           node /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js gen:keys
 
           # Verify keys were generated
-          grep -v "your_wallet_key_here\|your_encryption_key_here" .env
+          ! grep -qE "your_wallet_key_here|your_encryption_key_here" .env
           grep "WALLET_KEY=0x" .env
           grep "ENCRYPTION_KEY=" .env
           grep "public key is 0x" .env
