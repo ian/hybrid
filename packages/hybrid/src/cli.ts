@@ -305,6 +305,9 @@ function main() {
 		case "build":
 			runBuild()
 			break
+		case "--help":
+		case "-h":
+		case "help":
 		default:
 			console.log("Usage: hybrid <command> or hy <command>")
 			console.log("")
@@ -320,7 +323,10 @@ function main() {
 			console.log("  hybrid dev              or    hy dev")
 			console.log("  hybrid build            or    hy build")
 			console.log("  hybrid gen:keys         or    hy gen:keys")
-			process.exit(1)
+			// Only exit with error code for unknown commands, not for help
+			if (command && !["--help", "-h", "help"].includes(command)) {
+				process.exit(1)
+			}
 	}
 }
 
