@@ -42,7 +42,7 @@ jobs:
           cd /tmp/hybrid-cli-test
           # Set NODE_PATH to include the hybrid package dependencies
           export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
-          node /home/runner/work/hybrid/hybrid/packages/hybrid/dist/src/cli.js init integration-test
+          node "$GITHUB_WORKSPACE/packages/hybrid/dist/src/cli.js" init integration-test
 
       - name: Verify project structure and files
         run: |
