@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
+import degit from "degit"
 import { spawn } from "node:child_process"
 import { getRandomValues } from "node:crypto"
-import { mkdir, readFile, readdir, writeFile, unlink } from "node:fs/promises"
+import { mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { createInterface } from "node:readline"
 import { fileURLToPath } from "node:url"
 import { toString as uint8ToString } from "uint8arrays"
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
-import degit from "degit"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -153,16 +153,22 @@ async function initializeProject() {
 	// Use degit to clone template from GitHub, with fallback to local templates
 	console.log("📦 Downloading template from GitHub...")
 	let templateDownloaded = false
-	
+
 	try {
-		const templateRepo = "ian/hybrid/templates/hybrid"
-		const emitter = degit(templateRepo, { cache: false, force: true, verbose: false })
+		const templateRepo = "ian/hybrid/templates/agent"
+		const emitter = degit(templateRepo, {
+			cache: false,
+			force: true,
+			verbose: false
+		})
 		await emitter.clone(projectDir)
 		console.log(`✅ Template downloaded from GitHub to: ${sanitizedName}`)
 		templateDownloaded = true
 	} catch (error) {
-		console.log("⚠️  Failed to download template from GitHub, trying local fallback...")
-		
+		console.log(
+			"⚠️  Failed to download template from GitHub, trying local fallback..."
+		)
+
 		// Fallback to local templates if they exist
 		const localTemplatesDir = join(__dirname, "../templates")
 		try {
@@ -185,21 +191,28 @@ async function initializeProject() {
 			await Promise.all(
 				templateFiles.map(async ({ src, dest }) => {
 					const templatePath = join(localTemplatesDir, src)
-					const destPath = dest === "agent.ts" ? join(srcDir, dest) : join(projectDir, dest)
-					await copyTemplate(templatePath, destPath, { projectName: sanitizedName })
+					const destPath =
+						dest === "agent.ts" ? join(srcDir, dest) : join(projectDir, dest)
+					await copyTemplate(templatePath, destPath, {
+						projectName: sanitizedName
+					})
 				})
 			)
 
 			// Copy test file
 			const testTemplatePath = join(localTemplatesDir, "src/agent.test.ts")
 			const testDestPath = join(srcDir, "agent.test.ts")
-			await copyTemplate(testTemplatePath, testDestPath, { projectName: sanitizedName })
+			await copyTemplate(testTemplatePath, testDestPath, {
+				projectName: sanitizedName
+			})
 
 			console.log(`✅ Template copied from local files to: ${sanitizedName}`)
 			templateDownloaded = true
 		} catch (localError) {
 			console.error("❌ Failed to use local template fallback:", localError)
-			console.log("💡 Make sure you have internet connection or the local templates exist")
+			console.log(
+				"💡 Make sure you have internet connection or the local templates exist"
+			)
 			process.exit(1)
 		}
 	}
@@ -228,7 +241,9 @@ async function initializeProject() {
 				await writeFile(filePath, content, "utf-8")
 			} catch (error) {
 				// File might not exist, continue
-				console.log(`⚠️  Could not update ${filePath.split("/").pop()}: file not found`)
+				console.log(
+					`⚠️  Could not update ${filePath.split("/").pop()}: file not found`
+				)
 			}
 		}
 
