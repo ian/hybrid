@@ -204,7 +204,7 @@ async function initializeProject() {
 		{ src: "tsconfig.json", dest: "tsconfig.json" },
 		{ src: "README.md", dest: "README.md" },
 		{ src: "vitest.config.ts", dest: "vitest.config.ts" },
-		{ src: ".gitignore", dest: ".gitignore" },
+		{ src: "gitignore.template", dest: ".gitignore" },
 		{ src: "env.template", dest: ".env" }
 	]
 

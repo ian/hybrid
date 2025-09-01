@@ -1,11 +1,16 @@
 {
 	"name": "hybrid",
-	"version": "1.0.3",
+	"version": "1.0.10",
 	"type": "module",
 	"bin": {
 		"hybrid": "./dist/src/cli.js",
 		"hy": "./dist/src/cli.js"
 	},
+	"files": [
+		"dist",
+		"templates",
+		"src"
+	],
 	"exports": {
 		".": {
 			"import": "./dist/src/index.js",
@@ -30,18 +35,18 @@
 		"@coinbase/agentkit-vercel-ai-sdk": "^0.1.0",
 		"@coinbase/coinbase-sdk": "^0.22.0",
 		"@hono/node-server": "^1.13.5",
-		"@hybrd/utils": "workspace:*",
-		"@hybrd/xmtp": "workspace:*",
+		"@hybrd/utils": "^1.0.8",
+		"@hybrd/xmtp": "^1.0.8",
 		"@upstash/qstash": "2.7.22",
 		"ai": "^5.0.28",
 		"eta": "^3.5.0",
-		"hono": "catalog:stack",
+		"hono": "^4.9.2",
 		"jsonwebtoken": "^9.0.2",
 		"tsx": "^4.19.2",
 		"uint8arrays": "^5.1.0",
 		"viem": "^2.33.3",
 		"wagmi": "^2.15.6",
-		"zod": "catalog:stack"
+		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@hybrd/biome": "workspace:*",
