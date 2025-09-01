@@ -1,0 +1,40 @@
+{
+	"name": "{{projectName}}",
+	"version": "0.1.0",
+	"private": true,
+	"description": "A Hybrid XMTP agent project",
+	"type": "module",
+	"scripts": {
+		"dev": "tsx --watch src/agent.ts",
+		"build": "tsc",
+		"start": "node dist/src/agent.js",
+		"keys": "hybrid gen:keys",
+		"test": "vitest",
+		"test:watch": "vitest --watch",
+		"test:coverage": "vitest --coverage",
+		"lint": "biome lint --write",
+		"lint:check": "biome lint",
+		"format": "biome format --write",
+		"format:check": "biome format --check",
+		"typecheck": "tsc --noEmit",
+		"clean": "rimraf dist node_modules"
+	},
+	"dependencies": {
+		"@openrouter/ai-sdk-provider": "^1.1.2",
+		"hybrid": "^1.0.1",
+		"tsx": "^4.19.2"
+	},
+	"devDependencies": {
+		"@types/node": "^22.0.0",
+		"vitest": "^3.2.4",
+		"@biomejs/biome": "^1.9.4",
+		"typescript": "^5.8.3",
+		"rimraf": "^6.0.1"
+	},
+	"engines": {
+		"node": ">=20.0.0"
+	},
+	"keywords": ["xmtp", "agent", "ai", "hybrid", "blockchain", "messaging"],
+	"author": "",
+	"license": "MIT"
+}

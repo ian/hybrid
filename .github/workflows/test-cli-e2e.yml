@@ -1,0 +1,239 @@
+name: Test CLI End-to-End
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'packages/hybrid/**'
+      - '.github/workflows/test-cli-e2e.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'packages/hybrid/**'
+      - '.github/workflows/test-cli-e2e.yml'
+
+jobs:
+  test-cli-e2e:
+    name: Test CLI End-to-End (Real World Scenario)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Create isolated environment
+        run: |
+          mkdir -p /tmp/e2e-test
+          cd /tmp/e2e-test
+
+      - name: Simulate npm package installation
+        run: |
+          cd /tmp/e2e-test
+
+          # Create a package.json to install the hybrid package
+          echo '{"name": "e2e-test-env", "private": true}' > package.json
+          
+          # Install the built hybrid package from local path
+          npm install /home/runner/work/hybrid/hybrid/packages/hybrid
+
+      - name: Test CLI as installed package
+        run: |
+          cd /tmp/e2e-test
+
+          # Test both 'hybrid' and 'hy' commands
+          npx hybrid --help
+          npx hy --help
+
+          # Test project creation
+          npx hybrid init e2e-test-project
+
+      - name: Verify generated project
+        run: |
+          cd /tmp/e2e-test/e2e-test-project
+
+          # Check all files exist
+          test -f package.json
+          test -f README.md
+          test -f .env
+          test -f tsconfig.json
+          test -f vitest.config.ts
+          test -d src/
+          test -f src/agent.ts
+          test -f src/agent.test.ts
+
+          # Verify project name in package.json
+          grep '"name": "e2e-test-project"' package.json
+
+          # Verify README title
+          grep '^# e2e-test-project$' README.md
+
+      - name: Test key generation with installed CLI
+        run: |
+          cd /tmp/e2e-test/e2e-test-project
+
+          # Use the installed CLI
+          npx hybrid gen:keys
+
+          # Verify keys were generated
+          grep "WALLET_KEY=0x" .env
+          grep "ENCRYPTION_KEY=" .env
+
+      - name: Test package.json scripts
+        run: |
+          cd /tmp/e2e-test/e2e-test-project
+
+          # Verify all scripts exist
+          node -e "
+            const pkg = require('./package.json');
+            const scripts = pkg.scripts;
+            const expected = ['dev', 'build', 'start', 'keys', 'test', 'lint', 'format'];
+            expected.forEach(script => {
+              if (!scripts[script]) {
+                console.error('Missing script:', script);
+                process.exit(1);
+              }
+            });
+            console.log('✅ All scripts present');
+          "
+
+      - name: Test with mock OpenRouter API key
+        run: |
+          cd /tmp/e2e-test/e2e-test-project
+
+          # Add a fake API key to test agent functionality
+          sed -i 's/your_openrouter_api_key_here/mock-api-key-for-testing/' .env
+
+          # Verify it was set
+          grep 'mock-api-key-for-testing' .env
+
+      - name: Test agent code structure
+        run: |
+          cd /tmp/e2e-test/e2e-test-project
+
+          # Check that agent.ts has required imports and structure
+          grep "import.*Agent.*hybrid" src/agent.ts
+          grep "import.*createOpenRouter" src/agent.ts
+          grep "agent.listen" src/agent.ts
+          grep "process.env.PORT" src/agent.ts
+
+          # Check test file structure
+          grep "describe.*Agent" src/agent.test.ts
+          grep "import.*vitest" src/agent.test.ts
+
+      - name: Test TypeScript configuration
+        run: |
+          cd /tmp/e2e-test/e2e-test-project
+
+          # Verify tsconfig.json structure
+          node -e "
+            const tsconfig = require('./tsconfig.json');
+            if (!tsconfig.compilerOptions) {
+              console.error('Missing compilerOptions');
+              process.exit(1);
+            }
+            if (tsconfig.compilerOptions.target !== 'ES2020') {
+              console.error('Wrong target:', tsconfig.compilerOptions.target);
+              process.exit(1);
+            }
+            if (!tsconfig.include.includes('src/**/*')) {
+              console.error('Wrong include pattern');
+              process.exit(1);
+            }
+            console.log('✅ TypeScript config is valid');
+          "
+
+      - name: Test vitest configuration
+        run: |
+          cd /tmp/e2e-test/e2e-test-project
+
+          # Verify vitest config has correct content
+          grep 'import.*defineConfig.*vitest/config' vitest.config.ts
+          grep 'environment.*node' vitest.config.ts
+          grep 'globals.*true' vitest.config.ts
+          echo "✅ Vitest config is valid"
+
+      - name: Test .gitignore content
+        run: |
+          cd /tmp/e2e-test/e2e-test-project
+
+          # Check that important files are ignored
+          grep "node_modules" .gitignore
+          grep "\.env" .gitignore
+          grep "dist" .gitignore
+          grep "\.DS_Store" .gitignore
+
+      - name: Test README completeness
+        run: |
+          cd /tmp/e2e-test/e2e-test-project
+
+          # Check that README has important sections
+          grep "## 🚀 Quick Start" README.md
+          grep "## 📁 Project Structure" README.md
+          grep "## 🛠️ Available Scripts" README.md
+          grep "## 🤖 Agent Configuration" README.md
+          grep "npm install" README.md
+          grep "npm run dev" README.md
+
+      - name: Test environment file structure
+        run: |
+          cd /tmp/e2e-test/e2e-test-project
+
+          # Check .env file has all required variables
+          grep "OPENROUTER_API_KEY=" .env
+          grep "WALLET_KEY=" .env
+          grep "ENCRYPTION_KEY=" .env
+          grep "XMTP_ENV=" .env
+          grep "PORT=" .env
+
+      - name: Test project name sanitization
+        run: |
+          cd /tmp/e2e-test
+
+          # Test various project names
+          npx hybrid init "Test Agent 123!"
+          test -d test-agent-123
+          grep '"name": "test-agent-123"' test-agent-123/package.json
+          rm -rf test-agent-123
+
+          # Test single character
+          npx hybrid init "A"
+          test -d a
+          grep '"name": "a"' a/package.json
+          rm -rf a
+
+      - name: Final integration test
+        run: |
+          cd /tmp/e2e-test
+
+          # Create one final project and verify everything works together
+          npx hybrid init final-integration-test
+
+          cd final-integration-test
+
+          # Generate keys
+          npx hybrid gen:keys
+
+          # Verify the complete setup
+          test -f package.json
+          test -f src/agent.ts
+          test -d src/
+          grep "WALLET_KEY=0x" .env
+          grep "ENCRYPTION_KEY=" .env
+
+          echo "🎉 CLI integration test completed successfully!"
+          echo "Generated project: $(pwd)"
+          echo "Files created:"
+          ls -la
+
+

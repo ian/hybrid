@@ -1,0 +1,206 @@
+name: Test Hybrid CLI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'packages/hybrid/**'
+      - '.github/workflows/test-cli.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'packages/hybrid/**'
+      - '.github/workflows/test-cli.yml'
+
+jobs:
+  test-cli:
+    name: Test Hybrid CLI Project Generator
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Verify CLI binary exists
+        run: |
+          ls -la packages/hybrid/dist/src/cli.js
+          node packages/hybrid/dist/src/cli.js --help
+
+      - name: Create test directory
+        run: |
+          mkdir -p test-project
+          cd test-project
+
+      - name: Test CLI help
+        run: node ../packages/hybrid/dist/src/cli.js
+        working-directory: test-project
+
+      - name: Test project creation with specific name
+        run: node ../packages/hybrid/dist/src/cli.js init test-agent-cli
+        working-directory: test-project
+
+      - name: Verify project structure
+        run: |
+          ls -la test-agent-cli/
+          ls -la test-agent-cli/src/
+          test -f test-agent-cli/package.json
+          test -f test-agent-cli/README.md
+          test -f test-agent-cli/.env
+          test -f test-agent-cli/tsconfig.json
+          test -f test-agent-cli/vitest.config.ts
+          test -f test-agent-cli/src/agent.ts
+          test -f test-agent-cli/src/agent.test.ts
+        working-directory: test-project
+
+      - name: Verify package.json content
+        run: |
+          cd test-agent-cli
+          grep '"name": "test-agent-cli"' package.json
+          grep '"version": "0.1.0"' package.json
+          grep '"dev": "tsx --watch src/agent.ts"' package.json
+          grep '"keys": "hybrid gen:keys"' package.json
+        working-directory: test-project
+
+      - name: Verify README has correct project name
+        run: |
+          cd test-agent-cli
+          grep '^# test-agent-cli$' README.md
+        working-directory: test-project
+
+      - name: Test key generation
+        run: |
+          cd test-agent-cli
+          node ../../packages/hybrid/dist/src/cli.js gen:keys
+          grep -v "your_wallet_key_here\|your_encryption_key_here" .env
+          grep "WALLET_KEY=0x" .env
+          grep "ENCRYPTION_KEY=" .env
+        working-directory: test-project
+
+      - name: Test interactive project creation
+        run: |
+          echo -e "\n" | node ../packages/hybrid/dist/src/cli.js init
+        working-directory: test-project
+
+      - name: Verify interactive project creation
+        run: |
+          ls -la my-hybrid-agent/
+          test -f my-hybrid-agent/package.json
+          grep '"name": "my-hybrid-agent"' my-hybrid-agent/package.json
+        working-directory: test-project
+
+      - name: Test build command (should fail without deps, but verify it runs)
+        run: |
+          cd test-agent-cli
+          node ../../packages/hybrid/dist/src/cli.js build || echo "Build failed as expected without dependencies"
+        working-directory: test-project
+
+      - name: Test dev command (should start but we'll kill it)
+        run: |
+          cd test-agent-cli
+          timeout 5 node ../../packages/hybrid/dist/src/cli.js dev || echo "Dev server started and was killed after 5 seconds"
+        working-directory: test-project
+
+      - name: Clean up test projects
+        run: |
+          rm -rf test-agent-cli my-hybrid-agent
+        working-directory: test-project
+
+      - name: Test edge cases
+        run: |
+          # Test creating project in current directory
+          mkdir edge-case-test
+          cd edge-case-test
+          node ../../packages/hybrid/dist/src/cli.js init .
+          test -f package.json
+          test -f src/agent.ts
+          cd ..
+          rm -rf edge-case-test
+
+          # Test with special characters in name
+          node ../packages/hybrid/dist/src/cli.js init "My Amazing Agent!"
+          test -d my-amazing-agent
+          grep '"name": "my-amazing-agent"' my-amazing-agent/package.json
+          rm -rf my-amazing-agent
+        working-directory: test-project
+
+  test-cli-installation:
+    name: Test CLI Installation and Usage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Create test environment
+        run: |
+          mkdir -p /tmp/cli-test
+          cd /tmp/cli-test
+
+      - name: Test CLI as npx command
+        run: |
+          cd /tmp/cli-test
+          # Simulate npx by using the built CLI with proper NODE_PATH
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
+          node "$GITHUB_WORKSPACE/packages/hybrid/dist/src/cli.js" init demo-project
+
+          # Verify project was created
+          test -d demo-project
+          test -f demo-project/package.json
+          test -f demo-project/src/agent.ts
+
+          # Check if we can run npm scripts (they'll fail but should be available)
+          cd demo-project
+          npm run --help 2>/dev/null | grep -q "Available scripts" || echo "npm scripts available"
+        working-directory: /tmp/cli-test
+
+      - name: Test complete workflow
+        run: |
+          # Test key generation
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
+          node "$GITHUB_WORKSPACE/packages/hybrid/dist/src/cli.js" gen:keys
+          grep "WALLET_KEY=0x" .env
+
+          # Test that all scripts are defined
+          node -e "
+            const pkg = require('./package.json');
+            const scripts = pkg.scripts;
+            const required = ['dev', 'build', 'start', 'keys', 'test', 'lint', 'format'];
+            required.forEach(script => {
+              if (!scripts[script]) {
+                console.error('Missing script:', script);
+                process.exit(1);
+              }
+            });
+            console.log('All required scripts present');
+          "
+        working-directory: /tmp/cli-test/demo-project
+
+

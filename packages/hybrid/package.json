@@ -1,6 +1,6 @@
 {
 	"name": "hybrid",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"type": "module",
 	"bin": {
 		"hybrid": "./dist/src/cli.js",
@@ -17,7 +17,8 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc && pnpm run post-build",
+		"post-build": "cp -r templates dist/",
 		"clean": "rm -rf .turbo dist",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",
@@ -32,7 +33,7 @@
 		"@hybrd/utils": "workspace:*",
 		"@hybrd/xmtp": "workspace:*",
 		"@upstash/qstash": "2.7.22",
-		"ai": "^5.0.15",
+		"ai": "^5.0.28",
 		"eta": "^3.5.0",
 		"hono": "catalog:stack",
 		"jsonwebtoken": "^9.0.2",
