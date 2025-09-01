@@ -21,7 +21,8 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc && pnpm run post-build",
+		"post-build": "cp -r ../../templates/agent dist/templates",
 		"clean": "rm -rf .turbo dist",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",

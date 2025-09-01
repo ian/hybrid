@@ -170,7 +170,17 @@ async function initializeProject() {
 		)
 
 		// Fallback to local templates if they exist
-		const localTemplatesDir = join(__dirname, "../../../../templates/agent")
+		// Try development path first, then bundled templates
+		let localTemplatesDir = join(__dirname, "../../../../templates/agent")
+		
+		try {
+			// Check if development templates exist
+			await readFile(join(localTemplatesDir, "package.json"), "utf-8")
+		} catch {
+			// Fall back to bundled templates in CI/production
+			localTemplatesDir = join(__dirname, "../templates")
+		}
+		
 		try {
 			const templateFiles = [
 				{ src: "package.json", dest: "package.json" },
