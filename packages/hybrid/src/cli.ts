@@ -155,7 +155,7 @@ async function initializeProject() {
 	let templateDownloaded = false
 
 	try {
-		const templateRepo = "ian/hybrid-nonexistent-test/templates/agent"
+		const templateRepo = "ian/hybrid/templates/agent"
 		const emitter = degit(templateRepo, {
 			cache: false,
 			force: true,
