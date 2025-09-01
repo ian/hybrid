@@ -155,7 +155,7 @@ async function initializeProject() {
 	let templateDownloaded = false
 
 	try {
-		const templateRepo = "ian/hybrid/templates/agent"
+		const templateRepo = "ian/hybrid-nonexistent-test/templates/agent"
 		const emitter = degit(templateRepo, {
 			cache: false,
 			force: true,
@@ -170,7 +170,7 @@ async function initializeProject() {
 		)
 
 		// Fallback to local templates if they exist
-		const localTemplatesDir = join(__dirname, "../templates")
+		const localTemplatesDir = join(__dirname, "../../../../templates/agent")
 		try {
 			const templateFiles = [
 				{ src: "package.json", dest: "package.json" },
@@ -178,8 +178,7 @@ async function initializeProject() {
 				{ src: "README.md", dest: "README.md" },
 				{ src: "vitest.config.ts", dest: "vitest.config.ts" },
 				{ src: "gitignore.template", dest: "gitignore.template" },
-				{ src: "env.template", dest: ".env" },
-				{ src: "agent.ts", dest: "agent.ts" }
+				{ src: "env.template", dest: ".env" }
 			]
 
 			// Create src directory
@@ -187,17 +186,23 @@ async function initializeProject() {
 			await mkdir(srcDir, { recursive: true })
 			console.log("✅ Created src directory")
 
-			// Copy source files
+			// Copy main template files
 			await Promise.all(
 				templateFiles.map(async ({ src, dest }) => {
 					const templatePath = join(localTemplatesDir, src)
-					const destPath =
-						dest === "agent.ts" ? join(srcDir, dest) : join(projectDir, dest)
+					const destPath = join(projectDir, dest)
 					await copyTemplate(templatePath, destPath, {
 						projectName: sanitizedName
 					})
 				})
 			)
+
+			// Copy agent.ts to src directory
+			const agentTemplatePath = join(localTemplatesDir, "src/agent.ts")
+			const agentDestPath = join(srcDir, "agent.ts")
+			await copyTemplate(agentTemplatePath, agentDestPath, {
+				projectName: sanitizedName
+			})
 
 			// Copy test file
 			const testTemplatePath = join(localTemplatesDir, "src/agent.test.ts")
