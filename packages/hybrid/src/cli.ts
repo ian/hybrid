@@ -25,68 +25,33 @@ function generateEncryptionKeyHex() {
 	return uint8ToString(uint8Array, "hex")
 }
 
-// Generate keys and create .env file
+// Generate keys and display them for manual addition to .env
 async function generateKeys() {
-	console.log("Generating XMTP keys...")
+	console.log("🔑 Generating XMTP keys...")
 
 	const walletKey = generatePrivateKey()
 	const account = privateKeyToAccount(walletKey)
 	const encryptionKeyHex = generateEncryptionKeyHex()
 	const publicKey = account.address
 
-	const currentDir = process.cwd()
-	const envPath = join(currentDir, ".env")
-
-	console.log(`Looking for .env file in: ${currentDir}`)
-
-	// Read existing .env file if it exists
-	let existingEnv = ""
-	try {
-		existingEnv = await readFile(envPath, "utf-8")
-		console.log("Found existing .env file")
-	} catch {
-		console.log("No existing .env file found, creating new one")
-	}
-
-	// Replace placeholder values in existing .env or create new content
-	let newEnvContent = existingEnv
-
-	// Replace WALLET_KEY placeholder or append if not found
-	if (newEnvContent.includes("WALLET_KEY=your_wallet_key_here")) {
-		newEnvContent = newEnvContent.replace(
-			"WALLET_KEY=your_wallet_key_here",
-			`WALLET_KEY=${walletKey}`
-		)
-	} else if (!newEnvContent.includes("WALLET_KEY=")) {
-		newEnvContent += `\n# XMTP keys for agent\nWALLET_KEY=${walletKey}`
-	}
-
-	// Replace ENCRYPTION_KEY placeholder or append if not found
-	if (newEnvContent.includes("ENCRYPTION_KEY=your_encryption_key_here")) {
-		newEnvContent = newEnvContent.replace(
-			"ENCRYPTION_KEY=your_encryption_key_here",
-			`ENCRYPTION_KEY=${encryptionKeyHex}`
-		)
-	} else if (!newEnvContent.includes("ENCRYPTION_KEY=")) {
-		if (!newEnvContent.includes("WALLET_KEY=")) {
-			newEnvContent += `\n# XMTP keys for agent\nENCRYPTION_KEY=${encryptionKeyHex}`
-		} else {
-			newEnvContent += `\nENCRYPTION_KEY=${encryptionKeyHex}`
-		}
-	}
-
-	// Add XMTP_ENV if not present
-	if (!newEnvContent.includes("XMTP_ENV=")) {
-		newEnvContent += `\nXMTP_ENV=dev`
-	}
-
-	// Add public key comment
-	newEnvContent += `\n# public key is ${publicKey}`
-
-	// Write the .env file
-	await writeFile(envPath, newEnvContent, { flag: "w" })
-	console.log(`Keys written to ${envPath}`)
-	console.log(`Public key: ${publicKey}`)
+	console.log("\n✅ Keys generated successfully!")
+	console.log("\n📋 Add these environment variables to your .env file:")
+	console.log("=".repeat(60))
+	console.log(`WALLET_KEY=${walletKey}`)
+	console.log(`ENCRYPTION_KEY=${encryptionKeyHex}`)
+	console.log(`XMTP_ENV=dev  # or 'production' for mainnet`)
+	console.log("=".repeat(60))
+	console.log(`\n🔍 Your public key (wallet address): ${publicKey}`)
+	console.log("\n📝 Instructions:")
+	console.log("1. Copy the environment variables above")
+	console.log("2. Paste them into your .env file")
+	console.log(
+		"3. Set XMTP_ENV to 'dev' for development or 'production' for mainnet"
+	)
+	console.log("4. Add your OPENROUTER_API_KEY if you haven't already")
+	console.log(
+		"\n⚠️  Keep these keys secure and never commit them to version control!"
+	)
 }
 
 // Prompt user for input
@@ -146,11 +111,11 @@ async function initializeProject() {
 	let projectName = projectNameArg
 
 	if (!projectName) {
-		projectName = await prompt(
-			"Enter project name (default: my-hybrid-agent): "
-		)
-		if (!projectName.trim()) {
-			projectName = "my-hybrid-agent"
+		while (!projectName || !projectName.trim()) {
+			projectName = await prompt("Enter project name: ")
+			if (!projectName || !projectName.trim()) {
+				console.log("❌ Project name is required. Please enter a valid name.")
+			}
 		}
 	}
 
@@ -236,11 +201,14 @@ async function initializeProject() {
 	console.log(`\n📂 Project created in: ${projectDir}`)
 	console.log("\n📋 Next steps:")
 	console.log(`1. cd ${sanitizedName}`)
-	console.log("2. npm install")
+	console.log(
+		"2. Install dependencies (npm install, yarn install, or pnpm install)"
+	)
 	console.log("3. Get your OpenRouter API key from https://openrouter.ai/keys")
 	console.log("4. Add your API key to the OPENROUTER_API_KEY in .env")
-	console.log("5. npm run keys")
-	console.log("6. npm run dev")
+	console.log("5. Set XMTP_ENV in .env (dev or production)")
+	console.log("6. Generate keys: npm run keys (or yarn/pnpm equivalent)")
+	console.log("7. Start development: npm run dev (or yarn/pnpm equivalent)")
 
 	console.log(
 		"\n📖 For more information, see the README.md file in your project"
@@ -250,7 +218,7 @@ async function initializeProject() {
 // Run development server
 function runDev() {
 	console.log("Starting development server...")
-	const child = spawn("tsx", ["--watch", "src/index.ts"], {
+	const child = spawn("tsx", ["--watch", "src/agent.ts"], {
 		stdio: "inherit",
 		shell: true
 	})
@@ -325,7 +293,9 @@ function main() {
 			console.log("")
 			console.log("Examples:")
 			console.log("  hybrid init my-agent    or    hy init my-agent")
-			console.log("  hybrid init             or    hy init")
+			console.log(
+				"  hybrid init             or    hy init (will prompt for name)"
+			)
 			console.log("  hybrid dev              or    hy dev")
 			console.log("  hybrid build            or    hy build")
 			console.log("  hybrid gen:keys         or    hy gen:keys")
