@@ -2,12 +2,13 @@
 
 import { spawn } from "node:child_process"
 import { getRandomValues } from "node:crypto"
-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises"
+import { mkdir, readFile, readdir, writeFile, unlink } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { createInterface } from "node:readline"
 import { fileURLToPath } from "node:url"
 import { toString as uint8ToString } from "uint8arrays"
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
+import degit from "degit"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -149,53 +150,105 @@ async function initializeProject() {
 		}
 	}
 
-	// Create project directory
+	// Use degit to clone template from GitHub, with fallback to local templates
+	console.log("📦 Downloading template from GitHub...")
+	let templateDownloaded = false
+	
 	try {
-		await mkdir(projectDir, { recursive: true })
-		console.log(`📁 Created project directory: ${sanitizedName}`)
+		const templateRepo = "ian/hybrid/templates/hybrid"
+		const emitter = degit(templateRepo, { cache: false, force: true, verbose: false })
+		await emitter.clone(projectDir)
+		console.log(`✅ Template downloaded from GitHub to: ${sanitizedName}`)
+		templateDownloaded = true
 	} catch (error) {
-		console.error("❌ Failed to create project directory:", error)
+		console.log("⚠️  Failed to download template from GitHub, trying local fallback...")
+		
+		// Fallback to local templates if they exist
+		const localTemplatesDir = join(__dirname, "../templates")
+		try {
+			const templateFiles = [
+				{ src: "package.json", dest: "package.json" },
+				{ src: "tsconfig.json", dest: "tsconfig.json" },
+				{ src: "README.md", dest: "README.md" },
+				{ src: "vitest.config.ts", dest: "vitest.config.ts" },
+				{ src: "gitignore.template", dest: "gitignore.template" },
+				{ src: "env.template", dest: ".env" },
+				{ src: "agent.ts", dest: "agent.ts" }
+			]
+
+			// Create src directory
+			const srcDir = join(projectDir, "src")
+			await mkdir(srcDir, { recursive: true })
+			console.log("✅ Created src directory")
+
+			// Copy source files
+			await Promise.all(
+				templateFiles.map(async ({ src, dest }) => {
+					const templatePath = join(localTemplatesDir, src)
+					const destPath = dest === "agent.ts" ? join(srcDir, dest) : join(projectDir, dest)
+					await copyTemplate(templatePath, destPath, { projectName: sanitizedName })
+				})
+			)
+
+			// Copy test file
+			const testTemplatePath = join(localTemplatesDir, "src/agent.test.ts")
+			const testDestPath = join(srcDir, "agent.test.ts")
+			await copyTemplate(testTemplatePath, testDestPath, { projectName: sanitizedName })
+
+			console.log(`✅ Template copied from local files to: ${sanitizedName}`)
+			templateDownloaded = true
+		} catch (localError) {
+			console.error("❌ Failed to use local template fallback:", localError)
+			console.log("💡 Make sure you have internet connection or the local templates exist")
+			process.exit(1)
+		}
+	}
+
+	if (!templateDownloaded) {
+		console.error("❌ Could not download or copy template")
 		process.exit(1)
 	}
 
-	const templatesDir = join(__dirname, "../templates")
+	// Replace template variables in all files
 	const variables = {
 		projectName: sanitizedName
 	}
 
-	// Copy all templates
-	const templateFiles = [
-		{ src: "package.json", dest: "package.json" },
-		{ src: "tsconfig.json", dest: "tsconfig.json" },
-		{ src: "README.md", dest: "README.md" },
-		{ src: "vitest.config.ts", dest: "vitest.config.ts" },
-		{ src: "gitignore.template", dest: ".gitignore" },
-		{ src: "env.template", dest: ".env" }
-	]
+	try {
+		// Read and update files with template variables
+		const filesToUpdate = [
+			join(projectDir, "package.json"),
+			join(projectDir, "README.md")
+		]
 
-	// Create src directory
-	const srcDir = join(projectDir, "src")
-	await mkdir(srcDir, { recursive: true })
-	console.log("✅ Created src directory")
+		for (const filePath of filesToUpdate) {
+			try {
+				let content = await readFile(filePath, "utf-8")
+				content = replaceTemplateVariables(content, variables)
+				await writeFile(filePath, content, "utf-8")
+			} catch (error) {
+				// File might not exist, continue
+				console.log(`⚠️  Could not update ${filePath.split("/").pop()}: file not found`)
+			}
+		}
 
-	// Copy source files
-	await Promise.all(
-		templateFiles.map(async ({ src, dest }) => {
-			const templatePath = join(templatesDir, src)
-			const destPath = join(projectDir, dest)
-			await copyTemplate(templatePath, destPath, variables)
-		})
-	)
+		// Handle gitignore template file
+		const gitignoreTemplatePath = join(projectDir, "gitignore.template")
+		const gitignorePath = join(projectDir, ".gitignore")
+		try {
+			const gitignoreContent = await readFile(gitignoreTemplatePath, "utf-8")
+			await writeFile(gitignorePath, gitignoreContent, "utf-8")
+			// Remove the template file
+			await unlink(gitignoreTemplatePath)
+			console.log("✅ Created .gitignore file")
+		} catch (error) {
+			console.log("⚠️  Could not create .gitignore file")
+		}
 
-	// Copy agent.ts to src directory
-	const agentTemplatePath = join(templatesDir, "agent.ts")
-	const agentDestPath = join(srcDir, "agent.ts")
-	await copyTemplate(agentTemplatePath, agentDestPath, variables)
-
-	// Copy test file
-	const testTemplatePath = join(templatesDir, "src/agent.test.ts")
-	const testDestPath = join(srcDir, "agent.test.ts")
-	await copyTemplate(testTemplatePath, testDestPath, variables)
+		console.log("✅ Template variables updated")
+	} catch (error) {
+		console.error("❌ Failed to update template variables:", error)
+	}
 
 	console.log("\n🎉 Hybrid project created successfully!")
 	console.log(`\n📂 Project created in: ${projectDir}`)

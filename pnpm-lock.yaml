@@ -86,6 +86,9 @@ importers:
       ai:
         specifier: ^5.0.28
         version: 5.0.28(zod@3.25.76)
+      degit:
+        specifier: ^2.8.4
+        version: 2.8.4
       eta:
         specifier: ^3.5.0
         version: 3.5.0
@@ -117,6 +120,9 @@ importers:
       '@hybrd/tsconfig':
         specifier: workspace:*
         version: link:../../config/typescript
+      '@types/degit':
+        specifier: ^2.8.4
+        version: 2.8.6
       '@types/jsonwebtoken':
         specifier: ^9.0.7
         version: 9.0.10
@@ -1018,6 +1024,9 @@ packages:
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
 
+  '@types/degit@2.8.6':
+    resolution: {integrity: sha512-y0M7sqzsnHB6cvAeTCBPrCQNQiZe8U4qdzf8uBVmOWYap5MMTN/gB2iEqrIqFiYcsyvP74GnGD5tgsHttielFw==}
+
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
@@ -1544,6 +1553,11 @@ packages:
 
   defu@6.1.4:
     resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
+
+  degit@2.8.4:
+    resolution: {integrity: sha512-vqYuzmSA5I50J882jd+AbAhQtgK6bdKUJIex1JNfEUPENCgYsxugzKVZlFyMwV4i06MmnV47/Iqi5Io86zf3Ng==}
+    engines: {node: '>=8.0.0'}
+    hasBin: true
 
   delay@5.0.0:
     resolution: {integrity: sha512-ReEBKkIfe4ya47wlPYf/gu5ib6yUG0/Aez0JQZQz94kiWtRQvZIQbTiehsnwHvLSWJnQdhVeqYue7Id1dKr0qw==}
@@ -4245,6 +4259,8 @@ snapshots:
 
   '@types/deep-eql@4.0.2': {}
 
+  '@types/degit@2.8.6': {}
+
   '@types/estree@1.0.8': {}
 
   '@types/jsonwebtoken@9.0.10':
@@ -5283,6 +5299,8 @@ snapshots:
       gopd: 1.2.0
 
   defu@6.1.4: {}
+
+  degit@2.8.4: {}
 
   delay@5.0.0: {}
 

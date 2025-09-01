@@ -8,7 +8,6 @@
 	},
 	"files": [
 		"dist",
-		"templates",
 		"src"
 	],
 	"exports": {
@@ -22,8 +21,7 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc && pnpm run post-build",
-		"post-build": "cp -r templates dist/",
+		"build": "tsc",
 		"clean": "rm -rf .turbo dist",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",
@@ -39,6 +37,7 @@
 		"@hybrd/xmtp": "^1.0.8",
 		"@upstash/qstash": "2.7.22",
 		"ai": "^5.0.28",
+		"degit": "^2.8.4",
 		"eta": "^3.5.0",
 		"hono": "^4.9.2",
 		"jsonwebtoken": "^9.0.2",
@@ -51,6 +50,7 @@
 	"devDependencies": {
 		"@hybrd/biome": "workspace:*",
 		"@hybrd/tsconfig": "workspace:*",
+		"@types/degit": "^2.8.4",
 		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "catalog:stack",
 		"vitest": "^3.2.4"
