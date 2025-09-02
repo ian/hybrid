@@ -36,6 +36,7 @@
 		"@upstash/qstash": "2.7.22",
 		"ai": "^5.0.28",
 		"degit": "^2.8.4",
+		"dotenv": "^16.4.5",
 		"eta": "^3.5.0",
 		"hono": "^4.9.2",
 		"jsonwebtoken": "^9.0.2",

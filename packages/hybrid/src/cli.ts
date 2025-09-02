@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
 import degit from "degit"
+import dotenv from "dotenv"
 import { spawn } from "node:child_process"
 import { getRandomValues } from "node:crypto"
+import { existsSync } from "node:fs"
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { createInterface } from "node:readline"
@@ -302,6 +304,16 @@ async function initializeProject() {
 // Run development server
 function runDev() {
 	console.log("Starting development server...")
+
+	// Load environment variables from .env file
+	const envPath = join(process.cwd(), ".env")
+	if (existsSync(envPath)) {
+		dotenv.config({ path: envPath })
+		console.log("✅ Loaded environment variables from .env")
+	} else {
+		console.log("⚠️  No .env file found - environment variables not loaded")
+	}
+
 	const child = spawn("tsx", ["--watch", "src/agent.ts"], {
 		stdio: "inherit",
 		shell: true
@@ -341,24 +353,28 @@ function runBuild() {
 }
 
 // Main CLI logic
-function main() {
+async function main() {
 	const command = process.argv[2]
 
 	switch (command) {
 		case "init":
-			initializeProject().catch((error) => {
+			try {
+				await initializeProject()
+			} catch (error) {
 				console.error("Failed to initialize project:", error)
 				process.exit(1)
-			})
+			}
 			break
 		case "dev":
 			runDev()
 			break
 		case "gen:keys":
-			generateKeys().catch((error) => {
+			try {
+				await generateKeys()
+			} catch (error) {
 				console.error("Failed to generate keys:", error)
 				process.exit(1)
-			})
+			}
 			break
 		case "build":
 			runBuild()
@@ -400,4 +416,7 @@ function main() {
 }
 
 // Run the CLI
-main()
+main().catch((error) => {
+	console.error("CLI error:", error)
+	process.exit(1)
+})
