@@ -1,6 +1,7 @@
 {
 	"name": "@hybrd/xmtp",
 	"version": "1.0.10",
+
 	"type": "module",
 	"exports": {
 		".": {
@@ -11,14 +12,6 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "rm -rf .turbo dist",
-		"gen:keys": "tsx scripts/generate-keys.ts",
-		"register": "tsx scripts/register-wallet.ts",
-		"revoke": "tsx scripts/revoke-installations.ts",
-		"revoke:all": "tsx scripts/revoke-all-installations.ts",
-		"enhanced:demo": "tsx scripts/enhanced-connection-example.ts",
-		"test:messages": "tsx scripts/test-message-reception.ts",
-		"refresh:identity": "tsx scripts/refresh-identity.ts",
-		"custom:storage": "tsx scripts/custom-storage-example.ts",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",
 		"lint:fix": "biome lint --write --unsafe",

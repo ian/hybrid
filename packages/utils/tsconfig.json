@@ -1,5 +1,5 @@
 {
-	"extends": "@config/tsconfig/internal-package.json",
+	"extends": "@config/tsconfig/external-package.json",
 	"compilerOptions": {
 		"emitDeclarationOnly": false,
 		"outDir": "dist"

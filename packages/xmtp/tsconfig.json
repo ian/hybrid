@@ -1,14 +1,9 @@
 {
-	"extends": "@config/tsconfig/base.json",
+	"extends": "@config/tsconfig/external-package.json",
 	"compilerOptions": {
-		"rootDir": ".",
-		"target": "ES2020",
-		"lib": ["ES2020"],
-		"outDir": "dist",
-		"isolatedModules": false,
-		"noEmit": false,
-		"declaration": true
+		"emitDeclarationOnly": false,
+		"outDir": "dist"
 	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules", "dist"]
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["node_modules"]
 }
