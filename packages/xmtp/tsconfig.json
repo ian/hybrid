@@ -1,20 +1,8 @@
 {
+	"extends": "@config/tsconfig/external-package.json",
 	"compilerOptions": {
-		"target": "ES2022",
-		"lib": ["ES2022"],
-		"module": "ESNext",
-		"moduleResolution": "Node",
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"allowJs": true,
-		"resolveJsonModule": true,
-		"isolatedModules": false,
-		"strict": true,
-		"skipLibCheck": true,
-		"declaration": true,
-		"declarationMap": true,
-		"outDir": "dist",
-		"noEmit": false
+		"emitDeclarationOnly": false,
+		"outDir": "dist"
 	},
 	"include": ["src/**/*.ts", "src/**/*.tsx"],
 	"exclude": ["node_modules"]
