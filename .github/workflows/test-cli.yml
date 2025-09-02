@@ -4,12 +4,12 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'packages/hybrid/**'
+      - 'packages/cli/**'
       - '.github/workflows/test-cli.yml'
   pull_request:
     branches: [main, develop]
     paths:
-      - 'packages/hybrid/**'
+      - 'packages/cli/**'
       - '.github/workflows/test-cli.yml'
 
 jobs:
@@ -35,8 +35,8 @@ jobs:
 
       - name: Verify CLI binary exists
         run: |
-          ls -la packages/hybrid/dist/src/cli.js
-          node packages/hybrid/dist/src/cli.js --help
+          ls -la packages/cli/dist/src/cli.js
+          node packages/cli/dist/src/cli.js --help
 
       - name: Create test directory
         run: |
@@ -44,11 +44,11 @@ jobs:
           cd test-project
 
       - name: Test CLI help
-        run: node ../packages/hybrid/dist/src/cli.js
+        run: node ../packages/cli/dist/src/cli.js
         working-directory: test-project
 
       - name: Test project creation with specific name
-        run: node ../packages/hybrid/dist/src/cli.js init test-agent-cli
+        run: node ../packages/cli/dist/src/cli.js init test-agent-cli
         working-directory: test-project
 
       - name: Verify project structure
@@ -82,7 +82,7 @@ jobs:
       - name: Test key generation
         run: |
           cd test-agent-cli
-          node ../../packages/hybrid/dist/src/cli.js gen:keys
+          node ../../packages/cli/dist/src/cli.js gen:keys
           grep -v "your_wallet_key_here\|your_encryption_key_here" .env
           grep "XMTP_WALLET_KEY=0x" .env
           grep "XMTP_ENCRYPTION_KEY=" .env
@@ -90,7 +90,7 @@ jobs:
 
       - name: Test interactive project creation
         run: |
-          echo -e "\n" | node ../packages/hybrid/dist/src/cli.js init
+          echo -e "\n" | node ../packages/cli/dist/src/cli.js init
         working-directory: test-project
 
       - name: Verify interactive project creation
@@ -103,13 +103,13 @@ jobs:
       - name: Test build command (should fail without deps, but verify it runs)
         run: |
           cd test-agent-cli
-          node ../../packages/hybrid/dist/src/cli.js build || echo "Build failed as expected without dependencies"
+          node ../../packages/cli/dist/src/cli.js build || echo "Build failed as expected without dependencies"
         working-directory: test-project
 
       - name: Test dev command (should start but we'll kill it)
         run: |
           cd test-agent-cli
-          timeout 5 node ../../packages/hybrid/dist/src/cli.js dev || echo "Dev server started and was killed after 5 seconds"
+          timeout 5 node ../../packages/cli/dist/src/cli.js dev || echo "Dev server started and was killed after 5 seconds"
         working-directory: test-project
 
       - name: Clean up test projects
@@ -122,14 +122,14 @@ jobs:
           # Test creating project in current directory
           mkdir edge-case-test
           cd edge-case-test
-          node ../../packages/hybrid/dist/src/cli.js init .
+          node ../../packages/cli/dist/src/cli.js init .
           test -f package.json
           test -f src/agent.ts
           cd ..
           rm -rf edge-case-test
 
           # Test with special characters in name
-          node ../packages/hybrid/dist/src/cli.js init "My Amazing Agent!"
+          node ../packages/cli/dist/src/cli.js init "My Amazing Agent!"
           test -d my-amazing-agent
           grep '"name": "my-amazing-agent"' my-amazing-agent/package.json
           rm -rf my-amazing-agent
@@ -168,8 +168,8 @@ jobs:
         run: |
           cd /tmp/cli-test
           # Simulate npx by using the built CLI with proper NODE_PATH
-          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
-          node "$GITHUB_WORKSPACE/packages/hybrid/dist/src/cli.js" init demo-project
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/cli/node_modules:$NODE_PATH"
+          node "$GITHUB_WORKSPACE/packages/cli/dist/src/cli.js" init demo-project
 
           # Verify project was created
           test -d demo-project
@@ -184,8 +184,8 @@ jobs:
       - name: Test complete workflow
         run: |
           # Test key generation
-          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/hybrid/node_modules:$NODE_PATH"
-          node "$GITHUB_WORKSPACE/packages/hybrid/dist/src/cli.js" gen:keys
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/cli/node_modules:$NODE_PATH"
+          node "$GITHUB_WORKSPACE/packages/cli/dist/src/cli.js" gen:keys
           grep "XMTP_WALLET_KEY=0x" .env
 
           # Test that all scripts are defined
