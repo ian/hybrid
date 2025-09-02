@@ -21,7 +21,7 @@ import type {
 	XmtpServiceClientConfig,
 	XmtpServiceMessage,
 	XmtpServiceResponse
-} from "./types.js"
+} from "./types"
 
 export class XmtpServiceClient {
 	private config: XmtpServiceClientConfig
