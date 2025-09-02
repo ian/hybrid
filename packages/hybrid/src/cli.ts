@@ -3,7 +3,7 @@
 import degit from "degit"
 import { spawn } from "node:child_process"
 import { getRandomValues } from "node:crypto"
-import { mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises"
+import { mkdir, readFile, readdir, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { createInterface } from "node:readline"
 import { fileURLToPath } from "node:url"
@@ -155,7 +155,21 @@ async function initializeProject() {
 	let templateDownloaded = false
 
 	try {
-		const templateRepo = "ian/hybrid/templates/agent"
+		// Parse REPO environment variable to support repository and branch specification
+		const repoEnv = process.env.REPO || "ian/hybrid"
+		let templateRepo: string
+
+		if (repoEnv.includes("#")) {
+			// Format: user/repo#branch
+			const [repo, branch] = repoEnv.split("#")
+			templateRepo = `${repo}/templates/agent#${branch}`
+			console.log(`🔗 Using repository: ${repo} (branch: ${branch})`)
+		} else {
+			// Format: user/repo (use default branch)
+			templateRepo = `${repoEnv}/templates/agent`
+			console.log(`🔗 Using repository: ${repoEnv} (default branch)`)
+		}
+
 		const emitter = degit(templateRepo, {
 			cache: false,
 			force: true,
@@ -172,7 +186,7 @@ async function initializeProject() {
 		// Fallback to local templates if they exist
 		// Try development path first, then bundled templates
 		let localTemplatesDir = join(__dirname, "../../../../templates/agent")
-		
+
 		try {
 			// Check if development templates exist
 			await readFile(join(localTemplatesDir, "package.json"), "utf-8")
@@ -180,15 +194,15 @@ async function initializeProject() {
 			// Fall back to bundled templates in CI/production
 			localTemplatesDir = join(__dirname, "../templates")
 		}
-		
+
 		try {
 			const templateFiles = [
 				{ src: "package.json", dest: "package.json" },
 				{ src: "tsconfig.json", dest: "tsconfig.json" },
 				{ src: "README.md", dest: "README.md" },
 				{ src: "vitest.config.ts", dest: "vitest.config.ts" },
-				{ src: "gitignore.template", dest: "gitignore.template" },
-				{ src: "env.template", dest: ".env" }
+				{ src: ".gitignore", dest: ".gitignore" },
+				{ src: ".env", dest: ".env" }
 			]
 
 			// Create src directory
@@ -260,19 +274,6 @@ async function initializeProject() {
 					`⚠️  Could not update ${filePath.split("/").pop()}: file not found`
 				)
 			}
-		}
-
-		// Handle gitignore template file
-		const gitignoreTemplatePath = join(projectDir, "gitignore.template")
-		const gitignorePath = join(projectDir, ".gitignore")
-		try {
-			const gitignoreContent = await readFile(gitignoreTemplatePath, "utf-8")
-			await writeFile(gitignorePath, gitignoreContent, "utf-8")
-			// Remove the template file
-			await unlink(gitignoreTemplatePath)
-			console.log("✅ Created .gitignore file")
-		} catch (error) {
-			console.log("⚠️  Could not create .gitignore file")
 		}
 
 		console.log("✅ Template variables updated")
@@ -374,6 +375,12 @@ function main() {
 			console.log("  build        Build the TypeScript project")
 			console.log("  gen:keys     Generate XMTP wallet and encryption keys")
 			console.log("")
+			console.log("Environment Variables:")
+			console.log(
+				"  REPO         Set template repository (default: ian/hybrid)"
+			)
+			console.log("               Format: user/repo or user/repo#branch")
+			console.log("")
 			console.log("Examples:")
 			console.log("  hybrid init my-agent    or    hy init my-agent")
 			console.log(
@@ -382,6 +389,9 @@ function main() {
 			console.log("  hybrid dev              or    hy dev")
 			console.log("  hybrid build            or    hy build")
 			console.log("  hybrid gen:keys         or    hy gen:keys")
+			console.log("")
+			console.log("  REPO=myuser/myrepo hybrid init my-agent")
+			console.log("  REPO=myuser/myrepo#dev hybrid init my-agent")
 			// Only exit with error code for unknown commands, not for help
 			if (command && !["--help", "-h", "help"].includes(command)) {
 				process.exit(1)

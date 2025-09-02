@@ -6,10 +6,7 @@
 		"hybrid": "./dist/src/cli.js",
 		"hy": "./dist/src/cli.js"
 	},
-	"files": [
-		"dist",
-		"src"
-	],
+	"files": ["dist", "src"],
 	"exports": {
 		".": {
 			"import": "./dist/src/index.js",
@@ -21,8 +18,8 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc && pnpm run post-build",
-		"post-build": "cp -r ../../templates/agent dist/templates",
+		"build": "tsc",
+		"build:watch": "tsc --watch",
 		"clean": "rm -rf .turbo dist",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",
