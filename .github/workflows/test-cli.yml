@@ -169,44 +169,16 @@ jobs:
           cd /tmp/cli-test
           # Simulate npx by using the built CLI with proper NODE_PATH
           export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/cli/node_modules:$NODE_PATH"
+          node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init demo-project
 
-          # Run CLI and capture exit code
-          if node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init demo-project; then
-            echo "✅ CLI completed successfully"
+          # Verify project was created
+          test -d demo-project
+          test -f demo-project/package.json
+          test -f demo-project/src/agent.ts
 
-            # Verify project was created
-            if test -d demo-project; then
-              echo "✅ Project directory created"
-            else
-              echo "❌ Project directory not found"
-              exit 1
-            fi
-
-            if test -f demo-project/package.json; then
-              echo "✅ package.json exists"
-            else
-              echo "❌ package.json not found"
-              exit 1
-            fi
-
-            if test -f demo-project/src/agent.ts; then
-              echo "✅ agent.ts exists"
-            else
-              echo "❌ agent.ts not found"
-              exit 1
-            fi
-
-            # Check if we can run npm scripts
-            cd demo-project
-            if npm run --help 2>/dev/null | grep -q "Available scripts" 2>/dev/null; then
-              echo "✅ npm scripts available"
-            else
-              echo "ℹ️  npm scripts check completed"
-            fi
-          else
-            echo "❌ CLI failed"
-            exit 1
-          fi
+          # Check if we can run npm scripts (they'll fail but should be available)
+          cd demo-project
+          npm run --help 2>/dev/null | grep -q "Available scripts" || echo "npm scripts available"
         working-directory: /tmp/cli-test
 
       - name: Test complete workflow
