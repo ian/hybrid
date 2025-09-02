@@ -37,8 +37,8 @@
 		"viem": "^2.22.17"
 	},
 	"devDependencies": {
-		"@hybrd/biome": "workspace:*",
-		"@hybrd/tsconfig": "workspace:*",
+		"@config/biome": "workspace:*",
+		"@config/tsconfig": "workspace:*",
 		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "catalog:stack",
 		"vitest": "^3.2.4"

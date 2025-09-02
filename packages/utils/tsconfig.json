@@ -1,5 +1,5 @@
 {
-	"extends": "@hybrd/tsconfig/internal-package.json",
+	"extends": "@config/tsconfig/internal-package.json",
 	"compilerOptions": {
 		"emitDeclarationOnly": false,
 		"outDir": "dist"

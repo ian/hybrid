@@ -7,7 +7,10 @@
 		"outDir": "dist",
 		"isolatedModules": false,
 		"noEmit": false,
-		"declaration": true
+		"declaration": true,
+		"module": "ES2020",
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": false
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist"]

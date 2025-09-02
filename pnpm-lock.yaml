@@ -40,27 +40,70 @@ importers:
 
   examples/basic:
     dependencies:
+      '@hybrd/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@hybrd/xmtp':
+        specifier: workspace:*
+        version: link:../../packages/xmtp
       '@openrouter/ai-sdk-provider':
         specifier: catalog:ai
         version: 1.1.2(ai@5.0.28(zod@4.0.17))(zod@4.0.17)
-      hybrid:
-        specifier: workspace:*
-        version: link:../../packages/hybrid
       zod:
         specifier: catalog:stack
         version: 4.0.17
     devDependencies:
-      '@hybrd/biome':
+      '@config/biome':
         specifier: workspace:*
         version: link:../../config/biome
-      '@hybrd/tsconfig':
+      '@config/tsconfig':
         specifier: workspace:*
         version: link:../../config/typescript
       '@types/node':
         specifier: catalog:stack
         version: 22.8.6
+      hybrid:
+        specifier: workspace:*
+        version: link:../../packages/cli
 
-  packages/hybrid:
+  packages/cli:
+    dependencies:
+      '@hybrd/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@hybrd/xmtp':
+        specifier: workspace:*
+        version: link:../xmtp
+      degit:
+        specifier: ^2.8.4
+        version: 2.8.4
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.6.1
+      uint8arrays:
+        specifier: ^5.1.0
+        version: 5.1.0
+      viem:
+        specifier: ^2.33.3
+        version: 2.34.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+    devDependencies:
+      '@config/biome':
+        specifier: workspace:*
+        version: link:../../config/biome
+      '@config/tsconfig':
+        specifier: workspace:*
+        version: link:../../config/typescript
+      '@types/degit':
+        specifier: ^2.8.4
+        version: 2.8.6
+      '@types/jsonwebtoken':
+        specifier: ^9.0.7
+        version: 9.0.10
+      '@types/node':
+        specifier: catalog:stack
+        version: 22.8.6
+
+  packages/core:
     dependencies:
       '@coinbase/agentkit':
         specifier: ^0.6.2
@@ -75,23 +118,14 @@ importers:
         specifier: ^1.13.5
         version: 1.19.0(hono@4.9.2)
       '@hybrd/utils':
-        specifier: ^1.0.8
-        version: 1.0.10
+        specifier: workspace:*
+        version: link:../utils
       '@hybrd/xmtp':
-        specifier: ^1.0.8
-        version: 1.0.10(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)
-      '@upstash/qstash':
-        specifier: 2.7.22
-        version: 2.7.22
+        specifier: workspace:*
+        version: link:../xmtp
       ai:
         specifier: ^5.0.28
         version: 5.0.28(zod@3.25.76)
-      degit:
-        specifier: ^2.8.4
-        version: 2.8.4
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.6.1
       eta:
         specifier: ^3.5.0
         version: 3.5.0
@@ -117,10 +151,10 @@ importers:
         specifier: ^3.23.8
         version: 3.25.76
     devDependencies:
-      '@hybrd/biome':
+      '@config/biome':
         specifier: workspace:*
         version: link:../../config/biome
-      '@hybrd/tsconfig':
+      '@config/tsconfig':
         specifier: workspace:*
         version: link:../../config/typescript
       '@types/degit':
@@ -154,10 +188,10 @@ importers:
         specifier: 11.0.5
         version: 11.0.5
     devDependencies:
-      '@hybrd/biome':
+      '@config/biome':
         specifier: workspace:*
         version: link:../../config/biome
-      '@hybrd/tsconfig':
+      '@config/tsconfig':
         specifier: workspace:*
         version: link:../../config/typescript
       '@types/node':
@@ -166,9 +200,6 @@ importers:
 
   packages/xmtp:
     dependencies:
-      '@coinbase/coinbase-sdk':
-        specifier: ^0.22.0
-        version: 0.22.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@xmtp/content-type-group-updated':
         specifier: 2.0.2
         version: 2.0.2
@@ -200,10 +231,10 @@ importers:
         specifier: ^2.22.17
         version: 2.34.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)
     devDependencies:
-      '@hybrd/biome':
+      '@config/biome':
         specifier: workspace:*
         version: link:../../config/biome
-      '@hybrd/tsconfig':
+      '@config/tsconfig':
         specifier: workspace:*
         version: link:../../config/typescript
       '@types/jsonwebtoken':
@@ -535,12 +566,6 @@ packages:
   '@hpke/core@1.7.4':
     resolution: {integrity: sha512-1BfPQB7unq/tNx7eznmoFgmJlMFnymdLNNt2CQX/L8oYOfmc1+cFEItpXZ90mgthW7tB2oksy/G7Xh1t569qzA==}
     engines: {node: '>=16.0.0'}
-
-  '@hybrd/utils@1.0.10':
-    resolution: {integrity: sha512-8eQJClUwaZKTwm4foqZsg1lsYHNlDbd3pymMx4fncVRUmvtPIq368XaWqikr9W1UNnQscOpmQHpoEJysI4bOdA==}
-
-  '@hybrd/xmtp@1.0.10':
-    resolution: {integrity: sha512-YV0ACQ1NEMi/7grHZaiSVd/oWB6+m3g2q8p4es5rB9+y7akLlq6jaSZ4FVmI9mPgiRBlJZD+6s5SWUyo1ebYFg==}
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
@@ -1068,9 +1093,6 @@ packages:
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
-
-  '@upstash/qstash@2.7.22':
-    resolution: {integrity: sha512-JFmISZd9U3hTI03ZNLBKrel3r61ojp+ZejBio9ECUAPAdDK8sU5nwXq/drkM1M789a8KFsZ2nKSOKY4gxI8DoQ==}
 
   '@vitest/expect@3.2.4':
     resolution: {integrity: sha512-Io0yyORnB6sikFlt8QW5K7slY4OjqNX9jmJQ02QDda8lyM6B5oNgVWoSoKPac8/kgnCUzuHQKrSLtu/uOqqrig==}
@@ -2156,10 +2178,6 @@ packages:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
-
-  neverthrow@7.2.0:
-    resolution: {integrity: sha512-iGBUfFB7yPczHHtA8dksKTJ9E8TESNTAx1UQWW6TzMF280vo9jdPYpLUXrMN1BCkPdHFdNG3fxOt2CUad8KhAw==}
-    engines: {node: '>=18'}
 
   node-addon-api@2.0.2:
     resolution: {integrity: sha512-Ntyt4AIXyaLIuMHF6IOoTakB3K+RWxwtsHNRxllEoA6vPwP9o4866g6YWDLUdnucilZhmkxiHwHr11gAENw+QA==}
@@ -3372,36 +3390,6 @@ snapshots:
     dependencies:
       '@hpke/common': 1.8.1
 
-  '@hybrd/utils@1.0.10':
-    dependencies:
-      date-fns: 4.1.0
-      mime: 4.0.7
-      remark: 15.0.1
-      strip-markdown: 6.0.0
-      uuid: 11.0.5
-    transitivePeerDependencies:
-      - supports-color
-
-  '@hybrd/xmtp@1.0.10(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
-    dependencies:
-      '@coinbase/coinbase-sdk': 0.22.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)
-      '@xmtp/content-type-group-updated': 2.0.2
-      '@xmtp/content-type-reaction': 2.0.2
-      '@xmtp/content-type-reply': 2.0.2
-      '@xmtp/content-type-text': 2.0.2
-      '@xmtp/content-type-transaction-reference': 2.0.2
-      '@xmtp/content-type-wallet-send-calls': 2.0.0
-      '@xmtp/node-sdk': 4.0.3
-      jsonwebtoken: 9.0.2
-      uint8arrays: 5.1.0
-      viem: 2.34.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - typescript
-      - utf-8-validate
-      - zod
-
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
   '@jup-ag/api@6.0.44': {}
@@ -4304,12 +4292,6 @@ snapshots:
   '@types/ws@8.18.1':
     dependencies:
       '@types/node': 22.17.2
-
-  '@upstash/qstash@2.7.22':
-    dependencies:
-      crypto-js: 4.2.0
-      jose: 5.10.0
-      neverthrow: 7.2.0
 
   '@vitest/expect@3.2.4':
     dependencies:
@@ -6034,8 +6016,6 @@ snapshots:
   multiformats@9.9.0: {}
 
   nanoid@3.3.11: {}
-
-  neverthrow@7.2.0: {}
 
   node-addon-api@2.0.2: {}
 

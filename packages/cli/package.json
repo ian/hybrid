@@ -1,0 +1,34 @@
+{
+	"name": "hybrid",
+	"version": "1.0.10",
+	"type": "module",
+	"bin": {
+		"hybrid": "./dist/src/cli.js",
+		"hy": "./dist/src/cli.js"
+	},
+	"files": ["dist", "src"],
+	"scripts": {
+		"build": "tsc",
+		"build:watch": "tsc --watch",
+		"clean": "rm -rf .turbo dist",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome lint --unsafe",
+		"lint:fix": "biome lint --write --unsafe",
+		"format": "biome format --write"
+	},
+	"dependencies": {
+		"@hybrd/utils": "workspace:*",
+		"@hybrd/xmtp": "workspace:*",
+		"degit": "^2.8.4",
+		"dotenv": "^16.4.5",
+		"uint8arrays": "^5.1.0",
+		"viem": "^2.33.3"
+	},
+	"devDependencies": {
+		"@config/biome": "workspace:*",
+		"@config/tsconfig": "workspace:*",
+		"@types/degit": "^2.8.4",
+		"@types/jsonwebtoken": "^9.0.7",
+		"@types/node": "catalog:stack"
+	}
+}

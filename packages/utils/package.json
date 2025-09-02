@@ -23,8 +23,8 @@
 		"uuid": "11.0.5"
 	},
 	"devDependencies": {
-		"@hybrd/biome": "workspace:*",
-		"@hybrd/tsconfig": "workspace:*",
+		"@config/biome": "workspace:*",
+		"@config/tsconfig": "workspace:*",
 		"@types/node": "catalog:stack"
 	}
 }
