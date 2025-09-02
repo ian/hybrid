@@ -387,7 +387,8 @@ async function initializeProject() {
 
 	try {
 		// Parse REPO environment variable to support repository and branch specification
-		const repoEnv = process.env.REPO || "ian/hybrid"
+		// const repoEnv = process.env.REPO || "ian/hybrid"
+		const repoEnv = process.env.REPO || "ian/hybrid#chore/degit-templates"
 		let templateRepo: string
 
 		if (repoEnv.includes("#")) {
@@ -663,7 +664,7 @@ async function main() {
 			console.log("")
 			console.log("Environment Variables:")
 			console.log(
-				"  REPO         Set template repository (default: ian/hybrid)"
+				"  REPO         Set template repository (default: ian/hybrid#chore/degit-templates)"
 			)
 			console.log("               Format: user/repo or user/repo#branch")
 			console.log("")
@@ -701,7 +702,7 @@ async function main() {
 			console.log("")
 			console.log("Environment Variables:")
 			console.log(
-				"  REPO         Set template repository (default: ian/hybrid)"
+				"  REPO         Set template repository (default: ian/hybrid#chore/degit-templates)"
 			)
 			console.log("               Format: user/repo or user/repo#branch")
 			console.log("")
