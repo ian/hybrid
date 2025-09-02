@@ -25,7 +25,6 @@
 		"format": "biome format --write"
 	},
 	"dependencies": {
-		"@coinbase/coinbase-sdk": "^0.22.0",
 		"@xmtp/content-type-group-updated": "2.0.2",
 		"@xmtp/content-type-reaction": "2.0.2",
 		"@xmtp/content-type-reply": "2.0.2",

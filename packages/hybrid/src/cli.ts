@@ -29,7 +29,7 @@ function generateEncryptionKeyHex() {
 }
 
 // Generate keys and display them for manual addition to .env
-async function generateKeys() {
+async function generateKeys(writeToFile = false) {
 	console.log("🔑 Generating XMTP keys...")
 
 	const walletKey = generatePrivateKey()
@@ -38,20 +38,45 @@ async function generateKeys() {
 	const publicKey = account.address
 
 	console.log("\n✅ Keys generated successfully!")
-	console.log("\n📋 Add these environment variables to your .env file:")
-	console.log("=".repeat(60))
-	console.log(`XMTP_WALLET_KEY=${walletKey}`)
-	console.log(`XMTP_ENCRYPTION_KEY=${encryptionKeyHex}`)
-	console.log(`XMTP_ENV=dev  # or 'production' for mainnet`)
-	console.log("=".repeat(60))
-	console.log(`\n🔍 Your public key (wallet address): ${publicKey}`)
-	console.log("\n📝 Instructions:")
-	console.log("1. Copy the environment variables above")
-	console.log("2. Paste them into your .env file")
-	console.log(
-		"3. Set XMTP_ENV to 'dev' for development or 'production' for mainnet"
-	)
-	console.log("4. Add your OPENROUTER_API_KEY if you haven't already")
+
+	if (writeToFile) {
+		try {
+			const envContent = `# XMTP Configuration
+XMTP_WALLET_KEY=${walletKey}
+XMTP_ENCRYPTION_KEY=${encryptionKeyHex}
+XMTP_ENV=dev
+
+# OpenRouter Configuration
+# Get your OpenRouter API key from https://openrouter.ai/keys
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+
+# Server Configuration (optional)
+# PORT=8454
+`
+			await writeFile(".env", envContent)
+			console.log("\n📁 Environment variables written to .env file")
+			console.log(`🔍 Your public key (wallet address): ${publicKey}`)
+			console.log("\n📝 Next steps:")
+			console.log("1. Add your OPENROUTER_API_KEY to the .env file")
+			console.log(
+				"2. Set XMTP_ENV to 'dev' for development or 'production' for mainnet"
+			)
+		} catch (error) {
+			console.error("❌ Failed to write .env file:", error)
+			console.log("\n📋 Use these environment variables instead:")
+			console.log("=".repeat(60))
+			console.log(`XMTP_WALLET_KEY=${walletKey}`)
+			console.log(`XMTP_ENCRYPTION_KEY=${encryptionKeyHex}`)
+			console.log(`XMTP_ENV=dev`)
+			console.log("=".repeat(60))
+		}
+	} else {
+		console.log(`XMTP_WALLET_KEY=${walletKey}`)
+		console.log(`XMTP_ENCRYPTION_KEY=${encryptionKeyHex}`)
+		console.log(`XMTP_ENV=dev`)
+		console.log(`\n# Your public key (wallet address): ${publicKey}`)
+	}
+
 	console.log(
 		"\n⚠️  Keep these keys secure and never commit them to version control!"
 	)
@@ -352,6 +377,106 @@ function runBuild() {
 	})
 }
 
+// Run XMTP registration
+function runRegister() {
+	console.log("🚀 Starting XMTP registration...")
+
+	// Load environment variables from .env file
+	const envPath = join(process.cwd(), ".env")
+	if (existsSync(envPath)) {
+		dotenv.config({ path: envPath })
+		console.log("✅ Loaded environment variables from .env")
+	} else {
+		console.log("⚠️  No .env file found - environment variables not loaded")
+	}
+
+	const child = spawn("tsx", ["packages/xmtp/scripts/register-wallet.ts"], {
+		stdio: "inherit",
+		shell: true
+	})
+
+	child.on("error", (error) => {
+		console.error("Failed to run registration:", error)
+		process.exit(1)
+	})
+
+	child.on("exit", (code) => {
+		process.exit(code ?? 0)
+	})
+}
+
+// Run XMTP installation revocation
+function runRevoke() {
+	const inboxId = process.argv[3]
+
+	if (!inboxId) {
+		console.error("❌ InboxID is required")
+		console.error("Usage: hybrid revoke <inboxId>")
+		process.exit(1)
+	}
+
+	console.log(`🔧 Revoking XMTP installations for inbox: ${inboxId}`)
+
+	// Load environment variables from .env file
+	const envPath = join(process.cwd(), ".env")
+	if (existsSync(envPath)) {
+		dotenv.config({ path: envPath })
+		console.log("✅ Loaded environment variables from .env")
+	} else {
+		console.log("⚠️  No .env file found - environment variables not loaded")
+	}
+
+	const child = spawn(
+		"tsx",
+		["packages/xmtp/scripts/revoke-installations.ts", inboxId],
+		{
+			stdio: "inherit",
+			shell: true
+		}
+	)
+
+	child.on("error", (error) => {
+		console.error("Failed to run revocation:", error)
+		process.exit(1)
+	})
+
+	child.on("exit", (code) => {
+		process.exit(code ?? 0)
+	})
+}
+
+// Run XMTP revoke all installations
+function runRevokeAll() {
+	console.log("🔄 Revoking ALL XMTP installations...")
+
+	// Load environment variables from .env file
+	const envPath = join(process.cwd(), ".env")
+	if (existsSync(envPath)) {
+		dotenv.config({ path: envPath })
+		console.log("✅ Loaded environment variables from .env")
+	} else {
+		console.log("⚠️  No .env file found - environment variables not loaded")
+	}
+
+	const child = spawn(
+		"tsx",
+		["packages/xmtp/scripts/revoke-all-installations.ts"],
+		{
+			stdio: "inherit",
+			shell: true
+		}
+	)
+
+	child.on("error", (error) => {
+		console.error("Failed to run revoke all:", error)
+		process.exit(1)
+	})
+
+	child.on("exit", (code) => {
+		process.exit(code ?? 0)
+	})
+}
+
 // Main CLI logic
 async function main() {
 	const command = process.argv[2]
@@ -370,11 +495,21 @@ async function main() {
 			break
 		case "gen:keys":
 			try {
-				await generateKeys()
+				const writeFlag = process.argv.includes("--write")
+				await generateKeys(writeFlag)
 			} catch (error) {
 				console.error("Failed to generate keys:", error)
 				process.exit(1)
 			}
+			break
+		case "register":
+			runRegister()
+			break
+		case "revoke":
+			runRevoke()
+			break
+		case "revoke:all":
+			runRevokeAll()
 			break
 		case "build":
 			runBuild()
@@ -390,6 +525,15 @@ async function main() {
 			console.log("  dev          Start development server with watch mode")
 			console.log("  build        Build the TypeScript project")
 			console.log("  gen:keys     Generate XMTP wallet and encryption keys")
+			console.log(
+				"               Use --write to save keys directly to .env file"
+			)
+			console.log("  register     Register wallet with XMTP production network")
+			console.log("  revoke       Revoke XMTP installations for specific inbox")
+			console.log("               Usage: hybrid revoke <inboxId>")
+			console.log(
+				"  revoke:all   Revoke ALL XMTP installations for current wallet"
+			)
 			console.log("")
 			console.log("Environment Variables:")
 			console.log(
@@ -405,9 +549,11 @@ async function main() {
 			console.log("  hybrid dev              or    hy dev")
 			console.log("  hybrid build            or    hy build")
 			console.log("  hybrid gen:keys         or    hy gen:keys")
+			console.log("  hybrid gen:keys --write or    hy gen:keys --write")
+			console.log("  hybrid register         or    hy register")
+			console.log("  hybrid revoke <inboxId> or    hy revoke <inboxId>")
+			console.log("  hybrid revoke:all       or    hy revoke:all")
 			console.log("")
-			console.log("  REPO=myuser/myrepo hybrid init my-agent")
-			console.log("  REPO=myuser/myrepo#dev hybrid init my-agent")
 			// Only exit with error code for unknown commands, not for help
 			if (command && !["--help", "-h", "help"].includes(command)) {
 				process.exit(1)
