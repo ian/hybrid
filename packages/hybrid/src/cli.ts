@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 
+import {
+	Client,
+	createSigner,
+	createXMTPClient,
+	logAgentDetails,
+	validateEnvironment
+} from "@hybrd/xmtp"
 import degit from "degit"
 import dotenv from "dotenv"
 import { spawn } from "node:child_process"
@@ -80,6 +87,225 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 	console.log(
 		"\n⚠️  Keep these keys secure and never commit them to version control!"
 	)
+}
+
+// Register wallet with XMTP network
+async function registerWallet() {
+	console.log("🚀 Starting XMTP Production Network Registration...")
+
+	// Validate required environment variables
+	const { XMTP_WALLET_KEY } = validateEnvironment([
+		"XMTP_WALLET_KEY",
+		"XMTP_ENCRYPTION_KEY"
+	])
+
+	if (!XMTP_WALLET_KEY) {
+		console.error("❌ XMTP_WALLET_KEY is required for registration")
+		console.log("💡 Run 'hybrid gen:keys --write' to generate keys first")
+		process.exit(1)
+	}
+
+	try {
+		console.log("🔑 Creating signer...")
+		const signer = createSigner(XMTP_WALLET_KEY)
+
+		// Get wallet address for logging
+		const identifier = await signer.getIdentifier()
+		const address = identifier.identifier
+		console.log(`📍 Wallet Address: ${address}`)
+
+		console.log("🌐 Connecting to XMTP Production Network...")
+		console.log("⚠️  This will prompt you to sign messages in your wallet")
+		console.log("   - 'XMTP : Authenticate to inbox' message")
+		console.log("   - 'Grant messaging access to app' message")
+		console.log("   - 'Create inbox' message (if first time)")
+
+		// Connect to production network
+		const client = await createXMTPClient(XMTP_WALLET_KEY)
+
+		console.log("✅ Successfully connected to XMTP Production Network!")
+
+		// Log client details
+		await logAgentDetails(client)
+
+		console.log("📡 Syncing conversations...")
+		await client.conversations.sync()
+
+		const conversations = await client.conversations.list()
+		console.log(`💬 Found ${conversations.length} existing conversations`)
+
+		console.log("🎉 Registration Complete!")
+		console.log(`
+✓ Wallet ${address} is now registered on XMTP Production Network
+✓ Inbox ID: ${client.inboxId}
+✓ Ready to receive messages on production network
+
+Next steps:
+1. Update your environment: XMTP_ENV=production
+2. Start your listener service
+3. Share your address for others to message: ${address}
+4. Test messaging at: https://xmtp.chat/dm/${address}
+		`)
+	} catch (error) {
+		console.error("❌ Registration failed:", error)
+
+		if (error instanceof Error) {
+			if (error.message.includes("User rejected")) {
+				console.log(
+					"📝 Registration was cancelled. You need to approve the wallet signatures to complete registration."
+				)
+			} else if (error.message.includes("network")) {
+				console.log(
+					"🌐 Network connection issue. Please check your internet connection and try again."
+				)
+			} else {
+				console.log("💡 Make sure your wallet is connected and try again.")
+			}
+		}
+
+		process.exit(1)
+	}
+}
+
+// Revoke XMTP installations for specific inbox
+async function revokeInstallations(inboxId: string) {
+	console.log(`🔧 Revoking XMTP installations for inbox: ${inboxId}`)
+
+	const { XMTP_WALLET_KEY } = process.env
+
+	if (!XMTP_WALLET_KEY) {
+		console.error("❌ XMTP_WALLET_KEY is required")
+		console.log("💡 Run 'hybrid gen:keys --write' to generate keys first")
+		process.exit(1)
+	}
+
+	try {
+		const signer = createSigner(XMTP_WALLET_KEY)
+		const identifier = await signer.getIdentifier()
+		const address = identifier.identifier
+
+		console.log(`🔑 Wallet Address: ${address}`)
+		console.log(`📋 Inbox ID: ${inboxId}`)
+
+		console.log("🔍 Getting inbox state...")
+		const inboxStates = await Client.inboxStateFromInboxIds(
+			[inboxId],
+			(process.env.XMTP_ENV as "dev" | "production") || "dev"
+		)
+
+		if (!inboxStates[0]) {
+			console.log("❌ No inbox state found for the provided inboxId")
+			process.exit(1)
+		}
+
+		const toRevokeInstallationBytes = inboxStates[0].installations.map(
+			(i) => i.bytes
+		)
+
+		if (toRevokeInstallationBytes.length === 0) {
+			console.log("ℹ️ No installations found to revoke")
+			return
+		}
+
+		console.log(
+			`🔧 Revoking ${toRevokeInstallationBytes.length} installations...`
+		)
+
+		await Client.revokeInstallations(
+			signer,
+			inboxId,
+			toRevokeInstallationBytes,
+			(process.env.XMTP_ENV as "dev" | "production") || "dev"
+		)
+
+		const resultingStates = await Client.inboxStateFromInboxIds(
+			[inboxId],
+			(process.env.XMTP_ENV as "dev" | "production") || "dev"
+		)
+
+		console.log(
+			`✅ Successfully revoked installations: ${toRevokeInstallationBytes.length} installations`
+		)
+		console.log(
+			`📋 Resulting state: ${resultingStates[0]?.installations.length || 0} installations remaining`
+		)
+	} catch (error) {
+		console.error("❌ Error during installation revocation:", error)
+
+		if (error instanceof Error) {
+			if (error.message.includes("Missing existing member")) {
+				console.log(
+					"\n💡 This inbox ID may not exist or may be on a different environment"
+				)
+				console.log(
+					"   1. Check if you're using the correct XMTP_ENV (dev vs production)"
+				)
+				console.log("   2. Verify the inbox ID is correct")
+			}
+		}
+
+		process.exit(1)
+	}
+}
+
+// Revoke ALL XMTP installations for current wallet
+async function revokeAllInstallations() {
+	console.log("🔄 Revoking ALL XMTP Installations")
+	console.log("==================================")
+
+	const { XMTP_WALLET_KEY } = process.env
+
+	if (!XMTP_WALLET_KEY) {
+		console.error("❌ XMTP_WALLET_KEY is required")
+		console.log("💡 Run 'hybrid gen:keys --write' to generate keys first")
+		process.exit(1)
+	}
+
+	try {
+		console.log(`🌐 Environment: ${process.env.XMTP_ENV || "dev"}`)
+
+		// Try to create client to get current inbox ID
+		try {
+			const client = await createXMTPClient(XMTP_WALLET_KEY)
+			const currentInboxId = client.inboxId
+
+			console.log(`📧 Current Inbox ID: ${currentInboxId}`)
+			console.log("🔧 Attempting to revoke all installations for this inbox...")
+
+			// Use the local revoke function
+			await revokeInstallations(currentInboxId)
+
+			console.log("✅ Successfully revoked all installations")
+		} catch (clientError) {
+			console.log(
+				"⚠️ Could not create client, attempting alternative approach..."
+			)
+
+			// If we can't create a client, it might be because of installation limits
+			console.log("🔍 This might indicate installation limit issues")
+			console.log("💡 You may need to:")
+			console.log("   1. Wait a few minutes and try again")
+			console.log("   2. Use the specific inbox ID if you know it")
+			console.log("   3. Try switching XMTP environments (dev <-> production)")
+
+			throw clientError
+		}
+	} catch (error) {
+		console.error("💥 Error revoking installations:", error)
+
+		if (error instanceof Error) {
+			if (error.message.includes("5/5 installations")) {
+				console.log("\n💡 Installation limit reached. Possible solutions:")
+				console.log("   1. Wait 24 hours for installations to expire")
+				console.log(
+					"   2. Try switching XMTP environments (dev <-> production)"
+				)
+				console.log("   3. Use a different wallet")
+			}
+		}
+
+		process.exit(1)
+	}
 }
 
 // Prompt user for input
@@ -378,9 +604,7 @@ function runBuild() {
 }
 
 // Run XMTP registration
-function runRegister() {
-	console.log("🚀 Starting XMTP registration...")
-
+async function runRegister() {
 	// Load environment variables from .env file
 	const envPath = join(process.cwd(), ".env")
 	if (existsSync(envPath)) {
@@ -390,23 +614,16 @@ function runRegister() {
 		console.log("⚠️  No .env file found - environment variables not loaded")
 	}
 
-	const child = spawn("tsx", ["packages/xmtp/scripts/register-wallet.ts"], {
-		stdio: "inherit",
-		shell: true
-	})
-
-	child.on("error", (error) => {
+	try {
+		await registerWallet()
+	} catch (error) {
 		console.error("Failed to run registration:", error)
 		process.exit(1)
-	})
-
-	child.on("exit", (code) => {
-		process.exit(code ?? 0)
-	})
+	}
 }
 
 // Run XMTP installation revocation
-function runRevoke() {
+async function runRevoke() {
 	const inboxId = process.argv[3]
 
 	if (!inboxId) {
@@ -415,8 +632,6 @@ function runRevoke() {
 		process.exit(1)
 	}
 
-	console.log(`🔧 Revoking XMTP installations for inbox: ${inboxId}`)
-
 	// Load environment variables from .env file
 	const envPath = join(process.cwd(), ".env")
 	if (existsSync(envPath)) {
@@ -426,29 +641,16 @@ function runRevoke() {
 		console.log("⚠️  No .env file found - environment variables not loaded")
 	}
 
-	const child = spawn(
-		"tsx",
-		["packages/xmtp/scripts/revoke-installations.ts", inboxId],
-		{
-			stdio: "inherit",
-			shell: true
-		}
-	)
-
-	child.on("error", (error) => {
+	try {
+		await revokeInstallations(inboxId)
+	} catch (error) {
 		console.error("Failed to run revocation:", error)
 		process.exit(1)
-	})
-
-	child.on("exit", (code) => {
-		process.exit(code ?? 0)
-	})
+	}
 }
 
 // Run XMTP revoke all installations
-function runRevokeAll() {
-	console.log("🔄 Revoking ALL XMTP installations...")
-
+async function runRevokeAll() {
 	// Load environment variables from .env file
 	const envPath = join(process.cwd(), ".env")
 	if (existsSync(envPath)) {
@@ -458,23 +660,12 @@ function runRevokeAll() {
 		console.log("⚠️  No .env file found - environment variables not loaded")
 	}
 
-	const child = spawn(
-		"tsx",
-		["packages/xmtp/scripts/revoke-all-installations.ts"],
-		{
-			stdio: "inherit",
-			shell: true
-		}
-	)
-
-	child.on("error", (error) => {
+	try {
+		await revokeAllInstallations()
+	} catch (error) {
 		console.error("Failed to run revoke all:", error)
 		process.exit(1)
-	})
-
-	child.on("exit", (code) => {
-		process.exit(code ?? 0)
-	})
+	}
 }
 
 // Main CLI logic
@@ -503,13 +694,28 @@ async function main() {
 			}
 			break
 		case "register":
-			runRegister()
+			try {
+				await runRegister()
+			} catch (error) {
+				console.error("Failed to register:", error)
+				process.exit(1)
+			}
 			break
 		case "revoke":
-			runRevoke()
+			try {
+				await runRevoke()
+			} catch (error) {
+				console.error("Failed to revoke:", error)
+				process.exit(1)
+			}
 			break
 		case "revoke:all":
-			runRevokeAll()
+			try {
+				await runRevokeAll()
+			} catch (error) {
+				console.error("Failed to revoke all:", error)
+				process.exit(1)
+			}
 			break
 		case "build":
 			runBuild()

@@ -9,6 +9,6 @@
 		"noEmit": false,
 		"declaration": true
 	},
-	"include": ["src/**/*", "scripts/**/*"],
+	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist"]
 }
