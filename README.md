@@ -115,8 +115,8 @@ Create a `.env.local` file in the root directory:
 OPENROUTER_API_KEY="your_openai_api_key"
 
 # XMTP Configuration
-WALLET_KEY="0x..."  # Private key for XMTP agent
-ENCRYPTION_KEY="..."  # Database encryption key
+XMTP_WALLET_KEY="0x..."  # Private key for XMTP agent
+XMTP_ENCRYPTION_KEY="..."  # Database encryption key
 XMTP_ENV="dev"  # dev, production
 ```
 
@@ -213,12 +213,12 @@ Key environment variables for agent operation:
 ```env
 # Required
 OPENROUTER_API_KEY="your_openai_api_key"  # For AI integration
-WALLET_KEY="0x..."                        # XMTP wallet private key
+XMTP_WALLET_KEY="0x..."                        # XMTP wallet private key
 XMTP_ENV="dev"                           # dev or production
 
 # Optional
 PORT="8454"                              # Port for the agent server
-ENCRYPTION_KEY="..."                     # For secure data encryption
+XMTP_ENCRYPTION_KEY="..."                     # For secure data encryption
 ```
 
 ## 🚀 Deployment
@@ -245,7 +245,7 @@ pnpm build
 
 Make sure these environment variables are configured in your deployment:
 - `OPENROUTER_API_KEY` - Your AI API key
-- `WALLET_KEY` - XMTP wallet private key
+- `XMTP_WALLET_KEY` - XMTP wallet private key
 - `XMTP_ENV` - dev or production
 - `PORT` - Port for the agent server (optional)
 
@@ -319,9 +319,9 @@ Configure XMTP authentication with environment variables:
 **Agent Configuration:**
 ```env
 # XMTP Configuration
-WALLET_KEY="0x..."  # Your XMTP wallet private key
+XMTP_WALLET_KEY="0x..."  # Your XMTP wallet private key
 XMTP_ENV="dev"  # dev or production
-ENCRYPTION_KEY="..."  # For secure data encryption
+XMTP_ENCRYPTION_KEY="..."  # For secure data encryption
 ```
 
 ### XMTP Client Usage

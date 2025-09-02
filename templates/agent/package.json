@@ -5,9 +5,9 @@
 	"description": "A Hybrid XMTP agent project",
 	"type": "module",
 	"scripts": {
-		"dev": "tsx --watch src/agent.ts",
-		"build": "tsc",
-		"start": "node dist/src/agent.js",
+		"dev": "hybrid dev",
+		"build": "hybrid build",
+		"start": "hybrid start",
 		"keys": "hybrid gen:keys",
 		"test": "vitest",
 		"test:watch": "vitest --watch",

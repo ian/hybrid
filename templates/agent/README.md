@@ -98,8 +98,8 @@ Create a `.env` file with:
 ```env
 # Required
 OPENROUTER_API_KEY=your_openrouter_api_key_here
-WALLET_KEY=your_generated_wallet_key
-ENCRYPTION_KEY=your_generated_encryption_key
+XMTP_WALLET_KEY=your_generated_wallet_key
+XMTP_ENCRYPTION_KEY=your_generated_encryption_key
 
 # Optional
 XMTP_ENV=dev
