@@ -5,17 +5,19 @@
 	"files": ["dist", "src"],
 	"exports": {
 		".": {
-			"import": "./dist/src/index.js",
-			"types": "./dist/src/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
 		},
 		"./ponder": {
-			"import": "./dist/src/ponder/index.js",
-			"types": "./dist/src/ponder/index.d.ts"
+			"types": "./dist/ponder/index.d.ts",
+			"import": "./dist/ponder/index.js",
+			"require": "./dist/ponder/index.cjs"
 		}
 	},
 	"scripts": {
-		"build": "tsc",
-		"build:watch": "tsc --watch",
+		"build": "tsup",
+		"build:watch": "tsup --watch",
 		"clean": "rm -rf .turbo dist",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",
@@ -45,6 +47,7 @@
 		"@types/degit": "^2.8.4",
 		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "catalog:stack",
+		"tsup": "^8.5.0",
 		"vitest": "^3.2.4"
 	}
 }
