@@ -12,7 +12,7 @@ import dotenv from "dotenv"
 import { spawn } from "node:child_process"
 import { getRandomValues } from "node:crypto"
 import { existsSync } from "node:fs"
-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises"
+import { readFile, readdir, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { createInterface } from "node:readline"
 import { fileURLToPath } from "node:url"
@@ -334,28 +334,6 @@ function replaceTemplateVariables(
 	)
 }
 
-// Copy template file with variable substitution
-async function copyTemplate(
-	templatePath: string,
-	destPath: string,
-	variables: Record<string, string> = {}
-) {
-	try {
-		let content = await readFile(templatePath, "utf-8")
-
-		// Replace template variables
-		if (Object.keys(variables).length > 0) {
-			content = replaceTemplateVariables(content, variables)
-		}
-
-		await writeFile(destPath, content, "utf-8")
-		console.log(`✅ Created ${destPath.split("/").pop()}`)
-	} catch (error) {
-		console.error(`❌ Failed to create ${destPath.split("/").pop()}:`, error)
-		process.exit(1)
-	}
-}
-
 // Initialize a new hybrid project
 async function initializeProject() {
 	console.log("🚀 Creating a new Hybrid project...")
@@ -432,71 +410,14 @@ async function initializeProject() {
 		console.log(`✅ Template downloaded from GitHub to: ${sanitizedName}`)
 		templateDownloaded = true
 	} catch (error) {
-		console.log(
-			"⚠️  Failed to download template from GitHub, trying local fallback..."
+		console.error(
+			"❌ Failed to download template from GitHub:",
+			error instanceof Error ? error.message : String(error)
 		)
-
-		// Fallback to local templates if they exist
-		// Try development path first, then bundled templates
-		let localTemplatesDir = join(__dirname, "../../../../templates/agent")
-
-		try {
-			// Check if development templates exist
-			await readFile(join(localTemplatesDir, "package.json"), "utf-8")
-		} catch {
-			// Fall back to bundled templates in CI/production
-			localTemplatesDir = join(__dirname, "../templates")
-		}
-
-		try {
-			const templateFiles = [
-				{ src: "package.json", dest: "package.json" },
-				{ src: "tsconfig.json", dest: "tsconfig.json" },
-				{ src: "README.md", dest: "README.md" },
-				{ src: "vitest.config.ts", dest: "vitest.config.ts" },
-				{ src: ".gitignore", dest: ".gitignore" },
-				{ src: ".env", dest: ".env" }
-			]
-
-			// Create src directory
-			const srcDir = join(projectDir, "src")
-			await mkdir(srcDir, { recursive: true })
-			console.log("✅ Created src directory")
-
-			// Copy main template files
-			await Promise.all(
-				templateFiles.map(async ({ src, dest }) => {
-					const templatePath = join(localTemplatesDir, src)
-					const destPath = join(projectDir, dest)
-					await copyTemplate(templatePath, destPath, {
-						projectName: sanitizedName
-					})
-				})
-			)
-
-			// Copy agent.ts to src directory
-			const agentTemplatePath = join(localTemplatesDir, "src/agent.ts")
-			const agentDestPath = join(srcDir, "agent.ts")
-			await copyTemplate(agentTemplatePath, agentDestPath, {
-				projectName: sanitizedName
-			})
-
-			// Copy test file
-			const testTemplatePath = join(localTemplatesDir, "src/agent.test.ts")
-			const testDestPath = join(srcDir, "agent.test.ts")
-			await copyTemplate(testTemplatePath, testDestPath, {
-				projectName: sanitizedName
-			})
-
-			console.log(`✅ Template copied from local files to: ${sanitizedName}`)
-			templateDownloaded = true
-		} catch (localError) {
-			console.error("❌ Failed to use local template fallback:", localError)
-			console.log(
-				"💡 Make sure you have internet connection or the local templates exist"
-			)
-			process.exit(1)
-		}
+		console.log(
+			"💡 Make sure you have internet connection and the repository/branch exists"
+		)
+		process.exit(1)
 	}
 
 	if (!templateDownloaded) {
