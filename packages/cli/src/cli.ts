@@ -723,6 +723,43 @@ async function main() {
 		case "--help":
 		case "-h":
 		case "help":
+			console.log("Usage: hybrid <command> or hy <command>")
+			console.log("")
+			console.log("Commands:")
+			console.log("  init [name]  Create a new Hybrid project")
+			console.log("  dev          Start development server with watch mode")
+			console.log("  build        Build the TypeScript project")
+			console.log("  gen:keys     Generate XMTP wallet and encryption keys")
+			console.log(
+				"               Use --write to save keys directly to .env file"
+			)
+			console.log("  register     Register wallet with XMTP production network")
+			console.log("  revoke       Revoke XMTP installations for specific inbox")
+			console.log("               Usage: hybrid revoke <inboxId>")
+			console.log(
+				"  revoke:all   Revoke ALL XMTP installations for current wallet"
+			)
+			console.log("")
+			console.log("Environment Variables:")
+			console.log(
+				"  REPO         Set template repository (default: ian/hybrid)"
+			)
+			console.log("               Format: user/repo or user/repo#branch")
+			console.log("")
+			console.log("Examples:")
+			console.log("  hybrid init my-agent    or    hy init my-agent")
+			console.log(
+				"  hybrid init             or    hy init (will prompt for name)"
+			)
+			console.log("  hybrid dev              or    hy dev")
+			console.log("  hybrid build            or    hy build")
+			console.log("  hybrid gen:keys         or    hy gen:keys")
+			console.log("  hybrid gen:keys --write or    hy gen:keys --write")
+			console.log("  hybrid register         or    hy register")
+			console.log("  hybrid revoke <inboxId> or    hy revoke <inboxId>")
+			console.log("  hybrid revoke:all       or    hy revoke:all")
+			console.log("")
+			break
 		default:
 			console.log("Usage: hybrid <command> or hy <command>")
 			console.log("")
@@ -760,7 +797,7 @@ async function main() {
 			console.log("  hybrid revoke <inboxId> or    hy revoke <inboxId>")
 			console.log("  hybrid revoke:all       or    hy revoke:all")
 			console.log("")
-			// Only exit with error code for unknown commands, not for help
+			// Exit with error code for unknown commands
 			if (command && !["--help", "-h", "help"].includes(command)) {
 				process.exit(1)
 			}
