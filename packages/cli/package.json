@@ -21,7 +21,10 @@
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",
 		"lint:fix": "biome lint --write --unsafe",
-		"format": "biome format --write"
+		"format": "biome format --write",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage"
 	},
 	"dependencies": {
 		"@hybrd/utils": "workspace:*",
@@ -37,6 +40,7 @@
 		"@types/degit": "^2.8.4",
 		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "catalog:stack",
-		"tsup": "^8.5.0"
+		"tsup": "^8.5.0",
+		"vitest": "^3.2.4"
 	}
 }

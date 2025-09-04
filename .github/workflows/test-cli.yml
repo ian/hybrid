@@ -35,81 +35,295 @@ jobs:
 
       - name: Verify CLI binary exists
         run: |
+          echo "🔍 Checking CLI binary..."
+          if [ ! -f "packages/cli/dist/cli.js" ]; then
+            echo "❌ CLI binary not found at packages/cli/dist/cli.js"
+            ls -la packages/cli/dist/
+            exit 1
+          fi
+          echo "✅ CLI binary exists"
           ls -la packages/cli/dist/cli.js
-          node packages/cli/dist/cli.js --help
+
+          echo "🔍 Testing CLI help command..."
+          if ! node packages/cli/dist/cli.js --help; then
+            echo "❌ CLI help command failed"
+            exit 1
+          fi
+          echo "✅ CLI help command successful"
 
       - name: Create test directory
         run: |
           mkdir -p test-project
           cd test-project
 
-      - name: Test CLI help
-        run: node ../packages/cli/dist/cli.js
+      - name: Test CLI help (no args)
+        run: |
+          echo "🔍 Testing CLI without arguments..."
+          if ! node ../packages/cli/dist/cli.js; then
+            echo "❌ CLI should show help when no arguments provided"
+            exit 1
+          fi
+          echo "✅ CLI help displayed successfully"
         working-directory: test-project
 
       - name: Test project creation with specific name
-        run: node ../packages/cli/dist/cli.js init test-agent-cli
-        working-directory: test-project
+        run: |
+          echo "🔍 Testing project creation with name 'test-agent-cli'..."
+          if ! node ../packages/cli/dist/cli.js init test-agent-cli; then
+            echo "❌ Project creation failed"
+            exit 1
+          fi
+          echo "✅ Project created successfully"
 
       - name: Verify project structure
         run: |
+          echo "🔍 Verifying project structure for 'test-agent-cli'..."
+
+          echo "📂 Checking project root directory..."
+          if [ ! -d "test-agent-cli" ]; then
+            echo "❌ Project directory 'test-agent-cli' not found"
+            ls -la
+            exit 1
+          fi
+          echo "✅ Project directory exists"
           ls -la test-agent-cli/
+
+          echo "📂 Checking src directory..."
+          if [ ! -d "test-agent-cli/src" ]; then
+            echo "❌ src directory not found"
+            ls -la test-agent-cli/
+            exit 1
+          fi
+          echo "✅ src directory exists"
           ls -la test-agent-cli/src/
-          test -f test-agent-cli/package.json
-          test -f test-agent-cli/README.md
-          test -f test-agent-cli/.env
-          test -f test-agent-cli/tsconfig.json
-          test -f test-agent-cli/vitest.config.ts
-          test -f test-agent-cli/src/agent.ts
-          test -f test-agent-cli/src/agent.test.ts
+
+          echo "📄 Checking required files..."
+
+          required_files=(
+            "package.json"
+            "README.md"
+            ".env"
+            "tsconfig.json"
+            "vitest.config.ts"
+            "src/agent.ts"
+            "src/agent.test.ts"
+          )
+
+          missing_files=()
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "test-agent-cli/$file" ]; then
+              missing_files+=("$file")
+              echo "❌ Missing: $file"
+            else
+              echo "✅ Found: $file"
+            fi
+          done
+
+          if [ ${#missing_files[@]} -gt 0 ]; then
+            echo "❌ Missing files: ${missing_files[*]}"
+            exit 1
+          fi
+
+          echo "✅ All required files are present"
         working-directory: test-project
 
       - name: Verify package.json content
         run: |
+          echo "🔍 Verifying package.json content..."
           cd test-agent-cli
-          grep '"name": "test-agent-cli"' package.json
-          grep '"version": "0.1.0"' package.json
-          grep '"dev": "tsx --watch src/agent.ts"' package.json
-          grep '"keys": "hybrid gen:keys"' package.json
+
+          echo "📋 Checking package.json exists and is valid JSON..."
+          if ! cat package.json; then
+            echo "❌ Cannot read package.json"
+            exit 1
+          fi
+
+          if ! node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))"; then
+            echo "❌ package.json is not valid JSON"
+            exit 1
+          fi
+          echo "✅ package.json is valid JSON"
+
+          echo "🔍 Checking specific fields..."
+
+          # Check name field
+          if ! grep -q '"name": "test-agent-cli"' package.json; then
+            echo "❌ Expected name field not found"
+            echo "Current name field:"
+            node -e "console.log(JSON.parse(require('fs').readFileSync('package.json', 'utf8')).name)"
+            exit 1
+          fi
+          echo "✅ Name field is correct: test-agent-cli"
+
+          # Check version field
+          if ! grep -q '"version": "0.1.0"' package.json; then
+            echo "❌ Expected version field not found"
+            echo "Current version field:"
+            node -e "console.log(JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version)"
+            exit 1
+          fi
+          echo "✅ Version field is correct: 0.1.0"
+
+          # Check dev script (from template: "hybrid dev")
+          if ! grep -q '"dev": "hybrid dev"' package.json; then
+            echo "❌ Expected dev script not found"
+            echo "Current scripts:"
+            node -e "console.log(JSON.stringify(JSON.parse(require('fs').readFileSync('package.json', 'utf8')).scripts, null, 2))"
+            exit 1
+          fi
+          echo "✅ Dev script is correct"
+
+          # Check keys script
+          if ! grep -q '"keys": "hybrid gen:keys"' package.json; then
+            echo "❌ Expected keys script not found"
+            echo "Current scripts:"
+            node -e "console.log(JSON.stringify(JSON.parse(require('fs').readFileSync('package.json', 'utf8')).scripts, null, 2))"
+            exit 1
+          fi
+          echo "✅ Keys script is correct"
         working-directory: test-project
 
       - name: Verify README has correct project name
         run: |
+          echo "🔍 Verifying README.md content..."
           cd test-agent-cli
-          grep '^# test-agent-cli$' README.md
+
+          if [ ! -f "README.md" ]; then
+            echo "❌ README.md file not found"
+            ls -la
+            exit 1
+          fi
+
+          echo "📄 README.md content:"
+          cat README.md
+
+          if ! grep -q '^# test-agent-cli$' README.md; then
+            echo "❌ Expected header '# test-agent-cli' not found in README.md"
+            echo "Current header line:"
+            head -1 README.md
+            exit 1
+          fi
+          echo "✅ README.md has correct project name"
         working-directory: test-project
 
       - name: Test key generation
         run: |
+          echo "🔍 Testing key generation..."
           cd test-agent-cli
-          node ../../packages/cli/dist/cli.js gen:keys
-          grep -v "your_wallet_key_here\|your_encryption_key_here" .env
-          grep "XMTP_WALLET_KEY=0x" .env
-          grep "XMTP_ENCRYPTION_KEY=" .env
+
+          echo "🔑 Running key generation command..."
+          if ! node ../../packages/cli/dist/cli.js gen:keys; then
+            echo "❌ Key generation command failed"
+            exit 1
+          fi
+          echo "✅ Key generation command completed"
+
+          echo "📄 Checking .env file..."
+          if [ ! -f ".env" ]; then
+            echo "❌ .env file not found"
+            ls -la
+            exit 1
+          fi
+
+          echo "🔐 .env file contents (without sensitive data):"
+          grep -v "your_wallet_key_here\|your_encryption_key_here\|XMTP_WALLET_KEY=\|XMTP_ENCRYPTION_KEY=" .env || echo "No non-sensitive content found"
+          echo "🔐 Sensitive environment variables (masked):"
+          grep "XMTP_WALLET_KEY=" .env | sed 's/=0x.*/=0x[MASKED]/' || echo "XMTP_WALLET_KEY not found"
+          grep "XMTP_ENCRYPTION_KEY=" .env | sed 's/=.*$/=[MASKED]/' || echo "XMTP_ENCRYPTION_KEY not found"
+
+          echo "🔍 Validating environment variables..."
+
+          # Check for wallet key
+          if ! grep -q "XMTP_WALLET_KEY=0x" .env; then
+            echo "❌ XMTP_WALLET_KEY not found or not in correct format"
+            echo "Expected format: XMTP_WALLET_KEY=0x..."
+            exit 1
+          fi
+          echo "✅ XMTP_WALLET_KEY is present and correctly formatted"
+
+          # Check for encryption key
+          if ! grep -q "XMTP_ENCRYPTION_KEY=" .env; then
+            echo "❌ XMTP_ENCRYPTION_KEY not found"
+            echo "Expected format: XMTP_ENCRYPTION_KEY=..."
+            exit 1
+          fi
+          echo "✅ XMTP_ENCRYPTION_KEY is present"
         working-directory: test-project
 
       - name: Test interactive project creation
         run: |
-          echo -e "\n" | node ../packages/cli/dist/cli.js init
+          echo "🔍 Testing interactive project creation..."
+          echo "📝 Providing empty input to trigger interactive mode..."
+          if ! echo -e "\n" | node ../packages/cli/dist/cli.js init; then
+            echo "❌ Interactive project creation failed"
+            exit 1
+          fi
+          echo "✅ Interactive project creation command completed"
         working-directory: test-project
 
       - name: Verify interactive project creation
         run: |
+          echo "🔍 Verifying interactive project creation result..."
+
+          if [ ! -d "my-hybrid-agent" ]; then
+            echo "❌ Expected project directory 'my-hybrid-agent' not found"
+            echo "Available directories:"
+            ls -la | grep "^d"
+            exit 1
+          fi
+          echo "✅ Project directory 'my-hybrid-agent' created"
           ls -la my-hybrid-agent/
-          test -f my-hybrid-agent/package.json
-          grep '"name": "my-hybrid-agent"' my-hybrid-agent/package.json
+
+          if [ ! -f "my-hybrid-agent/package.json" ]; then
+            echo "❌ package.json not found in my-hybrid-agent/"
+            ls -la my-hybrid-agent/
+            exit 1
+          fi
+          echo "✅ package.json exists"
+
+          echo "🔍 Checking package.json name field..."
+          if ! grep -q '"name": "my-hybrid-agent"' my-hybrid-agent/package.json; then
+            echo "❌ Expected name 'my-hybrid-agent' not found in package.json"
+            echo "Current name:"
+            node -e "console.log(JSON.parse(require('fs').readFileSync('my-hybrid-agent/package.json', 'utf8')).name)"
+            exit 1
+          fi
+          echo "✅ Package.json has correct name: my-hybrid-agent"
         working-directory: test-project
 
       - name: Test build command (should fail without deps, but verify it runs)
         run: |
+          echo "🔍 Testing build command without dependencies..."
           cd test-agent-cli
-          node ../../packages/cli/dist/cli.js build || echo "Build failed as expected without dependencies"
+
+          echo "🏗️ Running build command..."
+          if node ../../packages/cli/dist/cli.js build; then
+            echo "⚠️ Build succeeded unexpectedly (might have dependencies installed)"
+          else
+            echo "✅ Build failed as expected without dependencies"
+          fi
+
+          echo "📂 Checking if build artifacts were created..."
+          if [ -d "dist" ]; then
+            echo "✅ Build directory created despite failure"
+            ls -la dist/
+          else
+            echo "ℹ️ No build directory created (expected)"
+          fi
         working-directory: test-project
 
       - name: Test dev command (should start but we'll kill it)
         run: |
+          echo "🔍 Testing dev command..."
           cd test-agent-cli
-          timeout 5 node ../../packages/cli/dist/cli.js dev || echo "Dev server started and was killed after 5 seconds"
+
+          echo "🚀 Starting dev server (will timeout after 5 seconds)..."
+          if timeout 5 node ../../packages/cli/dist/cli.js dev 2>&1; then
+            echo "✅ Dev server started successfully and was killed after 5 seconds"
+          else
+            echo "⚠️ Dev server may have failed to start or was killed"
+          fi
         working-directory: test-project
 
       - name: Clean up test projects
@@ -119,19 +333,54 @@ jobs:
 
       - name: Test edge cases
         run: |
-          # Test creating project in current directory
+          echo "🔍 Testing edge cases..."
+
+          echo "🧪 Test 1: Creating project in current directory"
           mkdir edge-case-test
           cd edge-case-test
-          node ../../packages/cli/dist/cli.js init .
-          test -f package.json
-          test -f src/agent.ts
+
+          echo "📁 Creating project in current directory..."
+          if ! node ../../packages/cli/dist/cli.js init .; then
+            echo "❌ Failed to create project in current directory"
+            cd ..
+            rm -rf edge-case-test
+            exit 1
+          fi
+
+          if [ ! -f "package.json" ] || [ ! -f "src/agent.ts" ]; then
+            echo "❌ Required files not found when creating in current directory"
+            ls -la
+            cd ..
+            rm -rf edge-case-test
+            exit 1
+          fi
+          echo "✅ Project created successfully in current directory"
           cd ..
           rm -rf edge-case-test
 
-          # Test with special characters in name
-          node ../packages/cli/dist/cli.js init "My Amazing Agent!"
-          test -d my-amazing-agent
-          grep '"name": "my-amazing-agent"' my-amazing-agent/package.json
+          echo "🧪 Test 2: Project name with special characters"
+          echo "📝 Testing project creation with special characters..."
+          if ! node ../packages/cli/dist/cli.js init "My Amazing Agent!"; then
+            echo "❌ Failed to create project with special characters"
+            exit 1
+          fi
+
+          if [ ! -d "my-amazing-agent" ]; then
+            echo "❌ Expected directory 'my-amazing-agent' not found"
+            ls -la | grep "^d"
+            exit 1
+          fi
+          echo "✅ Directory created with sanitized name"
+
+          echo "🔍 Checking package.json name field..."
+          if ! grep -q '"name": "my-amazing-agent"' my-amazing-agent/package.json; then
+            echo "❌ Package.json name not sanitized correctly"
+            echo "Current name:"
+            node -e "console.log(JSON.parse(require('fs').readFileSync('my-amazing-agent/package.json', 'utf8')).name)"
+            rm -rf my-amazing-agent
+            exit 1
+          fi
+          echo "✅ Package.json name correctly sanitized"
           rm -rf my-amazing-agent
         working-directory: test-project
 
@@ -166,41 +415,173 @@ jobs:
 
       - name: Test CLI as npx command
         run: |
+          echo "🔍 Testing CLI as npx command simulation..."
           cd /tmp/cli-test
-          # Simulate npx by using the built CLI with proper NODE_PATH
+
+          echo "📦 Setting up NODE_PATH for dependency resolution..."
           export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/cli/node_modules:$NODE_PATH"
-          node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init demo-project
+          echo "✅ NODE_PATH configured"
 
-          # Verify project was created
-          test -d demo-project
-          test -f demo-project/package.json
-          test -f demo-project/src/agent.ts
+          echo "🚀 Running CLI init command for demo-project..."
+          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init demo-project; then
+            echo "❌ CLI init command failed"
+            exit 1
+          fi
+          echo "✅ CLI init command completed"
 
-          # Check if we can run npm scripts (they'll fail but should be available)
+          echo "🔍 Verifying project creation..."
+          if [ ! -d "demo-project" ]; then
+            echo "❌ demo-project directory not found"
+            ls -la
+            exit 1
+          fi
+          echo "✅ demo-project directory created"
+
+          if [ ! -f "demo-project/package.json" ]; then
+            echo "❌ demo-project/package.json not found"
+            ls -la demo-project/
+            exit 1
+          fi
+          echo "✅ package.json exists"
+
+          if [ ! -f "demo-project/src/agent.ts" ]; then
+            echo "❌ demo-project/src/agent.ts not found"
+            ls -la demo-project/src/
+            exit 1
+          fi
+          echo "✅ src/agent.ts exists"
+
+          echo "📜 Checking npm scripts availability..."
           cd demo-project
-          npm run --help 2>/dev/null | grep -q "Available scripts" || echo "npm scripts available"
+          if npm run --help 2>/dev/null | grep -q "Available scripts"; then
+            echo "✅ npm scripts are available"
+          else
+            echo "ℹ️ npm scripts check completed (may not show 'Available scripts')"
+          fi
         working-directory: /tmp/cli-test
 
       - name: Test complete workflow
         run: |
-          # Test key generation
-          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/cli/node_modules:$NODE_PATH"
-          node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" gen:keys
-          grep "XMTP_WALLET_KEY=0x" .env
+          echo "🔍 Testing complete workflow..."
 
-          # Test that all scripts are defined
+          echo "🔑 Setting up environment for key generation..."
+          export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/cli/node_modules:$NODE_PATH"
+          echo "✅ NODE_PATH configured"
+
+          echo "🔐 Testing key generation..."
+          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" gen:keys; then
+            echo "❌ Key generation failed"
+            exit 1
+          fi
+          echo "✅ Key generation completed"
+
+          echo "🔍 Verifying .env file creation..."
+          if ! grep -q "XMTP_WALLET_KEY=0x" .env; then
+            echo "❌ XMTP_WALLET_KEY not found in .env"
+            echo ".env contents:"
+            cat .env
+            exit 1
+          fi
+          echo "✅ XMTP_WALLET_KEY found in .env"
+
+          echo "📜 Testing package.json scripts..."
+          echo "🔍 Checking for required scripts..."
           node -e "
             const pkg = require('./package.json');
             const scripts = pkg.scripts;
             const required = ['dev', 'build', 'start', 'keys', 'test', 'lint', 'format'];
+            const missing = [];
+            const present = [];
+
             required.forEach(script => {
-              if (!scripts[script]) {
-                console.error('Missing script:', script);
-                process.exit(1);
+              if (scripts[script]) {
+                present.push(script);
+                console.log('✅ Script present:', script, '->', scripts[script]);
+              } else {
+                missing.push(script);
+                console.error('❌ Missing script:', script);
               }
             });
-            console.log('All required scripts present');
+
+            if (missing.length > 0) {
+              console.error('Missing scripts:', missing.join(', '));
+              process.exit(1);
+            }
+
+            console.log('🎉 All', present.length, 'required scripts are present');
           "
+
+          echo "✅ Complete workflow test passed"
         working-directory: /tmp/cli-test/demo-project
 
+  test-cli-vitest:
+    name: Test CLI with Vitest
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        run: pnpm build --filter=cli
+
+      - name: Run CLI integration tests with Vitest
+        run: |
+          echo "🧪 Running CLI integration tests with Vitest..."
+          cd packages/cli
+          pnpm test
+        env:
+          NODE_ENV: test
+          CI: true
+
+      - name: Generate test coverage report
+        run: |
+          echo "📊 Generating test coverage report..."
+          cd packages/cli
+          pnpm test:coverage
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cli-test-results
+          path: |
+            packages/cli/coverage/
+            packages/cli/test-temp/
+          retention-days: 7
+
+  test-cli-comprehensive:
+    name: Comprehensive CLI Testing
+    runs-on: ubuntu-latest
+    needs: [test-cli, test-cli-installation, test-cli-vitest]
+    if: always() && (needs.test-cli.result == 'success' || needs.test-cli-installation.result == 'success' || needs.test-cli-vitest.result == 'success')
+
+    steps:
+      - name: All CLI tests completed
+        run: |
+          echo "🎉 All CLI testing approaches have been executed"
+          echo "📊 Test Results Summary:"
+          echo "  - Bash-based tests: ${{ needs.test-cli.result }}"
+          echo "  - Installation tests: ${{ needs.test-cli-installation.result }}"
+          echo "  - Vitest integration tests: ${{ needs.test-cli-vitest.result }}"
+          echo ""
+          echo "💡 For debugging failures:"
+          echo "  - Check the verbose logs in each job for detailed error messages"
+          echo "  - Use Vitest tests for the most detailed failure information"
+          echo "  - Review uploaded artifacts for test coverage and temporary files"
 
