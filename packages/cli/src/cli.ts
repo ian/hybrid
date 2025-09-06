@@ -342,7 +342,13 @@ async function initializeProject() {
 	const projectNameArg = process.argv[3] // Allow passing name as argument
 	let projectName = projectNameArg
 
-	if (!projectName) {
+	// Check if an empty string was explicitly passed
+	if (projectNameArg === "") {
+		console.error("❌ Project name is required")
+		process.exit(1)
+	}
+
+	if (!projectName || !projectName.trim()) {
 		while (!projectName || !projectName.trim()) {
 			projectName = await prompt("Enter project name: ")
 			if (!projectName || !projectName.trim()) {
@@ -368,11 +374,33 @@ async function initializeProject() {
 		try {
 			const existingFiles = await readdir(projectDir)
 			if (existingFiles.length > 0) {
-				console.log(
+				console.error(
 					`❌ Directory "${sanitizedName}" already exists and is not empty`
 				)
-				console.log(
+				console.error(
 					"Please choose a different name or remove the existing directory"
+				)
+				process.exit(1)
+			}
+		} catch {
+			// Directory doesn't exist, which is fine
+		}
+	} else {
+		try {
+			const existingFiles = await readdir(currentDir)
+			const significantFiles = existingFiles.filter(file => 
+				!file.startsWith('.') && 
+				file !== 'node_modules' && 
+				file !== 'package-lock.json' &&
+				file !== 'yarn.lock' &&
+				file !== 'pnpm-lock.yaml'
+			)
+			if (significantFiles.length > 0) {
+				console.error(
+					`❌ Current directory already exists and is not empty`
+				)
+				console.error(
+					"Please choose a different directory or remove existing files"
 				)
 				process.exit(1)
 			}
@@ -600,6 +628,7 @@ async function main() {
 				await initializeProject()
 			} catch (error) {
 				console.error("Failed to initialize project:", error)
+				console.error("Error details:", error instanceof Error ? error.stack : String(error))
 				process.exit(1)
 			}
 			break
@@ -729,5 +758,6 @@ async function main() {
 // Run the CLI
 main().catch((error) => {
 	console.error("CLI error:", error)
+	console.error("Error details:", error instanceof Error ? error.stack : String(error))
 	process.exit(1)
 })
