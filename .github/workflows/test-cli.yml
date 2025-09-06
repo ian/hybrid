@@ -538,7 +538,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build CLI
-        run: pnpm build --filter=cli
+        run: pnpm build --filter=hybrid
 
       - name: Run CLI integration tests with Vitest
         run: |
