@@ -8,6 +8,7 @@
 		"dev": "hybrid dev",
 		"build": "hybrid build",
 		"start": "hybrid start",
+		"keys": "hybrid gen:keys --write",
 		"test": "vitest",
 		"test:watch": "vitest --watch",
 		"test:coverage": "vitest --coverage",
