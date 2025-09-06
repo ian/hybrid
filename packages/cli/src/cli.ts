@@ -693,12 +693,6 @@ async function main() {
 				"  revoke:all   Revoke ALL XMTP installations for current wallet"
 			)
 			console.log("")
-			console.log("Environment Variables:")
-			console.log(
-				"  REPO         Set template repository (default: ian/hybrid#chore/degit-templates)"
-			)
-			console.log("               Format: user/repo or user/repo#branch")
-			console.log("")
 			console.log("Examples:")
 			console.log("  hybrid init my-agent    or    hy init my-agent")
 			console.log(
