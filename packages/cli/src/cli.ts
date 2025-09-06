@@ -388,17 +388,16 @@ async function initializeProject() {
 	} else {
 		try {
 			const existingFiles = await readdir(currentDir)
-			const significantFiles = existingFiles.filter(file => 
-				!file.startsWith('.') && 
-				file !== 'node_modules' && 
-				file !== 'package-lock.json' &&
-				file !== 'yarn.lock' &&
-				file !== 'pnpm-lock.yaml'
+			const significantFiles = existingFiles.filter(
+				(file) =>
+					!file.startsWith(".") &&
+					file !== "node_modules" &&
+					file !== "package-lock.json" &&
+					file !== "yarn.lock" &&
+					file !== "pnpm-lock.yaml"
 			)
 			if (significantFiles.length > 0) {
-				console.error(
-					`❌ Current directory already exists and is not empty`
-				)
+				console.error(`❌ Current directory already exists and is not empty`)
 				console.error(
 					"Please choose a different directory or remove existing files"
 				)
@@ -415,8 +414,7 @@ async function initializeProject() {
 
 	try {
 		// Parse REPO environment variable to support repository and branch specification
-		// const repoEnv = process.env.REPO || "ian/hybrid"
-		const repoEnv = process.env.REPO || "ian/hybrid#chore/degit-templates"
+		const repoEnv = process.env.REPO || "ian/hybrid"
 		let templateRepo: string
 
 		if (repoEnv.includes("#")) {
@@ -628,7 +626,10 @@ async function main() {
 				await initializeProject()
 			} catch (error) {
 				console.error("Failed to initialize project:", error)
-				console.error("Error details:", error instanceof Error ? error.stack : String(error))
+				console.error(
+					"Error details:",
+					error instanceof Error ? error.stack : String(error)
+				)
 				process.exit(1)
 			}
 			break
@@ -674,43 +675,6 @@ async function main() {
 		case "--help":
 		case "-h":
 		case "help":
-			console.log("Usage: hybrid <command> or hy <command>")
-			console.log("")
-			console.log("Commands:")
-			console.log("  init [name]  Create a new Hybrid project")
-			console.log("  dev          Start development server with watch mode")
-			console.log("  build        Build the TypeScript project")
-			console.log("  gen:keys     Generate XMTP wallet and encryption keys")
-			console.log(
-				"               Use --write to save keys directly to .env file"
-			)
-			console.log("  register     Register wallet with XMTP production network")
-			console.log("  revoke       Revoke XMTP installations for specific inbox")
-			console.log("               Usage: hybrid revoke <inboxId>")
-			console.log(
-				"  revoke:all   Revoke ALL XMTP installations for current wallet"
-			)
-			console.log("")
-			console.log("Environment Variables:")
-			console.log(
-				"  REPO         Set template repository (default: ian/hybrid#chore/degit-templates)"
-			)
-			console.log("               Format: user/repo or user/repo#branch")
-			console.log("")
-			console.log("Examples:")
-			console.log("  hybrid init my-agent    or    hy init my-agent")
-			console.log(
-				"  hybrid init             or    hy init (will prompt for name)"
-			)
-			console.log("  hybrid dev              or    hy dev")
-			console.log("  hybrid build            or    hy build")
-			console.log("  hybrid gen:keys         or    hy gen:keys")
-			console.log("  hybrid gen:keys --write or    hy gen:keys --write")
-			console.log("  hybrid register         or    hy register")
-			console.log("  hybrid revoke <inboxId> or    hy revoke <inboxId>")
-			console.log("  hybrid revoke:all       or    hy revoke:all")
-			console.log("")
-			break
 		default:
 			console.log("Usage: hybrid <command> or hy <command>")
 			console.log("")
@@ -758,6 +722,9 @@ async function main() {
 // Run the CLI
 main().catch((error) => {
 	console.error("CLI error:", error)
-	console.error("Error details:", error instanceof Error ? error.stack : String(error))
+	console.error(
+		"Error details:",
+		error instanceof Error ? error.stack : String(error)
+	)
 	process.exit(1)
 })
