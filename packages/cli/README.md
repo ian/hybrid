@@ -13,7 +13,7 @@ A flexible framework for building AI agents with plugin-based HTTP server extens
 ## Quick Start
 
 ```typescript
-import { Agent, XMTPPlugin, PonderPlugin } from "@hybrd/hybrid"
+import { Agent, XMTPPlugin, PonderPlugin } from "hybrid"
 
 // Create an agent
 const agent = new Agent({
@@ -48,7 +48,7 @@ The framework uses a plugin-based architecture that allows you to extend the age
 ### Creating Custom Plugins
 
 ```typescript
-import type { Plugin } from "@hybrd/hybrid"
+import type { Plugin } from "hybrid"
 import { Hono } from "hono"
 
 function MyCustomPlugin(): Plugin {

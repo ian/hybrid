@@ -40,15 +40,15 @@ importers:
 
   examples/basic:
     dependencies:
-      '@hybrd/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@hybrd/xmtp':
         specifier: workspace:*
         version: link:../../packages/xmtp
       '@openrouter/ai-sdk-provider':
         specifier: catalog:ai
         version: 1.1.2(ai@5.0.28(zod@4.0.17))(zod@4.0.17)
+      hybrid:
+        specifier: workspace:*
+        version: link:../../packages/core
       zod:
         specifier: catalog:stack
         version: 4.0.17
@@ -62,9 +62,6 @@ importers:
       '@types/node':
         specifier: catalog:stack
         version: 22.8.6
-      hybrid:
-        specifier: workspace:*
-        version: link:../../packages/cli
 
   packages/cli:
     dependencies:

@@ -1,15 +1,12 @@
 {
-	"name": "hybrid",
+	"name": "@hybrid/cli",
 	"version": "1.1.1",
 	"type": "module",
 	"bin": {
 		"hybrid": "./dist/cli.js",
 		"hy": "./dist/cli.js"
 	},
-	"files": [
-		"dist",
-		"src"
-	],
+	"files": ["dist", "src"],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
