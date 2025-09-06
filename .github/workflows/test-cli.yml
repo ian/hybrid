@@ -59,7 +59,7 @@ jobs:
       - name: Test CLI help (no args)
         run: |
           echo "🔍 Testing CLI without arguments..."
-          if ! node ../packages/cli/dist/cli.js; then
+          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js"; then
             echo "❌ CLI should show help when no arguments provided"
             exit 1
           fi
@@ -69,7 +69,7 @@ jobs:
       - name: Test project creation with specific name
         run: |
           echo "🔍 Testing project creation with name 'test-agent-cli'..."
-          if ! node ../packages/cli/dist/cli.js init test-agent-cli; then
+          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init test-agent-cli; then
             echo "❌ Project creation failed"
             exit 1
           fi
@@ -213,7 +213,7 @@ jobs:
           cd test-agent-cli
 
           echo "🔑 Running key generation command..."
-          if ! node ../../packages/cli/dist/cli.js gen:keys; then
+          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" gen:keys --write; then
             echo "❌ Key generation command failed"
             exit 1
           fi
@@ -255,7 +255,7 @@ jobs:
         run: |
           echo "🔍 Testing interactive project creation..."
           echo "📝 Providing empty input to trigger interactive mode..."
-          if ! echo -e "\n" | node ../packages/cli/dist/cli.js init; then
+          if ! echo -e "\n" | node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init; then
             echo "❌ Interactive project creation failed"
             exit 1
           fi
@@ -298,7 +298,7 @@ jobs:
           cd test-agent-cli
 
           echo "🏗️ Running build command..."
-          if node ../../packages/cli/dist/cli.js build; then
+          if node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" build; then
             echo "⚠️ Build succeeded unexpectedly (might have dependencies installed)"
           else
             echo "✅ Build failed as expected without dependencies"
@@ -319,7 +319,7 @@ jobs:
           cd test-agent-cli
 
           echo "🚀 Starting dev server (will timeout after 5 seconds)..."
-          if timeout 5 node ../../packages/cli/dist/cli.js dev 2>&1; then
+          if timeout 5 node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" dev 2>&1; then
             echo "✅ Dev server started successfully and was killed after 5 seconds"
           else
             echo "⚠️ Dev server may have failed to start or was killed"
@@ -340,7 +340,7 @@ jobs:
           cd edge-case-test
 
           echo "📁 Creating project in current directory..."
-          if ! node ../../packages/cli/dist/cli.js init .; then
+          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init .; then
             echo "❌ Failed to create project in current directory"
             cd ..
             rm -rf edge-case-test
@@ -360,7 +360,7 @@ jobs:
 
           echo "🧪 Test 2: Project name with special characters"
           echo "📝 Testing project creation with special characters..."
-          if ! node ../packages/cli/dist/cli.js init "My Amazing Agent!"; then
+          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init "My Amazing Agent!"; then
             echo "❌ Failed to create project with special characters"
             exit 1
           fi
@@ -469,7 +469,7 @@ jobs:
           echo "✅ NODE_PATH configured"
 
           echo "🔐 Testing key generation..."
-          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" gen:keys; then
+          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" gen:keys --write; then
             echo "❌ Key generation failed"
             exit 1
           fi

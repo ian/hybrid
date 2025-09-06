@@ -6,7 +6,10 @@
 		"hybrid": "./dist/cli.js",
 		"hy": "./dist/cli.js"
 	},
-	"files": ["dist", "src"],
+	"files": [
+		"dist",
+		"src"
+	],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -40,6 +43,7 @@
 		"@types/degit": "^2.8.4",
 		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "catalog:stack",
+		"@vitest/coverage-v8": "^3.2.4",
 		"tsup": "^8.5.0",
 		"vitest": "^3.2.4"
 	}
