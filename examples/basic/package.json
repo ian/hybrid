@@ -15,12 +15,14 @@
 	},
 	"dependencies": {
 		"@openrouter/ai-sdk-provider": "catalog:ai",
-		"hybrid": "workspace:*",
+		"@hybrd/core": "workspace:*",
+		"@hybrd/xmtp": "workspace:*",
 		"zod": "catalog:stack"
 	},
 	"devDependencies": {
-		"@hybrd/biome": "workspace:*",
-		"@hybrd/tsconfig": "workspace:*",
-		"@types/node": "catalog:stack"
+		"@config/biome": "workspace:*",
+		"@config/tsconfig": "workspace:*",
+		"@types/node": "catalog:stack",
+		"hybrid": "workspace:*"
 	}
 }

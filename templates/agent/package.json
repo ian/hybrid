@@ -5,10 +5,10 @@
 	"description": "A Hybrid XMTP agent project",
 	"type": "module",
 	"scripts": {
-		"dev": "tsx --watch src/agent.ts",
-		"build": "tsc",
-		"start": "node dist/src/agent.js",
-		"keys": "hybrid gen:keys",
+		"dev": "hybrid dev",
+		"build": "hybrid build",
+		"start": "hybrid start",
+		"keys": "hybrid gen:keys --write",
 		"test": "vitest",
 		"test:watch": "vitest --watch",
 		"test:coverage": "vitest --coverage",
@@ -20,16 +20,14 @@
 		"clean": "rimraf dist node_modules"
 	},
 	"dependencies": {
-		"@openrouter/ai-sdk-provider": "^1.1.2",
-		"hybrid": "^1.0.1",
-		"tsx": "^4.19.2"
+		"@openrouter/ai-sdk-provider": "^1.1.2"
 	},
 	"devDependencies": {
-		"@types/node": "^22.0.0",
-		"vitest": "^3.2.4",
 		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.0.0",
+		"hybrid": "^1.0.1",
 		"typescript": "^5.8.3",
-		"rimraf": "^6.0.1"
+		"vitest": "^3.2.4"
 	},
 	"engines": {
 		"node": ">=20.0.0"

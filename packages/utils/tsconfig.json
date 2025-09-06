@@ -1,9 +1,13 @@
 {
-	"extends": "@hybrd/tsconfig/internal-package.json",
+	"extends": "@config/tsconfig/external-package.json",
 	"compilerOptions": {
 		"emitDeclarationOnly": false,
-		"outDir": "dist"
+		"noEmit": false,
+		"outDir": "dist",
+		"module": "ES2020",
+		"moduleResolution": "node",
+		"target": "ES2020"
 	},
-	"include": ["src/**/*.ts", "src/**/*.tsx"],
-	"exclude": ["node_modules"]
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist"]
 }

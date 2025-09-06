@@ -4,12 +4,13 @@
 	"type": "module",
 	"exports": {
 		".": {
+			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js",
-			"types": "./dist/index.d.ts"
+			"require": "./dist/index.cjs"
 		}
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsup",
 		"clean": "rm -rf .turbo dist",
 		"lint": "biome lint --unsafe",
 		"lint:fix": "biome lint --write --unsafe",
@@ -23,8 +24,9 @@
 		"uuid": "11.0.5"
 	},
 	"devDependencies": {
-		"@hybrd/biome": "workspace:*",
-		"@hybrd/tsconfig": "workspace:*",
-		"@types/node": "catalog:stack"
+		"@config/biome": "workspace:*",
+		"@config/tsconfig": "workspace:*",
+		"@types/node": "catalog:stack",
+		"tsup": "^8.5.0"
 	}
 }

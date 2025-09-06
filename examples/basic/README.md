@@ -67,8 +67,8 @@ Examples:
 
 The following environment variables are required:
 
-- `WALLET_KEY` - The private key of the wallet
-- `ENCRYPTION_KEY` - Encryption key for the local database
+- `XMTP_WALLET_KEY` - The private key of the wallet
+- `XMTP_ENCRYPTION_KEY` - Encryption key for the local database
 - `XMTP_ENV` - XMTP environment (local, dev, production)
 
 ## License

@@ -1,5 +1,5 @@
+import { Agent, MessageListenerConfig, Reaction } from "@hybrd/core"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { Agent, MessageListenerConfig, Reaction } from "hybrid"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY

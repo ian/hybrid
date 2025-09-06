@@ -1,29 +1,23 @@
 {
-	"name": "hybrid",
+	"name": "@hybrd/core",
 	"version": "1.0.10",
 	"type": "module",
-	"bin": {
-		"hybrid": "./dist/src/cli.js",
-		"hy": "./dist/src/cli.js"
-	},
-	"files": [
-		"dist",
-		"templates",
-		"src"
-	],
+	"files": ["dist", "src"],
 	"exports": {
 		".": {
-			"import": "./dist/src/index.js",
-			"types": "./dist/src/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
 		},
 		"./ponder": {
-			"import": "./dist/src/ponder/index.js",
-			"types": "./dist/src/ponder/index.d.ts"
+			"types": "./dist/ponder/index.d.ts",
+			"import": "./dist/ponder/index.js",
+			"require": "./dist/ponder/index.cjs"
 		}
 	},
 	"scripts": {
-		"build": "tsc && pnpm run post-build",
-		"post-build": "cp -r templates dist/",
+		"build": "tsup",
+		"build:watch": "tsup --watch",
 		"clean": "rm -rf .turbo dist",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",
@@ -35,9 +29,8 @@
 		"@coinbase/agentkit-vercel-ai-sdk": "^0.1.0",
 		"@coinbase/coinbase-sdk": "^0.22.0",
 		"@hono/node-server": "^1.13.5",
-		"@hybrd/utils": "^1.0.8",
-		"@hybrd/xmtp": "^1.0.8",
-		"@upstash/qstash": "2.7.22",
+		"@hybrd/utils": "workspace:*",
+		"@hybrd/xmtp": "workspace:*",
 		"ai": "^5.0.28",
 		"eta": "^3.5.0",
 		"hono": "^4.9.2",
@@ -49,10 +42,12 @@
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
-		"@hybrd/biome": "workspace:*",
-		"@hybrd/tsconfig": "workspace:*",
+		"@config/biome": "workspace:*",
+		"@config/tsconfig": "workspace:*",
+		"@types/degit": "^2.8.4",
 		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "catalog:stack",
+		"tsup": "^8.5.0",
 		"vitest": "^3.2.4"
 	}
 }

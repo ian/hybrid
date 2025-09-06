@@ -10,6 +10,7 @@
 	"packageManager": "pnpm@9.15.5",
 	"scripts": {
 		"build": "turbo run build --ui stream",
+		"build:watch": "turbo run build:watch --ui stream",
 		"bump": "tsx scripts/bump.ts",
 		"bump:patch": "tsx scripts/bump.ts patch",
 		"bump:minor": "tsx scripts/bump.ts minor",
@@ -27,6 +28,6 @@
 		"@biomejs/biome": "1.9.4",
 		"tsx": "4.19.3",
 		"turbo": "2.5.0",
-		"typescript": "5.8.3"
+		"typescript": "5.9.2"
 	}
 }
