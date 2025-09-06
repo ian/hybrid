@@ -74,6 +74,7 @@ jobs:
             exit 1
           fi
           echo "✅ Project created successfully"
+        working-directory: test-project
 
       - name: Verify project structure
         run: |
@@ -87,6 +88,7 @@ jobs:
           fi
           echo "✅ Project directory exists"
           ls -la test-agent-cli/
+        working-directory: test-project
 
           echo "📂 Checking src directory..."
           if [ ! -d "test-agent-cli/src" ]; then
