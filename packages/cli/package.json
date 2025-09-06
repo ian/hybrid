@@ -27,10 +27,10 @@
 		"test:coverage": "vitest run --coverage"
 	},
 	"dependencies": {
-		"@hybrd/utils": "workspace:*",
 		"@hybrd/xmtp": "workspace:*",
 		"degit": "^2.8.4",
 		"dotenv": "^16.4.5",
+		"tsx": "^4.20.5",
 		"uint8arrays": "^5.1.0",
 		"viem": "^2.33.3"
 	},
