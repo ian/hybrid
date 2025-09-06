@@ -15,7 +15,7 @@
 	},
 	"dependencies": {
 		"@openrouter/ai-sdk-provider": "catalog:ai",
-		"@hybrd/core": "workspace:*",
+		"hybrid": "workspace:*",
 		"@hybrd/xmtp": "workspace:*",
 		"zod": "catalog:stack"
 	},

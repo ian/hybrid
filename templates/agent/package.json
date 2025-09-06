@@ -1,6 +1,6 @@
 {
 	"name": "{{projectName}}",
-	"version": "0.1.0",
+	"version": "0.0.0",
 	"private": true,
 	"description": "A Hybrid XMTP agent project",
 	"type": "module",
@@ -20,12 +20,13 @@
 		"clean": "rimraf dist node_modules"
 	},
 	"dependencies": {
-		"@openrouter/ai-sdk-provider": "^1.1.2"
+		"@openrouter/ai-sdk-provider": "^1.1.2",
+		"hybrid": "latest"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
 		"@types/node": "^22.0.0",
-		"hybrid": "^1.0.1",
+		"@hybrid/cli": "latest",
 		"typescript": "^5.8.3",
 		"vitest": "^3.2.4"
 	},
