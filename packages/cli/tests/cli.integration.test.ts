@@ -11,9 +11,9 @@ function runCliCommand(
 	try {
 		const { execSync } = require("node:child_process")
 		const cliPath = join(process.cwd(), "dist/cli.js")
-		
+
 		const result = execSync(
-			`node "${cliPath}" ${args.map(arg => `"${arg}"`).join(" ")}`,
+			`node "${cliPath}" ${args.map((arg) => `"${arg}"`).join(" ")}`,
 			{
 				cwd: cwd || process.cwd(),
 				encoding: "utf8",
@@ -39,21 +39,23 @@ function runCreateHybridCommand(
 		const { execSync } = require("node:child_process")
 		// Try to find the create-hybrid binary relative to the monorepo root
 		const currentDir = process.cwd()
-		const monorepoRoot = currentDir.includes('/packages/cli') 
-			? join(currentDir, '..', '..')
+		const monorepoRoot = currentDir.includes("/packages/cli")
+			? join(currentDir, "..", "..")
 			: currentDir
-		const createHybridPath = join(monorepoRoot, "packages", "create-hybrid", "dist", "index.js")
-		
-		
-		const result = execSync(
-			`node "${createHybridPath}" "${projectName}"`,
-			{
-				cwd: cwd || process.cwd(),
-				encoding: "utf8",
-				stdio: "pipe",
-				timeout: 30000
-			}
+		const createHybridPath = join(
+			monorepoRoot,
+			"packages",
+			"create-hybrid",
+			"dist",
+			"index.js"
 		)
+
+		const result = execSync(`node "${createHybridPath}" "${projectName}"`, {
+			cwd: cwd || process.cwd(),
+			encoding: "utf8",
+			stdio: "pipe",
+			timeout: 30000
+		})
 		return { stdout: result, stderr: "", exitCode: 0 }
 	} catch (error: any) {
 		return {
@@ -121,10 +123,7 @@ describe("CLI Integration Tests", () => {
 			const projectName = "test-project-cli"
 			const tempDir = join(process.cwd(), "test-temp")
 
-			const result = runCreateHybridCommand(
-				projectName,
-				tempDir
-			)
+			const result = runCreateHybridCommand(projectName, tempDir)
 			expect(result.exitCode).toBe(0)
 			expect(result.stdout).toContain("Hybrid project created successfully")
 
@@ -145,20 +144,19 @@ describe("CLI Integration Tests", () => {
 			cleanupTempProject(projectName)
 		})
 
-	it("should create a project in current directory when name is '.'", () => {
-		const projectName = "test-current-dir"
-		const tempDir = createTempProject(projectName)
+		it("should create a project in current directory when name is '.'", () => {
+			const projectName = "test-current-dir"
+			const tempDir = createTempProject(projectName)
 
-		// Ensure directory is empty for the test
-		const { execSync } = require("node:child_process")
-		try {
-			execSync(`find ${tempDir} -mindepth 1 -delete`, { stdio: "ignore" })
-		} catch (e) {
-		}
+			// Ensure directory is empty for the test
+			const { execSync } = require("node:child_process")
+			try {
+				execSync(`find ${tempDir} -mindepth 1 -delete`, { stdio: "ignore" })
+			} catch (e) {}
 
-		const result = runCreateHybridCommand(".", tempDir)
-		expect(result.exitCode).toBe(0)
-		expect(result.stdout).toContain("Hybrid project created successfully")
+			const result = runCreateHybridCommand(".", tempDir)
+			expect(result.exitCode).toBe(0)
+			expect(result.stdout).toContain("Hybrid project created successfully")
 
 			// Verify files are created in current directory
 			expect(existsSync(join(tempDir, "package.json"))).toBe(true)
@@ -188,17 +186,19 @@ describe("CLI Integration Tests", () => {
 			cleanupTempProject(expectedName)
 		})
 
-	it("should fail when trying to create project in non-empty directory", () => {
-		const projectName = "test-existing-dir"
-		const tempDir = join(process.cwd(), "test-temp")
+		it("should fail when trying to create project in non-empty directory", () => {
+			const projectName = "test-existing-dir"
+			const tempDir = join(process.cwd(), "test-temp")
 
-		// Create the project directory and add a file to it
-		execSync(`mkdir -p ${join(tempDir, projectName)}`)
-		execSync(`echo "existing file" > ${join(tempDir, projectName, "existing.txt")}`)
+			// Create the project directory and add a file to it
+			execSync(`mkdir -p ${join(tempDir, projectName)}`)
+			execSync(
+				`echo "existing file" > ${join(tempDir, projectName, "existing.txt")}`
+			)
 
-		const result = runCreateHybridCommand(projectName, tempDir)
-		expect(result.exitCode).toBe(1)
-		expect(result.stderr).toContain("already exists and is not empty")
+			const result = runCreateHybridCommand(projectName, tempDir)
+			expect(result.exitCode).toBe(1)
+			expect(result.stderr).toContain("already exists and is not empty")
 
 			cleanupTempProject(projectName)
 		})
@@ -212,10 +212,10 @@ describe("CLI Integration Tests", () => {
 			// First create a project
 			runCreateHybridCommand(projectName, tempDir)
 
-		// Change to project directory and generate keys
-		const projectPath = join(tempDir, projectName)
-		const result = runCliCommand(["gen:keys", "--write"], projectPath)
-		expect(result.exitCode).toBe(0)
+			// Change to project directory and generate keys
+			const projectPath = join(tempDir, projectName)
+			const result = runCliCommand(["gen:keys", "--write"], projectPath)
+			expect(result.exitCode).toBe(0)
 			expect(result.stdout).toContain("Keys generated successfully")
 
 			// Verify .env file contains keys
@@ -275,12 +275,12 @@ describe("CLI Integration Tests", () => {
 			// Create a project
 			runCreateHybridCommand(projectName, tempDir)
 
-		// Start dev server with timeout
-		const projectPath = join(tempDir, projectName)
-		const child = spawn("node", [join(process.cwd(), "dist/cli.js"), "dev"], {
-			cwd: projectPath,
-			stdio: "pipe"
-		})
+			// Start dev server with timeout
+			const projectPath = join(tempDir, projectName)
+			const child = spawn("node", [join(process.cwd(), "dist/cli.js"), "dev"], {
+				cwd: projectPath,
+				stdio: "pipe"
+			})
 
 			let output = ""
 			child.stdout?.on("data", (data) => {
