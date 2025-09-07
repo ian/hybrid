@@ -1,5 +1,5 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { Agent, MessageListenerConfig, Reaction } from "hybrid"
+import { Agent, type MessageListenerConfig, type Reaction } from "hybrid"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
@@ -12,7 +12,7 @@ const agent = new Agent({
 		"You are a XMTP agent that responds to messages and reactions. Try and be as conversational as possible."
 })
 
-const filter: MessageListenerConfig["filter"] = async ({ message }: { message: any }) => {
+const filter: MessageListenerConfig["filter"] = async ({ message }) => {
 	const messageContent = message.content?.toString()
 	const contentTypeId = message.contentType?.typeId
 	const isMessage = contentTypeId === "text"
@@ -50,4 +50,3 @@ agent.listen({
 	port: process.env.PORT || "8454",
 	filter
 })
-

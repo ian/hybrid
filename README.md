@@ -4,16 +4,21 @@ An open-source agent framework for building conversational AI agents on XMTP. Hy
 
 ## 🏗️ Architecture
 
-This project uses a monorepo structure with multiple applications and packages:
+This project uses a monorepo structure with multiple packages and supporting directories:
 
 ```
 hybrid/
+├── config/           # Shared configuration files (Biome, TypeScript)
 ├── examples/
 │   └── basic/        # Basic agent example implementation
-└── packages/
-    ├── hybrid/       # Main agent framework library
-    ├── utils/        # Utility functions and helpers
-    └── xmtp/         # XMTP client and messaging utilities
+├── packages/
+│   ├── cli/          # Command-line interface for agent management
+│   ├── core/         # Main agent framework library (published as "hybrid")
+│   ├── utils/        # Utility functions and helpers
+│   └── xmtp/         # XMTP client and messaging utilities
+├── scripts/          # Build and maintenance scripts
+├── templates/        # Project templates for agent creation
+└── test-project/     # Test project for development
 ```
 
 ## 📝 Core Example
@@ -22,7 +27,7 @@ Here's a basic agent implementation using Hybrid:
 
 ```typescript
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { Agent, MessageListenerConfig, Reaction } from "hybrid"
+import { Agent, type MessageListenerConfig, type Reaction } from "hybrid"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
@@ -37,11 +42,11 @@ const agent = new Agent({
 
 // We don't want the agent to respond to every message, this shows how to filter for only replies.
 const replyOnlyFilter: MessageListenerConfig["filter"] = async ({ message }) => {
-	const isReply = contentTypeId === "reply"
+	const isReply = message.contentType.typeId === "reply"
 
 	if (isReply) {
 		return true
-  }
+	}
 
 	return false
 }
@@ -88,6 +93,36 @@ npx hybrid dev
 
 Your agent will start listening for XMTP messages and you're ready to build!
 
+## 🖥️ CLI Commands
+
+The Hybrid CLI provides several commands to manage your agent development workflow:
+
+```bash
+# Initialize a new agent project
+npx hybrid init
+
+# Generate XMTP wallet and encryption keys
+npx hybrid gen:keys
+
+# Start development server
+npx hybrid dev
+
+# Build your agent
+npx hybrid build
+
+# Register your agent with XMTP
+npx hybrid register
+
+# Revoke specific XMTP installations
+npx hybrid revoke <installation-id>
+
+# Revoke all XMTP installations
+npx hybrid revoke:all
+
+# Clean build artifacts
+npx hybrid clean
+```
+
 ## 🔧 Developing Locally
 
 If you want to work with the source code or contribute to Hybrid:
@@ -127,7 +162,7 @@ XMTP_ENV="dev"  # dev, production
 pnpm dev
 ```
 
-This starts the agent at http://localhost:3001 and begins listening for XMTP messages.
+This starts the agent and begins listening for XMTP messages on the configured port (default: 8454).
 
 ## 🛠️ Development
 
@@ -135,17 +170,26 @@ This starts the agent at http://localhost:3001 and begins listening for XMTP mes
 
 ```bash
 # Development
-pnpm dev                    # Start the agent
 pnpm build                  # Build all packages
-pnpm test                   # Run tests
+pnpm build:watch            # Build all packages in watch mode
+pnpm test                   # Run tests across all packages
+pnpm typecheck              # Type checking across all packages
 
 # Code Quality
 pnpm lint                   # Lint all packages
-pnpm format                 # Format code
-pnpm typecheck              # Type checking
+pnpm lint:fix               # Fix linting issues
+pnpm format                 # Format code (handled by Biome)
 
-# XMTP
-pnpm gen:keys               # Generate XMTP keys
+# Maintenance
+pnpm clean                  # Clean build artifacts
+pnpm nuke                   # Remove all node_modules (nuclear option)
+pnpm bump                   # Bump version (patch by default)
+pnpm bump:patch             # Bump patch version
+pnpm bump:minor             # Bump minor version
+pnpm bump:major             # Bump major version
+
+# Release
+pnpm release                # Build and publish all packages
 ```
 
 ### Project Structure
@@ -158,26 +202,41 @@ Hybrid is designed as a framework for developers to build XMTP agents:
 - **Agent Configuration**: Simple setup with instructions and behavior
 - **XMTP Listening**: Built-in server to listen for messages on any port
 
+#### Templates (`templates/`)
+- **agent/**: Project template for creating new XMTP agents
+  - Pre-configured TypeScript setup with Vitest
+  - Example agent implementation and tests
+  - Ready-to-use project structure
+
 #### Core Packages
-- **hybrid/**: Main agent framework library
+- **core/**: Main agent framework library (published as "hybrid")
   - Agent runtime and plugin system
   - Type-safe message handling
   - Flexible filtering and processing
-- **utils/**: Common utilities and helpers
+  - Integration with AI providers and XMTP
+- **cli/**: Command-line interface for agent management
+  - Project initialization and setup
+  - XMTP key generation and management
+  - Development server and build tools
+- **utils/**: Common utilities and helpers (@hybrd/utils)
   - Array, string, and object utilities
-  - Storage and date helpers
-  - URL and UUID utilities
-- **xmtp/**: XMTP client and messaging utilities
+  - Date and UUID helpers
+  - Markdown processing utilities
+- **xmtp/**: XMTP client and messaging utilities (@hybrd/xmtp)
   - Client initialization and management
   - Message sending and receiving
-  - Address resolution and identity management
+  - Address resolution (ENS, BaseName, XMTP)
+  - Content type handling and encryption
 
 ### Key Technologies
 
-- **Core**: Node.js, TypeScript, pnpm workspace
+- **Core**: Node.js 22+, TypeScript, pnpm workspace
+- **Build**: Turbo for monorepo orchestration and caching
 - **Messaging**: XMTP Protocol for decentralized messaging
-- **AI**: OpenRouter API for natural language processing
+- **AI**: OpenRouter API and Vercel AI SDK for natural language processing
+- **Web3**: Viem for Ethereum interactions, Coinbase AgentKit for DeFi
 - **Development**: Biome for linting and formatting
+- **Testing**: Vitest for fast unit and integration tests
 
 ## 🔧 Configuration
 
@@ -329,20 +388,30 @@ XMTP_ENCRYPTION_KEY="..."  # For secure data encryption
 The framework automatically handles XMTP client initialization:
 
 ```typescript
-import { createXMTPClient } from "@hybrd/xmtp"
+import { Client } from "@xmtp/node-sdk"
+import { createWalletClient, http } from "viem"
+import { privateKeyToAccount } from "viem/accounts"
 
-// Client is automatically created from environment variables
-const xmtpClient = createXMTPClient()
+// Create XMTP client with wallet
+const account = privateKeyToAccount(process.env.XMTP_WALLET_KEY as `0x${string}`)
+const wallet = createWalletClient({
+  account,
+  transport: http()
+})
+
+const xmtpClient = await Client.create(wallet, {
+  env: process.env.XMTP_ENV as "dev" | "production" || "dev"
+})
 
 // Send messages to users
 await xmtpClient.sendMessage(userAddress, "Hello from your agent!")
 
 // Listen for incoming messages
-xmtpClient.onMessage(async (message) => {
+for await (const message of await xmtpClient.conversations.streamAllMessages()) {
   // Process message and respond
   const response = await processUserMessage(message.content)
-  await xmtpClient.sendMessage(message.senderAddress, response)
-})
+  await message.conversation.send(response)
+}
 ```
 
 ### Security Best Practices
