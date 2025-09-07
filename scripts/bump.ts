@@ -64,6 +64,9 @@ function bumpPackageVersions(bumpType: "patch" | "minor" | "major" = "patch") {
 		console.log(
 			`\n🎉 Successfully bumped all packages to ${bumpType} versions!`
 		)
+
+		// Note: Examples are no longer part of the workspace and use "latest" versions
+		// They will automatically get the newest published versions
 	} catch (error) {
 		console.error("❌ Error bumping package versions:", error)
 		process.exit(1)
