@@ -1,6 +1,7 @@
 {
 	"name": "hybrid",
-	"version": "1.1.1",
+	"version": "1.2.0",
+	"keywords": ["xmtp", "agent", "ai", "hybrid", "blockchain", "messaging"],
 	"type": "module",
 	"files": ["dist", "src"],
 	"exports": {
@@ -35,7 +36,6 @@
 		"eta": "^3.5.0",
 		"hono": "^4.9.2",
 		"jsonwebtoken": "^9.0.2",
-		"tsx": "^4.19.2",
 		"uint8arrays": "^5.1.0",
 		"viem": "^2.33.3",
 		"wagmi": "^2.15.6",

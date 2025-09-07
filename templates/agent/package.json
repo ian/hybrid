@@ -2,9 +2,10 @@
 	"name": "{{projectName}}",
 	"version": "0.0.0",
 	"private": true,
-	"description": "A Hybrid XMTP agent project",
+	"description": "A Hybrid XMTP agent",
 	"type": "module",
 	"scripts": {
+		"clean": "hybrid clean",
 		"dev": "hybrid dev",
 		"build": "hybrid build",
 		"start": "hybrid start",
@@ -16,8 +17,7 @@
 		"lint:check": "biome lint",
 		"format": "biome format --write",
 		"format:check": "biome format --check",
-		"typecheck": "tsc --noEmit",
-		"clean": "rimraf dist node_modules"
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@openrouter/ai-sdk-provider": "^1.1.2",
@@ -26,14 +26,13 @@
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
 		"@types/node": "^22.0.0",
-		"@hybrid/cli": "latest",
+		"@hybrd/cli": "latest",
 		"typescript": "^5.8.3",
 		"vitest": "^3.2.4"
 	},
 	"engines": {
-		"node": ">=20.0.0"
+		"node": ">=20"
 	},
-	"keywords": ["xmtp", "agent", "ai", "hybrid", "blockchain", "messaging"],
 	"author": "",
 	"license": "MIT"
 }
