@@ -63,6 +63,65 @@ importers:
         specifier: catalog:stack
         version: 22.8.6
 
+  examples/crypto-agent:
+    dependencies:
+      '@hybrd/xmtp':
+        specifier: workspace:*
+        version: link:../../packages/xmtp
+      '@openrouter/ai-sdk-provider':
+        specifier: catalog:ai
+        version: 1.1.2(ai@5.0.28(zod@4.0.17))(zod@4.0.17)
+      hybrid:
+        specifier: workspace:*
+        version: link:../../packages/core
+      zod:
+        specifier: catalog:stack
+        version: 4.0.17
+    devDependencies:
+      '@config/biome':
+        specifier: workspace:*
+        version: link:../../config/biome
+      '@config/tsconfig':
+        specifier: workspace:*
+        version: link:../../config/typescript
+      '@types/node':
+        specifier: catalog:stack
+        version: 22.8.6
+      tsx:
+        specifier: ^4.0.0
+        version: 4.20.5
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.2
+
+  examples/tools-usage:
+    dependencies:
+      '@openrouter/ai-sdk-provider':
+        specifier: catalog:ai
+        version: 1.1.2(ai@5.0.28(zod@4.0.17))(zod@4.0.17)
+      hybrid:
+        specifier: workspace:*
+        version: link:../../packages/core
+      zod:
+        specifier: catalog:stack
+        version: 4.0.17
+    devDependencies:
+      '@config/biome':
+        specifier: workspace:*
+        version: link:../../config/biome
+      '@config/tsconfig':
+        specifier: workspace:*
+        version: link:../../config/typescript
+      '@types/node':
+        specifier: catalog:stack
+        version: 22.8.6
+      tsx:
+        specifier: ^4.0.0
+        version: 4.20.5
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.2
+
   packages/cli:
     dependencies:
       '@hybrd/xmtp':
@@ -2974,11 +3033,6 @@ packages:
   typeforce@1.18.0:
     resolution: {integrity: sha512-7uc1O8h1M1g0rArakJdf0uLRSSgFcYexrVoKo+bzJd32gd4gDy2L/Z+8/FjPnU9ydY3pEnVPtr9FyscYY60K1g==}
 
-  typescript@5.8.3:
-    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
   typescript@5.9.2:
     resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
@@ -3448,7 +3502,7 @@ snapshots:
   '@alloralabs/allora-sdk@0.1.1':
     dependencies:
       '@types/node': 22.17.2
-      typescript: 5.8.3
+      typescript: 5.9.2
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -7226,8 +7280,6 @@ snapshots:
       is-typed-array: 1.1.15
 
   typeforce@1.18.0: {}
-
-  typescript@5.8.3: {}
 
   typescript@5.9.2: {}
 

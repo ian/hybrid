@@ -1,0 +1,30 @@
+{
+	"name": "@hybrd/example-crypto-agent",
+	"version": "1.0.0",
+	"description": "Crypto-enabled agent using Hybrid Tools standard library",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "tsx watch src/agent.ts",
+		"start": "tsx src/agent.ts",
+		"build": "tsc",
+		"clean": "rm -rf .turbo dist",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome lint --unsafe .",
+		"lint:fix": "biome lint --write --unsafe .",
+		"format": "biome format --write ."
+	},
+	"dependencies": {
+		"@openrouter/ai-sdk-provider": "catalog:ai",
+		"hybrid": "workspace:*",
+		"@hybrd/xmtp": "workspace:*",
+		"zod": "catalog:stack"
+	},
+	"devDependencies": {
+		"@config/biome": "workspace:*",
+		"@config/tsconfig": "workspace:*",
+		"@types/node": "catalog:stack",
+		"tsx": "^4.0.0",
+		"typescript": "^5.0.0"
+	}
+}

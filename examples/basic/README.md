@@ -1,76 +1,69 @@
-# grouptoss.base.eth
+# Basic Agent Example
 
-A simple agent that creates group tosses based on user messages.
-
-#
+A simple XMTP agent that responds to messages and reactions using the Hybrid framework.
 
 ## Features
 
-- Create group tosses with custom topics and options
-- Automatically add members to the group
-- Support for yes/no tosses and custom option tosses
-- Specify toss amounts
+- Responds to @bot mentions in messages
+- Reacts to 👍 emojis 
+- Basic conversational AI using OpenRouter/Grok
+- Message filtering for targeted responses
 
-## Getting Started
+## Setup
 
-### Prerequisites
+1. Install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-- Node.js 20 or higher
-- Yarn package manager
+2. Configure environment variables:
+   ```env
+   # Required
+   OPENROUTER_API_KEY=your_openrouter_api_key
+   XMTP_HOST=https://your-xmtp-service.com
+   XMTP_API_KEY=your_xmtp_api_key
+   
+   # Optional
+   PORT=8454
+   ```
 
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
-
-```bash
-pnpm install
-```
-
-3. Generate XMTP keys:
-
-```bash
-pnpm gen:keys
-```
-
-This will create a `.env` file with the necessary keys.
-
-### Running the Agent
-
-Start the agent:
-
-```bash
-pnpm start
-```
-
-For development with auto-restart:
-
-```bash
-pnpm dev
-```
+3. Run the agent:
+   ```bash
+   pnpm dev        # Development mode with hot reload
+   pnpm start      # Production mode
+   ```
 
 ## Usage
 
-Send a message to the agent with the following format:
+The agent will respond to:
+- Messages containing "@bot"
+- Reply messages (all replies are processed)
+- 👍 emoji reactions
+
+## Example Interactions
 
 ```
-@toss [topic] for [amount]
+User: "@bot hello there!"
+Agent: "Hello! I'm a XMTP agent that responds to messages and reactions. How can I help you?"
+
+User: [Reacts with 👍 to a message]
+Agent: [Responds to the reaction]
 ```
 
-Examples:
+## Architecture
 
-- `@toss Will it rain tomorrow for 5` - Creates a yes/no toss with 5 USDC
-- `@toss Lakers vs Celtics for 10` - Creates a toss with Lakers and Celtics as
-  options with 10 USDC
+- **Agent**: Uses OpenRouter's Grok-4 model
+- **Filtering**: Smart message filtering to avoid spam
+- **XMTP Integration**: Built-in XMTP messaging support
+- **Hot Reload**: Development mode with automatic restarts
 
-## Environment Variables
+## Files
 
-The following environment variables are required:
+- `src/agent.ts` - Main agent implementation
+- `package.json` - Project configuration and dependencies
+- `tsconfig.json` - TypeScript configuration
+- `biome.jsonc` - Code formatting and linting rules
 
-- `XMTP_WALLET_KEY` - The private key of the wallet
-- `XMTP_ENCRYPTION_KEY` - Encryption key for the local database
-- `XMTP_ENV` - XMTP environment (local, dev, production)
+## Related Examples
 
-## License
-
-MIT
+- **Crypto Agent** (`../crypto-agent/`): Comprehensive crypto-enabled agent with blockchain integration examples

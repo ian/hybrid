@@ -1,4 +1,4 @@
-# Hybrid - Agent Framework for XMTP
+# Hybrid - Typescript Framework for building commerce-connected AI Agents.
 
 An open-source agent framework for building conversational AI agents on XMTP. Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
 
@@ -8,7 +8,6 @@ This project uses a monorepo structure with multiple packages and supporting dir
 
 ```
 hybrid/
-├── config/           # Shared configuration files (Biome, TypeScript)
 ├── examples/
 │   └── basic/        # Basic agent example implementation
 ├── packages/
@@ -16,12 +15,10 @@ hybrid/
 │   ├── core/         # Main agent framework library (published as "hybrid")
 │   ├── utils/        # Utility functions and helpers
 │   └── xmtp/         # XMTP client and messaging utilities
-├── scripts/          # Build and maintenance scripts
-├── templates/        # Project templates for agent creation
-└── test-project/     # Test project for development
+└── templates/        # Project templates for agent creation
 ```
 
-## 📝 Core Example
+## 📝 Basic Example
 
 Here's a basic agent implementation using Hybrid:
 
@@ -121,6 +118,76 @@ npx hybrid revoke:all
 
 # Clean build artifacts
 npx hybrid clean
+```
+
+## 🛠️ Tools Standard Library
+
+Hybrid includes a comprehensive standard library of tools for building crypto-enabled agents:
+
+### Blockchain Tools (`blockchainTools`)
+
+```typescript
+import { blockchainTools, createCryptoRuntime } from "hybrid/tools"
+
+const agent = new Agent({
+  name: "crypto-agent",
+  model: myModel,
+  tools: blockchainTools,
+  createRuntime: createCryptoRuntime({
+    rpcUrl: process.env.RPC_URL,
+    privateKey: process.env.PRIVATE_KEY, // Optional
+    defaultChain: "mainnet"
+  }),
+  instructions: "You can check balances, send transactions, and interact with the blockchain."
+})
+```
+
+**Available Tools:**
+- `getBalance` - Get native token balance for any address
+- `sendTransaction` - Send native tokens to another address
+- `getTransaction` - Get transaction details by hash
+- `getBlock` - Get blockchain block information
+- `getGasPrice` - Get current gas prices
+- `estimateGas` - Estimate gas costs for transactions
+
+**Supported Chains:** Ethereum, Polygon, Arbitrum, Optimism, Base, and Sepolia testnet
+
+### XMTP Tools (`xmtpTools`)
+
+```typescript
+import { xmtpTools } from "hybrid/tools"
+
+const agent = new Agent({
+  name: "messaging-agent", 
+  model: myModel,
+  tools: xmtpTools,
+  instructions: "You can send messages, replies, and reactions in XMTP conversations."
+})
+```
+
+**Available Tools:**
+- `sendMessage` - Send messages to XMTP conversations
+- `sendReply` - Reply to specific messages
+- `sendReaction` - Send emoji reactions
+- `getMessage` - Retrieve message details by ID
+
+### Combined Usage
+
+```typescript
+import { blockchainTools, xmtpTools, allTools } from "hybrid/tools"
+
+// Use specific tool sets
+const agent = new Agent({
+  tools: {
+    ...blockchainTools,
+    ...xmtpTools
+  }
+})
+
+// Or use all tools
+const agent = new Agent({
+  tools: await allTools()
+})
 ```
 
 ## 🔧 Developing Locally
