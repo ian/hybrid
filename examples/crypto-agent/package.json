@@ -1,5 +1,5 @@
 {
-	"name": "@hybrd/example-crypto-agent",
+	"name": "{{projectName}}",
 	"version": "1.0.0",
 	"description": "Crypto-enabled agent using Hybrid Tools standard library",
 	"private": true,
@@ -17,14 +17,13 @@
 	"dependencies": {
 		"@openrouter/ai-sdk-provider": "catalog:ai",
 		"hybrid": "workspace:*",
-		"@hybrd/xmtp": "workspace:*",
 		"zod": "catalog:stack"
 	},
 	"devDependencies": {
 		"@config/biome": "workspace:*",
 		"@config/tsconfig": "workspace:*",
+		"@hybrd/cli": "latest",
 		"@types/node": "catalog:stack",
-		"tsx": "^4.0.0",
 		"typescript": "^5.0.0"
 	}
 }
