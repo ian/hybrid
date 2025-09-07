@@ -35,7 +35,13 @@ function runCreateHybridCommand(
 ): { stdout: string; stderr: string; exitCode: number } {
 	try {
 		const { execSync } = require("node:child_process")
-		const createHybridPath = join(process.cwd(), "..", "create-hybrid", "dist", "index.js")
+		// Try to find the create-hybrid binary relative to the monorepo root
+		const currentDir = process.cwd()
+		const monorepoRoot = currentDir.includes('/packages/cli') 
+			? join(currentDir, '..', '..')
+			: currentDir
+		const createHybridPath = join(monorepoRoot, "packages", "create-hybrid", "dist", "index.js")
+		
 		const result = execSync(
 			`node "${createHybridPath}" "${projectName}"`,
 			{
