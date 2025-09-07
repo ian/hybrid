@@ -5,17 +5,14 @@ Create a new Hybrid XMTP agent project with a single command.
 ## Usage
 
 ```bash
-# Create a new project (recommended)
-npm init hybrid my-agent
-
-# Or using npx directly
-npx create-hybrid my-agent
+# Create a new project
+npx create hybrid my-agent
 
 # Create in current directory
-npm init hybrid .
+npx create hybrid .
 
 # Interactive mode (will prompt for name)
-npm init hybrid
+npx create hybrid
 ```
 
 ## What it creates
