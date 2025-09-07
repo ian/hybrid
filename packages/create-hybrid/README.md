@@ -72,7 +72,7 @@ After creating your project:
 
 ## Related packages
 
-- [`hybrid`](../hybrid) - The main Hybrid framework
+- [`hybrid`](../core) - The main Hybrid framework
 - [`@hybrd/cli`](../cli) - CLI tools for Hybrid development
 - [`@hybrd/xmtp`](../xmtp) - XMTP client integration
 
