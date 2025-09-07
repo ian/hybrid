@@ -6,7 +6,7 @@ export const openrouter = createOpenRouter({
 })
 
 const agent = new Agent({
-	name: "My Hybrid Agent",
+	name: "{{projectName}}",
 	model: openrouter("x-ai/grok-4"),
 	instructions:
 		"You are a XMTP agent that responds to messages and reactions. Try and be as conversational as possible."
@@ -47,3 +47,6 @@ agent.listen({
 	port: process.env.PORT || "8454",
 	filter
 })
+
+export { agent }
+export default agent

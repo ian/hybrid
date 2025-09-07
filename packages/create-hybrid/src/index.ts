@@ -138,7 +138,8 @@ export async function initializeProject() {
 	try {
 		const filesToUpdate = [
 			join(projectDir, "package.json"),
-			join(projectDir, "README.md")
+			join(projectDir, "README.md"),
+			join(projectDir, "src", "agent.ts")
 		]
 
 		for (const filePath of filesToUpdate) {
