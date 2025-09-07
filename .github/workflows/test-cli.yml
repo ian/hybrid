@@ -72,10 +72,6 @@ jobs:
             echo "❌ Project creation failed"
             exit 1
           fi
-          
-          # INTENTIONAL FAILURE FOR TESTING CI - REMOVE THIS LINE
-          echo "❌ Intentional test failure to verify CI error handling"
-          exit 1
           echo "✅ Project created successfully"
         working-directory: test-project
 
