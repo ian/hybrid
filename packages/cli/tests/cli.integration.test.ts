@@ -10,8 +10,13 @@ function runCliCommand(
 ): { stdout: string; stderr: string; exitCode: number } {
 	try {
 		const { execSync } = require("node:child_process")
+		const cliPath = join(process.cwd(), "dist/cli.js")
+		console.log(`Running CLI command: node "${cliPath}" ${args.map(arg => `"${arg}"`).join(" ")}`)
+		console.log(`Working directory: ${cwd || process.cwd()}`)
+		console.log(`CLI binary exists: ${require("node:fs").existsSync(cliPath)}`)
+		
 		const result = execSync(
-			`node "${join(process.cwd(), "dist/cli.js")}" ${args.map(arg => `"${arg}"`).join(" ")}`,
+			`node "${cliPath}" ${args.map(arg => `"${arg}"`).join(" ")}`,
 			{
 				cwd: cwd || process.cwd(),
 				encoding: "utf8",
@@ -21,6 +26,9 @@ function runCliCommand(
 		)
 		return { stdout: result, stderr: "", exitCode: 0 }
 	} catch (error: any) {
+		console.log(`CLI command failed with exit code: ${error.status}`)
+		console.log(`Stdout: ${error.stdout || ""}`)
+		console.log(`Stderr: ${error.stderr || ""}`)
 		return {
 			stdout: error.stdout || "",
 			stderr: error.stderr || "",
@@ -42,6 +50,10 @@ function runCreateHybridCommand(
 			: currentDir
 		const createHybridPath = join(monorepoRoot, "packages", "create-hybrid", "dist", "index.js")
 		
+		console.log(`Running create-hybrid command: node "${createHybridPath}" "${projectName}"`)
+		console.log(`Working directory: ${cwd || process.cwd()}`)
+		console.log(`create-hybrid binary exists: ${require("node:fs").existsSync(createHybridPath)}`)
+		
 		const result = execSync(
 			`node "${createHybridPath}" "${projectName}"`,
 			{
@@ -53,6 +65,9 @@ function runCreateHybridCommand(
 		)
 		return { stdout: result, stderr: "", exitCode: 0 }
 	} catch (error: any) {
+		console.log(`create-hybrid command failed with exit code: ${error.status}`)
+		console.log(`Stdout: ${error.stdout || ""}`)
+		console.log(`Stderr: ${error.stderr || ""}`)
 		return {
 			stdout: error.stdout || "",
 			stderr: error.stderr || "",
