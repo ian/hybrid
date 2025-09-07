@@ -10,8 +10,10 @@ function runCliCommand(
 ): { stdout: string; stderr: string; exitCode: number } {
 	try {
 		const { execSync } = require("node:child_process")
+		const cliPath = join(process.cwd(), "dist/cli.js")
+
 		const result = execSync(
-			`node "${join(process.cwd(), "dist/cli.js")}" ${args.map(arg => `"${arg}"`).join(" ")}`,
+			`node "${cliPath}" ${args.map((arg) => `"${arg}"`).join(" ")}`,
 			{
 				cwd: cwd || process.cwd(),
 				encoding: "utf8",
@@ -19,6 +21,41 @@ function runCliCommand(
 				timeout: 30000
 			}
 		)
+		return { stdout: result, stderr: "", exitCode: 0 }
+	} catch (error: any) {
+		return {
+			stdout: error.stdout || "",
+			stderr: error.stderr || "",
+			exitCode: error.status || 1
+		}
+	}
+}
+
+function runCreateHybridCommand(
+	projectName: string,
+	cwd?: string
+): { stdout: string; stderr: string; exitCode: number } {
+	try {
+		const { execSync } = require("node:child_process")
+		// Try to find the create-hybrid binary relative to the monorepo root
+		const currentDir = process.cwd()
+		const monorepoRoot = currentDir.includes("/packages/cli")
+			? join(currentDir, "..", "..")
+			: currentDir
+		const createHybridPath = join(
+			monorepoRoot,
+			"packages",
+			"create-hybrid",
+			"dist",
+			"index.js"
+		)
+
+		const result = execSync(`node "${createHybridPath}" "${projectName}"`, {
+			cwd: cwd || process.cwd(),
+			encoding: "utf8",
+			stdio: "pipe",
+			timeout: 30000
+		})
 		return { stdout: result, stderr: "", exitCode: 0 }
 	} catch (error: any) {
 		return {
@@ -84,45 +121,42 @@ describe("CLI Integration Tests", () => {
 	describe("Project Initialization", () => {
 		it("should create a project with a specified name", () => {
 			const projectName = "test-project-cli"
-			const tempDir = createTempProject(projectName)
+			const tempDir = join(process.cwd(), "test-temp")
 
-			const result = runCliCommand(
-				["init", projectName],
-				join(process.cwd(), "test-temp")
-			)
+			const result = runCreateHybridCommand(projectName, tempDir)
 			expect(result.exitCode).toBe(0)
 			expect(result.stdout).toContain("Hybrid project created successfully")
 
 			// Verify project structure
-			expect(existsSync(join(tempDir, "package.json"))).toBe(true)
-			expect(existsSync(join(tempDir, "src", "agent.ts"))).toBe(true)
-			expect(existsSync(join(tempDir, "README.md"))).toBe(true)
-			expect(existsSync(join(tempDir, ".env"))).toBe(true)
+			const projectPath = join(tempDir, projectName)
+			expect(existsSync(join(projectPath, "package.json"))).toBe(true)
+			expect(existsSync(join(projectPath, "src", "agent.ts"))).toBe(true)
+			expect(existsSync(join(projectPath, "README.md"))).toBe(true)
+			expect(existsSync(join(projectPath, ".env"))).toBe(true)
 
 			// Verify package.json content
 			const packageJson = JSON.parse(
-				readFileSync(join(tempDir, "package.json"), "utf8")
+				readFileSync(join(projectPath, "package.json"), "utf8")
 			)
 			expect(packageJson.name).toBe(projectName)
-			expect(packageJson.version).toBe("0.1.0")
+			expect(packageJson.version).toBe("0.0.0")
 
 			cleanupTempProject(projectName)
 		})
 
-	it("should create a project in current directory when name is '.'", () => {
-		const projectName = "test-current-dir"
-		const tempDir = createTempProject(projectName)
+		it("should create a project in current directory when name is '.'", () => {
+			const projectName = "test-current-dir"
+			const tempDir = createTempProject(projectName)
 
-		// Ensure directory is empty for the test
-		const { execSync } = require("node:child_process")
-		try {
-			execSync(`find ${tempDir} -mindepth 1 -delete`, { stdio: "ignore" })
-		} catch (e) {
-		}
+			// Ensure directory is empty for the test
+			const { execSync } = require("node:child_process")
+			try {
+				execSync(`find ${tempDir} -mindepth 1 -delete`, { stdio: "ignore" })
+			} catch (e) {}
 
-		const result = runCliCommand(["init", "."], tempDir)
-		expect(result.exitCode).toBe(0)
-		expect(result.stdout).toContain("Hybrid project created successfully")
+			const result = runCreateHybridCommand(".", tempDir)
+			expect(result.exitCode).toBe(0)
+			expect(result.stdout).toContain("Hybrid project created successfully")
 
 			// Verify files are created in current directory
 			expect(existsSync(join(tempDir, "package.json"))).toBe(true)
@@ -134,42 +168,37 @@ describe("CLI Integration Tests", () => {
 		it("should sanitize project names with special characters", () => {
 			const inputName = "My Amazing Agent!"
 			const expectedName = "my-amazing-agent"
-			const tempDir = createTempProject(expectedName)
+			const tempDir = join(process.cwd(), "test-temp")
 
-			const result = runCliCommand(
-				["init", inputName],
-				join(process.cwd(), "test-temp")
-			)
+			const result = runCreateHybridCommand(inputName, tempDir)
 			expect(result.exitCode).toBe(0)
 
 			// Verify directory name is sanitized
-			expect(existsSync(join(process.cwd(), "test-temp", expectedName))).toBe(
-				true
-			)
+			const projectPath = join(tempDir, expectedName)
+			expect(existsSync(projectPath)).toBe(true)
 
 			// Verify package.json name is sanitized
 			const packageJson = JSON.parse(
-				readFileSync(join(tempDir, "package.json"), "utf8")
+				readFileSync(join(projectPath, "package.json"), "utf8")
 			)
 			expect(packageJson.name).toBe(expectedName)
 
 			cleanupTempProject(expectedName)
 		})
 
-	it("should fail when trying to create project in non-empty directory", () => {
-		const projectName = "test-existing-dir"
-		const tempDir = createTempProject(projectName)
+		it("should fail when trying to create project in non-empty directory", () => {
+			const projectName = "test-existing-dir"
+			const tempDir = join(process.cwd(), "test-temp")
 
-		// Create the project directory and add a file to it
-		execSync(`mkdir -p ${join(tempDir, projectName)}`)
-		execSync(`echo "existing file" > ${join(tempDir, projectName, "existing.txt")}`)
+			// Create the project directory and add a file to it
+			execSync(`mkdir -p ${join(tempDir, projectName)}`)
+			execSync(
+				`echo "existing file" > ${join(tempDir, projectName, "existing.txt")}`
+			)
 
-		const result = runCliCommand(
-			["init", projectName],
-			tempDir
-		)
-		expect(result.exitCode).toBe(1)
-		expect(result.stderr).toContain("already exists and is not empty")
+			const result = runCreateHybridCommand(projectName, tempDir)
+			expect(result.exitCode).toBe(1)
+			expect(result.stderr).toContain("already exists and is not empty")
 
 			cleanupTempProject(projectName)
 		})
@@ -178,19 +207,20 @@ describe("CLI Integration Tests", () => {
 	describe("Key Generation", () => {
 		it("should generate XMTP keys", () => {
 			const projectName = "test-keys"
-			const tempDir = createTempProject(projectName)
+			const tempDir = join(process.cwd(), "test-temp")
 
 			// First create a project
-			runCliCommand(["init", projectName], join(process.cwd(), "test-temp"))
+			runCreateHybridCommand(projectName, tempDir)
 
-		// Change to project directory and generate keys
-		const result = runCliCommand(["gen:keys", "--write"], tempDir)
-		expect(result.exitCode).toBe(0)
+			// Change to project directory and generate keys
+			const projectPath = join(tempDir, projectName)
+			const result = runCliCommand(["gen:keys", "--write"], projectPath)
+			expect(result.exitCode).toBe(0)
 			expect(result.stdout).toContain("Keys generated successfully")
 
 			// Verify .env file contains keys
-			expect(existsSync(join(tempDir, ".env"))).toBe(true)
-			const envContent = readFileSync(join(tempDir, ".env"), "utf8")
+			expect(existsSync(join(projectPath, ".env"))).toBe(true)
+			const envContent = readFileSync(join(projectPath, ".env"), "utf8")
 			expect(envContent).toContain("XMTP_WALLET_KEY=0x")
 			expect(envContent).toContain("XMTP_ENCRYPTION_KEY=")
 
@@ -199,20 +229,21 @@ describe("CLI Integration Tests", () => {
 
 		it("should write keys to .env file when --write flag is used", () => {
 			const projectName = "test-keys-write"
-			const tempDir = createTempProject(projectName)
+			const tempDir = join(process.cwd(), "test-temp")
 
 			// First create a project
-			runCliCommand(["init", projectName], join(process.cwd(), "test-temp"))
+			runCreateHybridCommand(projectName, tempDir)
 
 			// Generate keys with --write flag
-			const result = runCliCommand(["gen:keys", "--write"], tempDir)
+			const projectPath = join(tempDir, projectName)
+			const result = runCliCommand(["gen:keys", "--write"], projectPath)
 			expect(result.exitCode).toBe(0)
 			expect(result.stdout).toContain(
 				"Environment variables written to .env file"
 			)
 
 			// Verify .env file contains keys
-			const envContent = readFileSync(join(tempDir, ".env"), "utf8")
+			const envContent = readFileSync(join(projectPath, ".env"), "utf8")
 			expect(envContent).toContain("XMTP_WALLET_KEY=0x")
 			expect(envContent).toContain("XMTP_ENCRYPTION_KEY=")
 
@@ -223,13 +254,14 @@ describe("CLI Integration Tests", () => {
 	describe("Build and Dev Commands", () => {
 		it("should handle build command", () => {
 			const projectName = "test-build"
-			const tempDir = createTempProject(projectName)
+			const tempDir = join(process.cwd(), "test-temp")
 
 			// Create a project
-			runCliCommand(["init", projectName], join(process.cwd(), "test-temp"))
+			runCreateHybridCommand(projectName, tempDir)
 
 			// Try to build (should fail without dependencies, but command should work)
-			const result = runCliCommand(["build"], tempDir)
+			const projectPath = join(tempDir, projectName)
+			const result = runCliCommand(["build"], projectPath)
 			// Build may fail due to missing dependencies, but command should be recognized
 			expect([0, 1, 2]).toContain(result.exitCode)
 
@@ -238,16 +270,17 @@ describe("CLI Integration Tests", () => {
 
 		it("should handle dev command", () => {
 			const projectName = "test-dev"
-			const tempDir = createTempProject(projectName)
+			const tempDir = join(process.cwd(), "test-temp")
 
 			// Create a project
-			runCliCommand(["init", projectName], join(process.cwd(), "test-temp"))
+			runCreateHybridCommand(projectName, tempDir)
 
-		// Start dev server with timeout
-		const child = spawn("node", [join(process.cwd(), "dist/cli.js"), "dev"], {
-			cwd: tempDir,
-			stdio: "pipe"
-		})
+			// Start dev server with timeout
+			const projectPath = join(tempDir, projectName)
+			const child = spawn("node", [join(process.cwd(), "dist/cli.js"), "dev"], {
+				cwd: projectPath,
+				stdio: "pipe"
+			})
 
 			let output = ""
 			child.stdout?.on("data", (data) => {
@@ -274,12 +307,9 @@ describe("CLI Integration Tests", () => {
 	describe("Template Validation", () => {
 		it("should create all required files from template", () => {
 			const projectName = "test-template"
-			const tempDir = createTempProject(projectName)
+			const tempDir = join(process.cwd(), "test-temp")
 
-			const result = runCliCommand(
-				["init", projectName],
-				join(process.cwd(), "test-temp")
-			)
+			const result = runCreateHybridCommand(projectName, tempDir)
 			expect(result.exitCode).toBe(0)
 
 			// Check all expected files exist
@@ -293,13 +323,14 @@ describe("CLI Integration Tests", () => {
 				"src/agent.test.ts"
 			]
 
+			const projectPath = join(tempDir, projectName)
 			requiredFiles.forEach((file) => {
-				expect(existsSync(join(tempDir, file))).toBe(true)
+				expect(existsSync(join(projectPath, file))).toBe(true)
 			})
 
 			// Verify package.json has required scripts
 			const packageJson = JSON.parse(
-				readFileSync(join(tempDir, "package.json"), "utf8")
+				readFileSync(join(projectPath, "package.json"), "utf8")
 			)
 			const requiredScripts = ["dev", "build", "test", "keys"]
 			requiredScripts.forEach((script) => {
@@ -311,21 +342,19 @@ describe("CLI Integration Tests", () => {
 
 		it("should replace template variables correctly", () => {
 			const projectName = "test-variables"
-			const tempDir = createTempProject(projectName)
+			const tempDir = join(process.cwd(), "test-temp")
 
-			const result = runCliCommand(
-				["init", projectName],
-				join(process.cwd(), "test-temp")
-			)
+			const result = runCreateHybridCommand(projectName, tempDir)
 			expect(result.exitCode).toBe(0)
 
 			// Check that template variables were replaced
+			const projectPath = join(tempDir, projectName)
 			const packageJson = JSON.parse(
-				readFileSync(join(tempDir, "package.json"), "utf8")
+				readFileSync(join(projectPath, "package.json"), "utf8")
 			)
 			expect(packageJson.name).toBe(projectName)
 
-			const readme = readFileSync(join(tempDir, "README.md"), "utf8")
+			const readme = readFileSync(join(projectPath, "README.md"), "utf8")
 			expect(readme).toContain(`# ${projectName}`)
 
 			cleanupTempProject(projectName)
@@ -340,7 +369,7 @@ describe("CLI Integration Tests", () => {
 		})
 
 		it("should handle invalid project names", () => {
-			const result = runCliCommand(["init", ""])
+			const result = runCreateHybridCommand("", process.cwd())
 			expect(result.exitCode).toBe(1)
 			expect(result.stderr).toContain("Project name is required")
 		})
