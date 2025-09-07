@@ -3,10 +3,6 @@ name: Test Hybrid CLI
 on:
   push:
     branches: [main, develop]
-    paths:
-      - 'packages/cli/**'
-      - 'packages/create-hybrid/**'
-      - '.github/workflows/test-cli.yml'
   pull_request:
     branches: main
 
