@@ -68,9 +68,6 @@ importers:
       '@hybrd/xmtp':
         specifier: workspace:*
         version: link:../xmtp
-      degit:
-        specifier: ^2.8.4
-        version: 2.8.4
       dotenv:
         specifier: ^16.4.5
         version: 16.6.1
@@ -93,9 +90,6 @@ importers:
       '@config/tsconfig':
         specifier: workspace:*
         version: link:../../config/typescript
-      '@types/degit':
-        specifier: ^2.8.4
-        version: 2.8.6
       '@types/jsonwebtoken':
         specifier: ^9.0.7
         version: 9.0.10
@@ -1710,11 +1704,6 @@ packages:
 
   defu@6.1.4:
     resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
-
-  degit@2.8.4:
-    resolution: {integrity: sha512-vqYuzmSA5I50J882jd+AbAhQtgK6bdKUJIex1JNfEUPENCgYsxugzKVZlFyMwV4i06MmnV47/Iqi5Io86zf3Ng==}
-    engines: {node: '>=8.0.0'}
-    hasBin: true
 
   delay@5.0.0:
     resolution: {integrity: sha512-ReEBKkIfe4ya47wlPYf/gu5ib6yUG0/Aez0JQZQz94kiWtRQvZIQbTiehsnwHvLSWJnQdhVeqYue7Id1dKr0qw==}
@@ -5758,8 +5747,6 @@ snapshots:
       gopd: 1.2.0
 
   defu@6.1.4: {}
-
-  degit@2.8.4: {}
 
   delay@5.0.0: {}
 
