@@ -87,7 +87,10 @@ export async function initializeProject() {
 				)
 				process.exit(1)
 			}
-		} catch {
+		} catch (error: any) {
+			if (error.code !== 'ENOENT') {
+				console.warn(`⚠️ Warning: Unexpected error checking directory "${sanitizedName}":`, error.message)
+			}
 		}
 	} else {
 		try {
@@ -107,7 +110,10 @@ export async function initializeProject() {
 				)
 				process.exit(1)
 			}
-		} catch {
+		} catch (error: any) {
+			if (error.code !== 'ENOENT') {
+				console.warn(`⚠️ Warning: Unexpected error checking current directory:`, error.message)
+			}
 		}
 	}
 
