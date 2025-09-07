@@ -5,11 +5,13 @@ on:
     branches: [main, develop]
     paths:
       - 'packages/cli/**'
+      - 'packages/create-hybrid/**'
       - '.github/workflows/test-cli.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'packages/cli/**'
+      - 'packages/create-hybrid/**'
       - '.github/workflows/test-cli.yml'
 
 jobs:
@@ -33,7 +35,7 @@ jobs:
       - name: Build all packages
         run: pnpm build
 
-      - name: Verify CLI binary exists
+      - name: Verify CLI and create-hybrid binaries exist
         run: |
           echo "🔍 Checking CLI binary..."
           if [ ! -f "packages/cli/dist/cli.js" ]; then
@@ -43,6 +45,15 @@ jobs:
           fi
           echo "✅ CLI binary exists"
           ls -la packages/cli/dist/cli.js
+
+          echo "🔍 Checking create-hybrid binary..."
+          if [ ! -f "packages/create-hybrid/dist/index.js" ]; then
+            echo "❌ create-hybrid binary not found at packages/create-hybrid/dist/index.js"
+            ls -la packages/create-hybrid/dist/
+            exit 1
+          fi
+          echo "✅ create-hybrid binary exists"
+          ls -la packages/create-hybrid/dist/index.js
 
           echo "🔍 Testing CLI help command..."
           if ! node packages/cli/dist/cli.js --help; then
@@ -69,7 +80,7 @@ jobs:
       - name: Test project creation with specific name
         run: |
           echo "🔍 Testing project creation with name 'test-agent-cli'..."
-          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init test-agent-cli; then
+          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" test-agent-cli; then
             echo "❌ Project creation failed"
             exit 1
           fi
@@ -256,8 +267,8 @@ jobs:
       - name: Test interactive project creation
         run: |
           echo "🔍 Testing interactive project creation..."
-          echo "📝 Providing empty input to trigger interactive mode..."
-          if ! echo -e "\n" | node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init; then
+          echo "📝 Providing project name via stdin..."
+          if ! echo "my-hybrid-agent" | node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js"; then
             echo "❌ Interactive project creation failed"
             exit 1
           fi
@@ -342,7 +353,7 @@ jobs:
           cd edge-case-test
 
           echo "📁 Creating project in current directory..."
-          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init .; then
+          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" .; then
             echo "❌ Failed to create project in current directory"
             cd ..
             rm -rf edge-case-test
@@ -362,7 +373,7 @@ jobs:
 
           echo "🧪 Test 2: Project name with special characters"
           echo "📝 Testing project creation with special characters..."
-          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init "My Amazing Agent!"; then
+          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" "My Amazing Agent!"; then
             echo "❌ Failed to create project with special characters"
             exit 1
           fi
@@ -415,21 +426,21 @@ jobs:
           mkdir -p /tmp/cli-test
           cd /tmp/cli-test
 
-      - name: Test CLI as npx command
+      - name: Test create-hybrid command
         run: |
-          echo "🔍 Testing CLI as npx command simulation..."
+          echo "🔍 Testing create-hybrid command simulation..."
           cd /tmp/cli-test
 
           echo "📦 Setting up NODE_PATH for dependency resolution..."
           export NODE_PATH="/home/runner/work/hybrid/hybrid/packages/cli/node_modules:$NODE_PATH"
           echo "✅ NODE_PATH configured"
 
-          echo "🚀 Running CLI init command for demo-project..."
-          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" init demo-project; then
-            echo "❌ CLI init command failed"
+          echo "🚀 Running create-hybrid command for demo-project..."
+          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" demo-project; then
+            echo "❌ create-hybrid command failed"
             exit 1
           fi
-          echo "✅ CLI init command completed"
+          echo "✅ create-hybrid command completed"
 
           echo "🔍 Verifying project creation..."
           if [ ! -d "demo-project" ]; then
