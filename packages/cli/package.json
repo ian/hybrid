@@ -31,7 +31,6 @@
 	},
 	"dependencies": {
 		"@hybrd/xmtp": "workspace:*",
-		"degit": "^2.8.4",
 		"dotenv": "^16.4.5",
 		"rimraf": "^5.0.10",
 		"tsx": "^4.20.5",
@@ -41,7 +40,6 @@
 	"devDependencies": {
 		"@config/biome": "workspace:*",
 		"@config/tsconfig": "workspace:*",
-		"@types/degit": "^2.8.4",
 		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "catalog:stack",
 		"@vitest/coverage-v8": "^3.2.4",

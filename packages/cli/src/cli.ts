@@ -5,7 +5,6 @@ import { runClean } from "./cmd/clean.js"
 import { runDev } from "./cmd/dev.js"
 import { generateKeys } from "./cmd/gen-keys.js"
 // Import command modules
-import { initializeProject } from "./cmd/init.js"
 import { registerWallet } from "./cmd/register.js"
 import { revokeAllInstallations } from "./cmd/revoke-all.js"
 import { revokeInstallations } from "./cmd/revoke.js"
@@ -24,18 +23,6 @@ async function main() {
 	const command = process.argv[2]
 
 	switch (command) {
-		case "init":
-			try {
-				await initializeProject()
-			} catch (error) {
-				console.error("Failed to initialize project:", error)
-				console.error(
-					"Error details:",
-					error instanceof Error ? error.stack : String(error)
-				)
-				process.exit(1)
-			}
-			break
 		case "dev":
 			runDev()
 			break
@@ -105,7 +92,6 @@ async function main() {
 			console.log("Usage: hybrid <command> or hy <command>")
 			console.log("")
 			console.log("Commands:")
-			console.log("  init [name]  Create a new Hybrid project")
 			console.log("  dev          Start development server with watch mode")
 			console.log("  build        Build the TypeScript project")
 			console.log("  clean        Remove dist and node_modules directories")
@@ -124,10 +110,6 @@ async function main() {
 			)
 			console.log("")
 			console.log("Examples:")
-			console.log("  hybrid init my-agent    or    hy init my-agent")
-			console.log(
-				"  hybrid init             or    hy init (will prompt for name)"
-			)
 			console.log("  hybrid dev              or    hy dev")
 			console.log("  hybrid build            or    hy build")
 			console.log("  hybrid clean            or    hy clean")

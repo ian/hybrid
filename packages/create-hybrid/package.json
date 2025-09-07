@@ -1,0 +1,52 @@
+{
+	"name": "create-hybrid",
+	"version": "1.0.0",
+	"description": "Create a new Hybrid XMTP agent project",
+	"type": "module",
+	"bin": {
+		"create-hybrid": "./dist/index.js"
+	},
+	"files": [
+		"dist",
+		"templates"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsup",
+		"build:watch": "tsup --watch",
+		"clean": "rm -rf .turbo dist",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome lint --unsafe",
+		"lint:fix": "biome lint --write --unsafe",
+		"format": "biome format --write"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@config/biome": "workspace:*",
+		"@config/tsconfig": "workspace:*",
+		"@types/node": "catalog:stack",
+		"tsup": "^8.5.0"
+	},
+	"engines": {
+		"node": ">=20"
+	},
+	"keywords": [
+		"hybrid",
+		"xmtp",
+		"agent",
+		"cli",
+		"create"
+	],
+	"author": "Ian Hunter",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ian/hybrid.git",
+		"directory": "packages/create-hybrid"
+	}
+}

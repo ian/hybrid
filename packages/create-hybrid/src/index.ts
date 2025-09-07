@@ -1,12 +1,10 @@
-import degit from "degit"
-import { readFile, readdir, writeFile } from "node:fs/promises"
+import { readFile, readdir, writeFile, mkdir, copyFile, stat } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { createInterface } from "node:readline"
 import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-// Prompt user for input
 function prompt(question: string): Promise<string> {
 	const rl = createInterface({
 		input: process.stdin,
@@ -21,7 +19,6 @@ function prompt(question: string): Promise<string> {
 	})
 }
 
-// Template variable substitution
 function replaceTemplateVariables(
 	content: string,
 	variables: Record<string, string>
@@ -32,15 +29,28 @@ function replaceTemplateVariables(
 	)
 }
 
-// Initialize a new hybrid project
+async function copyTemplate(sourceDir: string, targetDir: string): Promise<void> {
+	const entries = await readdir(sourceDir, { withFileTypes: true })
+	
+	for (const entry of entries) {
+		const sourcePath = join(sourceDir, entry.name)
+		const targetPath = join(targetDir, entry.name)
+		
+		if (entry.isDirectory()) {
+			await mkdir(targetPath, { recursive: true })
+			await copyTemplate(sourcePath, targetPath)
+		} else {
+			await copyFile(sourcePath, targetPath)
+		}
+	}
+}
+
 export async function initializeProject() {
 	console.log("🚀 Creating a new Hybrid project...")
 
-	// Get project name
-	const projectNameArg = process.argv[3] // Allow passing name as argument
+	const projectNameArg = process.argv[2]
 	let projectName = projectNameArg
 
-	// Check if an empty string was explicitly passed
 	if (projectNameArg === "") {
 		console.error("❌ Project name is required")
 		process.exit(1)
@@ -55,19 +65,16 @@ export async function initializeProject() {
 		}
 	}
 
-	// Sanitize project name for package.json and directory
 	const sanitizedName = projectName
 		.toLowerCase()
-		.replace(/[^a-z0-9-]/g, "-") // Replace invalid chars with dashes
-		.replace(/-+/g, "-") // Collapse multiple dashes
-		.replace(/^-|-$/g, "") // Remove leading/trailing dashes
+		.replace(/[^a-z0-9-]/g, "-")
+		.replace(/-+/g, "-")
+		.replace(/^-|-$/g, "")
 
-	// Create project directory
 	const currentDir = process.cwd()
 	const projectDir =
 		projectName === "." ? currentDir : join(currentDir, sanitizedName)
 
-	// Check if directory already exists and is not empty
 	if (projectName !== ".") {
 		try {
 			const existingFiles = await readdir(projectDir)
@@ -81,7 +88,6 @@ export async function initializeProject() {
 				process.exit(1)
 			}
 		} catch {
-			// Directory doesn't exist, which is fine
 		}
 	} else {
 		try {
@@ -102,64 +108,38 @@ export async function initializeProject() {
 				process.exit(1)
 			}
 		} catch {
-			// Directory doesn't exist, which is fine
 		}
 	}
 
-	// Use degit to clone template from GitHub, with fallback to local templates
-	console.log("📦 Downloading template from GitHub...")
-	let templateDownloaded = false
+	console.log("📦 Copying template files...")
+	
+	const templateDir = join(__dirname, "..", "templates", "agent")
+	
+	try {
+		await stat(templateDir)
+	} catch {
+		console.error("❌ Template directory not found")
+		process.exit(1)
+	}
 
 	try {
-		// Parse REPO environment variable to support repository and branch specification
-		const repoEnv = process.env.REPO || "ian/hybrid"
-		let templateRepo: string
-
-		if (repoEnv.includes("#")) {
-			// Format: user/repo#branch
-			const [repo, branch] = repoEnv.split("#")
-			templateRepo = `${repo}/templates/agent#${branch}`
-			console.log(`🔗 Using repository: ${repo} (branch: ${branch})`)
-		} else {
-			// Format: user/repo (use default branch)
-			templateRepo = `${repoEnv}/templates/agent`
-			console.log(`🔗 Using repository: ${repoEnv} (default branch)`)
-		}
-
-		const emitter = degit(templateRepo, {
-			cache: false,
-			force: true,
-			verbose: false
-		})
-		await emitter.clone(projectDir)
-		console.log(`✅ Template downloaded from GitHub to: ${sanitizedName}`)
-		templateDownloaded = true
+		await mkdir(projectDir, { recursive: true })
+		await copyTemplate(templateDir, projectDir)
+		console.log(`✅ Template files copied to: ${sanitizedName}`)
 	} catch (error) {
-		console.error(
-			"❌ Failed to download template from GitHub:",
-			error instanceof Error ? error.message : String(error)
-		)
-		console.log(
-			"💡 Make sure you have internet connection and the repository/branch exists"
-		)
+		console.error("❌ Failed to copy template files:", error)
 		process.exit(1)
 	}
 
-	if (!templateDownloaded) {
-		console.error("❌ Could not download or copy template")
-		process.exit(1)
-	}
-
-	// Replace template variables in all files
 	const variables = {
 		projectName: sanitizedName
 	}
 
 	try {
-		// Read and update files with template variables
 		const filesToUpdate = [
 			join(projectDir, "package.json"),
-			join(projectDir, "README.md")
+			join(projectDir, "README.md"),
+			join(projectDir, "src", "agent.ts")
 		]
 
 		for (const filePath of filesToUpdate) {
@@ -168,7 +148,6 @@ export async function initializeProject() {
 				content = replaceTemplateVariables(content, variables)
 				await writeFile(filePath, content, "utf-8")
 			} catch (error) {
-				// File might not exist, continue
 				console.log(
 					`⚠️  Could not update ${filePath.split("/").pop()}: file not found`
 				)
@@ -197,3 +176,32 @@ export async function initializeProject() {
 		"\n📖 For more information, see the README.md file in your project"
 	)
 }
+
+async function main() {
+	const nodeVersion = process.versions.node
+	const [major] = nodeVersion.split(".").map(Number)
+	if (!major || major < 20) {
+		console.error("Error: Node.js version 20 or higher is required")
+		process.exit(1)
+	}
+
+	try {
+		await initializeProject()
+	} catch (error) {
+		console.error("Failed to initialize project:", error)
+		console.error(
+			"Error details:",
+			error instanceof Error ? error.stack : String(error)
+		)
+		process.exit(1)
+	}
+}
+
+main().catch((error) => {
+	console.error("CLI error:", error)
+	console.error(
+		"Error details:",
+		error instanceof Error ? error.stack : String(error)
+	)
+	process.exit(1)
+})
