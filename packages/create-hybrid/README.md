@@ -5,14 +5,17 @@ Create a new Hybrid XMTP agent project with a single command.
 ## Usage
 
 ```bash
-# Create a new project
+# Create a new project (recommended)
+npm init hybrid my-agent
+
+# Or using npx directly
 npx create-hybrid my-agent
 
 # Create in current directory
-npx create-hybrid .
+npm init hybrid .
 
 # Interactive mode (will prompt for name)
-npx create-hybrid
+npm init hybrid
 ```
 
 ## What it creates
@@ -22,7 +25,24 @@ This package creates a new Hybrid XMTP agent project with:
 - **TypeScript configuration** - Ready-to-use TypeScript setup
 - **Agent template** - Pre-configured agent with OpenRouter integration
 - **Development scripts** - Build, dev, test, and lint commands
-- **Environment setup** - Template `.env` file with required variables
+- **Environment setup** - Template `.env` file with required variables:
+
+```env
+# OpenRouter Configuration
+# Get your OpenRouter API key from https://openrouter.ai/keys
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+
+# XMTP Wallet and Encryption Keys
+# Run 'npx hybrid gen:keys' to generate these values
+XMTP_WALLET_KEY=your_wallet_key_here
+XMTP_ENCRYPTION_KEY=your_encryption_key_here
+
+# XMTP Environment (dev, production)
+XMTP_ENV=production
+
+# Server Configuration
+# PORT=8454
+```
 - **Testing framework** - Vitest configuration for unit tests
 
 ## Project structure
