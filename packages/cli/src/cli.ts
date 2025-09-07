@@ -94,7 +94,7 @@ async function main() {
 			console.log("Commands:")
 			console.log("  dev          Start development server with watch mode")
 			console.log("  build        Build the TypeScript project")
-			console.log("  clean        Remove dist and node_modules directories")
+			console.log("  clean        Remove dist directory")
 			console.log(
 				"  upgrade|up   Upgrade all hybrid and @hybrd/* packages to latest"
 			)
