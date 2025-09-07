@@ -74,6 +74,9 @@ importers:
       dotenv:
         specifier: ^16.4.5
         version: 16.6.1
+      rimraf:
+        specifier: ^5.0.10
+        version: 5.0.10
       tsx:
         specifier: ^4.20.5
         version: 4.20.5
@@ -2652,6 +2655,10 @@ packages:
 
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
+
+  rimraf@5.0.10:
+    resolution: {integrity: sha512-l0OE8wL34P4nJH/H2ffoaniAokM2qSmrtXHmlpvYr5AVVX8msAyW0l8NVJFDxlSK4u3Uh/f41cQheDVdnYijwQ==}
+    hasBin: true
 
   ripemd160@2.0.2:
     resolution: {integrity: sha512-ii4iagi25WusVoiC4B4lq7pbXfAp3D9v5CwfkY33vffw2+pkDjY1D8GaN7spsxvCSx8dkPqOZCEZyfxcmJG2IA==}
@@ -6865,6 +6872,10 @@ snapshots:
   resolve-from@5.0.0: {}
 
   resolve-pkg-maps@1.0.0: {}
+
+  rimraf@5.0.10:
+    dependencies:
+      glob: 10.4.5
 
   ripemd160@2.0.2:
     dependencies:
