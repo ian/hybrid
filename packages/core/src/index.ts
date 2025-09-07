@@ -15,5 +15,3 @@ import type { MessageListenerConfig, Reaction } from "@hybrd/xmtp"
 
 export type { MessageListenerConfig, Reaction }
 
-// Re-export tools standard library
-export * from "./tools"
