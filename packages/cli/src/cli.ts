@@ -9,6 +9,7 @@ import { initializeProject } from "./cmd/init.js"
 import { registerWallet } from "./cmd/register.js"
 import { revokeAllInstallations } from "./cmd/revoke-all.js"
 import { revokeInstallations } from "./cmd/revoke.js"
+import { runUpgrade } from "./cmd/upgrade.js"
 
 // Check Node.js version
 const nodeVersion = process.versions.node
@@ -88,6 +89,15 @@ async function main() {
 				process.exit(1)
 			}
 			break
+		case "upgrade":
+		case "up":
+			try {
+				await runUpgrade()
+			} catch (error) {
+				console.error("Failed to upgrade packages:", error)
+				process.exit(1)
+			}
+			break
 		case "--help":
 		case "-h":
 		case "help":
@@ -99,6 +109,9 @@ async function main() {
 			console.log("  dev          Start development server with watch mode")
 			console.log("  build        Build the TypeScript project")
 			console.log("  clean        Remove dist and node_modules directories")
+			console.log(
+				"  upgrade|up   Upgrade all hybrid and @hybrd/* packages to latest"
+			)
 			console.log("  gen:keys     Generate XMTP wallet and encryption keys")
 			console.log(
 				"               Use --write to save keys directly to .env file"
@@ -118,6 +131,7 @@ async function main() {
 			console.log("  hybrid dev              or    hy dev")
 			console.log("  hybrid build            or    hy build")
 			console.log("  hybrid clean            or    hy clean")
+			console.log("  hybrid upgrade          or    hy up")
 			console.log("  hybrid gen:keys         or    hy gen:keys")
 			console.log("  hybrid gen:keys --write or    hy gen:keys --write")
 			console.log("  hybrid register         or    hy register")
