@@ -1,7 +1,8 @@
 name: Test Hybrid CLI
 
 on:
-  pull_request
+  pull_request:
+    branches: main
 
 jobs:
   test-cli:
