@@ -72,7 +72,7 @@ pnpm install hybrid
 ### 2. Initialize your project
 
 ```bash
-npx hybrid init
+npx create-hybrid my-agent
 ```
 
 This creates all the necessary files and configuration for your agent.
@@ -99,7 +99,7 @@ The Hybrid CLI provides several commands to manage your agent development workfl
 
 ```bash
 # Initialize a new agent project
-npx hybrid init
+npx create-hybrid my-agent
 
 # Generate XMTP wallet and encryption keys
 npx hybrid gen:keys
