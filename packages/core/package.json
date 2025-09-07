@@ -1,9 +1,19 @@
 {
 	"name": "hybrid",
-	"version": "1.2.2",
-	"keywords": ["xmtp", "agent", "ai", "hybrid", "blockchain", "messaging"],
+	"version": "1.2.3",
+	"keywords": [
+		"xmtp",
+		"agent",
+		"ai",
+		"hybrid",
+		"blockchain",
+		"messaging"
+	],
 	"type": "module",
-	"files": ["dist", "src"],
+	"files": [
+		"dist",
+		"src"
+	],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",

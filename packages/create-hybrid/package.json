@@ -1,15 +1,12 @@
 {
 	"name": "create-hybrid",
-	"version": "1.0.0",
+	"version": "1.2.3",
 	"description": "Create a new Hybrid XMTP agent project",
 	"type": "module",
 	"bin": {
 		"create-hybrid": "./dist/index.js"
 	},
-	"files": [
-		"dist",
-		"templates"
-	],
+	"files": ["dist", "templates"],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -35,13 +32,7 @@
 	"engines": {
 		"node": ">=20"
 	},
-	"keywords": [
-		"hybrid",
-		"xmtp",
-		"agent",
-		"cli",
-		"create"
-	],
+	"keywords": ["hybrid", "xmtp", "agent", "cli", "create"],
 	"author": "Ian Hunter",
 	"license": "MIT",
 	"repository": {
