@@ -91,7 +91,6 @@ jobs:
           fi
           echo "✅ Project directory exists"
           ls -la test-agent-cli/
-        working-directory: test-project
 
           echo "📂 Checking src directory..."
           if [ ! -d "test-agent-cli/src" ]; then
