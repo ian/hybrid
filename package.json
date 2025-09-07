@@ -29,10 +29,5 @@
 		"tsx": "4.19.3",
 		"turbo": "2.5.0",
 		"typescript": "5.9.2"
-	},
-	"workspaces": [
-		"packages/*",
-		"examples/*",
-		"config/*"
-	]
+	}
 }
