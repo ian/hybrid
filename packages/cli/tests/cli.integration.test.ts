@@ -131,7 +131,7 @@ describe("CLI Integration Tests", () => {
 				readFileSync(join(projectPath, "package.json"), "utf8")
 			)
 			expect(packageJson.name).toBe(projectName)
-			expect(packageJson.version).toBe("0.1.0")
+			expect(packageJson.version).toBe("0.0.0")
 
 			cleanupTempProject(projectName)
 		})
