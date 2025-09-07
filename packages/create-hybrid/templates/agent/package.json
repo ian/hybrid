@@ -12,7 +12,6 @@
 		"keys": "hybrid gen:keys --write",
 		"test": "vitest",
 		"test:watch": "vitest --watch",
-		"test:coverage": "vitest --coverage",
 		"lint": "biome lint --write",
 		"lint:check": "biome lint",
 		"format": "biome format --write",
@@ -21,7 +20,7 @@
 	},
 	"dependencies": {
 		"@openrouter/ai-sdk-provider": "^1.1.2",
-		"hybrid": "latest"
+		"hybrid": "^1.2.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
