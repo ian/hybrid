@@ -99,7 +99,7 @@ The Hybrid CLI provides several commands to manage your agent development workfl
 
 ```bash
 # Initialize a new agent project
-npx create-hybrid my-agent
+npx create hybrid my-agent
 
 # Generate XMTP wallet and encryption keys
 npx hybrid gen:keys
