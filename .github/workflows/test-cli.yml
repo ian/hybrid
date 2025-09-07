@@ -537,8 +537,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build CLI
-        run: pnpm build --filter=hybrid
+      - name: Build all packages
+        run: pnpm build
 
       - name: Run CLI integration tests with Vitest
         run: |
