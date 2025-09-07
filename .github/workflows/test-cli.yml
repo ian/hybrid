@@ -1,9 +1,6 @@
 name: Test Hybrid CLI
 
-on:
-  push:
-  pull_request:
-    branches: main
+on: [push, pull_request]
 
 jobs:
   test-cli:
