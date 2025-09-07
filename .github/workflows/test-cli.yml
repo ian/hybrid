@@ -1,6 +1,6 @@
 name: Test Hybrid CLI
 
-on: [push, pull_request]
+on: push
 
 jobs:
   test-cli:
@@ -157,13 +157,13 @@ jobs:
           echo "✅ Name field is correct: test-agent-cli"
 
           # Check version field
-          if ! grep -q '"version": "0.1.0"' package.json; then
+          if ! grep -q '"version": "0.0.0"' package.json; then
             echo "❌ Expected version field not found"
             echo "Current version field:"
             node -e "console.log(JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version)"
             exit 1
           fi
-          echo "✅ Version field is correct: 0.1.0"
+          echo "✅ Version field is correct: 0.0.0"
 
           # Check dev script (from template: "hybrid dev")
           if ! grep -q '"dev": "hybrid dev"' package.json; then
@@ -175,7 +175,7 @@ jobs:
           echo "✅ Dev script is correct"
 
           # Check keys script
-          if ! grep -q '"keys": "hybrid gen:keys"' package.json; then
+          if ! grep -q '"keys": "hybrid gen:keys --write"' package.json; then
             echo "❌ Expected keys script not found"
             echo "Current scripts:"
             node -e "console.log(JSON.stringify(JSON.parse(require('fs').readFileSync('package.json', 'utf8')).scripts, null, 2))"
