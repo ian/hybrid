@@ -35,16 +35,6 @@ async function main() {
 				process.exit(1)
 			}
 			break
-		case "gen:keys":
-			console.log("⚠️  Warning: 'gen:keys' is deprecated. Use 'hybrid keys' instead.")
-			try {
-				const writeFlag = process.argv.includes("--write")
-				await generateKeys(writeFlag)
-			} catch (error) {
-				console.error("Failed to generate keys:", error)
-				process.exit(1)
-			}
-			break
 		case "register":
 			try {
 				await registerWallet()
@@ -112,7 +102,6 @@ async function main() {
 			console.log(
 				"               Use --write to save keys directly to .env file"
 			)
-			console.log("  gen:keys     (deprecated) Use 'keys' instead")
 			console.log("  register     Register wallet with XMTP production network")
 			console.log("  revoke       Revoke XMTP installations for specific inbox")
 			console.log("               Usage: hybrid revoke <inboxId>")
