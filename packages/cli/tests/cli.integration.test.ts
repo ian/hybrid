@@ -214,7 +214,7 @@ describe("CLI Integration Tests", () => {
 
 			// Change to project directory and generate keys
 			const projectPath = join(tempDir, projectName)
-			const result = runCliCommand(["gen:keys", "--write"], projectPath)
+			const result = runCliCommand(["keys", "--write"], projectPath)
 			expect(result.exitCode).toBe(0)
 			expect(result.stdout).toContain("Keys generated successfully")
 
@@ -236,7 +236,7 @@ describe("CLI Integration Tests", () => {
 
 			// Generate keys with --write flag
 			const projectPath = join(tempDir, projectName)
-			const result = runCliCommand(["gen:keys", "--write"], projectPath)
+			const result = runCliCommand(["keys", "--write"], projectPath)
 			expect(result.exitCode).toBe(0)
 			expect(result.stdout).toContain(
 				"Environment variables written to .env file"
@@ -249,6 +249,31 @@ describe("CLI Integration Tests", () => {
 
 			cleanupTempProject(projectName)
 		})
+
+		it("should support backward compatibility with gen:keys command and show deprecation warning", () => {
+			const projectName = "test-keys-backward-compat"
+			const tempDir = join(process.cwd(), "test-temp")
+
+			// First create a project
+			runCreateHybridCommand(projectName, tempDir)
+
+			// Generate keys with old gen:keys command
+			const projectPath = join(tempDir, projectName)
+			const result = runCliCommand(["gen:keys", "--write"], projectPath)
+			expect(result.exitCode).toBe(0)
+			expect(result.stdout).toContain("Warning: 'gen:keys' is deprecated")
+			expect(result.stdout).toContain(
+				"Environment variables written to .env file"
+			)
+
+			// Verify .env file contains keys
+			const envContent = readFileSync(join(projectPath, ".env"), "utf8")
+			expect(envContent).toContain("XMTP_WALLET_KEY=0x")
+			expect(envContent).toContain("XMTP_ENCRYPTION_KEY=")
+
+			cleanupTempProject(projectName)
+		})
+
 	})
 
 	describe("Build and Dev Commands", () => {

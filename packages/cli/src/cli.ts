@@ -26,7 +26,17 @@ async function main() {
 		case "dev":
 			runDev()
 			break
+		case "keys":
+			try {
+				const writeFlag = process.argv.includes("--write")
+				await generateKeys(writeFlag)
+			} catch (error) {
+				console.error("Failed to generate keys:", error)
+				process.exit(1)
+			}
+			break
 		case "gen:keys":
+			console.log("⚠️  Warning: 'gen:keys' is deprecated. Use 'hybrid keys' instead.")
 			try {
 				const writeFlag = process.argv.includes("--write")
 				await generateKeys(writeFlag)
@@ -98,10 +108,11 @@ async function main() {
 			console.log(
 				"  upgrade|up   Upgrade all hybrid and @hybrd/* packages to latest"
 			)
-			console.log("  gen:keys     Generate XMTP wallet and encryption keys")
+			console.log("  keys         Generate XMTP wallet and encryption keys")
 			console.log(
 				"               Use --write to save keys directly to .env file"
 			)
+			console.log("  gen:keys     (deprecated) Use 'keys' instead")
 			console.log("  register     Register wallet with XMTP production network")
 			console.log("  revoke       Revoke XMTP installations for specific inbox")
 			console.log("               Usage: hybrid revoke <inboxId>")
@@ -114,8 +125,8 @@ async function main() {
 			console.log("  hybrid build            or    hy build")
 			console.log("  hybrid clean            or    hy clean")
 			console.log("  hybrid upgrade          or    hy up")
-			console.log("  hybrid gen:keys         or    hy gen:keys")
-			console.log("  hybrid gen:keys --write or    hy gen:keys --write")
+			console.log("  hybrid keys             or    hy keys")
+			console.log("  hybrid keys --write     or    hy keys --write")
 			console.log("  hybrid register         or    hy register")
 			console.log("  hybrid revoke <inboxId> or    hy revoke <inboxId>")
 			console.log("  hybrid revoke:all       or    hy revoke:all")
