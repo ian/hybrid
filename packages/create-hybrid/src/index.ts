@@ -11,6 +11,12 @@ interface Example {
 	path: string
 }
 
+interface TemplateOption {
+	path: string | null
+	available: boolean
+	message?: string
+}
+
 // Default to main branch, but allow override via REPO env var for CI/testing
 const DEFAULT_REPO = "ian/hybrid"
 const REPO = process.env.REPO || DEFAULT_REPO
@@ -18,8 +24,8 @@ const REPO = process.env.REPO || DEFAULT_REPO
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const templateOptions = {
-	"agent": {
+const templateOptions: Record<string, TemplateOption> = {
+	"basic": {
 		path: join(__dirname, "..", "templates", "agent"),
 		available: true
 	},
@@ -42,9 +48,14 @@ const EXAMPLES: Example[] = [
 		path: "basic" // Path is now handled separately in degit options
 	},
 	{
-		name: "my-agent",
-		description: "Advanced agent with blockchain integration and crypto tools",
-		path: "my-agent" // Path is now handled separately in degit options
+		name: "with-ponder",
+		description: "Agent with Ponder integration for indexing blockchain data",
+		path: "with-ponder" // Path is now handled separately in degit options
+	},
+	{
+		name: "with-foundry",
+		description: "Agent with Foundry integration for smart contract development",
+		path: "with-foundry" // Path is now handled separately in degit options
 	}
 ]
 
@@ -351,16 +362,28 @@ async function createProject(
 			type: "select",
 			name: "example",
 			message: "Which example would you like to use?",
-			choices: EXAMPLES.map((ex) => ({
-				title: ex.name,
-				description: ex.description,
-				value: ex
-			})),
+			choices: EXAMPLES.map((ex) => {
+				const templateOption = templateOptions[ex.name as keyof typeof templateOptions]
+				const isAvailable = templateOption?.available ?? false
+				return {
+					title: ex.name,
+					description: isAvailable ? ex.description : `${ex.description} (Coming soon)`,
+					value: ex,
+					disabled: !isAvailable
+				}
+			}),
 			initial: 0
 		})
 
 		if (!example) {
 			console.log("❌ No example selected. Exiting...")
+			process.exit(1)
+		}
+
+		// Check if the selected template is available
+		const templateOption = templateOptions[example.name as keyof typeof templateOptions]
+		if (!templateOption?.available) {
+			console.log(`❌ Template "${example.name}" is not yet available. ${templateOption?.message || "Coming soon"}`)
 			process.exit(1)
 		}
 
@@ -440,7 +463,7 @@ export async function initializeProject(): Promise<void> {
 		.description("Create a new Hybrid XMTP agent project")
 		.version("1.2.3")
 		.argument("[project-name]", "Name of the project")
-		.option("-e, --example <example>", "Example to use (basic, my-agent)")
+		.option("-e, --example <example>", "Example to use (basic, with-ponder, with-foundry)")
 		.action(async (projectName?: string, options?: { example?: string }) => {
 			let finalProjectName = projectName
 
