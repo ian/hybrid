@@ -90,19 +90,72 @@ async function updateTemplateFiles(
 						packageJson.scripts = {}
 					}
 
-					// Add missing scripts that tests expect
+					// Add missing scripts and update old scripts to use hybrid CLI
 					const requiredScripts = {
+						clean: "hybrid clean",
+						dev: "hybrid dev", 
+						build: "hybrid build",
+						start: "hybrid start",
+						keys: "hybrid gen:keys --write",
 						test: "vitest",
-						keys: "hybrid gen:keys --write"
+						"test:watch": "vitest --watch",
+						"test:coverage": "vitest --coverage",
+						lint: "biome lint --write",
+						"lint:check": "biome lint",
+						format: "biome format --write",
+						"format:check": "biome format --check",
+						typecheck: "tsc --noEmit"
 					}
 
 					for (const [scriptName, scriptCommand] of Object.entries(
 						requiredScripts
 					)) {
-						if (!packageJson.scripts[scriptName]) {
-							packageJson.scripts[scriptName] = scriptCommand
+						// Always update scripts to use the correct hybrid CLI commands
+						packageJson.scripts[scriptName] = scriptCommand
+						updated = true
+					}
+
+					// Update dependencies to use independent packages
+					if (packageJson.dependencies) {
+						if (packageJson.dependencies["hybrid"] === "workspace:*") {
+							packageJson.dependencies["hybrid"] = "latest"
 							updated = true
 						}
+						if (packageJson.dependencies["@openrouter/ai-sdk-provider"] === "catalog:ai") {
+							packageJson.dependencies["@openrouter/ai-sdk-provider"] = "^1.1.2"
+							updated = true
+						}
+						if (packageJson.dependencies["zod"] === "catalog:stack") {
+							packageJson.dependencies["zod"] = "^3.23.8"
+							updated = true
+						}
+						// Remove workspace dependencies
+						if (packageJson.dependencies["@hybrd/xmtp"]) {
+							delete packageJson.dependencies["@hybrd/xmtp"]
+							updated = true
+						}
+					}
+
+					// Update devDependencies to use independent packages
+					if (packageJson.devDependencies) {
+						const independentDevDeps = {
+							"@biomejs/biome": "^1.9.4",
+							"@types/node": "^22.0.0",
+							"@hybrd/cli": "latest",
+							"tsx": "^4.20.5",
+							"typescript": "^5.8.3",
+							"vitest": "^3.2.4"
+						}
+						
+						// Remove workspace dependencies
+						delete packageJson.devDependencies["@config/biome"]
+						delete packageJson.devDependencies["@config/tsconfig"]
+						
+						// Add independent dependencies
+						for (const [depName, depVersion] of Object.entries(independentDevDeps)) {
+							packageJson.devDependencies[depName] = depVersion
+						}
+						updated = true
 					}
 
 					if (updated) {
@@ -294,7 +347,7 @@ async function createProject(
 		// For degit, the correct syntax is: repo#branch/subdirectory
 		// But we need to be careful about the path construction
 		let degitSource: string
-		
+
 		if (REPO.includes("#")) {
 			// REPO is in format "user/repo#branch"
 			// We need to construct: user/repo#branch/examples/basic
