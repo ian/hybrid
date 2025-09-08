@@ -257,8 +257,8 @@ jobs:
       - name: Test interactive project creation
         run: |
           echo "🔍 Testing interactive project creation..."
-          echo "📝 Providing project name via stdin..."
-          if ! echo "my-hybrid-agent" | node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" --example basic; then
+          echo "📝 Creating project with name 'my-hybrid-agent'..."
+          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" my-hybrid-agent --example basic; then
             echo "❌ Interactive project creation failed"
             exit 1
           fi

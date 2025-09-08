@@ -93,7 +93,7 @@ async function updateTemplateFiles(
 					// Add missing scripts and update old scripts to use hybrid CLI
 					const requiredScripts = {
 						clean: "hybrid clean",
-						dev: "hybrid dev", 
+						dev: "hybrid dev",
 						build: "hybrid build",
 						start: "hybrid start",
 						keys: "hybrid gen:keys --write",
@@ -121,7 +121,10 @@ async function updateTemplateFiles(
 							packageJson.dependencies["hybrid"] = "latest"
 							updated = true
 						}
-						if (packageJson.dependencies["@openrouter/ai-sdk-provider"] === "catalog:ai") {
+						if (
+							packageJson.dependencies["@openrouter/ai-sdk-provider"] ===
+							"catalog:ai"
+						) {
 							packageJson.dependencies["@openrouter/ai-sdk-provider"] = "^1.1.2"
 							updated = true
 						}
@@ -142,17 +145,19 @@ async function updateTemplateFiles(
 							"@biomejs/biome": "^1.9.4",
 							"@types/node": "^22.0.0",
 							"@hybrd/cli": "latest",
-							"tsx": "^4.20.5",
-							"typescript": "^5.8.3",
-							"vitest": "^3.2.4"
+							tsx: "^4.20.5",
+							typescript: "^5.8.3",
+							vitest: "^3.2.4"
 						}
-						
+
 						// Remove workspace dependencies
 						delete packageJson.devDependencies["@config/biome"]
 						delete packageJson.devDependencies["@config/tsconfig"]
-						
+
 						// Add independent dependencies
-						for (const [depName, depVersion] of Object.entries(independentDevDeps)) {
+						for (const [depName, depVersion] of Object.entries(
+							independentDevDeps
+						)) {
 							packageJson.devDependencies[depName] = depVersion
 						}
 						updated = true
