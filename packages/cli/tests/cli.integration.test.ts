@@ -33,7 +33,8 @@ function runCliCommand(
 
 function runCreateHybridCommand(
 	projectName: string,
-	cwd?: string
+	cwd?: string,
+	example = "basic"
 ): { stdout: string; stderr: string; exitCode: number } {
 	try {
 		const { execSync } = require("node:child_process")
@@ -50,7 +51,7 @@ function runCreateHybridCommand(
 			"index.js"
 		)
 
-		const result = execSync(`node "${createHybridPath}" "${projectName}"`, {
+		const result = execSync(`node "${createHybridPath}" "${projectName}" --example ${example}`, {
 			cwd: cwd || process.cwd(),
 			encoding: "utf8",
 			stdio: "pipe",
@@ -154,7 +155,7 @@ describe("CLI Integration Tests", () => {
 				execSync(`find ${tempDir} -mindepth 1 -delete`, { stdio: "ignore" })
 			} catch (e) {}
 
-			const result = runCreateHybridCommand(".", tempDir)
+			const result = runCreateHybridCommand(".", tempDir, "basic")
 			expect(result.exitCode).toBe(0)
 			expect(result.stdout).toContain("Hybrid project created successfully")
 
