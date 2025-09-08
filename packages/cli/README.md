@@ -1,165 +1,222 @@
-# Hybrid Agent Framework
+# Hybrid CLI
 
-A flexible framework for building AI agents with plugin-based HTTP server extensions.
+Command-line interface for managing Hybrid XMTP agent projects. The CLI provides essential tools for project development, key management, and XMTP integration.
 
-## Features
+## Installation
 
-- **AI Agent Core**: Built on AI SDK 5 with streaming and tool support
-- **Plugin System**: Extensible HTTP server with Hono integration
-- **XMTP Integration**: Built-in XMTP messaging capabilities
-- **Blockchain Events**: Ponder integration for blockchain event handling
-- **TypeScript First**: Full type safety and modern TypeScript patterns
-
-## Quick Start
-
-```typescript
-import { Agent, XMTPPlugin, PonderPlugin } from "hybrid"
-
-// Create an agent
-const agent = new Agent({
-  name: "my-agent",
-  model: "gpt-4",
-  instructions: "You are a helpful AI assistant."
-})
-
-// Start the server with plugins
-await agent.listen({
-  port: "3000",
-  filter: async ({ message }) => {
-    console.log("Received message:", message)
-    return true // Accept all messages
-  },
-  plugins: [
-    XMTPPlugin(),
-    PonderPlugin()
-  ]
-})
-```
-
-## Plugin System
-
-The framework uses a plugin-based architecture that allows you to extend the agent's HTTP server with additional functionality.
-
-### Built-in Plugins
-
-- **XMTPPlugin**: Provides XMTP messaging capabilities
-- **PonderPlugin**: Handles blockchain events via Ponder
-
-### Creating Custom Plugins
-
-```typescript
-import type { Plugin } from "hybrid"
-import { Hono } from "hono"
-
-function MyCustomPlugin(): Plugin {
-  return {
-    name: "my-custom",
-    description: "My custom functionality",
-    apply: (app) => {
-      app.get("/custom", (c) => c.json({ message: "Hello from custom plugin!" }))
-    }
-  }
-}
-
-// Use the plugin
-const agent = new Agent({
-  name: "my-agent",
-  model: "gpt-4",
-  instructions: "You are a helpful AI assistant."
-})
-
-// Start server with plugins
-await agent.listen({
-  port: "3000",
-  plugins: [
-    XMTPPlugin(),
-    PonderPlugin(),
-    MyCustomPlugin()
-  ]
-})
-```
-
-### Plugin Registry
-
-You can also register plugins dynamically:
-
-```typescript
-// Register a plugin after agent creation
-agent.use(MyCustomPlugin())
-
-// Check registered plugins
-console.log(`Agent has ${agent.plugins.size} plugins`)
-
-// Get a specific plugin
-const plugin = agent.plugins.get("my-custom")
-
-// Check if a plugin is registered
-if (agent.plugins.has("xmtp")) {
-  console.log("XMTP plugin is registered")
-}
-```
-
-### Plugin Context
-
-Plugins receive a context object with the agent instance:
-
-```typescript
-function MyPlugin(): Plugin {
-  return {
-    name: "my-plugin",
-    description: "My plugin",
-    apply: (app, context) => {
-      if (context) {
-        console.log(`Plugin applied to agent: ${context.agent.name}`)
-      }
-      
-      app.get("/my-endpoint", (c) => c.json({ message: "Hello!" }))
-    }
-  }
-}
-```
-
-## Architecture
-
-The framework consists of several core components:
-
-- **Agent**: Main AI agent with streaming and tool support
-- **Plugin System**: Extensible HTTP server architecture with Hono
-- **Tool System**: AI SDK compatible tool framework
-- **Server**: Hono-based HTTP server with plugin support
-
-### Plugin Lifecycle
-
-1. **Registration**: Plugins are registered during agent creation or via `agent.use()`
-2. **Application**: When `agent.listen()` is called, all plugins are applied to the Hono app
-3. **Execution**: Plugins can add routes, middleware, and other functionality to the app
-
-## Examples
-
-See the `examples/` directory for complete usage examples:
-
-- `plugin-usage.ts`: Comprehensive plugin usage examples
-- Basic plugin registration
-- Dynamic plugin registration
-- Custom plugin creation
-- Plugin registry inspection
-- Server startup with plugins
-
-## Development
+The CLI is included with the `hybrid` package:
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Build the package
-pnpm build
-
-# Run tests
-pnpm test
-
-# Type check
-pnpm typecheck
+pnpm install hybrid
 ```
+
+Or use it directly with npx:
+
+```bash
+npx hybrid <command>
+```
+
+## Commands
+
+### `hybrid dev`
+
+Start development server with watch mode for TypeScript compilation.
+
+```bash
+hybrid dev
+# or
+hy dev
+```
+
+This command:
+- Compiles TypeScript in watch mode
+- Restarts the agent when files change
+- Provides real-time development feedback
+
+### `hybrid build`
+
+Build the TypeScript project for production.
+
+```bash
+hybrid build
+# or
+hy build
+```
+
+Compiles all TypeScript files to JavaScript in the `dist/` directory.
+
+### `hybrid clean`
+
+Remove the `dist/` directory and clean build artifacts.
+
+```bash
+hybrid clean
+# or
+hy clean
+```
+
+### `hybrid keys`
+
+Generate XMTP wallet and encryption keys for your agent.
+
+```bash
+hybrid keys
+# or
+hy keys
+
+# Save keys directly to .env file
+hybrid keys --write
+# or
+hy keys --write
+```
+
+This command generates:
+- **XMTP_WALLET_KEY**: Private key for XMTP wallet identity
+- **XMTP_ENCRYPTION_KEY**: 32-byte hex string for message encryption
+
+Without `--write`, keys are displayed in the terminal. With `--write`, they are automatically saved to your `.env` file.
+
+### `hybrid register`
+
+Register your wallet with the XMTP production network.
+
+```bash
+hybrid register
+# or
+hy register
+```
+
+Required before your agent can send/receive messages on the production XMTP network.
+
+### `hybrid revoke <inboxId>`
+
+Revoke XMTP installations for a specific inbox.
+
+```bash
+hybrid revoke <inboxId>
+# or
+hy revoke <inboxId>
+```
+
+Use this to remove specific XMTP client installations when needed.
+
+### `hybrid revoke:all`
+
+Revoke ALL XMTP installations for the current wallet.
+
+```bash
+hybrid revoke:all
+# or
+hy revoke:all
+```
+
+**Warning**: This removes all XMTP installations for your wallet. Use with caution.
+
+### `hybrid upgrade`
+
+Upgrade all hybrid and @hybrd/* packages to their latest versions.
+
+```bash
+hybrid upgrade
+# or
+hy up
+```
+
+Automatically updates:
+- `hybrid` package
+- All `@hybrd/*` scoped packages
+- Maintains compatibility across the ecosystem
+
+## Environment Requirements
+
+The CLI requires Node.js version 20 or higher. If you're using an older version, you'll see an error message prompting you to upgrade.
+
+## Configuration
+
+### Environment Variables
+
+The CLI uses these environment variables:
+
+```env
+# Required for XMTP functionality
+XMTP_WALLET_KEY=0x...        # Generated by `hybrid keys`
+XMTP_ENCRYPTION_KEY=...      # Generated by `hybrid keys`
+XMTP_ENV=dev                 # or "production"
+
+# Optional
+PORT=8454                    # Development server port
+```
+
+### Project Structure
+
+The CLI expects your project to follow this structure:
+
+```
+my-agent/
+├── src/
+│   └── agent.ts            # Main agent implementation
+├── dist/                   # Built JavaScript (created by build)
+├── .env                    # Environment variables
+├── package.json
+└── tsconfig.json
+```
+
+## Development Workflow
+
+1. **Create a new project**:
+   ```bash
+   npx create-hybrid my-agent
+   cd my-agent
+   ```
+
+2. **Generate XMTP keys**:
+   ```bash
+   hybrid keys --write
+   ```
+
+3. **Start development**:
+   ```bash
+   hybrid dev
+   ```
+
+4. **Build for production**:
+   ```bash
+   hybrid build
+   ```
+
+5. **Register with XMTP** (for production):
+   ```bash
+   hybrid register
+   ```
+
+## Troubleshooting
+
+### Node.js Version Error
+
+If you see "Node.js version 20 or higher is required":
+- Update Node.js to version 20+
+- Use a version manager like nvm: `nvm install 20 && nvm use 20`
+
+### XMTP Connection Issues
+
+If XMTP commands fail:
+- Ensure `XMTP_WALLET_KEY` is set in your environment
+- Check that your wallet is registered: `hybrid register`
+- Verify the `XMTP_ENV` setting matches your target network
+
+### Build Failures
+
+If `hybrid build` fails:
+- Check TypeScript configuration in `tsconfig.json`
+- Ensure all dependencies are installed: `pnpm install`
+- Run `hybrid clean` and try building again
+
+## Related Packages
+
+- [`hybrid`](../core) - Main agent framework
+- [`create-hybrid`](../create-hybrid) - Project scaffolding tool
+- [`@hybrd/xmtp`](../xmtp) - XMTP client integration
+- [`@hybrd/utils`](../utils) - Utility functions
 
 ## License
 

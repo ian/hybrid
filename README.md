@@ -9,10 +9,12 @@ This project uses a monorepo structure with multiple packages and supporting dir
 ```
 hybrid/
 ├── examples/
-│   └── basic/        # Basic agent example implementation
+│   ├── basic/        # Basic agent example implementation
+│   └── crypto-agent/ # Crypto-enabled agent example
 ├── packages/
 │   ├── cli/          # Command-line interface for agent management
 │   ├── core/         # Main agent framework library (published as "hybrid")
+│   ├── create-hybrid/ # Project creation tool
 │   ├── utils/        # Utility functions and helpers
 │   └── xmtp/         # XMTP client and messaging utilities
 └── templates/        # Project templates for agent creation
@@ -96,7 +98,7 @@ The Hybrid CLI provides several commands to manage your agent development workfl
 
 ```bash
 # Initialize a new agent project
-npx create hybrid my-agent
+npx create-hybrid my-agent
 
 # Generate XMTP wallet and encryption keys
 npx hybrid keys
@@ -107,17 +109,20 @@ npx hybrid dev
 # Build your agent
 npx hybrid build
 
+# Clean build artifacts
+npx hybrid clean
+
+# Upgrade hybrid packages
+npx hybrid upgrade
+
 # Register your agent with XMTP
 npx hybrid register
 
 # Revoke specific XMTP installations
-npx hybrid revoke <installation-id>
+npx hybrid revoke <inboxId>
 
 # Revoke all XMTP installations
 npx hybrid revoke:all
-
-# Clean build artifacts
-npx hybrid clean
 ```
 
 ## 🛠️ Tools Standard Library
