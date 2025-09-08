@@ -10,7 +10,7 @@
  * import { Agent } from "hybrid"
  *
  * const agent = new Agent({
- *   name: "crypto-agent",
+ *   name: "my-agent",
  *   model: myModel,
  *   tools: {
  *     ...blockchainTools,

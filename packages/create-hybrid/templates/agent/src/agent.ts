@@ -35,7 +35,7 @@ const filter: MessageListenerConfig["filter"] = async ({ message }) => {
 
 	if (isMessage) {
 		const lowerContent = messageContent?.toLowerCase()
-		const mentionPatterns = ["@bot"]
+		const mentionPatterns = ["@agent"]
 
 		return mentionPatterns.some((pattern) => lowerContent?.includes(pattern))
 	}

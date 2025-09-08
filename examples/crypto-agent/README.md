@@ -169,7 +169,7 @@ Smart filtering responds to:
 
 ### Project Structure
 ```
-crypto-agent/
+my-agent/
 ├── src/
 │   └── agent.ts          # Main agent implementation
 ├── package.json          # Dependencies and scripts

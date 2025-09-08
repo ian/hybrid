@@ -14,6 +14,23 @@ interface Example {
 const DEFAULT_REPO = "ian/hybrid"
 const REPO = process.env.REPO || DEFAULT_REPO
 
+const templateOptions = {
+	"agent": {
+		path: join(__dirname, "..", "templates", "agent"),
+		available: true
+	},
+	"with-ponder": {
+		path: null,
+		available: false,
+		message: "Coming soon"
+	},
+	"with-foundry": {
+		path: null,
+		available: false,
+		message: "Coming soon"
+	}
+}
+
 const EXAMPLES: Example[] = [
 	{
 		name: "basic",
@@ -21,9 +38,9 @@ const EXAMPLES: Example[] = [
 		path: "basic" // Path is now handled separately in degit options
 	},
 	{
-		name: "crypto-agent",
+		name: "my-agent",
 		description: "Advanced agent with blockchain integration and crypto tools",
-		path: "crypto-agent" // Path is now handled separately in degit options
+		path: "my-agent" // Path is now handled separately in degit options
 	}
 ]
 
@@ -419,7 +436,7 @@ export async function initializeProject(): Promise<void> {
 		.description("Create a new Hybrid XMTP agent project")
 		.version("1.2.3")
 		.argument("[project-name]", "Name of the project")
-		.option("-e, --example <example>", "Example to use (basic, crypto-agent)")
+		.option("-e, --example <example>", "Example to use (basic, my-agent)")
 		.action(async (projectName?: string, options?: { example?: string }) => {
 			let finalProjectName = projectName
 

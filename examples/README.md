@@ -16,7 +16,7 @@ cd basic
 pnpm install && pnpm dev
 ```
 
-### 🔗 [Crypto Agent](./crypto-agent/)
+### 🔗 [My Agent](./my-agent/)
 **Reference implementation for crypto-enabled agents**
 
 - Shows how to structure agents with blockchain and XMTP tools
@@ -25,7 +25,7 @@ pnpm install && pnpm dev
 - Comprehensive README with usage examples and patterns
 
 ```bash
-cd crypto-agent
+cd my-agent
 pnpm install && pnpm dev
 ```
 
@@ -33,7 +33,7 @@ pnpm install && pnpm dev
 
 1. **Choose an example** based on your needs:
    - New to Hybrid? → Start with `basic/`
-   - Want crypto features? → Check `crypto-agent/`
+   - Want crypto features? → Check `my-agent/`
 
 2. **Install and run:**
    ```bash
