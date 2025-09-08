@@ -228,7 +228,7 @@ export async function initializeProject(): Promise<void> {
 				finalProjectName = name
 			}
 
-			await createProject(finalProjectName!, options?.example)
+			await createProject(finalProjectName as string, options?.example)
 		})
 
 	await program.parseAsync()
