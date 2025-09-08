@@ -26,7 +26,7 @@ async function main() {
 		case "dev":
 			runDev()
 			break
-		case "gen:keys":
+		case "keys":
 			try {
 				const writeFlag = process.argv.includes("--write")
 				await generateKeys(writeFlag)
@@ -98,7 +98,7 @@ async function main() {
 			console.log(
 				"  upgrade|up   Upgrade all hybrid and @hybrd/* packages to latest"
 			)
-			console.log("  gen:keys     Generate XMTP wallet and encryption keys")
+			console.log("  keys         Generate XMTP wallet and encryption keys")
 			console.log(
 				"               Use --write to save keys directly to .env file"
 			)
@@ -114,8 +114,8 @@ async function main() {
 			console.log("  hybrid build            or    hy build")
 			console.log("  hybrid clean            or    hy clean")
 			console.log("  hybrid upgrade          or    hy up")
-			console.log("  hybrid gen:keys         or    hy gen:keys")
-			console.log("  hybrid gen:keys --write or    hy gen:keys --write")
+			console.log("  hybrid keys             or    hy keys")
+			console.log("  hybrid keys --write     or    hy keys --write")
 			console.log("  hybrid register         or    hy register")
 			console.log("  hybrid revoke <inboxId> or    hy revoke <inboxId>")
 			console.log("  hybrid revoke:all       or    hy revoke:all")

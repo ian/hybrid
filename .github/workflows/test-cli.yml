@@ -178,7 +178,7 @@ jobs:
           echo "✅ Dev script is correct"
 
           # Check keys script
-          if ! grep -q '"keys": "hybrid gen:keys --write"' package.json; then
+          if ! grep -q '"keys": "hybrid keys --write"' package.json; then
             echo "❌ Expected keys script not found"
             echo "Current scripts:"
             node -e "console.log(JSON.stringify(JSON.parse(require('fs').readFileSync('package.json', 'utf8')).scripts, null, 2))"
@@ -216,7 +216,7 @@ jobs:
           cd test-agent-cli
 
           echo "🔑 Running key generation command..."
-          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" gen:keys --write; then
+          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" keys --write; then
             echo "❌ Key generation command failed"
             exit 1
           fi
@@ -475,7 +475,7 @@ jobs:
           echo "✅ NODE_PATH configured"
 
           echo "🔐 Testing key generation..."
-          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" gen:keys --write; then
+          if ! node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" keys --write; then
             echo "❌ Key generation failed"
             exit 1
           fi

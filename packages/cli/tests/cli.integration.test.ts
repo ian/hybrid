@@ -215,7 +215,7 @@ describe("CLI Integration Tests", () => {
 
 			// Change to project directory and generate keys
 			const projectPath = join(tempDir, projectName)
-			const result = runCliCommand(["gen:keys", "--write"], projectPath)
+			const result = runCliCommand(["keys", "--write"], projectPath)
 			expect(result.exitCode).toBe(0)
 			expect(result.stdout).toContain("Keys generated successfully")
 
@@ -237,7 +237,7 @@ describe("CLI Integration Tests", () => {
 
 			// Generate keys with --write flag
 			const projectPath = join(tempDir, projectName)
-			const result = runCliCommand(["gen:keys", "--write"], projectPath)
+			const result = runCliCommand(["keys", "--write"], projectPath)
 			expect(result.exitCode).toBe(0)
 			expect(result.stdout).toContain(
 				"Environment variables written to .env file"
@@ -250,6 +250,8 @@ describe("CLI Integration Tests", () => {
 
 			cleanupTempProject(projectName)
 		})
+
+
 	})
 
 	describe("Build and Dev Commands", () => {

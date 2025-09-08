@@ -208,7 +208,7 @@ pnpm with-env pnpm --filter @hybrd/xmtp custom:storage
 
 | Script             | Command                                      | Description                       |
 | ------------------ | -------------------------------------------- | --------------------------------- |
-| `gen:keys`         | `pnpm --filter @hybrd/xmtp gen:keys`         | Generate new XMTP wallet keys     |
+| `keys`             | `pnpm --filter @hybrd/xmtp keys`             | Generate new XMTP wallet keys     |
 | `register`         | `pnpm --filter @hybrd/xmtp register`         | Register wallet on XMTP network   |
 | `revoke`           | `pnpm --filter @hybrd/xmtp revoke`           | Revoke old XMTP installations     |
 | `enhanced:demo`    | `pnpm --filter @hybrd/xmtp enhanced:demo`    | Demo enhanced connection features |
@@ -377,4 +377,4 @@ import { ENSResolver, BasenameResolver } from '@hybrd/xmtp/resolver'
 
 const ensResolver = new ENSResolver({ mainnetClient })
 const basenameResolver = new BasenameResolver({ publicClient: baseClient })
-``` 
+```  

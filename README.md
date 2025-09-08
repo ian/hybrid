@@ -77,7 +77,7 @@ This creates all the necessary files and configuration for your agent.
 ### 3. Generate XMTP keys
 
 ```bash
-npx hybrid gen:keys
+npx hybrid keys
 ```
 
 This generates secure wallet and encryption keys for your XMTP agent.
@@ -99,7 +99,7 @@ The Hybrid CLI provides several commands to manage your agent development workfl
 npx create hybrid my-agent
 
 # Generate XMTP wallet and encryption keys
-npx hybrid gen:keys
+npx hybrid keys
 
 # Start development server
 npx hybrid dev

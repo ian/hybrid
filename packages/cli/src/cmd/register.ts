@@ -29,7 +29,7 @@ export async function registerWallet() {
 
 	if (!XMTP_WALLET_KEY) {
 		console.error("❌ XMTP_WALLET_KEY is required for registration")
-		console.log("💡 Run 'hybrid gen:keys --write' to generate keys first")
+		console.log("💡 Run 'hybrid keys --write' to generate keys first")
 		process.exit(1)
 	}
 

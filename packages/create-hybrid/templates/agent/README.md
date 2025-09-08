@@ -27,7 +27,7 @@ npm install
    ```bash
    npm run keys
    # or
-   npx hybrid gen:keys
+   npx hybrid keys
    ```
 
 3. **Update environment variables**
