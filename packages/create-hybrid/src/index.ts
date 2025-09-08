@@ -14,28 +14,16 @@ interface Example {
 const DEFAULT_REPO = "ian/hybrid"
 const REPO = process.env.REPO || DEFAULT_REPO
 
-function getExamplePath(exampleName: string): string {
-	// If REPO contains a branch (repo#branch), we need to format it correctly for degit
-	// Format: repo#branch/path or just repo/path if no branch specified
-	if (REPO.includes("#")) {
-		// REPO is already in format "repo#branch", just add the path
-		return `${REPO}/examples/${exampleName}`
-	} else {
-		// No branch specified, use default format
-		return `${REPO}/examples/${exampleName}`
-	}
-}
-
 const EXAMPLES: Example[] = [
 	{
 		name: "basic",
 		description: "Basic XMTP agent with message filtering and AI responses",
-		path: getExamplePath("basic")
+		path: "basic" // Path is now handled separately in degit options
 	},
 	{
 		name: "crypto-agent",
 		description: "Advanced agent with blockchain integration and crypto tools",
-		path: getExamplePath("crypto-agent")
+		path: "crypto-agent" // Path is now handled separately in degit options
 	}
 ]
 
@@ -271,11 +259,15 @@ async function createProject(
 	} else {
 		// Check if we're running in a non-interactive environment (like CI)
 		if (!process.stdin.isTTY) {
-			console.error("❌ Example is required in non-interactive mode. Use --example <name>")
-			console.error(`Available examples: ${EXAMPLES.map((ex) => ex.name).join(", ")}`)
+			console.error(
+				"❌ Example is required in non-interactive mode. Use --example <name>"
+			)
+			console.error(
+				`Available examples: ${EXAMPLES.map((ex) => ex.name).join(", ")}`
+			)
 			process.exit(1)
 		}
-		
+
 		const { example } = await prompts({
 			type: "select",
 			name: "example",
@@ -299,16 +291,21 @@ async function createProject(
 	console.log(`📦 Cloning ${selectedExample.name} example...`)
 
 	try {
-		// For degit, we need to handle repo#branch and subdirectory correctly
+		// For degit, the correct syntax is: repo#branch/subdirectory
+		// But we need to be careful about the path construction
 		let degitSource: string
+		
 		if (REPO.includes("#")) {
-			// Extract repo and branch, then add subdirectory
-			degitSource = `${REPO}/examples/${selectedExample.name}`
+			// REPO is in format "user/repo#branch"
+			// We need to construct: user/repo#branch/examples/basic
+			const [repoWithBranch] = REPO.split("/examples/") // Remove any existing path
+			degitSource = `${repoWithBranch}/examples/${selectedExample.name}`
 		} else {
-			// No branch specified
+			// No branch specified, use default format
 			degitSource = `${REPO}/examples/${selectedExample.name}`
 		}
 
+		console.log(`🔍 Degit source: ${degitSource}`)
 		const emitter = degit(degitSource)
 		await emitter.clone(projectDir)
 		console.log(`✅ Template cloned to: ${sanitizedName}`)
@@ -370,7 +367,9 @@ export async function initializeProject(): Promise<void> {
 
 			// Debug logging for CI troubleshooting
 			if (process.env.CI) {
-				console.log(`🔍 Debug: projectName="${projectName}", options.example="${options?.example}"`)
+				console.log(
+					`🔍 Debug: projectName="${projectName}", options.example="${options?.example}"`
+				)
 			}
 
 			// If no project name provided or empty string, prompt for it

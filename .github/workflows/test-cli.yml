@@ -23,8 +23,8 @@ jobs:
       - name: Build all packages
         run: pnpm build
         
-      - name: Set REPO environment variable for current branch
-        run: echo "REPO=ian/hybrid#chore/cleanup-examples" >> $GITHUB_ENV
+      - name: Set REPO environment variable for main branch
+        run: echo "REPO=ian/hybrid" >> $GITHUB_ENV
 
       - name: Verify CLI and create-hybrid binaries exist
         run: |
@@ -411,8 +411,8 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm build
           
-      - name: Set REPO environment variable for current branch
-        run: echo "REPO=ian/hybrid#chore/cleanup-examples" >> $GITHUB_ENV
+      - name: Set REPO environment variable for main branch
+        run: echo "REPO=ian/hybrid" >> $GITHUB_ENV
 
       - name: Create test environment
         run: |
@@ -546,8 +546,8 @@ jobs:
       - name: Build all packages
         run: pnpm build
         
-      - name: Set REPO environment variable for current branch
-        run: echo "REPO=ian/hybrid#chore/cleanup-examples" >> $GITHUB_ENV
+      - name: Set REPO environment variable for main branch
+        run: echo "REPO=ian/hybrid" >> $GITHUB_ENV
 
       - name: Run CLI integration tests with Vitest
         run: |
