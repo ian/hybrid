@@ -1,4 +1,4 @@
-# Crypto Agent Example
+# {{projectName}}
 
 A comprehensive crypto-enabled agent that demonstrates the full power of the Hybrid Tools standard library. This agent can interact with blockchains and manage XMTP conversations.
 

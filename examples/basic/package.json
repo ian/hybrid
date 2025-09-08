@@ -1,28 +1,39 @@
 {
-	"name": "agent",
+	"name": "{{projectName}}",
 	"version": "0.0.0",
 	"private": true,
+	"description": "A Hybrid XMTP agent",
 	"type": "module",
 	"scripts": {
-		"dev": "tsx watch src/agent.ts",
-		"start": "tsx src/agent.ts",
-		"build": "tsc",
-		"clean": "rm -rf .turbo dist",
-		"typecheck": "tsc --noEmit",
-		"lint": "biome lint --unsafe .",
-		"lint:fix": "biome lint --write --unsafe .",
-		"format": "biome format --write ."
+		"clean": "hybrid clean",
+		"dev": "hybrid dev",
+		"build": "hybrid build",
+		"start": "hybrid start",
+		"keys": "hybrid gen:keys --write",
+		"test": "vitest",
+		"test:watch": "vitest --watch",
+		"test:coverage": "vitest --coverage",
+		"lint": "biome lint --write",
+		"lint:check": "biome lint",
+		"format": "biome format --write",
+		"format:check": "biome format --check",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@openrouter/ai-sdk-provider": "catalog:ai",
-		"hybrid": "workspace:*",
-		"@hybrd/xmtp": "workspace:*",
-		"zod": "catalog:stack"
+		"@openrouter/ai-sdk-provider": "^1.1.2",
+		"hybrid": "latest"
 	},
 	"devDependencies": {
-		"@config/biome": "workspace:*",
-		"@config/tsconfig": "workspace:*",
-		"@types/node": "catalog:stack",
-		"hybrid": "workspace:*"
-	}
+		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.0.0",
+		"@hybrd/cli": "latest",
+		"tsx": "^4.20.5",
+		"typescript": "^5.8.3",
+		"vitest": "^3.2.4"
+	},
+	"engines": {
+		"node": ">=20"
+	},
+	"author": "",
+	"license": "MIT"
 }

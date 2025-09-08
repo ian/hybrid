@@ -22,6 +22,9 @@ jobs:
 
       - name: Build all packages
         run: pnpm build
+        
+      - name: Set REPO environment variable for main branch
+        run: echo "REPO=ian/hybrid" >> $GITHUB_ENV
 
       - name: Verify CLI and create-hybrid binaries exist
         run: |
@@ -68,7 +71,7 @@ jobs:
       - name: Test project creation with specific name
         run: |
           echo "🔍 Testing project creation with name 'test-agent-cli'..."
-          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" test-agent-cli; then
+          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" test-agent-cli --example basic; then
             echo "❌ Project creation failed"
             exit 1
           fi
@@ -254,8 +257,8 @@ jobs:
       - name: Test interactive project creation
         run: |
           echo "🔍 Testing interactive project creation..."
-          echo "📝 Providing project name via stdin..."
-          if ! echo "my-hybrid-agent" | node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js"; then
+          echo "📝 Creating project with name 'my-hybrid-agent'..."
+          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" my-hybrid-agent --example basic; then
             echo "❌ Interactive project creation failed"
             exit 1
           fi
@@ -340,7 +343,7 @@ jobs:
           cd edge-case-test
 
           echo "📁 Creating project in current directory..."
-          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" .; then
+          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" . --example basic; then
             echo "❌ Failed to create project in current directory"
             cd ..
             rm -rf edge-case-test
@@ -360,7 +363,7 @@ jobs:
 
           echo "🧪 Test 2: Project name with special characters"
           echo "📝 Testing project creation with special characters..."
-          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" "My Amazing Agent!"; then
+          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" "My Amazing Agent!" --example basic; then
             echo "❌ Failed to create project with special characters"
             exit 1
           fi
@@ -407,6 +410,9 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm build
+          
+      - name: Set REPO environment variable for main branch
+        run: echo "REPO=ian/hybrid" >> $GITHUB_ENV
 
       - name: Create test environment
         run: |
@@ -423,7 +429,7 @@ jobs:
           echo "✅ NODE_PATH configured"
 
           echo "🚀 Running create-hybrid command for demo-project..."
-          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" demo-project; then
+          if ! node "$GITHUB_WORKSPACE/packages/create-hybrid/dist/index.js" demo-project --example basic; then
             echo "❌ create-hybrid command failed"
             exit 1
           fi
@@ -539,6 +545,9 @@ jobs:
 
       - name: Build all packages
         run: pnpm build
+        
+      - name: Set REPO environment variable for main branch
+        run: echo "REPO=ian/hybrid" >> $GITHUB_ENV
 
       - name: Run CLI integration tests with Vitest
         run: |

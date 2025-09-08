@@ -6,7 +6,7 @@
 	"bin": {
 		"create-hybrid": "./dist/index.js"
 	},
-	"files": ["dist", "templates"],
+	"files": ["dist"],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -22,11 +22,16 @@
 		"lint:fix": "biome lint --write --unsafe",
 		"format": "biome format --write"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"degit": "^2.8.4",
+		"commander": "^12.1.0",
+		"prompts": "^2.4.2"
+	},
 	"devDependencies": {
 		"@config/biome": "workspace:*",
 		"@config/tsconfig": "workspace:*",
 		"@types/node": "catalog:stack",
+		"@types/prompts": "^2.4.9",
 		"tsup": "^8.5.0"
 	},
 	"engines": {
