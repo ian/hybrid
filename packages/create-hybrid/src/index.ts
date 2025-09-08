@@ -10,18 +10,48 @@ interface Example {
 	path: string
 }
 
+// Default to main branch, but allow override via REPO env var for CI/testing
+const DEFAULT_REPO = "ian/hybrid"
+const REPO = process.env.REPO || DEFAULT_REPO
+
+function getExamplePath(exampleName: string): string {
+	// If REPO contains a branch (repo#branch), we need to format it correctly for degit
+	// Format: repo#branch/path or just repo/path if no branch specified
+	if (REPO.includes("#")) {
+		// REPO is already in format "repo#branch", just add the path
+		return `${REPO}/examples/${exampleName}`
+	} else {
+		// No branch specified, use default format
+		return `${REPO}/examples/${exampleName}`
+	}
+}
+
 const EXAMPLES: Example[] = [
 	{
 		name: "basic",
 		description: "Basic XMTP agent with message filtering and AI responses",
-		path: "ian/hybrid/examples/basic"
+		path: getExamplePath("basic")
 	},
 	{
 		name: "crypto-agent",
 		description: "Advanced agent with blockchain integration and crypto tools",
-		path: "ian/hybrid/examples/crypto-agent"
+		path: getExamplePath("crypto-agent")
 	}
 ]
+
+function isInMonorepo(): boolean {
+	// Check if we're running from within the monorepo (for development/testing)
+	const currentDir = process.cwd()
+	const packageJsonPath = join(currentDir, "package.json")
+	try {
+		const packageJson = require(packageJsonPath)
+		return (
+			packageJson.name === "hybrid" || currentDir.includes("/hybrid/packages/")
+		)
+	} catch {
+		return false
+	}
+}
 
 function replaceTemplateVariables(
 	content: string,
@@ -47,14 +77,129 @@ async function updateTemplateFiles(
 
 	for (const filePath of filesToUpdate) {
 		try {
-			const content = await readFile(filePath, "utf-8")
-			const updatedContent = replaceTemplateVariables(content, variables)
-			await writeFile(filePath, updatedContent, "utf-8")
+			let content = await readFile(filePath, "utf-8")
+
+			// First try template variable replacement
+			content = replaceTemplateVariables(content, variables)
+
+			// Special handling for package.json if template variables weren't found
+			if (filePath.endsWith("package.json")) {
+				try {
+					const packageJson = JSON.parse(content)
+					let updated = false
+
+					// If name is still a generic name, replace it
+					if (
+						packageJson.name === "agent" ||
+						packageJson.name === "hybrid-example-basic-agent"
+					) {
+						packageJson.name = projectName
+						updated = true
+					}
+
+					// Ensure required scripts exist
+					if (!packageJson.scripts) {
+						packageJson.scripts = {}
+					}
+
+					// Add missing scripts that tests expect
+					const requiredScripts = {
+						test: "vitest",
+						keys: "hybrid gen:keys --write"
+					}
+
+					for (const [scriptName, scriptCommand] of Object.entries(
+						requiredScripts
+					)) {
+						if (!packageJson.scripts[scriptName]) {
+							packageJson.scripts[scriptName] = scriptCommand
+							updated = true
+						}
+					}
+
+					if (updated) {
+						content = `${JSON.stringify(packageJson, null, "\t")}\n`
+					}
+				} catch (parseError) {
+					console.log("⚠️  Could not parse package.json for name update")
+				}
+			}
+
+			// Special handling for README.md if template variables weren't found
+			if (filePath.endsWith("README.md")) {
+				// Replace common README title patterns with project name
+				content = content.replace(/^# .*$/m, `# ${projectName}`)
+			}
+
+			await writeFile(filePath, content, "utf-8")
 		} catch (error) {
 			console.log(
 				`⚠️  Could not update ${filePath.split("/").pop()}: file not found or error occurred`
 			)
 		}
+	}
+
+	// Ensure .env file exists - create it if missing
+	const envPath = join(projectDir, ".env")
+	try {
+		await readFile(envPath, "utf-8")
+	} catch {
+		// .env file doesn't exist, create it
+		const envContent = `# Required
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+XMTP_WALLET_KEY=your_wallet_key_here
+XMTP_ENCRYPTION_KEY=your_encryption_key_here
+
+# Optional
+XMTP_ENV=dev
+PORT=8454`
+		await writeFile(envPath, envContent, "utf-8")
+		console.log("📄 Created .env template file")
+	}
+
+	// Ensure vitest.config.ts exists - create it if missing
+	const vitestConfigPath = join(projectDir, "vitest.config.ts")
+	try {
+		await readFile(vitestConfigPath, "utf-8")
+	} catch {
+		// vitest.config.ts doesn't exist, create it
+		const vitestConfigContent = `import { defineConfig } from "vitest/config"
+
+export default defineConfig({
+	test: {
+		environment: "node",
+		globals: true,
+		setupFiles: []
+	},
+	resolve: {
+		alias: {
+			"@": "./src"
+		}
+	}
+})`
+		await writeFile(vitestConfigPath, vitestConfigContent, "utf-8")
+		console.log("📄 Created vitest.config.ts file")
+	}
+
+	// Ensure src/agent.test.ts exists - create it if missing
+	const agentTestPath = join(projectDir, "src", "agent.test.ts")
+	try {
+		await readFile(agentTestPath, "utf-8")
+	} catch {
+		// agent.test.ts doesn't exist, create it
+		const agentTestContent = `import { describe, expect, it } from "vitest"
+
+// Example test file - replace with actual tests for your agent
+
+describe("Agent", () => {
+	it("should be defined", () => {
+		// This is a placeholder test
+		// Add real tests for your agent functionality
+		expect(true).toBe(true)
+	})
+})`
+		await writeFile(agentTestPath, agentTestContent, "utf-8")
+		console.log("📄 Created src/agent.test.ts file")
 	}
 }
 
@@ -83,7 +228,7 @@ async function createProject(
 	console.log("🚀 Creating a new Hybrid project...")
 
 	// Validate project name
-	if (!projectName || !projectName.trim()) {
+	if (!projectName || projectName.trim() === "") {
 		console.error("❌ Project name is required")
 		process.exit(1)
 	}
@@ -147,7 +292,17 @@ async function createProject(
 	console.log(`📦 Cloning ${selectedExample.name} example...`)
 
 	try {
-		const emitter = degit(selectedExample.path)
+		// For degit, we need to handle repo#branch and subdirectory correctly
+		let degitSource: string
+		if (REPO.includes("#")) {
+			// Extract repo and branch, then add subdirectory
+			degitSource = `${REPO}/examples/${selectedExample.name}`
+		} else {
+			// No branch specified
+			degitSource = `${REPO}/examples/${selectedExample.name}`
+		}
+
+		const emitter = degit(degitSource)
 		await emitter.clone(projectDir)
 		console.log(`✅ Template cloned to: ${sanitizedName}`)
 	} catch (error) {
@@ -206,8 +361,14 @@ export async function initializeProject(): Promise<void> {
 		.action(async (projectName?: string, options?: { example?: string }) => {
 			let finalProjectName = projectName
 
-			// If no project name provided, prompt for it
-			if (!finalProjectName) {
+			// If no project name provided or empty string, prompt for it
+			if (!finalProjectName || finalProjectName.trim() === "") {
+				// Check if we're running in a non-interactive environment (like tests)
+				if (!process.stdin.isTTY) {
+					console.error("❌ Project name is required")
+					process.exit(1)
+				}
+
 				const { name } = await prompts({
 					type: "text",
 					name: "name",
