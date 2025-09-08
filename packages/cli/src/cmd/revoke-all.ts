@@ -22,7 +22,7 @@ export async function revokeAllInstallations() {
 
 	if (!XMTP_WALLET_KEY) {
 		console.error("❌ XMTP_WALLET_KEY is required")
-		console.log("💡 Run 'hybrid gen:keys --write' to generate keys first")
+		console.log("💡 Run 'hybrid keys --write' to generate keys first")
 		process.exit(1)
 	}
 

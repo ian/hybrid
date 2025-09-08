@@ -30,7 +30,7 @@ This package creates a new Hybrid XMTP agent project with:
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 
 # XMTP Wallet and Encryption Keys
-# Run 'npx hybrid gen:keys' to generate these values
+# Run 'npx hybrid keys' to generate these values
 XMTP_WALLET_KEY=your_wallet_key_here
 XMTP_ENCRYPTION_KEY=your_encryption_key_here
 

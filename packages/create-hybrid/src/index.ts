@@ -96,7 +96,7 @@ async function updateTemplateFiles(
 						dev: "hybrid dev",
 						build: "hybrid build",
 						start: "hybrid start",
-						keys: "hybrid gen:keys --write",
+						keys: "hybrid keys --write",
 						test: "vitest",
 						"test:watch": "vitest --watch",
 						"test:coverage": "vitest --coverage",
