@@ -1,7 +1,8 @@
 import { Command } from "commander"
 import degit from "degit"
 import { readFile, readdir, writeFile } from "node:fs/promises"
-import { join } from "node:path"
+import { join, dirname } from "node:path"
+import { fileURLToPath } from "node:url"
 import prompts from "prompts"
 
 interface Example {
@@ -13,6 +14,9 @@ interface Example {
 // Default to main branch, but allow override via REPO env var for CI/testing
 const DEFAULT_REPO = "ian/hybrid"
 const REPO = process.env.REPO || DEFAULT_REPO
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const templateOptions = {
 	"agent": {
