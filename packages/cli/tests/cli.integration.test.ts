@@ -34,7 +34,7 @@ function runCliCommand(
 function runCreateHybridCommand(
 	projectName: string,
 	cwd?: string,
-	example: string = "basic"
+	example = "basic"
 ): { stdout: string; stderr: string; exitCode: number } {
 	try {
 		const { execSync } = require("node:child_process")

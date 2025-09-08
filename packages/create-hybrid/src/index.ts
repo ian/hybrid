@@ -117,8 +117,8 @@ async function updateTemplateFiles(
 
 					// Update dependencies to use independent packages
 					if (packageJson.dependencies) {
-						if (packageJson.dependencies["hybrid"] === "workspace:*") {
-							packageJson.dependencies["hybrid"] = "latest"
+						if (packageJson.dependencies.hybrid === "workspace:*") {
+							packageJson.dependencies.hybrid = "latest"
 							updated = true
 						}
 						if (
@@ -128,13 +128,13 @@ async function updateTemplateFiles(
 							packageJson.dependencies["@openrouter/ai-sdk-provider"] = "^1.1.2"
 							updated = true
 						}
-						if (packageJson.dependencies["zod"] === "catalog:stack") {
-							packageJson.dependencies["zod"] = "^3.23.8"
+						if (packageJson.dependencies.zod === "catalog:stack") {
+							packageJson.dependencies.zod = "^3.23.8"
 							updated = true
 						}
 						// Remove workspace dependencies
 						if (packageJson.dependencies["@hybrd/xmtp"]) {
-							delete packageJson.dependencies["@hybrd/xmtp"]
+							packageJson.dependencies["@hybrd/xmtp"] = undefined
 							updated = true
 						}
 					}
@@ -151,8 +151,8 @@ async function updateTemplateFiles(
 						}
 
 						// Remove workspace dependencies
-						delete packageJson.devDependencies["@config/biome"]
-						delete packageJson.devDependencies["@config/tsconfig"]
+						packageJson.devDependencies["@config/biome"] = undefined
+						packageJson.devDependencies["@config/tsconfig"] = undefined
 
 						// Add independent dependencies
 						for (const [depName, depVersion] of Object.entries(
