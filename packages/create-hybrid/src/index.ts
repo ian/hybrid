@@ -269,6 +269,13 @@ async function createProject(
 		selectedExample = example
 		console.log(`📋 Using example: ${selectedExample.name}`)
 	} else {
+		// Check if we're running in a non-interactive environment (like CI)
+		if (!process.stdin.isTTY) {
+			console.error("❌ Example is required in non-interactive mode. Use --example <name>")
+			console.error(`Available examples: ${EXAMPLES.map((ex) => ex.name).join(", ")}`)
+			process.exit(1)
+		}
+		
 		const { example } = await prompts({
 			type: "select",
 			name: "example",
@@ -360,6 +367,11 @@ export async function initializeProject(): Promise<void> {
 		.option("-e, --example <example>", "Example to use (basic, crypto-agent)")
 		.action(async (projectName?: string, options?: { example?: string }) => {
 			let finalProjectName = projectName
+
+			// Debug logging for CI troubleshooting
+			if (process.env.CI) {
+				console.log(`🔍 Debug: projectName="${projectName}", options.example="${options?.example}"`)
+			}
 
 			// If no project name provided or empty string, prompt for it
 			if (!finalProjectName || finalProjectName.trim() === "") {
