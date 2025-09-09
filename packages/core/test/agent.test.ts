@@ -9,13 +9,43 @@ const mockModel: LanguageModel = {
 	// Add minimal required properties for the LanguageModel interface
 } as LanguageModel
 
-// Mock runtime for XMTP tools
+// Mock runtime for XMTP tools - matches BaseRuntime interface
 const mockRuntime = {
-	// Base runtime properties
-	conversationId: "test-conversation",
-	fromAddress: "0x1234567890123456789012345678901234567890",
-
-	// XMTP-specific runtime properties that tools might expect
+	// BaseRuntime required properties - using type assertions for complex XMTP types
+	conversation: {
+		id: "test-conversation",
+		isActive: true,
+		addedByInboxId: "test-inbox",
+		createdAtNs: BigInt(Date.now() * 1000000),
+		topic: "test-topic",
+		members: [],
+		permissions: {} as any,
+		consentState: "allowed" as any,
+		metadata: {},
+		description: "",
+		imageUrlSquare: "",
+		name: ""
+	} as any, // Cast to satisfy XMTP Conversation type
+	message: {
+		id: "test-message-id",
+		content: "test content",
+		senderInboxId: "test-inbox",
+		sentAtNs: BigInt(Date.now() * 1000000),
+		contentType: { typeId: "text" }
+	} as any, // Cast to satisfy XMTP DecodedMessage type
+	rootMessage: {
+		id: "test-root-message-id",
+		content: "root content",
+		senderInboxId: "test-inbox",
+		sentAtNs: BigInt(Date.now() * 1000000),
+		contentType: { typeId: "text" }
+	} as any, // Cast to satisfy XMTP DecodedMessage type
+	sender: {
+		address: "0x1234567890123456789012345678901234567890",
+		inboxId: "test-inbox",
+		name: "Test User"
+	},
+	subjects: {},
 	xmtpClient: {
 		sendMessage: vi.fn().mockResolvedValue({ messageId: "test-message-id" }),
 		sendReaction: vi.fn().mockResolvedValue({ success: true }),
@@ -24,8 +54,11 @@ const mockRuntime = {
 			content: "test content",
 			senderAddress: "0x1234567890123456789012345678901234567890"
 		})
-	}
-}
+	} as any, // Cast to satisfy XmtpServiceClient type
+	// AgentRuntime properties
+	chatId: "test-chat-id",
+	messages: []
+} as any // Cast entire object to avoid DefaultRuntimeExtension conflicts
 
 describe("Agent with xmtpTools", () => {
 	let agent: Agent
@@ -46,7 +79,7 @@ describe("Agent with xmtpTools", () => {
 				- Use sendReaction to acknowledge messages
 				- Keep responses concise
 			`,
-			createRuntime: () => mockRuntime
+			createRuntime: () => ({})
 		})
 	})
 
@@ -65,9 +98,10 @@ describe("Agent with xmtpTools", () => {
 		]
 
 		expectedTools.forEach((toolName) => {
-			expect(xmtpTools[toolName]).toBeDefined()
-			expect(typeof xmtpTools[toolName].execute).toBe("function")
-			expect(xmtpTools[toolName].inputSchema).toBeDefined()
+			const toolsObj = xmtpTools as Record<string, any>
+			expect(toolsObj[toolName]).toBeDefined()
+			expect(typeof toolsObj[toolName].execute).toBe("function")
+			expect(toolsObj[toolName].inputSchema).toBeDefined()
 		})
 	})
 
@@ -124,7 +158,13 @@ describe("Agent with xmtpTools", () => {
 
 	it("should execute tools with proper runtime context", async () => {
 		const sendReactionTool = xmtpTools.sendReaction
-		const messages = [{ role: "user" as const, content: "Hello" }]
+		const messages = [
+			{
+				role: "user" as const,
+				id: "test-message-1",
+				parts: [{ type: "text" as const, text: "Hello" }]
+			}
+		]
 
 		// Mock the tool execution
 		const mockExecute = vi.fn().mockResolvedValue({
@@ -150,7 +190,13 @@ describe("Agent with xmtpTools", () => {
 
 	it("should handle ZodEffects schema in sendMessage tool", async () => {
 		const sendMessageTool = xmtpTools.sendMessage
-		const messages = [{ role: "user" as const, content: "Hello" }]
+		const messages = [
+			{
+				role: "user" as const,
+				id: "test-message-2",
+				parts: [{ type: "text" as const, text: "Hello" }]
+			}
+		]
 
 		// Mock the tool execution
 		const mockExecute = vi.fn().mockResolvedValue({
