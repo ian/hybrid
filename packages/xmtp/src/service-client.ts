@@ -22,6 +22,7 @@ import type {
 	XmtpServiceMessage,
 	XmtpServiceResponse
 } from "./types"
+import { logger } from "./lib/logger"
 
 export class XmtpServiceClient {
 	private config: XmtpServiceClientConfig
@@ -35,6 +36,9 @@ export class XmtpServiceClient {
 		body?: Record<string, unknown>,
 		method: "GET" | "POST" = "POST"
 	): Promise<XmtpServiceResponse<T>> {
+		const startTime = performance.now()
+		logger.debug(`🌐 [HTTP] Starting ${method} request to ${endpoint}`)
+		
 		try {
 			const baseUrl = this.config.serviceUrl.replace(/\/+$/, "")
 
@@ -60,7 +64,14 @@ export class XmtpServiceClient {
 				fetchOptions.body = JSON.stringify(body)
 			}
 
+			const sanitizedUrl = `${baseUrl}${endpoint}?token=***`
+			logger.debug(`🌐 [HTTP] Making fetch request to ${sanitizedUrl}`)
+			const fetchStartTime = performance.now()
+			
 			const response = await fetch(url, fetchOptions)
+			
+			const fetchEndTime = performance.now()
+			logger.debug(`🌐 [HTTP] Fetch completed in ${(fetchEndTime - fetchStartTime).toFixed(2)}ms, status: ${response.status}`)
 
 			if (!response.ok) {
 				let errorMessage = `HTTP ${response.status}`
@@ -75,16 +86,28 @@ export class XmtpServiceClient {
 				} catch {
 					// If we can't read the response at all, use the status
 				}
+				
+				const endTime = performance.now()
+				logger.debug(`🌐 [HTTP] Request failed in ${(endTime - startTime).toFixed(2)}ms: ${errorMessage}`)
 				throw new Error(errorMessage)
 			}
 
-			return {
+			const jsonStartTime = performance.now()
+			const result = {
 				success: true,
 				data: (await response.json()) as T
 			}
+			const jsonEndTime = performance.now()
+			logger.debug(`🌐 [HTTP] JSON parsing completed in ${(jsonEndTime - jsonStartTime).toFixed(2)}ms`)
+			
+			const endTime = performance.now()
+			logger.debug(`🌐 [HTTP] Total request completed in ${(endTime - startTime).toFixed(2)}ms`)
+			
+			return result
 		} catch (error) {
-			console.error(
-				`❌ [XmtpServiceClient] Request to ${endpoint} failed:`,
+			const endTime = performance.now()
+			logger.error(
+				`❌ [XmtpServiceClient] Request to ${endpoint} failed in ${(endTime - startTime).toFixed(2)}ms:`,
 				error
 			)
 			return {

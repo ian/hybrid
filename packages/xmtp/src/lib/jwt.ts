@@ -1,5 +1,6 @@
 import { Context } from "hono"
 import jwt from "jsonwebtoken"
+import { logger } from "./logger"
 
 export interface XMTPToolsPayload {
 	action: "send" | "reply" | "react" | "transaction" | "blockchain-event"
@@ -148,6 +149,9 @@ const JWT_EXPIRY = 5 * 60 // 5 minutes in seconds
 export function generateXMTPToolsToken(
 	payload: Omit<XMTPToolsPayload, "issued" | "expires">
 ): string {
+	const startTime = performance.now()
+	logger.debug("🔐 [JWT] Starting token generation...")
+	
 	const now = Math.floor(Date.now() / 1000)
 	const fullPayload: XMTPToolsPayload = {
 		...payload,
@@ -155,9 +159,14 @@ export function generateXMTPToolsToken(
 		expires: now + JWT_EXPIRY
 	}
 
-	return jwt.sign(fullPayload, getJwtSecret(), {
+	const token = jwt.sign(fullPayload, getJwtSecret(), {
 		expiresIn: JWT_EXPIRY
 	})
+	
+	const endTime = performance.now()
+	logger.debug(`🔐 [JWT] Token generation completed in ${(endTime - startTime).toFixed(2)}ms`)
+	
+	return token
 }
 
 /**
@@ -184,37 +193,50 @@ export function generateXMTPToolsToken(
  * ```
  */
 export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
+	const startTime = performance.now()
+	logger.debug("🔐 [JWT] Starting token validation...")
+	
 	// First try API key authentication
 	if (token === getApiKey()) {
-		console.log("🔑 [Auth] Using API key authentication")
+		logger.debug("🔑 [Auth] Using API key authentication")
 		// Return a valid payload for API key auth
 		const now = Math.floor(Date.now() / 1000)
-		return {
-			action: "send", // Default action
+		const result = {
+			action: "send" as const, // Default action
 			conversationId: "", // Will be filled by endpoint
 			issued: now,
 			expires: now + 3600 // API keys are valid for 1 hour
 		}
+		
+		const endTime = performance.now()
+		logger.debug(`🔐 [JWT] API key validation completed in ${(endTime - startTime).toFixed(2)}ms`)
+		return result
 	}
 
 	// Then try JWT token authentication
 	try {
 		const decoded = jwt.verify(token, getJwtSecret()) as XMTPToolsPayload
-		console.log("🔑 [Auth] Using JWT token authentication")
+		logger.debug("🔑 [Auth] Using JWT token authentication")
 
 		// Additional expiry check
 		const now = Math.floor(Date.now() / 1000)
 		if (decoded.expires < now) {
 			console.warn("🔒 XMTP tools token has expired")
+			const endTime = performance.now()
+			logger.debug(`🔐 [JWT] Token validation failed (expired) in ${(endTime - startTime).toFixed(2)}ms`)
 			return null
 		}
 
+		const endTime = performance.now()
+		logger.debug(`🔐 [JWT] JWT validation completed in ${(endTime - startTime).toFixed(2)}ms`)
 		return decoded
 	} catch (error) {
 		console.error(
 			"🔒 Invalid XMTP tools token and not matching API key:",
 			error
 		)
+		const endTime = performance.now()
+		logger.debug(`🔐 [JWT] Token validation failed in ${(endTime - startTime).toFixed(2)}ms`)
 		return null
 	}
 }
