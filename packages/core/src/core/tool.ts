@@ -2,14 +2,16 @@ import { Tool as AISDKTool, type UIMessage } from "ai"
 import { z } from "zod"
 import { AgentRuntime } from "../types"
 
+type AnyTool<TRuntimeExtension = DefaultRuntimeExtension> = Tool<any, any, TRuntimeExtension>
+
 type DefaultRuntimeExtension = Record<string, never>
 
 /**
  * Configuration interface for creating custom tools that integrate with AI SDK.
  */
 export interface ToolConfig<
-	TInput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
-	TOutput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
+	TInput extends z.ZodTypeAny = z.ZodTypeAny,
+	TOutput extends z.ZodTypeAny = z.ZodTypeAny,
 	TRuntimeExtension = DefaultRuntimeExtension
 > {
 	/** Unique identifier for the tool */
@@ -33,8 +35,8 @@ export interface ToolConfig<
  * Similar to ToolConfig but without the ID field, used after tool creation.
  */
 export interface Tool<
-	TInput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
-	TOutput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
+	TInput extends z.ZodTypeAny = z.ZodTypeAny,
+	TOutput extends z.ZodTypeAny = z.ZodTypeAny,
 	TRuntimeExtension = DefaultRuntimeExtension
 > {
 	/** Human-readable description of what the tool does */
@@ -57,8 +59,8 @@ export interface Tool<
  */
 export function toolFactory<TRuntimeExtension = DefaultRuntimeExtension>() {
 	return <
-		TInput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny>,
-		TOutput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny
+		TInput extends z.ZodTypeAny = z.ZodTypeAny,
+		TOutput extends z.ZodTypeAny = z.ZodTypeAny
 	>(
 		config: ToolConfig<TInput, TOutput, TRuntimeExtension>
 	): Tool<TInput, TOutput, TRuntimeExtension> => {
@@ -93,9 +95,9 @@ export const createTool = toolFactory()
  * This adapter enables our tools to work with AI SDK's generateText/streamText functions.
  */
 export function toAISDKTool<
-	TRuntimeExtension = DefaultRuntimeExtension,
-	TInput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
-	TOutput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny
+	TInput extends z.ZodTypeAny = z.ZodTypeAny,
+	TOutput extends z.ZodTypeAny = z.ZodTypeAny,
+	TRuntimeExtension = DefaultRuntimeExtension
 >(
 	tool: Tool<TInput, TOutput, TRuntimeExtension>,
 	runtime: AgentRuntime & TRuntimeExtension,
@@ -104,7 +106,7 @@ export function toAISDKTool<
 	return {
 		description: tool.description,
 		inputSchema: tool.inputSchema,
-		execute: async (args: z.infer<TInput>) => {
+		execute: async (args: z.infer<typeof tool.inputSchema>) => {
 			return tool.execute({
 				input: args,
 				runtime,
@@ -118,12 +120,8 @@ export function toAISDKTool<
  * Converts a collection of custom tools to AI SDK format.
  * Useful for batch conversion when setting up multiple tools for AI SDK usage.
  */
-export function toAISDKTools<
-	TRuntimeExtension = DefaultRuntimeExtension,
-	TInput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
-	TOutput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny
->(
-	tools: Record<string, Tool<TInput, TOutput, TRuntimeExtension>>,
+export function toAISDKTools<TRuntimeExtension = DefaultRuntimeExtension>(
+	tools: Record<string, AnyTool<TRuntimeExtension>>,
 	runtime: AgentRuntime & TRuntimeExtension,
 	messages: UIMessage[]
 ): Record<string, AISDKTool> {
