@@ -8,8 +8,8 @@ type DefaultRuntimeExtension = Record<string, never>
  * Configuration interface for creating custom tools that integrate with AI SDK.
  */
 export interface ToolConfig<
-	TInput extends z.ZodTypeAny = z.ZodTypeAny,
-	TOutput extends z.ZodTypeAny = z.ZodTypeAny,
+	TInput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
+	TOutput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
 	TRuntimeExtension = DefaultRuntimeExtension
 > {
 	/** Unique identifier for the tool */
@@ -33,8 +33,8 @@ export interface ToolConfig<
  * Similar to ToolConfig but without the ID field, used after tool creation.
  */
 export interface Tool<
-	TInput extends z.ZodTypeAny = z.ZodTypeAny,
-	TOutput extends z.ZodTypeAny = z.ZodTypeAny,
+	TInput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
+	TOutput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
 	TRuntimeExtension = DefaultRuntimeExtension
 > {
 	/** Human-readable description of what the tool does */
@@ -57,8 +57,8 @@ export interface Tool<
  */
 export function toolFactory<TRuntimeExtension = DefaultRuntimeExtension>() {
 	return <
-		TInput extends z.ZodTypeAny,
-		TOutput extends z.ZodTypeAny = z.ZodTypeAny
+		TInput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny>,
+		TOutput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny
 	>(
 		config: ToolConfig<TInput, TOutput, TRuntimeExtension>
 	): Tool<TInput, TOutput, TRuntimeExtension> => {
@@ -94,8 +94,8 @@ export const createTool = toolFactory()
  */
 export function toAISDKTool<
 	TRuntimeExtension = DefaultRuntimeExtension,
-	TInput extends z.ZodTypeAny = z.ZodTypeAny,
-	TOutput extends z.ZodTypeAny = z.ZodTypeAny
+	TInput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
+	TOutput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny
 >(
 	tool: Tool<TInput, TOutput, TRuntimeExtension>,
 	runtime: AgentRuntime & TRuntimeExtension,
@@ -120,8 +120,8 @@ export function toAISDKTool<
  */
 export function toAISDKTools<
 	TRuntimeExtension = DefaultRuntimeExtension,
-	TInput extends z.ZodTypeAny = z.ZodTypeAny,
-	TOutput extends z.ZodTypeAny = z.ZodTypeAny
+	TInput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny,
+	TOutput extends z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny> = z.ZodTypeAny
 >(
 	tools: Record<string, Tool<TInput, TOutput, TRuntimeExtension>>,
 	runtime: AgentRuntime & TRuntimeExtension,

@@ -30,6 +30,8 @@
 		"build": "tsup",
 		"build:watch": "tsup --watch",
 		"clean": "rm -rf .turbo dist",
+		"test": "vitest",
+		"test:run": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",
 		"lint:fix": "biome lint --write --unsafe",
