@@ -147,6 +147,10 @@ export function createBackgroundMessageProcessor<
 
 				// Create service client for agent runtime
 				const serviceUrl = process.env.AGENT_URL || "http://localhost:8454"
+				
+				console.log("🔧 [ServiceClient] Starting service client creation...")
+				const clientStartTime = performance.now()
+				
 				const serviceToken = generateXMTPToolsToken({
 					action: "send",
 					conversationId: messageEvent.message.conversationId,
@@ -156,6 +160,9 @@ export function createBackgroundMessageProcessor<
 					serviceUrl,
 					serviceToken
 				)
+				
+				const clientEndTime = performance.now()
+				console.log(`🔧 [ServiceClient] Service client created in ${(clientEndTime - clientStartTime).toFixed(2)}ms`)
 
 				// Create base runtime context
 				const baseRuntime: AgentRuntime = {
