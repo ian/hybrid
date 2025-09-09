@@ -22,7 +22,7 @@ import type {
 	XmtpServiceMessage,
 	XmtpServiceResponse
 } from "./types"
-import { xmtpDebug, xmtpDebugError } from "./lib/jwt"
+import { logger } from "./lib/jwt"
 
 export class XmtpServiceClient {
 	private config: XmtpServiceClientConfig
@@ -37,7 +37,7 @@ export class XmtpServiceClient {
 		method: "GET" | "POST" = "POST"
 	): Promise<XmtpServiceResponse<T>> {
 		const startTime = performance.now()
-		xmtpDebug(`🌐 [HTTP] Starting ${method} request to ${endpoint}`)
+		logger.debug(`🌐 [HTTP] Starting ${method} request to ${endpoint}`)
 		
 		try {
 			const baseUrl = this.config.serviceUrl.replace(/\/+$/, "")
@@ -65,13 +65,13 @@ export class XmtpServiceClient {
 			}
 
 			const sanitizedUrl = `${baseUrl}${endpoint}?token=***`
-			xmtpDebug(`🌐 [HTTP] Making fetch request to ${sanitizedUrl}`)
+			logger.debug(`🌐 [HTTP] Making fetch request to ${sanitizedUrl}`)
 			const fetchStartTime = performance.now()
 			
 			const response = await fetch(url, fetchOptions)
 			
 			const fetchEndTime = performance.now()
-			xmtpDebug(`🌐 [HTTP] Fetch completed in ${(fetchEndTime - fetchStartTime).toFixed(2)}ms, status: ${response.status}`)
+			logger.debug(`🌐 [HTTP] Fetch completed in ${(fetchEndTime - fetchStartTime).toFixed(2)}ms, status: ${response.status}`)
 
 			if (!response.ok) {
 				let errorMessage = `HTTP ${response.status}`
@@ -88,7 +88,7 @@ export class XmtpServiceClient {
 				}
 				
 				const endTime = performance.now()
-				xmtpDebug(`🌐 [HTTP] Request failed in ${(endTime - startTime).toFixed(2)}ms: ${errorMessage}`)
+				logger.debug(`🌐 [HTTP] Request failed in ${(endTime - startTime).toFixed(2)}ms: ${errorMessage}`)
 				throw new Error(errorMessage)
 			}
 
@@ -98,15 +98,15 @@ export class XmtpServiceClient {
 				data: (await response.json()) as T
 			}
 			const jsonEndTime = performance.now()
-			xmtpDebug(`🌐 [HTTP] JSON parsing completed in ${(jsonEndTime - jsonStartTime).toFixed(2)}ms`)
+			logger.debug(`🌐 [HTTP] JSON parsing completed in ${(jsonEndTime - jsonStartTime).toFixed(2)}ms`)
 			
 			const endTime = performance.now()
-			xmtpDebug(`🌐 [HTTP] Total request completed in ${(endTime - startTime).toFixed(2)}ms`)
+			logger.debug(`🌐 [HTTP] Total request completed in ${(endTime - startTime).toFixed(2)}ms`)
 			
 			return result
 		} catch (error) {
 			const endTime = performance.now()
-			xmtpDebugError(
+			logger.error(
 				`❌ [XmtpServiceClient] Request to ${endpoint} failed in ${(endTime - startTime).toFixed(2)}ms:`,
 				error
 			)

@@ -2,22 +2,19 @@ import { Context } from "hono"
 import jwt from "jsonwebtoken"
 
 /**
- * Helper function for conditional XMTP debug logging
+ * Logger instance for conditional XMTP debug logging
  * Only logs when XMTP_DEBUG environment variable is set
  */
-export function xmtpDebug(message: string, ...args: any[]): void {
-	if (process.env.XMTP_DEBUG) {
-		console.log(message, ...args)
-	}
-}
-
-/**
- * Helper function for conditional XMTP debug error logging
- * Only logs when XMTP_DEBUG environment variable is set
- */
-export function xmtpDebugError(message: string, ...args: any[]): void {
-	if (process.env.XMTP_DEBUG) {
-		console.error(message, ...args)
+export const logger = {
+	debug: (message: string, ...args: any[]): void => {
+		if (process.env.XMTP_DEBUG) {
+			console.log(message, ...args)
+		}
+	},
+	error: (message: string, ...args: any[]): void => {
+		if (process.env.XMTP_DEBUG) {
+			console.error(message, ...args)
+		}
 	}
 }
 
@@ -169,7 +166,7 @@ export function generateXMTPToolsToken(
 	payload: Omit<XMTPToolsPayload, "issued" | "expires">
 ): string {
 	const startTime = performance.now()
-	xmtpDebug("🔐 [JWT] Starting token generation...")
+	logger.debug("🔐 [JWT] Starting token generation...")
 	
 	const now = Math.floor(Date.now() / 1000)
 	const fullPayload: XMTPToolsPayload = {
@@ -183,7 +180,7 @@ export function generateXMTPToolsToken(
 	})
 	
 	const endTime = performance.now()
-	xmtpDebug(`🔐 [JWT] Token generation completed in ${(endTime - startTime).toFixed(2)}ms`)
+	logger.debug(`🔐 [JWT] Token generation completed in ${(endTime - startTime).toFixed(2)}ms`)
 	
 	return token
 }
@@ -213,11 +210,11 @@ export function generateXMTPToolsToken(
  */
 export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 	const startTime = performance.now()
-	xmtpDebug("🔐 [JWT] Starting token validation...")
+	logger.debug("🔐 [JWT] Starting token validation...")
 	
 	// First try API key authentication
 	if (token === getApiKey()) {
-		xmtpDebug("🔑 [Auth] Using API key authentication")
+		logger.debug("🔑 [Auth] Using API key authentication")
 		// Return a valid payload for API key auth
 		const now = Math.floor(Date.now() / 1000)
 		const result = {
@@ -228,26 +225,26 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 		}
 		
 		const endTime = performance.now()
-		xmtpDebug(`🔐 [JWT] API key validation completed in ${(endTime - startTime).toFixed(2)}ms`)
+		logger.debug(`🔐 [JWT] API key validation completed in ${(endTime - startTime).toFixed(2)}ms`)
 		return result
 	}
 
 	// Then try JWT token authentication
 	try {
 		const decoded = jwt.verify(token, getJwtSecret()) as XMTPToolsPayload
-		xmtpDebug("🔑 [Auth] Using JWT token authentication")
+		logger.debug("🔑 [Auth] Using JWT token authentication")
 
 		// Additional expiry check
 		const now = Math.floor(Date.now() / 1000)
 		if (decoded.expires < now) {
 			console.warn("🔒 XMTP tools token has expired")
 			const endTime = performance.now()
-			xmtpDebug(`🔐 [JWT] Token validation failed (expired) in ${(endTime - startTime).toFixed(2)}ms`)
+			logger.debug(`🔐 [JWT] Token validation failed (expired) in ${(endTime - startTime).toFixed(2)}ms`)
 			return null
 		}
 
 		const endTime = performance.now()
-		xmtpDebug(`🔐 [JWT] JWT validation completed in ${(endTime - startTime).toFixed(2)}ms`)
+		logger.debug(`🔐 [JWT] JWT validation completed in ${(endTime - startTime).toFixed(2)}ms`)
 		return decoded
 	} catch (error) {
 		console.error(
@@ -255,7 +252,7 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 			error
 		)
 		const endTime = performance.now()
-		xmtpDebug(`🔐 [JWT] Token validation failed in ${(endTime - startTime).toFixed(2)}ms`)
+		logger.debug(`🔐 [JWT] Token validation failed in ${(endTime - startTime).toFixed(2)}ms`)
 		return null
 	}
 }

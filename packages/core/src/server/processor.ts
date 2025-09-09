@@ -5,7 +5,7 @@ import {
 	XmtpClient,
 	createAuthenticatedXmtpClient,
 	generateXMTPToolsToken,
-	xmtpDebug
+	logger
 } from "@hybrd/xmtp"
 import { type MiddlewareHandler } from "hono"
 import { randomUUID } from "node:crypto"
@@ -149,7 +149,7 @@ export function createBackgroundMessageProcessor<
 				// Create service client for agent runtime
 				const serviceUrl = process.env.AGENT_URL || "http://localhost:8454"
 				
-				xmtpDebug("🔧 [ServiceClient] Starting service client creation...")
+				logger.debug("🔧 [ServiceClient] Starting service client creation...")
 				const clientStartTime = performance.now()
 				
 				const serviceToken = generateXMTPToolsToken({
@@ -163,7 +163,7 @@ export function createBackgroundMessageProcessor<
 				)
 				
 				const clientEndTime = performance.now()
-				xmtpDebug(`🔧 [ServiceClient] Service client created in ${(clientEndTime - clientStartTime).toFixed(2)}ms`)
+				logger.debug(`🔧 [ServiceClient] Service client created in ${(clientEndTime - clientStartTime).toFixed(2)}ms`)
 
 				// Create base runtime context
 				const baseRuntime: AgentRuntime = {
