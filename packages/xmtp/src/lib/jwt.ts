@@ -65,17 +65,17 @@ export function getValidatedPayload(c: Context): XMTPToolsPayload | null {
 
 /**
  * JWT secret key used for signing and verifying tokens
- * Requires XMTP_JWT_SECRET environment variable in production
+ * Uses XMTP_ENCRYPTION_KEY environment variable for consistency
  * Only falls back to development secret in development/test environments
  */
 const JWT_SECRET = (() => {
-	const secret = process.env.XMTP_JWT_SECRET
+	const secret = process.env.XMTP_ENCRYPTION_KEY
 	const nodeEnv = process.env.NODE_ENV || "development"
 
 	// In production, require a real JWT secret
 	if (nodeEnv === "production" && !secret) {
 		throw new Error(
-			"XMTP_JWT_SECRET environment variable is required in production. " +
+			"XMTP_ENCRYPTION_KEY environment variable is required in production. " +
 				"Generate a secure random secret for JWT token signing."
 		)
 	}
@@ -84,7 +84,7 @@ const JWT_SECRET = (() => {
 	if (!secret) {
 		console.warn(
 			"⚠️  [SECURITY] Using fallback JWT secret for development. " +
-				"Set XMTP_JWT_SECRET environment variable for production."
+				"Set XMTP_ENCRYPTION_KEY environment variable for production."
 		)
 		return "fallback-secret-for-dev-only"
 	}
