@@ -1,7 +1,8 @@
 #!/usr/bin/env tsx
 
-import { readFileSync, readdirSync, statSync, writeFileSync } from "fs"
-import { join } from "path"
+import { execSync } from "node:child_process"
+import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs"
+import { join } from "node:path"
 
 interface PackageJson {
 	name: string
@@ -27,6 +28,37 @@ function bumpVersion(
 	}
 }
 
+function executeGitCommand(command: string): string {
+	try {
+		return execSync(command, { encoding: "utf-8", stdio: "pipe" }).trim()
+	} catch (error) {
+		throw new Error(`Git command failed: ${command}\n${error}`)
+	}
+}
+
+function gitCommitAndTag(version: string, bumpType: string) {
+	console.log("\n🔄 Committing changes to git...")
+
+	// Add all package.json changes
+	executeGitCommand("git add packages/*/package.json")
+
+	// Commit with descriptive message
+	const commitMessage = `chore: bump ${bumpType} versions to ${version}`
+	executeGitCommand(`git commit -m "${commitMessage}"`)
+	console.log(`✅ Committed changes: ${commitMessage}`)
+
+	// Create and push tag
+	const tagName = `v${version}`
+	executeGitCommand(`git tag ${tagName}`)
+	console.log(`✅ Created tag: ${tagName}`)
+
+	// Push commits and tags
+	console.log("🚀 Pushing to remote...")
+	executeGitCommand("git push")
+	executeGitCommand("git push --tags")
+	console.log("✅ Successfully pushed commits and tags to remote")
+}
+
 function bumpPackageVersions(bumpType: "patch" | "minor" | "major" = "patch") {
 	try {
 		// Find all package directories in the packages directory
@@ -43,6 +75,7 @@ function bumpPackageVersions(bumpType: "patch" | "minor" | "major" = "patch") {
 		console.log(`🔍 Found ${packageFiles.length} packages to bump`)
 		console.log(`📦 Bumping ${bumpType} versions...\n`)
 
+		let newVersion = ""
 		for (const packageFile of packageFiles) {
 			const packagePath = join(process.cwd(), packageFile)
 			const packageJson: PackageJson = JSON.parse(
@@ -50,13 +83,13 @@ function bumpPackageVersions(bumpType: "patch" | "minor" | "major" = "patch") {
 			)
 
 			const currentVersion = packageJson.version
-			const newVersion = bumpVersion(currentVersion, bumpType)
+			newVersion = bumpVersion(currentVersion, bumpType)
 
 			// Update the version in the package.json
 			packageJson.version = newVersion
 
 			// Write the updated package.json back
-			writeFileSync(packagePath, JSON.stringify(packageJson, null, "\t") + "\n")
+			writeFileSync(packagePath, `${JSON.stringify(packageJson, null, "\t")}\n`)
 
 			console.log(`✅ ${packageJson.name}: ${currentVersion} → ${newVersion}`)
 		}
@@ -64,6 +97,9 @@ function bumpPackageVersions(bumpType: "patch" | "minor" | "major" = "patch") {
 		console.log(
 			`\n🎉 Successfully bumped all packages to ${bumpType} versions!`
 		)
+
+		// Commit, tag, and push changes
+		gitCommitAndTag(newVersion, bumpType)
 
 		// Note: Examples are no longer part of the workspace and use "latest" versions
 		// They will automatically get the newest published versions
