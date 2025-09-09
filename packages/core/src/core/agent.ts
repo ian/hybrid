@@ -26,8 +26,8 @@ export type DefaultRuntimeExtension = Record<string, never>
  * Extends the base Tool type with runtime extension support.
  */
 type AgentTool<TRuntimeExtension = DefaultRuntimeExtension> = Tool<
-	z.ZodSchema,
-	z.ZodSchema,
+	z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny>,
+	z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny>,
 	TRuntimeExtension
 >
 
