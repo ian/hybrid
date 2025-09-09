@@ -64,7 +64,8 @@ export class XmtpServiceClient {
 				fetchOptions.body = JSON.stringify(body)
 			}
 
-			xmtpDebug(`🌐 [HTTP] Making fetch request to ${url}`)
+			const sanitizedUrl = `${baseUrl}${endpoint}?token=***`
+			xmtpDebug(`🌐 [HTTP] Making fetch request to ${sanitizedUrl}`)
 			const fetchStartTime = performance.now()
 			
 			const response = await fetch(url, fetchOptions)
