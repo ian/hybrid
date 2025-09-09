@@ -10,7 +10,7 @@ This project uses a monorepo structure with multiple packages and supporting dir
 hybrid/
 ├── examples/
 │   ├── basic/        # Basic agent example implementation
-│   └── crypto-agent/ # Crypto-enabled agent example
+│   └── my-agent/ # Crypto-enabled agent example
 ├── packages/
 │   ├── cli/          # Command-line interface for agent management
 │   ├── core/         # Main agent framework library (published as "hybrid")
@@ -135,7 +135,7 @@ Hybrid includes a comprehensive standard library of tools for building crypto-en
 import { blockchainTools, createCryptoRuntime } from "hybrid/tools"
 
 const agent = new Agent({
-  name: "crypto-agent",
+  name: "my-agent",
   model: myModel,
   tools: blockchainTools,
   createRuntime: createCryptoRuntime({

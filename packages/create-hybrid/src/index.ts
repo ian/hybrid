@@ -8,6 +8,8 @@ interface Example {
 	name: string
 	description: string
 	path: string
+	available: boolean
+	message?: string
 }
 
 // Default to main branch, but allow override via REPO env var for CI/testing
@@ -18,28 +20,25 @@ const EXAMPLES: Example[] = [
 	{
 		name: "basic",
 		description: "Basic XMTP agent with message filtering and AI responses",
-		path: "basic" // Path is now handled separately in degit options
+		path: "basic",
+		available: true
 	},
 	{
-		name: "crypto-agent",
-		description: "Advanced agent with blockchain integration and crypto tools",
-		path: "crypto-agent" // Path is now handled separately in degit options
+		name: "with-ponder",
+		description: "Agent with Ponder integration for indexing blockchain data",
+		path: "with-ponder",
+		available: false,
+		message: "Coming soon"
+	},
+	{
+		name: "with-foundry",
+		description:
+			"Agent with Foundry integration for smart contract development",
+		path: "with-foundry",
+		available: false,
+		message: "Coming soon"
 	}
 ]
-
-function isInMonorepo(): boolean {
-	// Check if we're running from within the monorepo (for development/testing)
-	const currentDir = process.cwd()
-	const packageJsonPath = join(currentDir, "package.json")
-	try {
-		const packageJson = require(packageJsonPath)
-		return (
-			packageJson.name === "hybrid" || currentDir.includes("/hybrid/packages/")
-		)
-	} catch {
-		return false
-	}
-}
 
 function replaceTemplateVariables(
 	content: string,
@@ -332,14 +331,25 @@ async function createProject(
 			message: "Which example would you like to use?",
 			choices: EXAMPLES.map((ex) => ({
 				title: ex.name,
-				description: ex.description,
-				value: ex
+				description: ex.available
+					? ex.description
+					: `${ex.description} (${ex.message || "Coming soon"})`,
+				value: ex,
+				disabled: !ex.available
 			})),
 			initial: 0
 		})
 
 		if (!example) {
 			console.log("❌ No example selected. Exiting...")
+			process.exit(1)
+		}
+
+		// Check if the selected example is available
+		if (!example.available) {
+			console.log(
+				`❌ Example "${example.name}" is not yet available. ${example.message || "Coming soon"}`
+			)
 			process.exit(1)
 		}
 
@@ -419,7 +429,10 @@ export async function initializeProject(): Promise<void> {
 		.description("Create a new Hybrid XMTP agent project")
 		.version("1.2.3")
 		.argument("[project-name]", "Name of the project")
-		.option("-e, --example <example>", "Example to use (basic, crypto-agent)")
+		.option(
+			"-e, --example <example>",
+			"Example to use (basic, with-ponder, with-foundry)"
+		)
 		.action(async (projectName?: string, options?: { example?: string }) => {
 			let finalProjectName = projectName
 
