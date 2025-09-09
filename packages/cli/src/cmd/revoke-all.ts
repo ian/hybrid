@@ -35,7 +35,9 @@ export async function revokeAllInstallations() {
 			const currentInboxId = client.inboxId
 
 			if (!currentInboxId) {
-				throw new Error("Could not get inbox ID from client")
+				console.log("❌ Could not get inbox ID from client")
+				console.log("This may indicate the client was not properly initialized")
+				process.exit(1)
 			}
 
 			console.log(`📧 Current Inbox ID: ${currentInboxId}`)

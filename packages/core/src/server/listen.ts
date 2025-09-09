@@ -1,6 +1,6 @@
 import { serve } from "@hono/node-server"
 import { getCloudflareStoragePath } from "@hybrd/utils"
-import type { MessageListenerConfig, XmtpClient } from "@hybrd/xmtp"
+import type { MessageEvent, XmtpClient } from "@hybrd/xmtp"
 import { type HonoVariables, XMTPPlugin, createXMTPClient } from "@hybrd/xmtp"
 import { Context, Hono, Next } from "hono"
 import type { Agent, DefaultRuntimeExtension } from "../core/agent"
@@ -54,7 +54,9 @@ export function createHonoMiddleware(client: XmtpClient) {
 export type CreateHonoAppOptions<TRuntimeExtension = DefaultRuntimeExtension> =
 	{
 		agent: Agent<TRuntimeExtension>
-		messageFilter: MessageListenerConfig["filter"]
+		messageFilter?: (
+			event: Pick<MessageEvent, "conversation" | "message" | "rootMessage">
+		) => Promise<boolean> | boolean
 	}
 
 /**
@@ -151,7 +153,9 @@ export interface PluginContext {
 export type ListenOptions = {
 	agent: Agent
 	port: string
-	filter?: MessageListenerConfig["filter"]
+	filter?: (
+		event: Pick<MessageEvent, "conversation" | "message" | "rootMessage">
+	) => Promise<boolean> | boolean
 	plugins?: Plugin<PluginContext>[]
 }
 

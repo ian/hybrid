@@ -3,10 +3,9 @@ import type { MessageEvent, XmtpClient } from "../types"
 
 export interface AgentMessageListenerConfig {
 	client: XmtpClient
-	filter?: {
-		senderAddress?: string
-		conversationId?: string
-	}
+	filter?: (
+		event: Pick<MessageEvent, "conversation" | "message" | "rootMessage">
+	) => Promise<boolean> | boolean
 	resolver?: (messageOrCtx: any) => Promise<MessageEvent>
 }
 
@@ -16,6 +15,9 @@ export class AgentMessageListener extends EventEmitter {
 	private filter?: AgentMessageListenerConfig["filter"]
 	private resolver?: AgentMessageListenerConfig["resolver"]
 	private isListening = false
+	private textHandler?: (ctx: any) => Promise<void>
+	private reactionHandler?: (ctx: any) => Promise<void>
+	private replyHandler?: (ctx: any) => Promise<void>
 
 	constructor(config: AgentMessageListenerConfig) {
 		super()
@@ -36,9 +38,9 @@ export class AgentMessageListener extends EventEmitter {
 		try {
 			console.log("Starting XMTP agent message listener...")
 
-			this.agent.on("text", async (ctx: any) => {
+			this.textHandler = async (ctx: any) => {
 				try {
-					if (this.shouldProcessMessage(ctx)) {
+					if (await this.shouldProcessMessage(ctx)) {
 						const messageEvent = this.resolver
 							? await this.resolver(ctx)
 							: this.createDefaultMessageEvent(ctx)
@@ -49,11 +51,11 @@ export class AgentMessageListener extends EventEmitter {
 					console.error("Error processing text message:", error)
 					this.emit("error", error)
 				}
-			})
+			}
 
-			this.agent.on("reaction", async (ctx: any) => {
+			this.reactionHandler = async (ctx: any) => {
 				try {
-					if (this.shouldProcessMessage(ctx)) {
+					if (await this.shouldProcessMessage(ctx)) {
 						const messageEvent = this.resolver
 							? await this.resolver(ctx)
 							: this.createDefaultMessageEvent(ctx)
@@ -64,11 +66,11 @@ export class AgentMessageListener extends EventEmitter {
 					console.error("Error processing reaction message:", error)
 					this.emit("error", error)
 				}
-			})
+			}
 
-			this.agent.on("reply", async (ctx: any) => {
+			this.replyHandler = async (ctx: any) => {
 				try {
-					if (this.shouldProcessMessage(ctx)) {
+					if (await this.shouldProcessMessage(ctx)) {
 						const messageEvent = this.resolver
 							? await this.resolver(ctx)
 							: this.createDefaultMessageEvent(ctx)
@@ -79,37 +81,50 @@ export class AgentMessageListener extends EventEmitter {
 					console.error("Error processing reply message:", error)
 					this.emit("error", error)
 				}
-			})
+			}
 
 			await this.agent.start()
+			
+			this.agent.on("text", this.textHandler)
+			this.agent.on("reaction", this.reactionHandler)
+			this.agent.on("reply", this.replyHandler)
+
 			console.log("XMTP agent started successfully")
+			this.emit("started")
 		} catch (error) {
 			console.error("Error starting agent:", error)
 			this.emit("error", error)
 			this.isListening = false
+			this.cleanupHandlers()
 		}
 	}
 
 	stop(): void {
-		if (this.agent) {
-			this.agent.removeAllListeners()
-		}
+		this.cleanupHandlers()
 		this.isListening = false
 		console.log("XMTP agent message listener stopped")
+		this.emit("stopped")
 	}
 
-	private shouldProcessMessage(ctx: any): boolean {
+	private cleanupHandlers(): void {
+		if (this.agent) {
+			if (this.textHandler) {
+				this.agent.off("text", this.textHandler)
+			}
+			if (this.reactionHandler) {
+				this.agent.off("reaction", this.reactionHandler)
+			}
+			if (this.replyHandler) {
+				this.agent.off("reply", this.replyHandler)
+			}
+		}
+	}
+
+	private async shouldProcessMessage(ctx: any): Promise<boolean> {
 		if (!this.filter) return true
 
-		if (this.filter.senderAddress && ctx.message?.senderAddress !== this.filter.senderAddress) {
-			return false
-		}
-
-		if (this.filter.conversationId && ctx.conversation?.id !== this.filter.conversationId) {
-			return false
-		}
-
-		return true
+		const messageEvent = this.createDefaultMessageEvent(ctx)
+		return await this.filter(messageEvent)
 	}
 
 	private createDefaultMessageEvent(ctx: any): MessageEvent {

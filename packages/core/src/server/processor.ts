@@ -1,7 +1,6 @@
 import {
-	MessageEvent,
+	type MessageEvent,
 	AgentMessageListener,
-	MessageListenerConfig,
 	XmtpClient,
 	createAuthenticatedXmtpClient,
 	generateXMTPToolsToken
@@ -33,7 +32,9 @@ interface BackgroundMessageProcessorOptions<
 > {
 	agent: Agent<TRuntimeExtension>
 	xmtpClient: XmtpClient
-	messageFilter: MessageListenerConfig["filter"]
+	messageFilter?: (
+		event: Pick<MessageEvent, "conversation" | "message" | "rootMessage">
+	) => Promise<boolean> | boolean
 	intervalMs?: number
 	backoffMs?: number
 	maxBackoffMs?: number
