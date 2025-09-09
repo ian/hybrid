@@ -149,7 +149,9 @@ export function generateXMTPToolsToken(
 	payload: Omit<XMTPToolsPayload, "issued" | "expires">
 ): string {
 	const startTime = performance.now()
-	console.log("🔐 [JWT] Starting token generation...")
+	if (process.env.XMTP_DEBUG) {
+		console.log("🔐 [JWT] Starting token generation...")
+	}
 	
 	const now = Math.floor(Date.now() / 1000)
 	const fullPayload: XMTPToolsPayload = {
@@ -163,7 +165,9 @@ export function generateXMTPToolsToken(
 	})
 	
 	const endTime = performance.now()
-	console.log(`🔐 [JWT] Token generation completed in ${(endTime - startTime).toFixed(2)}ms`)
+	if (process.env.XMTP_DEBUG) {
+		console.log(`🔐 [JWT] Token generation completed in ${(endTime - startTime).toFixed(2)}ms`)
+	}
 	
 	return token
 }
@@ -193,11 +197,15 @@ export function generateXMTPToolsToken(
  */
 export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 	const startTime = performance.now()
-	console.log("🔐 [JWT] Starting token validation...")
+	if (process.env.XMTP_DEBUG) {
+		console.log("🔐 [JWT] Starting token validation...")
+	}
 	
 	// First try API key authentication
 	if (token === getApiKey()) {
-		console.log("🔑 [Auth] Using API key authentication")
+		if (process.env.XMTP_DEBUG) {
+			console.log("🔑 [Auth] Using API key authentication")
+		}
 		// Return a valid payload for API key auth
 		const now = Math.floor(Date.now() / 1000)
 		const result = {
@@ -208,26 +216,34 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 		}
 		
 		const endTime = performance.now()
-		console.log(`🔐 [JWT] API key validation completed in ${(endTime - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`🔐 [JWT] API key validation completed in ${(endTime - startTime).toFixed(2)}ms`)
+		}
 		return result
 	}
 
 	// Then try JWT token authentication
 	try {
 		const decoded = jwt.verify(token, getJwtSecret()) as XMTPToolsPayload
-		console.log("🔑 [Auth] Using JWT token authentication")
+		if (process.env.XMTP_DEBUG) {
+			console.log("🔑 [Auth] Using JWT token authentication")
+		}
 
 		// Additional expiry check
 		const now = Math.floor(Date.now() / 1000)
 		if (decoded.expires < now) {
 			console.warn("🔒 XMTP tools token has expired")
 			const endTime = performance.now()
-			console.log(`🔐 [JWT] Token validation failed (expired) in ${(endTime - startTime).toFixed(2)}ms`)
+			if (process.env.XMTP_DEBUG) {
+				console.log(`🔐 [JWT] Token validation failed (expired) in ${(endTime - startTime).toFixed(2)}ms`)
+			}
 			return null
 		}
 
 		const endTime = performance.now()
-		console.log(`🔐 [JWT] JWT validation completed in ${(endTime - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`🔐 [JWT] JWT validation completed in ${(endTime - startTime).toFixed(2)}ms`)
+		}
 		return decoded
 	} catch (error) {
 		console.error(
@@ -235,7 +251,9 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 			error
 		)
 		const endTime = performance.now()
-		console.log(`🔐 [JWT] Token validation failed in ${(endTime - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`🔐 [JWT] Token validation failed in ${(endTime - startTime).toFixed(2)}ms`)
+		}
 		return null
 	}
 }

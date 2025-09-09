@@ -49,7 +49,9 @@ export const sendReactionTool = createTool({
 	}),
 	execute: async ({ input, runtime }) => {
 		const startTime = performance.now()
-		console.log(`👀 [Tool:sendReaction] Starting execution with emoji: ${input.emoji}`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`👀 [Tool:sendReaction] Starting execution with emoji: ${input.emoji}`)
+		}
 		
 		try {
 			const xmtpClient = runtime.xmtpClient
@@ -57,14 +59,18 @@ export const sendReactionTool = createTool({
 
 			if (!xmtpClient) {
 				const endTime = performance.now()
-				console.log(`👀 [Tool:sendReaction] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				if (process.env.XMTP_DEBUG) {
+					console.log(`👀 [Tool:sendReaction] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				}
 				const errorMsg = "❌ XMTP service not available"
 				return { success: false, emoji: input.emoji, error: errorMsg }
 			}
 
 			if (!currentMessage) {
 				const endTime = performance.now()
-				console.log(`👀 [Tool:sendReaction] Failed - no current message in ${(endTime - startTime).toFixed(2)}ms`)
+				if (process.env.XMTP_DEBUG) {
+					console.log(`👀 [Tool:sendReaction] Failed - no current message in ${(endTime - startTime).toFixed(2)}ms`)
+				}
 				const errorMsg = "❌ No message to react to"
 				return { success: false, emoji: input.emoji, error: errorMsg }
 			}
@@ -83,11 +89,15 @@ export const sendReactionTool = createTool({
 				action: "added"
 			})
 			const sendEndTime = performance.now()
-			console.log(`👀 [Tool:sendReaction] XMTP client sendReaction completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+			if (process.env.XMTP_DEBUG) {
+				console.log(`👀 [Tool:sendReaction] XMTP client sendReaction completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+			}
 
 			if (!reactionResult.success) {
 				const endTime = performance.now()
-				console.log(`👀 [Tool:sendReaction] Failed in ${(endTime - startTime).toFixed(2)}ms: ${reactionResult.error}`)
+				if (process.env.XMTP_DEBUG) {
+					console.log(`👀 [Tool:sendReaction] Failed in ${(endTime - startTime).toFixed(2)}ms: ${reactionResult.error}`)
+				}
 				const errorMsg = `❌ Failed to send reaction: ${reactionResult.error || "Unknown error"}`
 				return { success: false, emoji: input.emoji, error: errorMsg }
 			}
@@ -95,14 +105,18 @@ export const sendReactionTool = createTool({
 			console.log(`✅ [sendReaction] Successfully sent ${input.emoji} reaction`)
 			
 			const endTime = performance.now()
-			console.log(`👀 [Tool:sendReaction] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`)
+			if (process.env.XMTP_DEBUG) {
+				console.log(`👀 [Tool:sendReaction] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`)
+			}
 			
 			return { success: true, emoji: input.emoji }
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : String(error)
 			const endTime = performance.now()
-			console.error(`❌ [Tool:sendReaction] Error in ${(endTime - startTime).toFixed(2)}ms:`, errorMessage)
+			if (process.env.XMTP_DEBUG) {
+				console.error(`❌ [Tool:sendReaction] Error in ${(endTime - startTime).toFixed(2)}ms:`, errorMessage)
+			}
 			return { success: false, emoji: input.emoji, error: errorMessage }
 		}
 	}
@@ -149,7 +163,9 @@ export const sendMessageTool = createTool({
 	}),
 	execute: async ({ input, runtime }) => {
 		const startTime = performance.now()
-		console.log(`💬 [Tool:sendMessage] Starting execution with content: "${input.content.substring(0, 50)}${input.content.length > 50 ? "..." : ""}"`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`💬 [Tool:sendMessage] Starting execution with content: "${input.content.substring(0, 50)}${input.content.length > 50 ? "..." : ""}"`)
+		}
 		
 		try {
 			const xmtpClient = runtime.xmtpClient
@@ -157,7 +173,9 @@ export const sendMessageTool = createTool({
 
 			if (!xmtpClient) {
 				const endTime = performance.now()
-				console.log(`💬 [Tool:sendMessage] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				if (process.env.XMTP_DEBUG) {
+					console.log(`💬 [Tool:sendMessage] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				}
 				return {
 					success: false,
 					content,
@@ -187,11 +205,15 @@ export const sendMessageTool = createTool({
 				content
 			})
 			const sendEndTime = performance.now()
-			console.log(`💬 [Tool:sendMessage] XMTP client sendMessage completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+			if (process.env.XMTP_DEBUG) {
+				console.log(`💬 [Tool:sendMessage] XMTP client sendMessage completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+			}
 
 			if (!messageResult.success) {
 				const endTime = performance.now()
-				console.log(`💬 [Tool:sendMessage] Failed in ${(endTime - startTime).toFixed(2)}ms: ${messageResult.error}`)
+				if (process.env.XMTP_DEBUG) {
+					console.log(`💬 [Tool:sendMessage] Failed in ${(endTime - startTime).toFixed(2)}ms: ${messageResult.error}`)
+				}
 				return {
 					success: false,
 					content,
@@ -202,7 +224,9 @@ export const sendMessageTool = createTool({
 			console.log(`✅ [sendMessage] Message sent successfully`)
 			
 			const endTime = performance.now()
-			console.log(`💬 [Tool:sendMessage] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`)
+			if (process.env.XMTP_DEBUG) {
+				console.log(`💬 [Tool:sendMessage] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`)
+			}
 
 			return {
 				success: true,
@@ -214,7 +238,9 @@ export const sendMessageTool = createTool({
 			const errorMessage =
 				error instanceof Error ? error.message : String(error)
 			const endTime = performance.now()
-			console.error(`❌ [Tool:sendMessage] Error in ${(endTime - startTime).toFixed(2)}ms:`, errorMessage)
+			if (process.env.XMTP_DEBUG) {
+				console.error(`❌ [Tool:sendMessage] Error in ${(endTime - startTime).toFixed(2)}ms:`, errorMessage)
+			}
 			return {
 				success: false,
 				content: input.content,
@@ -256,7 +282,9 @@ export const sendReplyTool = createTool({
 	}),
 	execute: async ({ input, runtime }) => {
 		const startTime = performance.now()
-		console.log(`↩️ [Tool:sendReply] Starting execution with content: "${input.content.substring(0, 50)}${input.content.length > 50 ? "..." : ""}"`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`↩️ [Tool:sendReply] Starting execution with content: "${input.content.substring(0, 50)}${input.content.length > 50 ? "..." : ""}"`)
+		}
 		
 		try {
 			const xmtpClient = runtime.xmtpClient
@@ -265,7 +293,9 @@ export const sendReplyTool = createTool({
 
 			if (!xmtpClient) {
 				const endTime = performance.now()
-				console.log(`↩️ [Tool:sendReply] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				if (process.env.XMTP_DEBUG) {
+					console.log(`↩️ [Tool:sendReply] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				}
 				return {
 					success: false,
 					content,
@@ -275,7 +305,9 @@ export const sendReplyTool = createTool({
 
 			if (!currentMessage && !replyToMessageId) {
 				const endTime = performance.now()
-				console.log(`↩️ [Tool:sendReply] Failed - no message to reply to in ${(endTime - startTime).toFixed(2)}ms`)
+				if (process.env.XMTP_DEBUG) {
+					console.log(`↩️ [Tool:sendReply] Failed - no message to reply to in ${(endTime - startTime).toFixed(2)}ms`)
+				}
 				return {
 					success: false,
 					content,
@@ -375,7 +407,9 @@ export const getMessageTool = createTool({
 	}),
 	execute: async ({ input, runtime }) => {
 		const startTime = performance.now()
-		console.log(`📜 [Tool:getMessage] Starting execution for message: ${input.messageId}`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📜 [Tool:getMessage] Starting execution for message: ${input.messageId}`)
+		}
 		
 		try {
 			const xmtpClient = runtime.xmtpClient
@@ -383,7 +417,9 @@ export const getMessageTool = createTool({
 
 			if (!xmtpClient) {
 				const endTime = performance.now()
-				console.log(`📜 [Tool:getMessage] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				if (process.env.XMTP_DEBUG) {
+					console.log(`📜 [Tool:getMessage] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				}
 				return {
 					success: false,
 					error: "XMTP service not available"
@@ -397,11 +433,15 @@ export const getMessageTool = createTool({
 				messageId
 			})
 			const sendEndTime = performance.now()
-			console.log(`📜 [Tool:getMessage] XMTP client getMessage completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+			if (process.env.XMTP_DEBUG) {
+				console.log(`📜 [Tool:getMessage] XMTP client getMessage completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+			}
 
 			if (!messageResult.success) {
 				const endTime = performance.now()
-				console.log(`📜 [Tool:getMessage] Failed in ${(endTime - startTime).toFixed(2)}ms: ${messageResult.error}`)
+				if (process.env.XMTP_DEBUG) {
+					console.log(`📜 [Tool:getMessage] Failed in ${(endTime - startTime).toFixed(2)}ms: ${messageResult.error}`)
+				}
 				return {
 					success: false,
 					error: messageResult.error || "Failed to get message"
@@ -413,7 +453,9 @@ export const getMessageTool = createTool({
 			)
 			
 			const endTime = performance.now()
-			console.log(`📜 [Tool:getMessage] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`)
+			if (process.env.XMTP_DEBUG) {
+				console.log(`📜 [Tool:getMessage] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`)
+			}
 
 			return {
 				success: true,
@@ -423,7 +465,9 @@ export const getMessageTool = createTool({
 			const errorMessage =
 				error instanceof Error ? error.message : String(error)
 			const endTime = performance.now()
-			console.error(`❌ [Tool:getMessage] Error in ${(endTime - startTime).toFixed(2)}ms:`, errorMessage)
+			if (process.env.XMTP_DEBUG) {
+				console.error(`❌ [Tool:getMessage] Error in ${(endTime - startTime).toFixed(2)}ms:`, errorMessage)
+			}
 			return {
 				success: false,
 				error: errorMessage

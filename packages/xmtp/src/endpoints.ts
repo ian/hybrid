@@ -59,34 +59,46 @@ app.get("/messages/:messageId", async (c) => {
 // XMTP Tools endpoints
 app.post("/send", async (c) => {
 	const startTime = performance.now()
-	console.log("📨 [Endpoint] Starting /send endpoint processing")
+	if (process.env.XMTP_DEBUG) {
+		console.log("📨 [Endpoint] Starting /send endpoint processing")
+	}
 	
 	const xmtpClient = c.get("xmtpClient")
 
 	if (!xmtpClient) {
-		console.log(`📨 [Endpoint] /send failed - no XMTP client in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /send failed - no XMTP client in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json({ error: "XMTP client not initialized" }, 500)
 	}
 
 	const authStartTime = performance.now()
 	const payload = getValidatedPayload(c)
 	if (!payload) {
-		console.log(`📨 [Endpoint] /send failed - invalid token in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /send failed - invalid token in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json({ error: "Invalid or expired token" }, 401)
 	}
 	const authEndTime = performance.now()
-	console.log(`📨 [Endpoint] Token validation completed in ${(authEndTime - authStartTime).toFixed(2)}ms`)
+	if (process.env.XMTP_DEBUG) {
+		console.log(`📨 [Endpoint] Token validation completed in ${(authEndTime - authStartTime).toFixed(2)}ms`)
+	}
 
 	// Get request body data
 	const bodyStartTime = performance.now()
 	const body = await c.req.json<SendMessageParams>()
 	const bodyEndTime = performance.now()
-	console.log(`📨 [Endpoint] Request body parsing completed in ${(bodyEndTime - bodyStartTime).toFixed(2)}ms`)
+	if (process.env.XMTP_DEBUG) {
+		console.log(`📨 [Endpoint] Request body parsing completed in ${(bodyEndTime - bodyStartTime).toFixed(2)}ms`)
+	}
 
 	// Content can come from JWT payload or request body
 	const content = body.content || payload.content
 	if (!content) {
-		console.log(`📨 [Endpoint] /send failed - no content in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /send failed - no content in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json({ error: "Content required for send action" }, 400)
 	}
 
@@ -95,7 +107,9 @@ app.post("/send", async (c) => {
 	// Conversation ID can come from JWT payload or request body (for API key auth)
 	// const conversationId = payload.conversationId || body.conversationId
 	if (!conversationId) {
-		console.log(`📨 [Endpoint] /send failed - no conversation ID in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /send failed - no conversation ID in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json({ error: "Conversation ID required" }, 400)
 	}
 
@@ -104,21 +118,29 @@ app.post("/send", async (c) => {
 		const conversation =
 			await xmtpClient.conversations.getConversationById(conversationId)
 		const convEndTime = performance.now()
-		console.log(`📨 [Endpoint] Conversation lookup completed in ${(convEndTime - convStartTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] Conversation lookup completed in ${(convEndTime - convStartTime).toFixed(2)}ms`)
+		}
 		
 		if (!conversation) {
-			console.log(`📨 [Endpoint] /send failed - conversation not found in ${(performance.now() - startTime).toFixed(2)}ms`)
+			if (process.env.XMTP_DEBUG) {
+				console.log(`📨 [Endpoint] /send failed - conversation not found in ${(performance.now() - startTime).toFixed(2)}ms`)
+			}
 			return c.json({ error: "Conversation not found" }, 404)
 		}
 
 		const sendStartTime = performance.now()
 		await conversation.send(content)
 		const sendEndTime = performance.now()
-		console.log(`📨 [Endpoint] Message send completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] Message send completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+		}
 		console.log(`➡ Sent message to conversation ${conversationId}`)
 
 		const endTime = performance.now()
-		console.log(`📨 [Endpoint] Total /send endpoint completed in ${(endTime - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] Total /send endpoint completed in ${(endTime - startTime).toFixed(2)}ms`)
+		}
 
 		return c.json({
 			success: true,
@@ -127,41 +149,55 @@ app.post("/send", async (c) => {
 		})
 	} catch (error) {
 		const endTime = performance.now()
-		console.error(`❌ Error sending message in ${(endTime - startTime).toFixed(2)}ms:`, error)
+		if (process.env.XMTP_DEBUG) {
+			console.error(`❌ Error sending message in ${(endTime - startTime).toFixed(2)}ms:`, error)
+		}
 		return c.json({ error: "Failed to send message" }, 500)
 	}
 })
 
 app.post("/reply", async (c) => {
 	const startTime = performance.now()
-	console.log("📨 [Endpoint] Starting /reply endpoint processing")
+	if (process.env.XMTP_DEBUG) {
+		console.log("📨 [Endpoint] Starting /reply endpoint processing")
+	}
 	
 	const xmtpClient = c.get("xmtpClient")
 
 	if (!xmtpClient) {
-		console.log(`📨 [Endpoint] /reply failed - no XMTP client in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /reply failed - no XMTP client in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json({ error: "XMTP client not initialized" }, 500)
 	}
 
 	const authStartTime = performance.now()
 	const payload = getValidatedPayload(c)
 	if (!payload) {
-		console.log(`📨 [Endpoint] /reply failed - invalid token in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /reply failed - invalid token in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json({ error: "Invalid or expired token" }, 401)
 	}
 	const authEndTime = performance.now()
-	console.log(`📨 [Endpoint] Token validation completed in ${(authEndTime - authStartTime).toFixed(2)}ms`)
+	if (process.env.XMTP_DEBUG) {
+		console.log(`📨 [Endpoint] Token validation completed in ${(authEndTime - authStartTime).toFixed(2)}ms`)
+	}
 
 	// Get request body data
 	const bodyStartTime = performance.now()
 	const body = await c.req.json<SendReplyParams>()
 	const bodyEndTime = performance.now()
-	console.log(`📨 [Endpoint] Request body parsing completed in ${(bodyEndTime - bodyStartTime).toFixed(2)}ms`)
+	if (process.env.XMTP_DEBUG) {
+		console.log(`📨 [Endpoint] Request body parsing completed in ${(bodyEndTime - bodyStartTime).toFixed(2)}ms`)
+	}
 
 	// Content can come from JWT payload or request body
 	const content = body.content || payload.content
 	if (!content) {
-		console.log(`📨 [Endpoint] /reply failed - no content in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /reply failed - no content in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json({ error: "Content required for reply action" }, 400)
 	}
 
@@ -169,7 +205,9 @@ app.post("/reply", async (c) => {
 	const messageId = body.messageId
 
 	if (!messageId) {
-		console.log(`📨 [Endpoint] /reply failed - no message ID in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /reply failed - no message ID in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json(
 			{ error: "Reference message ID required for reply action" },
 			400
@@ -182,10 +220,14 @@ app.post("/reply", async (c) => {
 			payload.conversationId
 		)
 		const convEndTime = performance.now()
-		console.log(`📨 [Endpoint] Conversation lookup completed in ${(convEndTime - convStartTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] Conversation lookup completed in ${(convEndTime - convStartTime).toFixed(2)}ms`)
+		}
 		
 		if (!conversation) {
-			console.log(`📨 [Endpoint] /reply failed - conversation not found in ${(performance.now() - startTime).toFixed(2)}ms`)
+			if (process.env.XMTP_DEBUG) {
+				console.log(`📨 [Endpoint] /reply failed - conversation not found in ${(performance.now() - startTime).toFixed(2)}ms`)
+			}
 			return c.json({ error: "Conversation not found" }, 404)
 		}
 
@@ -200,13 +242,17 @@ app.post("/reply", async (c) => {
 		const sendStartTime = performance.now()
 		await conversation.send(reply, ContentTypeReply)
 		const sendEndTime = performance.now()
-		console.log(`📨 [Endpoint] Reply send completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] Reply send completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+		}
 		console.log(
 			`➡ Sent reply "${content}" to conversation ${payload.conversationId}`
 		)
 
 		const endTime = performance.now()
-		console.log(`📨 [Endpoint] Total /reply endpoint completed in ${(endTime - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] Total /reply endpoint completed in ${(endTime - startTime).toFixed(2)}ms`)
+		}
 
 		return c.json({
 			success: true,
@@ -215,39 +261,53 @@ app.post("/reply", async (c) => {
 		})
 	} catch (error) {
 		const endTime = performance.now()
-		console.error(`❌ Error sending reply in ${(endTime - startTime).toFixed(2)}ms:`, error)
+		if (process.env.XMTP_DEBUG) {
+			console.error(`❌ Error sending reply in ${(endTime - startTime).toFixed(2)}ms:`, error)
+		}
 		return c.json({ error: "Failed to send reply" }, 500)
 	}
 })
 
 app.post("/react", async (c) => {
 	const startTime = performance.now()
-	console.log("📨 [Endpoint] Starting /react endpoint processing")
+	if (process.env.XMTP_DEBUG) {
+		console.log("📨 [Endpoint] Starting /react endpoint processing")
+	}
 	
 	const xmtpClient = c.get("xmtpClient")
 
 	if (!xmtpClient) {
-		console.log(`📨 [Endpoint] /react failed - no XMTP client in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /react failed - no XMTP client in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json({ error: "XMTP client not initialized" }, 500)
 	}
 
 	const authStartTime = performance.now()
 	const payload = getValidatedPayload(c)
 	if (!payload) {
-		console.log(`📨 [Endpoint] /react failed - invalid token in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /react failed - invalid token in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json({ error: "Invalid or expired token" }, 401)
 	}
 	const authEndTime = performance.now()
-	console.log(`📨 [Endpoint] Token validation completed in ${(authEndTime - authStartTime).toFixed(2)}ms`)
+	if (process.env.XMTP_DEBUG) {
+		console.log(`📨 [Endpoint] Token validation completed in ${(authEndTime - authStartTime).toFixed(2)}ms`)
+	}
 
 	// Get request body data
 	const bodyStartTime = performance.now()
 	const body = await c.req.json<SendReactionParams>()
 	const bodyEndTime = performance.now()
-	console.log(`📨 [Endpoint] Request body parsing completed in ${(bodyEndTime - bodyStartTime).toFixed(2)}ms`)
+	if (process.env.XMTP_DEBUG) {
+		console.log(`📨 [Endpoint] Request body parsing completed in ${(bodyEndTime - bodyStartTime).toFixed(2)}ms`)
+	}
 
 	if (!body.emoji) {
-		console.log(`📨 [Endpoint] /react failed - no emoji in ${(performance.now() - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] /react failed - no emoji in ${(performance.now() - startTime).toFixed(2)}ms`)
+		}
 		return c.json({ error: "Emoji required for react action" }, 400)
 	}
 
@@ -257,10 +317,14 @@ app.post("/react", async (c) => {
 			payload.conversationId
 		)
 		const convEndTime = performance.now()
-		console.log(`📨 [Endpoint] Conversation lookup completed in ${(convEndTime - convStartTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] Conversation lookup completed in ${(convEndTime - convStartTime).toFixed(2)}ms`)
+		}
 		
 		if (!conversation) {
-			console.log(`📨 [Endpoint] /react failed - conversation not found in ${(performance.now() - startTime).toFixed(2)}ms`)
+			if (process.env.XMTP_DEBUG) {
+				console.log(`📨 [Endpoint] /react failed - conversation not found in ${(performance.now() - startTime).toFixed(2)}ms`)
+			}
 			return c.json({ error: "Conversation not found" }, 404)
 		}
 
@@ -277,14 +341,18 @@ app.post("/react", async (c) => {
 		const sendStartTime = performance.now()
 		await conversation.send(reaction, ContentTypeReaction)
 		const sendEndTime = performance.now()
-		console.log(`📨 [Endpoint] Reaction send completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] Reaction send completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+		}
 
 		console.log(
 			`➡ Sent reaction ${body.emoji} to message ${body.messageId} in conversation ${payload.conversationId}`
 		)
 
 		const endTime = performance.now()
-		console.log(`📨 [Endpoint] Total /react endpoint completed in ${(endTime - startTime).toFixed(2)}ms`)
+		if (process.env.XMTP_DEBUG) {
+			console.log(`📨 [Endpoint] Total /react endpoint completed in ${(endTime - startTime).toFixed(2)}ms`)
+		}
 
 		return c.json({
 			success: true,
@@ -293,7 +361,9 @@ app.post("/react", async (c) => {
 		})
 	} catch (error) {
 		const endTime = performance.now()
-		console.error(`❌ Error sending reaction in ${(endTime - startTime).toFixed(2)}ms:`, error)
+		if (process.env.XMTP_DEBUG) {
+			console.error(`❌ Error sending reaction in ${(endTime - startTime).toFixed(2)}ms:`, error)
+		}
 		return c.json({ error: "Failed to send reaction" }, 500)
 	}
 })
