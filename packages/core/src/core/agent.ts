@@ -11,6 +11,8 @@ import {
 	streamText
 } from "ai"
 import { render } from "../lib/render"
+
+type AnyTool<TRuntimeExtension = DefaultRuntimeExtension> = Tool<any, any, TRuntimeExtension>
 import type { PluginContext } from "../server/listen"
 import { ListenOptions, listen } from "../server/listen"
 import type { AgentRuntime } from "../types"
@@ -29,8 +31,8 @@ export type ToolGenerator<TRuntimeExtension = DefaultRuntimeExtension> =
 		messages: UIMessage[]
 		runtime: AgentRuntime & TRuntimeExtension
 	}) =>
-		| Record<string, Tool<any, any, TRuntimeExtension>>
-		| Promise<Record<string, Tool<any, any, TRuntimeExtension>>>
+		| Record<string, AnyTool<TRuntimeExtension>>
+		| Promise<Record<string, AnyTool<TRuntimeExtension>>>
 
 /**
  * Configuration interface for creating an Agent instance.
@@ -47,7 +49,7 @@ export interface AgentConfig<TRuntimeExtension = DefaultRuntimeExtension> {
 		  }) => LanguageModel | Promise<LanguageModel>)
 	/** Tools available to the agent, can be static or dynamically generated */
 	tools?:
-		| Record<string, Tool<any, any, TRuntimeExtension>>
+		| Record<string, AnyTool<TRuntimeExtension>>
 		| ToolGenerator<TRuntimeExtension>
 	/** Instructions for the agent, can be static or dynamically resolved */
 	instructions:
@@ -182,7 +184,7 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension> {
 		runtime: AgentRuntime & TRuntimeExtension
 	): Promise<{
 		model: LanguageModel
-		tools?: Record<string, Tool<any, any, TRuntimeExtension>>
+		tools?: Record<string, AnyTool<TRuntimeExtension>>
 		instructions?: string
 	}> {
 		const props = { messages, runtime }

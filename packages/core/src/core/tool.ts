@@ -2,6 +2,8 @@ import { Tool as AISDKTool, type UIMessage } from "ai"
 import { z } from "zod"
 import { AgentRuntime } from "../types"
 
+type AnyTool<TRuntimeExtension = DefaultRuntimeExtension> = Tool<any, any, TRuntimeExtension>
+
 type DefaultRuntimeExtension = Record<string, never>
 
 /**
@@ -92,8 +94,12 @@ export const createTool = toolFactory()
  * Converts a custom Tool instance to AI SDK's tool format.
  * This adapter enables our tools to work with AI SDK's generateText/streamText functions.
  */
-export function toAISDKTool<TRuntimeExtension = DefaultRuntimeExtension>(
-	tool: Tool<any, any, TRuntimeExtension>,
+export function toAISDKTool<
+	TInput extends z.ZodTypeAny = z.ZodTypeAny,
+	TOutput extends z.ZodTypeAny = z.ZodTypeAny,
+	TRuntimeExtension = DefaultRuntimeExtension
+>(
+	tool: Tool<TInput, TOutput, TRuntimeExtension>,
 	runtime: AgentRuntime & TRuntimeExtension,
 	messages: UIMessage[]
 ): AISDKTool {
@@ -115,7 +121,7 @@ export function toAISDKTool<TRuntimeExtension = DefaultRuntimeExtension>(
  * Useful for batch conversion when setting up multiple tools for AI SDK usage.
  */
 export function toAISDKTools<TRuntimeExtension = DefaultRuntimeExtension>(
-	tools: Record<string, Tool<any, any, TRuntimeExtension>>,
+	tools: Record<string, AnyTool<TRuntimeExtension>>,
 	runtime: AgentRuntime & TRuntimeExtension,
 	messages: UIMessage[]
 ): Record<string, AISDKTool> {
