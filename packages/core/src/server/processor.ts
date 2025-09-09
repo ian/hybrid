@@ -3,14 +3,14 @@ import {
 	MessageListener,
 	MessageListenerConfig,
 	XmtpClient,
-	createAuthenticatedXmtpClient
+	createAuthenticatedXmtpClient,
+	generateXMTPToolsToken
 } from "@hybrd/xmtp"
 import { type MiddlewareHandler } from "hono"
 import { randomUUID } from "node:crypto"
 import { createPublicClient, http } from "viem"
 import { base } from "viem/chains"
 import type { Agent } from "../core/agent"
-import { generateXMTPToolsToken } from "../lib/jwt"
 import type { AgentRuntime } from "../types"
 
 // Global state management

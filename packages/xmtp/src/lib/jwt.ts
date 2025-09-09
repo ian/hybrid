@@ -64,11 +64,11 @@ export function getValidatedPayload(c: Context): XMTPToolsPayload | null {
 }
 
 /**
- * JWT secret key used for signing and verifying tokens
+ * Gets the JWT secret for token signing, with lazy initialization
  * Uses XMTP_ENCRYPTION_KEY environment variable for consistency
  * Only falls back to development secret in development/test environments
  */
-const JWT_SECRET = (() => {
+function getJwtSecret(): string {
 	const secret = process.env.XMTP_ENCRYPTION_KEY
 	const nodeEnv = process.env.NODE_ENV || "development"
 
@@ -80,7 +80,7 @@ const JWT_SECRET = (() => {
 		)
 	}
 
-	// In development/test, allow fallback but warn
+	// In development/test, allow fallback but warn only when actually used
 	if (!secret) {
 		console.warn(
 			"⚠️  [SECURITY] Using fallback JWT secret for development. " +
@@ -90,14 +90,14 @@ const JWT_SECRET = (() => {
 	}
 
 	return secret
-})()
+}
 
 /**
- * API key used for simple authentication bypass
+ * Gets the API key for authentication, with lazy initialization
  * Requires XMTP_API_KEY environment variable in production
  * Only falls back to development key in development/test environments
  */
-const API_KEY = (() => {
+function getApiKey(): string {
 	const apiKey = process.env.XMTP_API_KEY
 	const nodeEnv = process.env.NODE_ENV || "development"
 
@@ -109,7 +109,7 @@ const API_KEY = (() => {
 		)
 	}
 
-	// In development/test, allow fallback but warn
+	// In development/test, allow fallback but warn only when actually used
 	if (!apiKey) {
 		console.warn(
 			"⚠️  [SECURITY] Using fallback API key for development. " +
@@ -119,7 +119,7 @@ const API_KEY = (() => {
 	}
 
 	return apiKey
-})()
+}
 
 /**
  * JWT token expiry time in seconds (5 minutes)
@@ -155,7 +155,7 @@ export function generateXMTPToolsToken(
 		expires: now + JWT_EXPIRY
 	}
 
-	return jwt.sign(fullPayload, JWT_SECRET, {
+	return jwt.sign(fullPayload, getJwtSecret(), {
 		expiresIn: JWT_EXPIRY
 	})
 }
@@ -185,7 +185,7 @@ export function generateXMTPToolsToken(
  */
 export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 	// First try API key authentication
-	if (token === API_KEY) {
+	if (token === getApiKey()) {
 		console.log("🔑 [Auth] Using API key authentication")
 		// Return a valid payload for API key auth
 		const now = Math.floor(Date.now() / 1000)
@@ -199,7 +199,7 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 
 	// Then try JWT token authentication
 	try {
-		const decoded = jwt.verify(token, JWT_SECRET) as XMTPToolsPayload
+		const decoded = jwt.verify(token, getJwtSecret()) as XMTPToolsPayload
 		console.log("🔑 [Auth] Using JWT token authentication")
 
 		// Additional expiry check
