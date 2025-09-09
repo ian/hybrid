@@ -1,5 +1,5 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { Agent, type MessageListenerConfig, Reaction } from "hybrid"
+import { Agent, type MessageListenerConfig } from "hybrid"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
@@ -13,24 +13,26 @@ const agent = new Agent({
 })
 
 const filter: MessageListenerConfig["filter"] = async ({ message }) => {
-	const messageContent = message.content?.toString()
-	const contentTypeId = message.contentType?.typeId
+	return true
 
-	// Example of how to check for a @bot mention
-	if (contentTypeId === "text") {
-		const lowerContent = messageContent?.toLowerCase()
-		const mentionPatterns = ["@bot"]
+	// const messageContent = message.content?.toString()
+	// const contentTypeId = message.contentType?.typeId
 
-		return mentionPatterns.some((pattern) => lowerContent?.includes(pattern))
-	}
+	// // Example of how to check for a @bot mention
+	// if (contentTypeId === "text") {
+	// 	const lowerContent = messageContent?.toLowerCase()
+	// 	const mentionPatterns = ["@bot"]
 
-	// Example of how to check for a reaction
-	if (contentTypeId === "reaction") {
-		const { content, action } = message.content as Reaction
-		return action === "added" && content === "🚀"
-	}
+	// 	return mentionPatterns.some((pattern) => lowerContent?.includes(pattern))
+	// }
 
-	return false
+	// // Example of how to check for a reaction
+	// if (contentTypeId === "reaction") {
+	// 	const { content, action } = message.content as Reaction
+	// 	return action === "added" && content === "🚀"
+	// }
+
+	// return false
 }
 
 agent.listen({

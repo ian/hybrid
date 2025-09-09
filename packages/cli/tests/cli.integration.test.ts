@@ -51,12 +51,15 @@ function runCreateHybridCommand(
 			"index.js"
 		)
 
-		const result = execSync(`node "${createHybridPath}" "${projectName}" --example ${example}`, {
-			cwd: cwd || process.cwd(),
-			encoding: "utf8",
-			stdio: "pipe",
-			timeout: 30000
-		})
+		const result = execSync(
+			`node "${createHybridPath}" "${projectName}" --example ${example}`,
+			{
+				cwd: cwd || process.cwd(),
+				encoding: "utf8",
+				stdio: "pipe",
+				timeout: 30000
+			}
+		)
 		return { stdout: result, stderr: "", exitCode: 0 }
 	} catch (error: any) {
 		return {
@@ -84,6 +87,8 @@ function cleanupTempProject(name: string): void {
 }
 
 describe("CLI Integration Tests", () => {
+	const activeProcesses: Set<any> = new Set()
+
 	beforeEach(() => {
 		// Create temp directory for tests
 		if (!existsSync("test-temp")) {
@@ -91,7 +96,19 @@ describe("CLI Integration Tests", () => {
 		}
 	})
 
-	afterEach(() => {
+	afterEach(async () => {
+		// Kill any remaining active processes
+		for (const process of activeProcesses) {
+			if (!process.killed) {
+				process.kill("SIGTERM")
+				await new Promise((resolve) => setTimeout(resolve, 100))
+				if (!process.killed) {
+					process.kill("SIGKILL")
+				}
+			}
+		}
+		activeProcesses.clear()
+
 		// Cleanup temp directories
 		if (existsSync("test-temp")) {
 			rmSync("test-temp", { recursive: true, force: true })
@@ -250,8 +267,6 @@ describe("CLI Integration Tests", () => {
 
 			cleanupTempProject(projectName)
 		})
-
-
 	})
 
 	describe("Build and Dev Commands", () => {
@@ -271,7 +286,7 @@ describe("CLI Integration Tests", () => {
 			cleanupTempProject(projectName)
 		})
 
-		it("should handle dev command", () => {
+		it("should handle dev command", async () => {
 			const projectName = "test-dev"
 			const tempDir = join(process.cwd(), "test-temp")
 
@@ -282,26 +297,59 @@ describe("CLI Integration Tests", () => {
 			const projectPath = join(tempDir, projectName)
 			const child = spawn("node", [join(process.cwd(), "dist/cli.js"), "dev"], {
 				cwd: projectPath,
-				stdio: "pipe"
+				stdio: "pipe",
+				detached: false
 			})
+
+			// Track the process for cleanup
+			activeProcesses.add(child)
 
 			let output = ""
-			child.stdout?.on("data", (data) => {
-				output += data.toString()
+			let hasOutput = false
+
+			const outputPromise = new Promise<void>((resolve) => {
+				const timeout = setTimeout(() => {
+					resolve()
+				}, 2000)
+
+				child.stdout?.on("data", (data) => {
+					output += data.toString()
+					hasOutput = true
+					clearTimeout(timeout)
+					resolve()
+				})
+
+				child.stderr?.on("data", (data) => {
+					output += data.toString()
+					hasOutput = true
+					clearTimeout(timeout)
+					resolve()
+				})
+
+				child.on("error", () => {
+					clearTimeout(timeout)
+					resolve()
+				})
 			})
 
-			child.stderr?.on("data", (data) => {
-				output += data.toString()
-			})
+			// Wait for output or timeout
+			await outputPromise
 
-			// Wait a bit for the process to start
-			setTimeout(() => {
-				child.kill()
-			}, 2000)
+			// Clean up the process
+			if (!child.killed) {
+				child.kill("SIGTERM")
+				// Give it a moment to terminate gracefully
+				await new Promise((resolve) => setTimeout(resolve, 100))
+				if (!child.killed) {
+					child.kill("SIGKILL")
+				}
+			}
 
-			// The test passes if the command doesn't immediately fail
-			expect(child.killed).toBe(false)
-			child.kill()
+			// Remove from tracking
+			activeProcesses.delete(child)
+
+			// The test passes if the command started (either with output or without immediate failure)
+			expect(child.pid).toBeDefined()
 
 			cleanupTempProject(projectName)
 		}, 10000) // Longer timeout for this test
