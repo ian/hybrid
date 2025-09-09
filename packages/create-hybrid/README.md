@@ -1,98 +1,66 @@
-# create-hybrid
+# Hybrid - Typescript Framework for building commerce-connected AI Agents.
 
-Create a new Hybrid XMTP agent project with a single command.
+An open-source agent framework for building conversational AI agents on XMTP. 
 
-## Usage
+Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
+
+See [http://hybriddev.com](http://hybrid.dev) for more information.
+
+## 📦 Quickstart
+
+Getting started with Hybrid is simple:
+
+### 1. Initialize your project
 
 ```bash
-# Create a new project
-npx create hybrid my-agent
-
-# Create in current directory
-npx create hybrid .
-
-# Interactive mode (will prompt for name)
-npx create hybrid
+npm create hybrid my-agent
+cd my-agent
 ```
 
-## What it creates
+This creates all the necessary files and configuration for your agent.
 
-This package creates a new Hybrid XMTP agent project with:
+### 2. Get your OpenRouter API key
+   
+Visit [OpenRouter](https://openrouter.ai/keys), create an account and generate an API key
 
-- **TypeScript configuration** - Ready-to-use TypeScript setup
-- **Agent template** - Pre-configured agent with OpenRouter integration
-- **Development scripts** - Build, dev, test, and lint commands
-- **Environment setup** - Template `.env` file with required variables:
+Add it to your `.env` file:
 
 ```env
-# OpenRouter Configuration
-# Get your OpenRouter API key from https://openrouter.ai/keys
 OPENROUTER_API_KEY=your_openrouter_api_key_here
-
-# XMTP Wallet and Encryption Keys
-# Run 'npx hybrid keys' to generate these values
-XMTP_WALLET_KEY=your_wallet_key_here
-XMTP_ENCRYPTION_KEY=your_encryption_key_here
-
-# XMTP Environment (dev, production)
-XMTP_ENV=production
-
-# Server Configuration
-# PORT=8454
-```
-- **Testing framework** - Vitest configuration for unit tests
-
-## Project structure
-
-```
-my-agent/
-├── src/
-│   ├── agent.ts          # Main agent implementation
-│   └── agent.test.ts     # Example tests
-├── .env                  # Environment variables
-├── .gitignore           # Git ignore rules
-├── package.json         # Dependencies and scripts
-├── tsconfig.json        # TypeScript configuration
-├── vitest.config.ts     # Test configuration
-└── README.md           # Project documentation
 ```
 
-## Next steps
+### 3. Generate XMTP keys
 
-After creating your project:
+```bash
+hybrid keys
+```
 
-1. **Install dependencies**
-   ```bash
-   cd my-agent
-   npm install
-   ```
+or automatically add it to your `.env` file:  
 
-2. **Get your OpenRouter API key**
-   - Visit [OpenRouter](https://openrouter.ai/keys)
-   - Create an account and generate an API key
-   - Add it to your `.env` file
+```bash
+hybrid keys --write
+```
 
-3. **Generate XMTP keys**
-   ```bash
-   npm run keys
-   ```
+### 4. Register your wallet with XMTP
 
-4. **Start development**
-   ```bash
-   npm run dev
-   ```
+```bash
+hybrid register
+```
 
-## Requirements
+This generates secure wallet and encryption keys for your XMTP agent.
 
-- Node.js 20 or higher
-- npm, yarn, or pnpm
+### 5. Register your wallet with XMTP
 
-## Related packages
+```bash
+hybrid register
+```
 
-- [`hybrid`](../core) - The main Hybrid framework
-- [`@hybrd/cli`](../cli) - CLI tools for Hybrid development
-- [`@hybrd/xmtp`](../xmtp) - XMTP client integration
+  ### 6. Start developing
 
-## License
+```bash
+hybrid dev
+```
 
-MIT
+Your agent will start listening for XMTP messages and you're ready to build! 
+
+Go to [https://xmtp.chat/dm/](https://xmtp.chat/dm/) and send a message to your agent.

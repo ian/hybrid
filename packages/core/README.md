@@ -1,167 +1,66 @@
-# Hybrid Agent Framework
+# Hybrid - Typescript Framework for building commerce-connected AI Agents.
 
-A flexible framework for building AI agents with plugin-based HTTP server extensions.
+An open-source agent framework for building conversational AI agents on XMTP. 
 
-## Features
+Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
 
-- **AI Agent Core**: Built on AI SDK 5 with streaming and tool support
-- **Plugin System**: Extensible HTTP server with Hono integration
-- **XMTP Integration**: Built-in XMTP messaging capabilities
-- **Blockchain Events**: Ponder integration for blockchain event handling
-- **TypeScript First**: Full type safety and modern TypeScript patterns
+See [http://hybriddev.com](http://hybrid.dev) for more information.
 
-## Quick Start
+## 📦 Quickstart
 
-```typescript
-import { Agent, XMTPPlugin, PonderPlugin } from "hybrid"
+Getting started with Hybrid is simple:
 
-// Create an agent
-const agent = new Agent({
-  name: "my-agent",
-  model: "gpt-4",
-  instructions: "You are a helpful AI assistant."
-})
-
-// Start the server with plugins
-await agent.listen({
-  port: "3000",
-  filter: async ({ message }) => {
-    console.log("Received message:", message)
-    return true // Accept all messages
-  },
-  plugins: [
-    XMTPPlugin(),
-    PonderPlugin()
-  ]
-})
-```
-
-## Plugin System
-
-The framework uses a plugin-based architecture that allows you to extend the agent's HTTP server with additional functionality.
-
-### Built-in Plugins
-
-- **XMTPPlugin**: Provides XMTP messaging capabilities
-- **PonderPlugin**: Handles blockchain events via Ponder
-
-### Creating Custom Plugins
-
-```typescript
-import type { Plugin } from "hybrid"
-import { Hono } from "hono"
-
-function MyCustomPlugin(): Plugin {
-  return {
-    name: "my-custom",
-    description: "My custom functionality",
-    apply: (app) => {
-      app.get("/custom", (c) => c.json({ message: "Hello from custom plugin!" }))
-    }
-  }
-}
-
-// Use the plugin
-const agent = new Agent({
-  name: "my-agent",
-  model: "gpt-4",
-  instructions: "You are a helpful AI assistant."
-})
-
-// Start server with plugins
-await agent.listen({
-  port: "3000",
-  plugins: [
-    XMTPPlugin(),
-    PonderPlugin(),
-    MyCustomPlugin()
-  ]
-})
-```
-
-### Plugin Registry
-
-You can also register plugins dynamically:
-
-```typescript
-// Register a plugin after agent creation
-agent.use(MyCustomPlugin())
-
-// Check registered plugins
-console.log(`Agent has ${agent.plugins.size} plugins`)
-
-// Get a specific plugin
-const plugin = agent.plugins.get("my-custom")
-
-// Check if a plugin is registered
-if (agent.plugins.has("xmtp")) {
-  console.log("XMTP plugin is registered")
-}
-```
-
-### Plugin Context
-
-Plugins receive a context object with the agent instance:
-
-```typescript
-function MyPlugin(): Plugin {
-  return {
-    name: "my-plugin",
-    description: "My plugin",
-    apply: (app, context) => {
-      if (context) {
-        console.log(`Plugin applied to agent: ${context.agent.name}`)
-      }
-      
-      app.get("/my-endpoint", (c) => c.json({ message: "Hello!" }))
-    }
-  }
-}
-```
-
-## Architecture
-
-The framework consists of several core components:
-
-- **Agent**: Main AI agent with streaming and tool support
-- **Plugin System**: Extensible HTTP server architecture with Hono
-- **Tool System**: AI SDK compatible tool framework
-- **Server**: Hono-based HTTP server with plugin support
-
-### Plugin Lifecycle
-
-1. **Registration**: Plugins are registered during agent creation or via `agent.use()`
-2. **Application**: When `agent.listen()` is called, all plugins are applied to the Hono app
-3. **Execution**: Plugins can add routes, middleware, and other functionality to the app
-
-## Examples
-
-See the `examples/` directory for complete usage examples:
-
-- `plugin-usage.ts`: Comprehensive plugin usage examples
-- Basic plugin registration
-- Dynamic plugin registration
-- Custom plugin creation
-- Plugin registry inspection
-- Server startup with plugins
-
-## Development
+### 1. Initialize your project
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Build the package
-pnpm build
-
-# Run tests
-pnpm test
-
-# Type check
-pnpm typecheck
+npm create hybrid my-agent
+cd my-agent
 ```
 
-## License
+This creates all the necessary files and configuration for your agent.
 
-MIT
+### 2. Get your OpenRouter API key
+   
+Visit [OpenRouter](https://openrouter.ai/keys), create an account and generate an API key
 
+Add it to your `.env` file:
+
+```env
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+```
+
+### 3. Generate XMTP keys
+
+```bash
+hybrid keys
+```
+
+or automatically add it to your `.env` file:  
+
+```bash
+hybrid keys --write
+```
+
+### 4. Register your wallet with XMTP
+
+```bash
+hybrid register
+```
+
+This generates secure wallet and encryption keys for your XMTP agent.
+
+### 5. Register your wallet with XMTP
+
+```bash
+hybrid register
+```
+
+  ### 6. Start developing
+
+```bash
+hybrid dev
+```
+
+Your agent will start listening for XMTP messages and you're ready to build! 
+
+Go to [https://xmtp.chat/dm/](https://xmtp.chat/dm/) and send a message to your agent.

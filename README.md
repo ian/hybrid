@@ -1,6 +1,10 @@
 # Hybrid - Typescript Framework for building commerce-connected AI Agents.
 
-An open-source agent framework for building conversational AI agents on XMTP. Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
+An open-source agent framework for building conversational AI agents on XMTP. 
+
+Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
+
+See [http://hybriddev.com](http://hybrid.dev) for more information.
 
 ## 📦 Quickstart
 
@@ -15,23 +19,46 @@ cd my-agent
 
 This creates all the necessary files and configuration for your agent.
 
-### 2. Generate XMTP keys
+### 2. Get your OpenRouter API key
+   
+Visit [OpenRouter](https://openrouter.ai/keys), create an account and generate an API key
+
+Add it to your `.env` file:
+
+```env
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+```
+
+### 3. Generate XMTP keys
 
 ```bash
-npx hybrid keys
+hybrid keys
+```
+
+or automatically add it to your `.env` file:  
+
+```bash
+hybrid keys --write
+```
+
+### 4. Register your wallet with XMTP
+
+```bash
+hybrid register
 ```
 
 This generates secure wallet and encryption keys for your XMTP agent.
 
-### 3. Register your wallet with XMTP
+### 5. Register your wallet with XMTP
 
 ```bash
-npx hybrid register
+hybrid register
 ```
-### 4. Start developing
+
+  ### 6. Start developing
 
 ```bash
-npx hybrid dev
+hybrid dev
 ```
 
 Your agent will start listening for XMTP messages and you're ready to build! 
