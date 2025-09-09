@@ -65,15 +65,61 @@ export function getValidatedPayload(c: Context): XMTPToolsPayload | null {
 
 /**
  * JWT secret key used for signing and verifying tokens
- * Falls back to a development secret if XMTP_JWT_SECRET is not set
+ * Requires XMTP_JWT_SECRET environment variable in production
+ * Only falls back to development secret in development/test environments
  */
-const JWT_SECRET = process.env.XMTP_JWT_SECRET || "fallback-secret-for-dev"
+const JWT_SECRET = (() => {
+	const secret = process.env.XMTP_JWT_SECRET
+	const nodeEnv = process.env.NODE_ENV || "development"
+
+	// In production, require a real JWT secret
+	if (nodeEnv === "production" && !secret) {
+		throw new Error(
+			"XMTP_JWT_SECRET environment variable is required in production. " +
+				"Generate a secure random secret for JWT token signing."
+		)
+	}
+
+	// In development/test, allow fallback but warn
+	if (!secret) {
+		console.warn(
+			"⚠️  [SECURITY] Using fallback JWT secret for development. " +
+				"Set XMTP_JWT_SECRET environment variable for production."
+		)
+		return "fallback-secret-for-dev-only"
+	}
+
+	return secret
+})()
 
 /**
  * API key used for simple authentication bypass
- * Falls back to a development key if XMTP_API_KEY is not set
+ * Requires XMTP_API_KEY environment variable in production
+ * Only falls back to development key in development/test environments
  */
-const API_KEY = process.env.XMTP_API_KEY || "fallback-api-key-for-dev"
+const API_KEY = (() => {
+	const apiKey = process.env.XMTP_API_KEY
+	const nodeEnv = process.env.NODE_ENV || "development"
+
+	// In production, require a real API key
+	if (nodeEnv === "production" && !apiKey) {
+		throw new Error(
+			"XMTP_API_KEY environment variable is required in production. " +
+				"Generate a secure random API key for authentication."
+		)
+	}
+
+	// In development/test, allow fallback but warn
+	if (!apiKey) {
+		console.warn(
+			"⚠️  [SECURITY] Using fallback API key for development. " +
+				"Set XMTP_API_KEY environment variable for production."
+		)
+		return "fallback-api-key-for-dev-only"
+	}
+
+	return apiKey
+})()
 
 /**
  * JWT token expiry time in seconds (5 minutes)

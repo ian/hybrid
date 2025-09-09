@@ -11,7 +11,7 @@
 	},
 	"scripts": {
 		"build": "tsup",
-		"clean": "rm -rf .turbo dist",
+		"clean": "rimraf .turbo dist",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --unsafe",
 		"lint:fix": "biome lint --write --unsafe",
@@ -24,6 +24,7 @@
 		"@config/biome": "workspace:*",
 		"@config/tsconfig": "workspace:*",
 		"@types/node": "catalog:stack",
+		"rimraf": "^5.0.10",
 		"tsup": "^8.5.0",
 		"vitest": "^3.2.4"
 	}
