@@ -2,6 +2,42 @@
 
 An open-source agent framework for building conversational AI agents on XMTP. Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
 
+## 📦 Quickstart
+
+Getting started with Hybrid is simple:
+
+### 1. Initialize your project
+
+```bash
+npm create hybrid my-agent
+cd my-agent
+```
+
+This creates all the necessary files and configuration for your agent.
+
+### 2. Generate XMTP keys
+
+```bash
+npx hybrid keys
+```
+
+This generates secure wallet and encryption keys for your XMTP agent.
+
+### 3. Register your wallet with XMTP
+
+```bash
+npx hybrid register
+```
+### 4. Start developing
+
+```bash
+npx hybrid dev
+```
+
+Your agent will start listening for XMTP messages and you're ready to build! 
+
+Go to [https://xmtp.chat/dm/](https://xmtp.chat/dm/) and send a message to your agent.
+
 ## 🏗️ Architecture
 
 This project uses a monorepo structure with multiple packages and supporting directories:
@@ -55,42 +91,6 @@ agent.listen({
 	filter: replyOnlyFilter
 })
 ```
-
-This example shows how Hybrid handles message filtering, AI integration, and XMTP listening - all in just a few lines of code.
-
-## 📦 Installation
-
-Getting started with Hybrid is simple:
-
-### 1. Install the package
-
-```bash
-pnpm install hybrid
-```  
-
-### 2. Initialize your project
-
-```bash
-npx create-hybrid my-agent
-```
-
-This creates all the necessary files and configuration for your agent.
-
-### 3. Generate XMTP keys
-
-```bash
-npx hybrid keys
-```
-
-This generates secure wallet and encryption keys for your XMTP agent.
-
-### 4. Start developing
-
-```bash
-npx hybrid dev
-```
-
-Your agent will start listening for XMTP messages and you're ready to build!
 
 ## 🖥️ CLI Commands
 
