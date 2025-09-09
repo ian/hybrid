@@ -1,6 +1,6 @@
 {
-	"name": "@hybrd/xmtp",
-	"version": "1.2.8",
+	"name": "@hybrd/ponder",
+	"version": "1.0.0",
 	"type": "module",
 	"exports": {
 		".": {
@@ -18,22 +18,11 @@
 		"format": "biome format --write"
 	},
 	"dependencies": {
-		"@xmtp/content-type-group-updated": "2.0.2",
-		"@xmtp/content-type-reaction": "2.0.2",
-		"@xmtp/content-type-reply": "2.0.2",
-		"@xmtp/content-type-text": "2.0.2",
-		"@xmtp/content-type-transaction-reference": "2.0.2",
-		"@xmtp/content-type-wallet-send-calls": "2.0.0",
-		"@xmtp/node-sdk": "^4.0.1",
-		"hono": "^4.7.4",
-		"jsonwebtoken": "^9.0.2",
-		"uint8arrays": "^5.1.0",
-		"viem": "^2.22.17"
+		"hono": "^4.7.4"
 	},
 	"devDependencies": {
 		"@config/biome": "workspace:*",
 		"@config/tsconfig": "workspace:*",
-		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "catalog:stack",
 		"tsup": "^8.5.0",
 		"vitest": "^3.2.4"

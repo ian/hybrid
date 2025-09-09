@@ -88,6 +88,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.13.5
         version: 1.19.0(hono@4.9.2)
+      '@hybrd/ponder':
+        specifier: workspace:*
+        version: link:../ponder
       '@hybrd/utils':
         specifier: workspace:*
         version: link:../utils
@@ -169,6 +172,28 @@ importers:
         specifier: ^8.5.0
         version: 8.5.0(postcss@8.5.6)(tsx@4.20.5)(typescript@5.9.2)
 
+  packages/ponder:
+    dependencies:
+      hono:
+        specifier: ^4.7.4
+        version: 4.9.2
+    devDependencies:
+      '@config/biome':
+        specifier: workspace:*
+        version: link:../../config/biome
+      '@config/tsconfig':
+        specifier: workspace:*
+        version: link:../../config/typescript
+      '@types/node':
+        specifier: catalog:stack
+        version: 22.8.6
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(postcss@8.5.6)(tsx@4.20.5)(typescript@5.9.2)
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@22.8.6)(tsx@4.20.5)
+
   packages/utils:
     dependencies:
       date-fns:
@@ -223,6 +248,9 @@ importers:
       '@xmtp/node-sdk':
         specifier: ^4.0.1
         version: 4.0.3
+      hono:
+        specifier: ^4.7.4
+        version: 4.9.2
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2

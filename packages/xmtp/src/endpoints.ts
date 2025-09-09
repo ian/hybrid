@@ -1,18 +1,10 @@
-import {
-	ContentTypeReaction,
-	ContentTypeReply,
-	ContentTypeText,
-	ContentTypeWalletSendCalls,
-	HonoVariables,
-	Reply,
-	SendMessageParams,
-	SendReactionParams,
-	SendReplyParams,
-	SendTransactionParams,
-	WalletSendCallsParams
-} from "@hybrd/xmtp"
+import { ContentTypeReaction } from "@xmtp/content-type-reaction"
+import { ContentTypeReply, Reply } from "@xmtp/content-type-reply"
+import { ContentTypeText } from "@xmtp/content-type-text"
+import { ContentTypeWalletSendCalls, WalletSendCallsParams } from "@xmtp/content-type-wallet-send-calls"
 import { Hono } from "hono"
-import { getValidatedPayload, validateXMTPToolsToken } from "../lib/jwt"
+import { getValidatedPayload, validateXMTPToolsToken } from "./lib/jwt"
+import type { HonoVariables, SendMessageParams, SendReactionParams, SendReplyParams, SendTransactionParams } from "./types"
 
 const app = new Hono<{ Variables: HonoVariables }>()
 

@@ -16,12 +16,24 @@ export * from "./service-client"
 export * from "./types"
 
 // ===================================================================
+// XMTP Plugin for Agent Integration
+// ===================================================================
+export { XMTPPlugin } from "./plugin"
+export type { Plugin, XMTPPluginContext } from "./plugin"
+
+// ===================================================================
+// JWT Utilities for XMTP Tools
+// ===================================================================
+export { generateXMTPToolsToken } from "./lib/jwt"
+export type { XMTPToolsPayload } from "./lib/jwt"
+
+// ===================================================================
 // Enhanced XMTP Client & Connection Management
 // ===================================================================
 export {
-	createXMTPConnectionManager,
 	// Enhanced connection management
 	XMTPConnectionManager,
+	createXMTPConnectionManager,
 	type XMTPConnectionConfig,
 	type XMTPConnectionHealth
 } from "./client"
@@ -30,8 +42,8 @@ export {
 // XMTP Service Client (for external service communication)
 // ===================================================================
 export {
-	createXmtpServiceClient,
-	XmtpServiceClient
+	XmtpServiceClient,
+	createXmtpServiceClient
 } from "./service-client"
 
 // Service Client Types

@@ -1,6 +1,15 @@
-import type { Plugin } from "../core/plugin"
-import type { PluginContext } from "../server/listen"
+import { Hono } from "hono"
 import { app as ponderApp } from "./endpoints"
+
+export interface Plugin<TContext = unknown> {
+	name: string
+	description?: string
+	apply: (app: Hono, context?: TContext) => void | Promise<void>
+}
+
+export interface PluginContext {
+	agent: unknown
+}
 
 /**
  * Ponder Plugin that provides blockchain event handling functionality

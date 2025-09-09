@@ -1,11 +1,10 @@
 import { serve } from "@hono/node-server"
 import { getCloudflareStoragePath } from "@hybrd/utils"
 import type { MessageListenerConfig, XmtpClient } from "@hybrd/xmtp"
-import { type HonoVariables, createXMTPClient } from "@hybrd/xmtp"
+import { type HonoVariables, XMTPPlugin, createXMTPClient } from "@hybrd/xmtp"
 import { Context, Hono, Next } from "hono"
 import type { Agent, DefaultRuntimeExtension } from "../core/agent"
 import type { Plugin } from "../core/plugin"
-import { XMTPPlugin } from "../xmtp/plugin"
 import {
 	createBackgroundMessageProcessor,
 	getBgState,
