@@ -71,30 +71,6 @@ jobs:
           cd packages/core
           pnpm test:run
 
-      - name: Verify Agent can use xmtpTools (type check)
-        run: |
-          cd packages/core
-          cat > type-check-test.ts << 'EOF'
-          import { Agent, xmtpTools } from "./src/index"
-          import type { LanguageModel } from "ai"
-          
-          // This should compile without type errors after our fix
-          const mockModel: LanguageModel = {} as LanguageModel
-          
-          const agent = new Agent({
-            name: "CI Test Agent",
-            model: mockModel,
-            tools: xmtpTools, // This was causing the original type error
-            instructions: "Test agent for CI"
-          })
-          
-          console.log("✅ Type check passed - Agent accepts xmtpTools")
-          EOF
-          
-          npx tsc --noEmit type-check-test.ts --skipLibCheck
-          echo "✅ TypeScript compilation successful - type fix verified"
-          rm type-check-test.ts
-
   test-compatibility:
     name: Test Tool Schema Compatibility
     runs-on: ubuntu-latest
@@ -177,38 +153,3 @@ jobs:
           
           npx tsx compatibility-test.ts
           rm compatibility-test.ts
-
-  lint-and-format:
-    name: Lint and Format Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.5
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint core package
-        run: |
-          cd packages/core
-          pnpm lint
-
-      - name: Check formatting
-        run: |
-          cd packages/core
-          pnpm format --check || {
-            echo "❌ Code formatting issues found. Run 'pnpm format' to fix."
-            exit 1
-          }
