@@ -50,13 +50,14 @@ npm start
 ```
 {{projectName}}/
 ├── src/
-│   └── agent.ts          # Main agent implementation
+│   ├── agent.ts          # Main agent implementation
+│   └── agent.test.ts     # Agent test entry file
 ├── dist/                 # Compiled JavaScript (after build)
 ├── .env                  # Environment variables
 ├── package.json          # Dependencies and scripts
 ├── tsconfig.json         # TypeScript configuration
 ├── vitest.config.ts      # Test configuration
-└── README.md            # This file
+└── README.md             # This file
 ```
 
 ## 🛠️ Available Scripts
