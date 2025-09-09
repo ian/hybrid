@@ -25,19 +25,15 @@ export function runDev() {
 			currentChild.kill("SIGTERM")
 		}
 
-		currentChild = spawn(
-			"tsx",
-			["--watch", "--clear-screen=false", "src/agent.ts"],
-			{
-				stdio: "inherit",
-				shell: true,
-				env: {
-					...process.env,
-					// Force tsx to exit cleanly on file changes
-					TSX_WATCH_IGNORE_PATHS: "node_modules/**"
-				}
+		currentChild = spawn("tsx", ["--watch", "src/agent.ts"], {
+			stdio: "inherit",
+			shell: true,
+			env: {
+				...process.env,
+				// Force tsx to exit cleanly on file changes
+				TSX_WATCH_IGNORE_PATHS: "node_modules/**"
 			}
-		)
+		})
 
 		currentChild.on("error", (error) => {
 			console.error("Failed to start dev server:", error)
