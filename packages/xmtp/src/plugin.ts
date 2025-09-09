@@ -1,6 +1,6 @@
 import { Hono } from "hono"
 import xmtpEndpoints from "./endpoints"
-import type { MessageListenerConfig } from "./lib/message-listener"
+import type { MessageListenerConfig } from "./types"
 import type { HonoVariables } from "./types"
 
 export interface Plugin<TContext = unknown> {

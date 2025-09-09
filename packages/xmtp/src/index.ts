@@ -6,7 +6,8 @@
 
 export * from "./client"
 export * from "./constants"
-export * from "./lib/message-listener"
+// export * from "./lib/message-listener" // Deprecated - use AgentMessageListener instead
+export * from "./lib/agent-message-listener"
 export * from "./lib/subjects"
 export * from "./resolver"
 export * from "./resolver/basename-resolver"
@@ -69,19 +70,13 @@ export type {
 } from "./types"
 
 // ===================================================================
-// XMTP Core SDK Exports
+// XMTP Agent SDK Exports
 // ===================================================================
 export {
-	Client,
-	IdentifierKind,
-	// type Conversation,
-	type DecodedMessage,
-	type Dm,
-	// type Group,
-	type LogLevel,
-	type Signer,
-	type XmtpEnv
-} from "@xmtp/node-sdk"
+	createUser,
+	createSigner,
+	Agent
+} from "@xmtp/agent-sdk"
 
 // ===================================================================
 // XMTP Content Types
@@ -120,8 +115,6 @@ export {
 // ===================================================================
 export {
 	backupDbToPersistentStorage,
-	createSigner,
-	createUser,
 	createXMTPClient,
 	diagnoseXMTPIdentityIssue,
 	generateEncryptionKeyHex,

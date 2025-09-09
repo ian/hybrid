@@ -1,4 +1,5 @@
 import {
+	createUser,
 	createSigner,
 	createXMTPClient,
 	logAgentDetails,
@@ -35,7 +36,9 @@ export async function registerWallet() {
 
 	try {
 		console.log("🔑 Creating signer...")
-		const signer = createSigner(XMTP_WALLET_KEY)
+		const privateKeyHex = XMTP_WALLET_KEY.startsWith('0x') ? XMTP_WALLET_KEY as `0x${string}` : `0x${XMTP_WALLET_KEY}` as `0x${string}`
+		const user = createUser(privateKeyHex)
+		const signer = createSigner(user)
 
 		// Get wallet address for logging
 		const identifier = await signer.getIdentifier()
