@@ -147,7 +147,7 @@ const agent = new Agent({
 
 ## 🔗 Useful Links
 
-- [Hybrid Documentation](https://github.com/your-org/hybrid)
+- [Hybrid Documentation](https://hybrid.dev)
 - [XMTP Documentation](https://docs.xmtp.org/)
 - [OpenRouter Models](https://openrouter.ai/docs#models)
 
