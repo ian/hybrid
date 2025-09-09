@@ -195,6 +195,39 @@ export async function listen({
 		agent
 	}
 
+	// Initialize XMTP client and start background message processor
+	const { XMTP_WALLET_KEY, XMTP_ENCRYPTION_KEY } = process.env
+
+	if (!XMTP_WALLET_KEY) {
+		throw new Error("XMTP_WALLET_KEY must be set")
+	}
+
+	if (!XMTP_ENCRYPTION_KEY) {
+		throw new Error("XMTP_ENCRYPTION_KEY must be set")
+	}
+
+	// Create XMTP client with persistent storage for reliable message streaming
+	const cloudflareStoragePath = getCloudflareStoragePath("xmtp")
+	const xmtpClient = await createXMTPClient(XMTP_WALLET_KEY as string, {
+		persist: true,
+		storagePath: cloudflareStoragePath
+	})
+
+	// Apply middleware for XMTP client
+	app.use(createHonoMiddleware(xmtpClient))
+
+	// Start the background message processor
+	app.use(
+		createBackgroundMessageProcessor({
+			agent,
+			xmtpClient,
+			messageFilter: filter, // Use the provided filter
+			intervalMs: 5_000, // Check every 5 seconds
+			backoffMs: 1_000, // Start with 1 second backoff
+			maxBackoffMs: 30_000 // Max 30 seconds backoff
+		})
+	)
+
 	const xmtpPlugin = XMTPPlugin({
 		filter
 	})
@@ -275,7 +308,8 @@ export async function listen({
 			fetch: app.fetch,
 			port: httpPort
 		})
-		console.log(`✅ XMTP Tools HTTP Server running on port ${httpPort}`)
+		console.log(`✅ Hybrid server running on port ${httpPort}`)
+		console.log(`🎧 Background message listener is active`)
 	} catch (error: any) {
 		if (error.code === "EADDRINUSE") {
 			console.error(
