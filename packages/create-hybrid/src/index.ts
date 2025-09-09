@@ -1,18 +1,13 @@
 import { Command } from "commander"
 import degit from "degit"
 import { readFile, readdir, writeFile } from "node:fs/promises"
-import { join, dirname } from "node:path"
-import { fileURLToPath } from "node:url"
+import { join } from "node:path"
 import prompts from "prompts"
 
 interface Example {
 	name: string
 	description: string
 	path: string
-}
-
-interface TemplateOption {
-	path: string | null
 	available: boolean
 	message?: string
 }
@@ -21,57 +16,29 @@ interface TemplateOption {
 const DEFAULT_REPO = "ian/hybrid"
 const REPO = process.env.REPO || DEFAULT_REPO
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const templateOptions: Record<string, TemplateOption> = {
-	"basic": {
-		path: join(__dirname, "..", "templates", "agent"),
-		available: true
-	},
-	"with-ponder": {
-		path: null,
-		available: false,
-		message: "Coming soon"
-	},
-	"with-foundry": {
-		path: null,
-		available: false,
-		message: "Coming soon"
-	}
-}
-
 const EXAMPLES: Example[] = [
 	{
 		name: "basic",
 		description: "Basic XMTP agent with message filtering and AI responses",
-		path: "basic" // Path is now handled separately in degit options
+		path: "basic",
+		available: true
 	},
 	{
 		name: "with-ponder",
 		description: "Agent with Ponder integration for indexing blockchain data",
-		path: "with-ponder" // Path is now handled separately in degit options
+		path: "with-ponder",
+		available: false,
+		message: "Coming soon"
 	},
 	{
 		name: "with-foundry",
-		description: "Agent with Foundry integration for smart contract development",
-		path: "with-foundry" // Path is now handled separately in degit options
+		description:
+			"Agent with Foundry integration for smart contract development",
+		path: "with-foundry",
+		available: false,
+		message: "Coming soon"
 	}
 ]
-
-function isInMonorepo(): boolean {
-	// Check if we're running from within the monorepo (for development/testing)
-	const currentDir = process.cwd()
-	const packageJsonPath = join(currentDir, "package.json")
-	try {
-		const packageJson = require(packageJsonPath)
-		return (
-			packageJson.name === "hybrid" || currentDir.includes("/hybrid/packages/")
-		)
-	} catch {
-		return false
-	}
-}
 
 function replaceTemplateVariables(
 	content: string,
@@ -362,16 +329,14 @@ async function createProject(
 			type: "select",
 			name: "example",
 			message: "Which example would you like to use?",
-			choices: EXAMPLES.map((ex) => {
-				const templateOption = templateOptions[ex.name as keyof typeof templateOptions]
-				const isAvailable = templateOption?.available ?? false
-				return {
-					title: ex.name,
-					description: isAvailable ? ex.description : `${ex.description} (Coming soon)`,
-					value: ex,
-					disabled: !isAvailable
-				}
-			}),
+			choices: EXAMPLES.map((ex) => ({
+				title: ex.name,
+				description: ex.available
+					? ex.description
+					: `${ex.description} (${ex.message || "Coming soon"})`,
+				value: ex,
+				disabled: !ex.available
+			})),
 			initial: 0
 		})
 
@@ -380,10 +345,11 @@ async function createProject(
 			process.exit(1)
 		}
 
-		// Check if the selected template is available
-		const templateOption = templateOptions[example.name as keyof typeof templateOptions]
-		if (!templateOption?.available) {
-			console.log(`❌ Template "${example.name}" is not yet available. ${templateOption?.message || "Coming soon"}`)
+		// Check if the selected example is available
+		if (!example.available) {
+			console.log(
+				`❌ Example "${example.name}" is not yet available. ${example.message || "Coming soon"}`
+			)
 			process.exit(1)
 		}
 
@@ -463,7 +429,10 @@ export async function initializeProject(): Promise<void> {
 		.description("Create a new Hybrid XMTP agent project")
 		.version("1.2.3")
 		.argument("[project-name]", "Name of the project")
-		.option("-e, --example <example>", "Example to use (basic, with-ponder, with-foundry)")
+		.option(
+			"-e, --example <example>",
+			"Example to use (basic, with-ponder, with-foundry)"
+		)
 		.action(async (projectName?: string, options?: { example?: string }) => {
 			let finalProjectName = projectName
 
