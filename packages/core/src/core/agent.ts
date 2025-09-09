@@ -10,7 +10,6 @@ import {
 	stepCountIs,
 	streamText
 } from "ai"
-import { z } from "zod"
 import { render } from "../lib/render"
 import type { PluginContext } from "../server/listen"
 import { ListenOptions, listen } from "../server/listen"
@@ -22,16 +21,6 @@ import { Tool, toAISDKTools } from "./tool"
 export type DefaultRuntimeExtension = Record<string, never>
 
 /**
- * Tool that can be used in Agent configuration.
- * Extends the base Tool type with runtime extension support.
- */
-type AgentTool<TRuntimeExtension = DefaultRuntimeExtension> = Tool<
-	z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny>,
-	z.ZodTypeAny | z.ZodEffects<z.ZodTypeAny>,
-	TRuntimeExtension
->
-
-/**
  * Function that generates tools dynamically based on messages and runtime context.
  * Allows for context-aware tool selection and configuration.
  */
@@ -40,8 +29,8 @@ export type ToolGenerator<TRuntimeExtension = DefaultRuntimeExtension> =
 		messages: UIMessage[]
 		runtime: AgentRuntime & TRuntimeExtension
 	}) =>
-		| Record<string, AgentTool<TRuntimeExtension>>
-		| Promise<Record<string, AgentTool<TRuntimeExtension>>>
+		| Record<string, Tool<any, any, TRuntimeExtension>>
+		| Promise<Record<string, Tool<any, any, TRuntimeExtension>>>
 
 /**
  * Configuration interface for creating an Agent instance.
@@ -58,7 +47,7 @@ export interface AgentConfig<TRuntimeExtension = DefaultRuntimeExtension> {
 		  }) => LanguageModel | Promise<LanguageModel>)
 	/** Tools available to the agent, can be static or dynamically generated */
 	tools?:
-		| Record<string, AgentTool<TRuntimeExtension>>
+		| Record<string, Tool<any, any, TRuntimeExtension>>
 		| ToolGenerator<TRuntimeExtension>
 	/** Instructions for the agent, can be static or dynamically resolved */
 	instructions:
@@ -193,7 +182,7 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension> {
 		runtime: AgentRuntime & TRuntimeExtension
 	): Promise<{
 		model: LanguageModel
-		tools?: Record<string, Tool<z.ZodTypeAny, z.ZodTypeAny, TRuntimeExtension>>
+		tools?: Record<string, Tool<any, any, TRuntimeExtension>>
 		instructions?: string
 	}> {
 		const props = { messages, runtime }
@@ -278,7 +267,7 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension> {
 		const { runtime, maxTokens, telemetry, prompt, ...aiSdkOptions } = options
 
 		const aiSDKTools = tools
-			? toAISDKTools<TRuntimeExtension, z.ZodTypeAny, z.ZodTypeAny>(
+			? toAISDKTools<TRuntimeExtension>(
 					tools,
 					extendedRuntime,
 					preparedMessages
@@ -324,7 +313,7 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension> {
 			options
 
 		const aiSDKTools = tools
-			? toAISDKTools<TRuntimeExtension, z.ZodTypeAny, z.ZodTypeAny>(
+			? toAISDKTools<TRuntimeExtension>(
 					tools,
 					extendedRuntime,
 					preparedMessages
