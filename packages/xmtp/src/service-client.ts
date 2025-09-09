@@ -22,6 +22,7 @@ import type {
 	XmtpServiceMessage,
 	XmtpServiceResponse
 } from "./types"
+import { xmtpDebug, xmtpDebugError } from "./lib/jwt"
 
 export class XmtpServiceClient {
 	private config: XmtpServiceClientConfig
@@ -36,9 +37,7 @@ export class XmtpServiceClient {
 		method: "GET" | "POST" = "POST"
 	): Promise<XmtpServiceResponse<T>> {
 		const startTime = performance.now()
-		if (process.env.XMTP_DEBUG) {
-			console.log(`🌐 [HTTP] Starting ${method} request to ${endpoint}`)
-		}
+		xmtpDebug(`🌐 [HTTP] Starting ${method} request to ${endpoint}`)
 		
 		try {
 			const baseUrl = this.config.serviceUrl.replace(/\/+$/, "")
@@ -65,17 +64,13 @@ export class XmtpServiceClient {
 				fetchOptions.body = JSON.stringify(body)
 			}
 
-			if (process.env.XMTP_DEBUG) {
-				console.log(`🌐 [HTTP] Making fetch request to ${url}`)
-			}
+			xmtpDebug(`🌐 [HTTP] Making fetch request to ${url}`)
 			const fetchStartTime = performance.now()
 			
 			const response = await fetch(url, fetchOptions)
 			
 			const fetchEndTime = performance.now()
-			if (process.env.XMTP_DEBUG) {
-				console.log(`🌐 [HTTP] Fetch completed in ${(fetchEndTime - fetchStartTime).toFixed(2)}ms, status: ${response.status}`)
-			}
+			xmtpDebug(`🌐 [HTTP] Fetch completed in ${(fetchEndTime - fetchStartTime).toFixed(2)}ms, status: ${response.status}`)
 
 			if (!response.ok) {
 				let errorMessage = `HTTP ${response.status}`
@@ -92,9 +87,7 @@ export class XmtpServiceClient {
 				}
 				
 				const endTime = performance.now()
-				if (process.env.XMTP_DEBUG) {
-					console.log(`🌐 [HTTP] Request failed in ${(endTime - startTime).toFixed(2)}ms: ${errorMessage}`)
-				}
+				xmtpDebug(`🌐 [HTTP] Request failed in ${(endTime - startTime).toFixed(2)}ms: ${errorMessage}`)
 				throw new Error(errorMessage)
 			}
 
@@ -104,24 +97,18 @@ export class XmtpServiceClient {
 				data: (await response.json()) as T
 			}
 			const jsonEndTime = performance.now()
-			if (process.env.XMTP_DEBUG) {
-				console.log(`🌐 [HTTP] JSON parsing completed in ${(jsonEndTime - jsonStartTime).toFixed(2)}ms`)
-			}
+			xmtpDebug(`🌐 [HTTP] JSON parsing completed in ${(jsonEndTime - jsonStartTime).toFixed(2)}ms`)
 			
 			const endTime = performance.now()
-			if (process.env.XMTP_DEBUG) {
-				console.log(`🌐 [HTTP] Total request completed in ${(endTime - startTime).toFixed(2)}ms`)
-			}
+			xmtpDebug(`🌐 [HTTP] Total request completed in ${(endTime - startTime).toFixed(2)}ms`)
 			
 			return result
 		} catch (error) {
 			const endTime = performance.now()
-			if (process.env.XMTP_DEBUG) {
-				console.error(
-					`❌ [XmtpServiceClient] Request to ${endpoint} failed in ${(endTime - startTime).toFixed(2)}ms:`,
-					error
-				)
-			}
+			xmtpDebugError(
+				`❌ [XmtpServiceClient] Request to ${endpoint} failed in ${(endTime - startTime).toFixed(2)}ms:`,
+				error
+			)
 			return {
 				success: false,
 				error: error instanceof Error ? error.message : "Unknown error"
