@@ -1,19 +1,9 @@
 {
 	"name": "hybrid",
 	"version": "1.2.8",
-	"keywords": [
-		"xmtp",
-		"agent",
-		"ai",
-		"hybrid",
-		"blockchain",
-		"messaging"
-	],
+	"keywords": ["xmtp", "agent", "ai", "hybrid", "blockchain", "messaging"],
 	"type": "module",
-	"files": [
-		"dist",
-		"src"
-	],
+	"files": ["dist", "src"],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -24,11 +14,6 @@
 			"types": "./dist/tools/index.d.ts",
 			"import": "./dist/tools/index.js",
 			"require": "./dist/tools/index.cjs"
-		},
-		"./ponder": {
-			"types": "./dist/ponder/index.d.ts",
-			"import": "./dist/ponder/index.js",
-			"require": "./dist/ponder/index.cjs"
 		}
 	},
 	"scripts": {
@@ -45,6 +30,7 @@
 		"@coinbase/agentkit-vercel-ai-sdk": "^0.1.0",
 		"@coinbase/coinbase-sdk": "^0.22.0",
 		"@hono/node-server": "^1.13.5",
+		"@hybrd/ponder": "workspace:*",
 		"@hybrd/utils": "workspace:*",
 		"@hybrd/xmtp": "workspace:*",
 		"ai": "^5.0.28",
