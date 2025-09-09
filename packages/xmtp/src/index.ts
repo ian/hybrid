@@ -24,7 +24,8 @@ export type { Plugin, XMTPPluginContext } from "./plugin"
 // ===================================================================
 // JWT Utilities for XMTP Tools
 // ===================================================================
-export { generateXMTPToolsToken, logger } from "./lib/jwt"
+export { generateXMTPToolsToken } from "./lib/jwt"
+export { logger } from "./lib/logger"
 export type { XMTPToolsPayload } from "./lib/jwt"
 
 // ===================================================================

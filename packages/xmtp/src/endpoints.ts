@@ -3,7 +3,8 @@ import { ContentTypeReply, Reply } from "@xmtp/content-type-reply"
 import { ContentTypeText } from "@xmtp/content-type-text"
 import { ContentTypeWalletSendCalls, WalletSendCallsParams } from "@xmtp/content-type-wallet-send-calls"
 import { Hono } from "hono"
-import { getValidatedPayload, validateXMTPToolsToken, logger } from "./lib/jwt"
+import { getValidatedPayload, validateXMTPToolsToken } from "./lib/jwt"
+import { logger } from "./lib/logger"
 import type { HonoVariables, SendMessageParams, SendReactionParams, SendReplyParams, SendTransactionParams } from "./types"
 
 const app = new Hono<{ Variables: HonoVariables }>()

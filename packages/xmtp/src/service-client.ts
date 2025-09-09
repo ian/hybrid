@@ -22,7 +22,7 @@ import type {
 	XmtpServiceMessage,
 	XmtpServiceResponse
 } from "./types"
-import { logger } from "./lib/jwt"
+import { logger } from "./lib/logger"
 
 export class XmtpServiceClient {
 	private config: XmtpServiceClientConfig

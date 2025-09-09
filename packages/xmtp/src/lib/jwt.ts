@@ -1,22 +1,6 @@
 import { Context } from "hono"
 import jwt from "jsonwebtoken"
-
-/**
- * Logger instance for conditional XMTP debug logging
- * Only logs when XMTP_DEBUG environment variable is set
- */
-export const logger = {
-	debug: (message: string, ...args: any[]): void => {
-		if (process.env.XMTP_DEBUG) {
-			console.log(message, ...args)
-		}
-	},
-	error: (message: string, ...args: any[]): void => {
-		if (process.env.XMTP_DEBUG) {
-			console.error(message, ...args)
-		}
-	}
-}
+import { logger } from "./logger"
 
 export interface XMTPToolsPayload {
 	action: "send" | "reply" | "react" | "transaction" | "blockchain-event"
