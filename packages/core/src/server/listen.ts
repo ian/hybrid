@@ -230,12 +230,64 @@ export async function listen({
 		return c.json({ error: "Not found" }, 404)
 	})
 
-	serve({
-		fetch: app.fetch,
-		port: Number.parseInt(port || "8454")
+	const httpPort = Number.parseInt(port || "8454")
+
+	// Setup graceful shutdown
+	const shutdown = async () => {
+		console.log("Waiting for graceful termination...")
+
+		// Stop background processor first
+		try {
+			stopBackground()
+		} catch (error) {
+			console.error("Error stopping background processor:", error)
+		}
+
+		// Give some time for cleanup
+		await new Promise((resolve) => setTimeout(resolve, 1000))
+	}
+
+	// Register shutdown handlers
+	process.once("SIGINT", async () => {
+		await shutdown()
+		process.exit(0)
 	})
 
-	console.log(`✅ XMTP Tools HTTP Server running`)
+	process.once("SIGTERM", async () => {
+		await shutdown()
+		process.exit(0)
+	})
+
+	// Handle uncaught errors
+	process.on("uncaughtException", async (error) => {
+		console.error("Uncaught exception:", error)
+		await shutdown()
+		process.exit(1)
+	})
+
+	process.on("unhandledRejection", async (reason) => {
+		console.error("Unhandled rejection:", reason)
+		await shutdown()
+		process.exit(1)
+	})
+
+	try {
+		serve({
+			fetch: app.fetch,
+			port: httpPort
+		})
+		console.log(`✅ XMTP Tools HTTP Server running on port ${httpPort}`)
+	} catch (error: any) {
+		if (error.code === "EADDRINUSE") {
+			console.error(
+				`❌ Port ${httpPort} is already in use. Please stop the existing server or use a different port.`
+			)
+			process.exit(1)
+		} else {
+			console.error("Server error:", error)
+			process.exit(1)
+		}
+	}
 }
 
 // Re-export the background processor helpers

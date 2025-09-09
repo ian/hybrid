@@ -39,8 +39,26 @@ interface BackgroundMessageProcessorOptions<
 	maxBackoffMs?: number
 }
 
-function sleep(ms: number) {
-	return new Promise((r) => setTimeout(r, ms))
+function sleep(ms: number, signal?: AbortSignal) {
+	return new Promise((resolve, reject) => {
+		if (signal?.aborted) {
+			reject(new Error("AbortError"))
+			return
+		}
+
+		const timeout = setTimeout(resolve, ms)
+
+		if (signal) {
+			signal.addEventListener(
+				"abort",
+				() => {
+					clearTimeout(timeout)
+					reject(new Error("AbortError"))
+				},
+				{ once: true }
+			)
+		}
+	})
 }
 
 export function createBackgroundMessageProcessor<
@@ -257,13 +275,21 @@ export function createBackgroundMessageProcessor<
 					}
 				}
 
-				// Sleep until next iteration
-				await sleep(nextDelay)
+				// Sleep with abort signal support for faster shutdown
+				try {
+					await sleep(nextDelay, signal)
+				} catch (error) {
+					if (error instanceof Error && error.name === "AbortError") {
+						break // Exit the loop on abort
+					}
+					throw error
+				}
 			}
 
 			// Cleanup on exit
 			try {
 				if (state.listenerRunning) {
+					console.log("[XMTP Background] Stopping message listener...")
 					await listener.stop()
 				}
 			} catch (error) {
