@@ -7,7 +7,6 @@ A Hybrid XMTP agent built with TypeScript and AI capabilities.
 ### Prerequisites
 
 - Node.js 20 or higher
-- npm or yarn
 
 ### Installation
 
@@ -25,9 +24,9 @@ npm install
 
 2. **Generate XMTP keys**
    ```bash
-   npm run keys
+   hybrid keys
    # or
-   npx hybrid keys
+   hybrid keys --write
    ```
 
 3. **Update environment variables**
