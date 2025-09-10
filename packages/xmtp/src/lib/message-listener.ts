@@ -164,8 +164,9 @@ export class MessageListener extends EventEmitter {
 						// Skip messages from self or null messages
 						if (
 							!message ||
+							(this.xmtpClient.inboxId && 
 							message.senderInboxId.toLowerCase() ===
-								this.xmtpClient.inboxId.toLowerCase()
+								this.xmtpClient.inboxId.toLowerCase())
 						) {
 							continue
 						}

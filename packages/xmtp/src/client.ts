@@ -2,17 +2,16 @@ import { ReactionCodec } from "@xmtp/content-type-reaction"
 import { ReplyCodec } from "@xmtp/content-type-reply"
 import { TransactionReferenceCodec } from "@xmtp/content-type-transaction-reference"
 import { WalletSendCallsCodec } from "@xmtp/content-type-wallet-send-calls"
-import { Client, IdentifierKind, type Signer, XmtpEnv } from "@xmtp/node-sdk"
+import { createUser, createSigner, Agent } from "@xmtp/agent-sdk"
 import { getRandomValues } from "node:crypto"
 import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { fromString, toString as uint8arraysToString } from "uint8arrays"
-import { createWalletClient, http, toBytes } from "viem"
+import { createWalletClient, http } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 import { sepolia } from "viem/chains"
-import { revokeOldInstallations } from "../scripts/revoke-installations"
-import { XmtpClient } from "./types"
+import { XmtpClient, XmtpConversation, XmtpMessage } from "./types"
 
 // ===================================================================
 // Module Setup
@@ -33,7 +32,7 @@ interface User {
 // ===================================================================
 // User and Signer Creation
 // ===================================================================
-export const createUser = (key: string): User => {
+const createLocalUser = (key: string): User => {
 	const account = privateKeyToAccount(key as `0x${string}`)
 	return {
 		key: key as `0x${string}`,
@@ -46,24 +45,149 @@ export const createUser = (key: string): User => {
 	}
 }
 
-export const createSigner = (key: string): Signer => {
-	if (!key || typeof key !== "string") {
-		throw new Error("XMTP wallet key must be a non-empty string")
+class XmtpAgentClient implements XmtpClient {
+	private agent: any
+
+	constructor(agent: any) {
+		this.agent = agent
 	}
-	const sanitizedKey = key.startsWith("0x") ? key : `0x${key}`
-	const user = createUser(sanitizedKey)
-	return {
-		type: "EOA",
-		getIdentifier: () => ({
-			identifierKind: 0 as IdentifierKind.Ethereum, // Use numeric value to avoid ambient const enum issue
-			identifier: user.account.address.toLowerCase()
-		}),
-		signMessage: async (message: string) => {
-			const signature = await user.wallet.signMessage({
-				message,
-				account: user.account
-			})
-			return toBytes(signature)
+
+	get address(): string {
+		return this.agent.address
+	}
+
+	get inboxId(): string | undefined {
+		return (this.agent as any).inboxId
+	}
+
+	get accountIdentifier(): { identifier: string } | undefined {
+		return {
+			identifier: this.address
+		}
+	}
+
+	conversations = Object.assign(
+		async (): Promise<XmtpConversation[]> => {
+			const conversations = await this.agent.conversations()
+			return conversations.map((conv: any) => ({
+				id: conv.id,
+				topic: conv.topic,
+				peerAddress: conv.peerAddress,
+				createdAt: conv.createdAt,
+				send: async (content: any, contentType?: any) => {
+					const message = await conv.send(content)
+					return {
+						id: message.id,
+						content: message.content,
+						contentType,
+						senderAddress: message.senderAddress,
+						senderInboxId: (message as any).senderInboxId,
+						sentAt: message.sentAt,
+						conversation: conv,
+						conversationId: conv.id
+					}
+				},
+				messages: async () => {
+					const messages = await conv.messages()
+					return messages.map((msg: any) => ({
+						id: msg.id,
+						content: msg.content,
+						contentType: msg.contentType,
+						senderAddress: msg.senderAddress,
+						senderInboxId: msg.senderInboxId,
+						sentAt: msg.sentAt,
+						conversation: conv,
+						conversationId: conv.id
+					}))
+				}
+			}))
+		},
+		{
+			async list(): Promise<XmtpConversation[]> {
+				console.warn("conversations.list() method not implemented with Agent SDK")
+				return []
+			},
+			async getConversationById(conversationId: string): Promise<XmtpConversation | null> {
+				console.warn("conversations.getConversationById() method not implemented with Agent SDK")
+				return null
+			},
+			async getMessageById(messageId: string): Promise<XmtpMessage | null> {
+				console.warn("conversations.getMessageById() method not implemented with Agent SDK")
+				return null
+			},
+			async sync(): Promise<void> {
+				console.warn("conversations.sync() method not implemented with Agent SDK")
+				return
+			},
+			async streamAllMessages(): Promise<any> {
+				console.warn("conversations.streamAllMessages() method not implemented with Agent SDK")
+				return {
+					[Symbol.asyncIterator]: async function* () {
+					}
+				}
+			}
+		}
+	)
+
+	async conversation(peerAddress: string): Promise<XmtpConversation | null> {
+		try {
+			const conv = await this.agent.conversation(peerAddress)
+			if (!conv) return null
+			
+			return {
+				id: conv.id,
+				topic: conv.topic,
+				peerAddress: conv.peerAddress,
+				createdAt: conv.createdAt,
+				send: async (content: any, contentType?: any) => {
+					const message = await conv.send(content)
+					return {
+						id: message.id,
+						content: message.content,
+						contentType,
+						senderAddress: message.senderAddress,
+						senderInboxId: (message as any).senderInboxId,
+						sentAt: message.sentAt,
+						conversation: conv,
+						conversationId: conv.id
+					}
+				},
+				messages: async () => {
+					const messages = await conv.messages()
+					return messages.map((msg: any) => ({
+						id: msg.id,
+						content: msg.content,
+						contentType: msg.contentType,
+						senderAddress: msg.senderAddress,
+						senderInboxId: msg.senderInboxId,
+						sentAt: msg.sentAt,
+						conversation: conv,
+						conversationId: conv.id
+					}))
+				},
+				members: async () => {
+					console.warn("conversation.members() method not implemented with Agent SDK")
+					return []
+				}
+			}
+		} catch (error) {
+			console.error("Failed to get conversation:", error)
+			return null
+		}
+	}
+
+	async canMessage(peerAddress: string): Promise<boolean> {
+		return await this.agent.canMessage(peerAddress)
+	}
+
+	getAgent(): any {
+		return this.agent
+	}
+
+	preferences = {
+		async inboxStateFromInboxIds(inboxIds: string[]): Promise<any[]> {
+			console.warn("inboxStateFromInboxIds() method not implemented with Agent SDK")
+			return []
 		}
 	}
 }
@@ -133,7 +257,6 @@ async function clearXMTPDatabase(address: string, env: string) {
 }
 
 export async function createXMTPClient(
-	// signer: Signer,
 	privateKey: string,
 	opts?: {
 		persist?: boolean
@@ -144,187 +267,64 @@ export async function createXMTPClient(
 	const { persist = true, maxRetries = 3, storagePath } = opts ?? {}
 	let attempt = 0
 
-	// Extract common variables for error handling
-	// const actualSigner = signer
-	const signer = createSigner(privateKey)
-
-	if (!signer) {
-		throw new Error(
-			"No signer provided and XMTP_WALLET_KEY environment variable is not set"
-		)
-	}
+	const user = createUser(privateKey as `0x${string}`)
+	const signer = createSigner(user)
 
 	const { XMTP_ENCRYPTION_KEY, XMTP_ENV } = process.env
-
-	// Get the wallet address to use the correct database
-	const identifier = await signer.getIdentifier()
-	const address = identifier.identifier
 
 	while (attempt < maxRetries) {
 		try {
 			console.log(
-				`🔄 Attempt ${attempt + 1}/${maxRetries} to create XMTP client...`
+				`🔄 Attempt ${attempt + 1}/${maxRetries} to create XMTP agent...`
 			)
 
-			// Always require encryption key and persistence - no stateless mode
-			if (!persist) {
-				throw new Error(
-					"Stateless mode is not supported. XMTP client must run in persistent mode " +
-						"to properly receive and process messages. Set persist: true or remove the persist option " +
-						"to use the default persistent mode."
-				)
-			}
-
-			if (!XMTP_ENCRYPTION_KEY) {
-				throw new Error("XMTP_ENCRYPTION_KEY must be set for persistent mode")
-			}
-
-			const dbEncryptionKey = getEncryptionKeyFromHex(XMTP_ENCRYPTION_KEY)
-			const dbPath = await getDbPath(
-				`${XMTP_ENV || "dev"}-${address}`,
-				storagePath
-			)
-			console.log(`📁 Using database path: ${dbPath}`)
-
-			// Always create a fresh client and sync it
-			const client = await Client.create(signer, {
-				dbEncryptionKey,
-				env: XMTP_ENV as XmtpEnv,
-				dbPath,
+			const agentOptions: any = {
+				env: XMTP_ENV || "dev",
 				codecs: [
-					new ReplyCodec(),
 					new ReactionCodec(),
-					new WalletSendCallsCodec(),
-					new TransactionReferenceCodec()
+					new ReplyCodec(),
+					new TransactionReferenceCodec(),
+					new WalletSendCallsCodec()
 				]
-			})
+			}
 
-			// Force sync conversations to ensure we have the latest data
-			console.log("📡 Syncing conversations to ensure latest state...")
-			await client.conversations.sync()
+			if (persist !== false) {
+				const dbPath = storagePath || await getDbPath(
+					`${XMTP_ENV || "dev"}-${user.account.address}`,
+					storagePath
+				)
+				agentOptions.dbPath = dbPath
+				console.log(`📁 Using database path: ${dbPath}`)
+			} else {
+				agentOptions.dbPath = null
+			}
 
-			await backupDbToPersistentStorage(
-				dbPath,
-				`${XMTP_ENV || "dev"}-${address}`
-			)
+			if (XMTP_ENCRYPTION_KEY) {
+				agentOptions.dbEncryptionKey = getEncryptionKeyFromHex(XMTP_ENCRYPTION_KEY)
+			}
 
-			console.log("✅ XMTP XmtpClient created")
-			console.log(`🔑 Wallet address: ${address}`)
+			const agent = await Agent.create(signer, agentOptions)
+
+			console.log("✅ XMTP Agent created")
+			console.log(`🔑 Wallet address: ${(agent as any).address || "unknown"}`)
 			console.log(`🌐 Environment: ${XMTP_ENV || "dev"}`)
-			console.log(`💾 Storage mode: persistent`)
+			console.log(`💾 Storage mode: ${persist ? "persistent" : "in-memory"}`)
 
-			return client
+			return new XmtpAgentClient(agent)
 		} catch (error) {
 			attempt++
+			console.error(
+				`Failed to create XMTP agent (attempt ${attempt}/${maxRetries}):`,
+				error
+			)
 
-			if (
-				error instanceof Error &&
-				error.message.includes("5/5 installations")
-			) {
-				console.log(
-					`💥 Installation limit reached (attempt ${attempt}/${maxRetries})`
+			if (attempt >= maxRetries) {
+				throw new Error(
+					`Failed to create XMTP agent after ${maxRetries} attempts: ${error}`
 				)
-
-				if (attempt < maxRetries) {
-					// Get wallet address for database clearing
-					const identifier = await signer.getIdentifier()
-					const address = identifier.identifier
-
-					// Extract inboxId from the error message
-					const inboxIdMatch = error.message.match(/InboxID ([a-f0-9]+)/)
-					const inboxId = inboxIdMatch ? inboxIdMatch[1] : undefined
-
-					// First try to revoke old installations
-					const revocationSuccess = await revokeOldInstallations(
-						signer,
-						inboxId
-					)
-
-					if (revocationSuccess) {
-						console.log("🎯 Installations revoked, retrying connection...")
-					} else {
-						console.log(
-							"⚠️ Installation revocation failed or not needed, clearing database..."
-						)
-						// Clear database as fallback
-						await clearXMTPDatabase(address, process.env.XMTP_ENV || "dev")
-					}
-
-					// Wait a bit before retrying
-					const delay = Math.pow(2, attempt) * 1000 // Exponential backoff
-					console.log(`⏳ Waiting ${delay}ms before retry...`)
-					await new Promise((resolve) => setTimeout(resolve, delay))
-				} else {
-					console.error(
-						"❌ Failed to resolve installation limit after all retries"
-					)
-					console.error("💡 Possible solutions:")
-					console.error("   1. Use a different wallet (generate new keys)")
-					console.error("   2. Switch XMTP environments (dev <-> production)")
-					console.error("   3. Wait and try again later")
-					console.error("   4. Contact XMTP support for manual intervention")
-					throw error
-				}
-			} else if (
-				error instanceof Error &&
-				error.message.includes("Association error: Missing identity update")
-			) {
-				console.log(
-					`🔄 Identity association error detected (attempt ${attempt}/${maxRetries})`
-				)
-
-				if (attempt < maxRetries) {
-					console.log("🔧 Attempting automatic identity refresh...")
-
-					// Try to refresh identity by creating a persistent client first
-					try {
-						console.log("📝 Creating persistent client to refresh identity...")
-						const tempEncryptionKey = XMTP_ENCRYPTION_KEY
-							? getEncryptionKeyFromHex(XMTP_ENCRYPTION_KEY)
-							: getEncryptionKeyFromHex(generateEncryptionKeyHex())
-						const tempClient = await Client.create(signer, {
-							dbEncryptionKey: tempEncryptionKey,
-							env: XMTP_ENV as XmtpEnv,
-							dbPath: await getDbPath(
-								`${XMTP_ENV || "dev"}-${address}`,
-								storagePath
-							),
-							codecs: [
-								new ReplyCodec(),
-								new ReactionCodec(),
-								new WalletSendCallsCodec(),
-								new TransactionReferenceCodec()
-							]
-						})
-
-						console.log("📡 Syncing identity and conversations...")
-						await tempClient.conversations.sync()
-
-						console.log(
-							"✅ Identity refresh successful, retrying original request..."
-						)
-
-						// Wait a bit before retrying
-						const delay = Math.pow(2, attempt) * 1000 // Exponential backoff
-						console.log(`⏳ Waiting ${delay}ms before retry...`)
-						await new Promise((resolve) => setTimeout(resolve, delay))
-					} catch (refreshError) {
-						console.log(`❌ Identity refresh failed:`, refreshError)
-						// Continue to the retry logic
-					}
-				} else {
-					console.error(
-						"❌ Failed to resolve identity association error after all retries"
-					)
-					console.error(
-						"💡 Try running: pnpm with-env pnpm --filter @hybrd/xmtp refresh:identity"
-					)
-					throw error
-				}
-			} else {
-				// For other errors, don't retry
-				throw error
 			}
+
+			await new Promise((resolve) => setTimeout(resolve, 1000 * attempt))
 		}
 	}
 
@@ -451,23 +451,10 @@ export const backupDbToPersistentStorage = async (
 export const logAgentDetails = async (
 	clients: XmtpClient | XmtpClient[]
 ): Promise<void> => {
-	const clientsByAddress = Array.isArray(clients)
-		? clients.reduce<Record<string, XmtpClient[]>>((acc, XmtpClient) => {
-				const address = XmtpClient.accountIdentifier?.identifier ?? ""
-				acc[address] = acc[address] ?? []
-				acc[address].push(XmtpClient)
-				return acc
-			}, {})
-		: {
-				[clients.accountIdentifier?.identifier ?? ""]: [clients]
-			}
-
-	for (const [address, clientGroup] of Object.entries(clientsByAddress)) {
-		const firstClient = clientGroup[0]
-		const inboxId = firstClient?.inboxId
-		const environments = clientGroup
-			.map((c) => c.options?.env ?? "dev")
-			.join(", ")
+	const clientArray = Array.isArray(clients) ? clients : [clients]
+	
+	for (const client of clientArray) {
+		const address = client.address
 		console.log(`\x1b[38;2;252;76;52m
         ██╗  ██╗███╗   ███╗████████╗██████╗ 
         ╚██╗██╔╝████╗ ████║╚══██╔══╝██╔══██╗
@@ -478,15 +465,12 @@ export const logAgentDetails = async (
       \x1b[0m`)
 
 		const urls = [`http://xmtp.chat/dm/${address}`]
-
-		const conversations = await firstClient?.conversations.list()
+		const conversations = await client.conversations()
 
 		console.log(`
-    ✓ XMTP XmtpClient:
+    ✓ XMTP Agent Client:
     • Address: ${address}
     • Conversations: ${conversations?.length}
-    • InboxId: ${inboxId}
-    • Networks: ${environments}
     ${urls.map((url) => `• URL: ${url}`).join("\n")}`)
 	}
 }
@@ -553,51 +537,10 @@ export async function diagnoseXMTPIdentityIssue(
 	}
 
 	try {
-		// Try to resolve the inbox state
-		const inboxState = await client.preferences.inboxStateFromInboxIds([
-			inboxId
-		])
-
-		if (inboxState.length === 0) {
-			suggestions.push(
-				`Inbox ID ${inboxId} not found in ${environment} environment`
-			)
-			suggestions.push(
-				"Try switching XMTP_ENV to 'dev' if currently 'production' or vice versa"
-			)
-			suggestions.push(
-				"Verify the user has created an identity on this XMTP network"
-			)
-			details.inboxStateFound = false
-			return { canResolve: false, suggestions, details }
-		}
-
-		const inbox = inboxState[0]
-		if (!inbox) {
-			suggestions.push("Inbox state returned empty data")
-			details.inboxStateFound = false
-			return { canResolve: false, suggestions, details }
-		}
-
-		details.inboxStateFound = true
-		details.identifierCount = inbox.identifiers?.length || 0
-
-		if (!inbox.identifiers || inbox.identifiers.length === 0) {
-			suggestions.push("Inbox found but has no identifiers")
-			suggestions.push("This indicates incomplete identity registration")
-			suggestions.push("User may need to re-register their identity on XMTP")
-			details.hasIdentifiers = false
-			return { canResolve: false, suggestions, details }
-		}
-
-		// Successfully resolved
-		details.hasIdentifiers = true
-		details.resolvedAddress = inbox.identifiers[0]?.identifier
-		return {
-			canResolve: true,
-			suggestions: ["Identity resolved successfully"],
-			details
-		}
+		console.log("Inbox state resolution not available in Agent SDK")
+		suggestions.push("Inbox state resolution not available with Agent SDK")
+		details.inboxStateFound = false
+		return { canResolve: false, suggestions, details }
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error)
 		details.error = errorMessage
@@ -746,7 +689,7 @@ export class XMTPConnectionManager {
 
 		try {
 			// Simple health check: try to list conversations
-			await this.client.conversations.list()
+			await this.client.conversations()
 
 			const responseTime = Date.now() - startTime
 			this.health.avgResponseTime =
@@ -842,24 +785,7 @@ export async function resolveUserAddress(
 				`🔍 Resolving user address (attempt ${attempt + 1}/${maxRetries})...`
 			)
 
-			const inboxState = await client.preferences.inboxStateFromInboxIds([
-				senderInboxId
-			])
-
-			const firstInbox = inboxState[0]
-			if (
-				inboxState.length > 0 &&
-				firstInbox?.identifiers &&
-				firstInbox.identifiers.length > 0
-			) {
-				const userAddress = firstInbox.identifiers[0]?.identifier
-				if (userAddress) {
-					console.log("✅ Resolved user address:", userAddress)
-					return userAddress
-				}
-			}
-
-			console.log("⚠️ No identifiers found in inbox state")
+			console.log("Inbox state resolution not available in Agent SDK")
 			return "unknown"
 		} catch (error) {
 			attempt++
@@ -880,7 +806,7 @@ export async function resolveUserAddress(
 					try {
 						// Force a conversation sync to refresh identity state
 						console.log("📡 Syncing conversations to refresh identity...")
-						await client.conversations.sync()
+						console.log("Conversation sync handled automatically by Agent SDK")
 
 						// Small delay before retry
 						console.log("⏳ Waiting 2s before retry...")

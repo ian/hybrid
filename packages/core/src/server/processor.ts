@@ -1,7 +1,6 @@
 import {
-	MessageEvent,
-	MessageListener,
-	MessageListenerConfig,
+	type MessageEvent,
+	AgentMessageListener,
 	XmtpClient,
 	createAuthenticatedXmtpClient,
 	generateXMTPToolsToken,
@@ -34,7 +33,9 @@ interface BackgroundMessageProcessorOptions<
 > {
 	agent: Agent<TRuntimeExtension>
 	xmtpClient: XmtpClient
-	messageFilter: MessageListenerConfig["filter"]
+	messageFilter?: (
+		event: Pick<MessageEvent, "conversation" | "message" | "rootMessage">
+	) => Promise<boolean> | boolean
 	intervalMs?: number
 	backoffMs?: number
 	maxBackoffMs?: number
@@ -110,13 +111,10 @@ export function createBackgroundMessageProcessor<
 			transport: http()
 		})
 
-		// Create message listener - use type assertion to work around viem version differences
-		const listener = new MessageListener({
-			publicClient: publicClient as any,
-			xmtpClient: opts.xmtpClient,
-			filter: opts.messageFilter,
-			heartbeatInterval: 5 * 60 * 1000, // 5 minutes
-			conversationCheckInterval: 30 * 1000 // 30 seconds
+		// Create message listener using Agent SDK
+		const listener = new AgentMessageListener({
+			client: opts.xmtpClient,
+			filter: opts.messageFilter
 		})
 
 		// Set up message event handler
@@ -154,7 +152,7 @@ export function createBackgroundMessageProcessor<
 				
 				const serviceToken = generateXMTPToolsToken({
 					action: "send",
-					conversationId: messageEvent.message.conversationId,
+					conversationId: messageEvent.message.conversationId || messageEvent.conversation.id,
 					content: messageEvent.message.content?.toString() || ""
 				})
 				const serviceClient = createAuthenticatedXmtpClient(
@@ -167,7 +165,7 @@ export function createBackgroundMessageProcessor<
 
 				// Create base runtime context
 				const baseRuntime: AgentRuntime = {
-					chatId: messageEvent.message.conversationId,
+					chatId: messageEvent.message.conversationId || messageEvent.conversation.id,
 					messages: messages,
 					conversation: messageEvent.conversation,
 					message: messageEvent.message,
@@ -233,7 +231,7 @@ export function createBackgroundMessageProcessor<
 			console.log("[XMTP Background] Message listener stopped")
 		})
 
-		listener.on("heartbeat", (stats) => {
+		listener.on("heartbeat", (stats: any) => {
 			console.log(
 				`[XMTP Background] Heartbeat - Messages: ${stats.messageCount}, Conversations: ${stats.conversationCount}`
 			)

@@ -9,7 +9,6 @@ import { Reaction } from "@xmtp/content-type-reaction"
 import { Reply } from "@xmtp/content-type-reply"
 import { TransactionReference } from "@xmtp/content-type-transaction-reference"
 import { WalletSendCallsParams } from "@xmtp/content-type-wallet-send-calls"
-import { Client, Conversation, DecodedMessage } from "@xmtp/node-sdk"
 import type { Resolver } from "./resolver/resolver"
 
 export type HonoVariables = {
@@ -28,9 +27,57 @@ type Codec =
 	| TransactionReference
 	| WalletSendCallsParams
 
-export type XmtpClient = Client<string | Codec>
-export type XmtpConversation = Conversation<string | Codec>
-export type XmtpMessage = DecodedMessage<string | Codec>
+export interface XmtpClient {
+	address: string
+	inboxId?: string
+	accountIdentifier?: {
+		identifier: string
+	}
+	conversations: (() => Promise<XmtpConversation[]>) & {
+		list(): Promise<XmtpConversation[]>
+		getConversationById(conversationId: string): Promise<XmtpConversation | null>
+		getMessageById(messageId: string): Promise<XmtpMessage | null>
+		sync(): Promise<void>
+		streamAllMessages(): Promise<any>
+	}
+	conversation(peerAddress: string): Promise<XmtpConversation | null>
+	canMessage(peerAddress: string): Promise<boolean>
+	getAgent?(): any
+	preferences: {
+		inboxStateFromInboxIds(inboxIds: string[]): Promise<any[]>
+	}
+}
+
+export interface XmtpConversation {
+	id: string
+	topic: string
+	peerAddress: string
+	createdAt: Date
+	send(content: any, contentType?: any): Promise<XmtpMessage>
+	messages(): Promise<XmtpMessage[]>
+	members(): Promise<any[]>
+}
+
+export interface XmtpMessage {
+	id: string
+	content: any
+	contentType?: any
+	senderAddress: string
+	senderInboxId?: string
+	sentAt: Date
+	conversation: any
+	conversationId?: string
+}
+
+export interface MessageListenerConfig {
+	client: XmtpClient
+	filter?: {
+		senderAddress?: string
+		conversationId?: string
+	}
+	resolver?: (messageOrCtx: any) => Promise<MessageEvent>
+}
+
 export type XmtpSender = {
 	address: string
 	inboxId: string

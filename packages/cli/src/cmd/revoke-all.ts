@@ -34,6 +34,12 @@ export async function revokeAllInstallations() {
 			const client = await createXMTPClient(XMTP_WALLET_KEY)
 			const currentInboxId = client.inboxId
 
+			if (!currentInboxId) {
+				console.log("❌ Could not get inbox ID from client")
+				console.log("This may indicate the client was not properly initialized")
+				process.exit(1)
+			}
+
 			console.log(`📧 Current Inbox ID: ${currentInboxId}`)
 			console.log("🔧 Attempting to revoke all installations for this inbox...")
 
