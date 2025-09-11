@@ -4,7 +4,7 @@ An open-source agent framework for building conversational AI agents on XMTP.
 
 Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
 
-See [http://hybriddev.com](http://hybrid.dev) for more information.
+See [http://hybrid.dev](http://hybrid.dev) for more information.
 
 ## 📦 Quickstart
 
