@@ -1,8 +1,8 @@
+import { Agent, createSigner, createUser } from "@xmtp/agent-sdk"
 import { ReactionCodec } from "@xmtp/content-type-reaction"
 import { ReplyCodec } from "@xmtp/content-type-reply"
 import { TransactionReferenceCodec } from "@xmtp/content-type-transaction-reference"
 import { WalletSendCallsCodec } from "@xmtp/content-type-wallet-send-calls"
-import { createUser, createSigner, Agent } from "@xmtp/agent-sdk"
 import { getRandomValues } from "node:crypto"
 import fs from "node:fs"
 import path from "node:path"
@@ -104,26 +104,37 @@ class XmtpAgentClient implements XmtpClient {
 		},
 		{
 			async list(): Promise<XmtpConversation[]> {
-				console.warn("conversations.list() method not implemented with Agent SDK")
+				console.warn(
+					"conversations.list() method not implemented with Agent SDK"
+				)
 				return []
 			},
-			async getConversationById(conversationId: string): Promise<XmtpConversation | null> {
-				console.warn("conversations.getConversationById() method not implemented with Agent SDK")
+			async getConversationById(
+				conversationId: string
+			): Promise<XmtpConversation | null> {
+				console.warn(
+					"conversations.getConversationById() method not implemented with Agent SDK"
+				)
 				return null
 			},
 			async getMessageById(messageId: string): Promise<XmtpMessage | null> {
-				console.warn("conversations.getMessageById() method not implemented with Agent SDK")
+				console.warn(
+					"conversations.getMessageById() method not implemented with Agent SDK"
+				)
 				return null
 			},
 			async sync(): Promise<void> {
-				console.warn("conversations.sync() method not implemented with Agent SDK")
+				console.warn(
+					"conversations.sync() method not implemented with Agent SDK"
+				)
 				return
 			},
 			async streamAllMessages(): Promise<any> {
-				console.warn("conversations.streamAllMessages() method not implemented with Agent SDK")
+				console.warn(
+					"conversations.streamAllMessages() method not implemented with Agent SDK"
+				)
 				return {
-					[Symbol.asyncIterator]: async function* () {
-					}
+					[Symbol.asyncIterator]: async function* () {}
 				}
 			}
 		}
@@ -133,7 +144,7 @@ class XmtpAgentClient implements XmtpClient {
 		try {
 			const conv = await this.agent.conversation(peerAddress)
 			if (!conv) return null
-			
+
 			return {
 				id: conv.id,
 				topic: conv.topic,
@@ -166,7 +177,9 @@ class XmtpAgentClient implements XmtpClient {
 					}))
 				},
 				members: async () => {
-					console.warn("conversation.members() method not implemented with Agent SDK")
+					console.warn(
+						"conversation.members() method not implemented with Agent SDK"
+					)
 					return []
 				}
 			}
@@ -186,7 +199,9 @@ class XmtpAgentClient implements XmtpClient {
 
 	preferences = {
 		async inboxStateFromInboxIds(inboxIds: string[]): Promise<any[]> {
-			console.warn("inboxStateFromInboxIds() method not implemented with Agent SDK")
+			console.warn(
+				"inboxStateFromInboxIds() method not implemented with Agent SDK"
+			)
 			return []
 		}
 	}
@@ -289,10 +304,14 @@ export async function createXMTPClient(
 			}
 
 			if (persist !== false) {
-				const dbPath = storagePath || await getDbPath(
+				console.log(
+					`🔍 DEBUG: persist=${persist}, storagePath="${storagePath}", XMTP_ENV="${XMTP_ENV}", address="${user.account.address}"`
+				)
+				const dbPath = await getDbPath(
 					`${XMTP_ENV || "dev"}-${user.account.address}`,
 					storagePath
 				)
+				console.log(`🔍 DEBUG: getDbPath returned: "${dbPath}"`)
 				agentOptions.dbPath = dbPath
 				console.log(`📁 Using database path: ${dbPath}`)
 			} else {
@@ -300,7 +319,8 @@ export async function createXMTPClient(
 			}
 
 			if (XMTP_ENCRYPTION_KEY) {
-				agentOptions.dbEncryptionKey = getEncryptionKeyFromHex(XMTP_ENCRYPTION_KEY)
+				agentOptions.dbEncryptionKey =
+					getEncryptionKeyFromHex(XMTP_ENCRYPTION_KEY)
 			}
 
 			const agent = await Agent.create(signer, agentOptions)
@@ -319,9 +339,10 @@ export async function createXMTPClient(
 			)
 
 			if (attempt >= maxRetries) {
-				throw new Error(
-					`Failed to create XMTP agent after ${maxRetries} attempts: ${error}`
+				console.error(
+					"🚨 XMTP client creation failed after all retries. Forcing process exit..."
 				)
+				process.exit(1) // Force exit immediately
 			}
 
 			await new Promise((resolve) => setTimeout(resolve, 1000 * attempt))
@@ -381,6 +402,12 @@ export const getDbPath = async (description = "xmtp", storagePath?: string) => {
 
 	const dbPath = `${volumePath}/${description}.db3`
 
+	// Ensure the directory exists before any operations
+	if (!fs.existsSync(volumePath)) {
+		fs.mkdirSync(volumePath, { recursive: true })
+		console.log(`📁 Created directory: ${volumePath}`)
+	}
+
 	if (typeof globalThis !== "undefined" && "XMTP_STORAGE" in globalThis) {
 		try {
 			console.log(`📦 Using Cloudflare R2 storage for: ${dbPath}`)
@@ -392,10 +419,6 @@ export const getDbPath = async (description = "xmtp", storagePath?: string) => {
 				const existingObject = await r2Bucket.head(remotePath)
 				if (existingObject) {
 					console.log(`📥 Downloading existing database from R2 storage...`)
-
-					if (!fs.existsSync(volumePath)) {
-						fs.mkdirSync(volumePath, { recursive: true })
-					}
 
 					const object = await r2Bucket.get(remotePath)
 					if (object) {
@@ -412,10 +435,6 @@ export const getDbPath = async (description = "xmtp", storagePath?: string) => {
 		} catch (error) {
 			console.log(`⚠️ R2 storage not available:`, error)
 		}
-	}
-
-	if (!fs.existsSync(volumePath)) {
-		fs.mkdirSync(volumePath, { recursive: true })
 	}
 
 	return dbPath
@@ -452,7 +471,7 @@ export const logAgentDetails = async (
 	clients: XmtpClient | XmtpClient[]
 ): Promise<void> => {
 	const clientArray = Array.isArray(clients) ? clients : [clients]
-	
+
 	for (const client of clientArray) {
 		const address = client.address
 		console.log(`\x1b[38;2;252;76;52m

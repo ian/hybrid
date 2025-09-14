@@ -10,15 +10,16 @@
 		"clean": "rm -rf dist .turbo"
 	},
 	"dependencies": {
-		"@hybrd/xmtp": "workspace:*",
-		"@hybrd/utils": "workspace:*",
 		"@hybrd/ponder": "workspace:*",
+		"@hybrd/utils": "workspace:*",
+		"@hybrd/xmtp": "workspace:*",
 		"@openrouter/ai-sdk-provider": "^1.1.2",
 		"hybrid": "workspace:*"
 	},
 	"devDependencies": {
 		"@hybrd/cli": "workspace:*",
 		"@types/node": "^22.8.6",
+		"tsx": "^4.20.5",
 		"typescript": "^5.9.2"
 	}
 }

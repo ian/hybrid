@@ -105,10 +105,18 @@ export async function createHonoApp<
 
 	// Create xmtpClient with persistent storage for reliable message streaming
 	const cloudflareStoragePath = getCloudflareStoragePath("xmtp")
-	const xmtpClient = await createXMTPClient(XMTP_WALLET_KEY as string, {
-		persist: true,
-		storagePath: cloudflareStoragePath
-	})
+	let xmtpClient: XmtpClient
+	try {
+		xmtpClient = await createXMTPClient(XMTP_WALLET_KEY as string, {
+			persist: true,
+			storagePath: cloudflareStoragePath
+		})
+	} catch (error) {
+		console.error("❌ Failed to create XMTP client after all retries:", error)
+		console.error("🚨 Exiting process due to XMTP client creation failure")
+		// Force immediate exit - don't wait for cleanup
+		process.exit(1)
+	}
 
 	// Apply middleware for XMTP client
 	app.use(createHonoMiddleware(xmtpClient))
@@ -212,10 +220,18 @@ export async function listen({
 
 	// Create XMTP client with persistent storage for reliable message streaming
 	const cloudflareStoragePath = getCloudflareStoragePath("xmtp")
-	const xmtpClient = await createXMTPClient(XMTP_WALLET_KEY as string, {
-		persist: true,
-		storagePath: cloudflareStoragePath
-	})
+	let xmtpClient: XmtpClient
+	try {
+		xmtpClient = await createXMTPClient(XMTP_WALLET_KEY as string, {
+			persist: true,
+			storagePath: cloudflareStoragePath
+		})
+	} catch (error) {
+		console.error("❌ Failed to create XMTP client after all retries:", error)
+		console.error("🚨 Exiting process due to XMTP client creation failure")
+		// Force immediate exit - don't wait for cleanup
+		process.exit(1)
+	}
 
 	// Apply middleware for XMTP client
 	app.use(createHonoMiddleware(xmtpClient))
