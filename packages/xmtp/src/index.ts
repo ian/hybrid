@@ -72,12 +72,11 @@ export type {
 // ===================================================================
 // XMTP Agent SDK Exports
 // ===================================================================
-// NOTE: Temporarily commented out due to missing @xmtp/agent-sdk dependency
-// export {
-// 	createUser,
-// 	createSigner,
-// 	Agent
-// } from "@xmtp/agent-sdk"
+export {
+	Agent,
+	createSigner,
+	createUser
+} from "@xmtp/agent-sdk"
 
 // ===================================================================
 // XMTP Content Types

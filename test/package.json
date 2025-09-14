@@ -1,0 +1,24 @@
+{
+	"name": "hybrid-test",
+	"description": "Test project for hybrid workspace packages",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"start": "hybrid start",
+		"dev": "hybrid dev",
+		"typecheck": "tsc --noEmit",
+		"clean": "rm -rf dist .turbo"
+	},
+	"dependencies": {
+		"@hybrd/xmtp": "workspace:*",
+		"@hybrd/utils": "workspace:*",
+		"@hybrd/ponder": "workspace:*",
+		"@openrouter/ai-sdk-provider": "^1.1.2",
+		"hybrid": "workspace:*"
+	},
+	"devDependencies": {
+		"@hybrd/cli": "workspace:*",
+		"@types/node": "^22.8.6",
+		"typescript": "^5.9.2"
+	}
+}
