@@ -22,7 +22,11 @@ interface AgentMessageProcessorOptions<
 	TRuntimeExtension = Record<string, never>
 > {
 	hybridAgent: HybridAgent<TRuntimeExtension>
-	xmtpAgent: any
+	xmtpAgent: {
+		on: (event: string, handler: (...args: any[]) => Promise<void> | void) => void
+		client: { address: string }
+		start: () => Promise<void>
+	}
 }
 
 export function createAgentMessageProcessor<
@@ -37,8 +41,8 @@ export function createAgentMessageProcessor<
 	}
 
 	// Ensure singleton in this process
-	if (!(globalThis as any)[BG_STARTED]) {
-		;(globalThis as any)[BG_STARTED] = true
+	if (!(globalThis as Record<symbol, unknown>)[BG_STARTED]) {
+		;(globalThis as Record<symbol, unknown>)[BG_STARTED] = true
 
 		const state: BgState = {
 			running: true,
@@ -47,7 +51,7 @@ export function createAgentMessageProcessor<
 			messagesProcessed: 0,
 			agentRunning: false
 		}
-		;(globalThis as any)[BG_STATE] = state
+		;(globalThis as Record<symbol, unknown>)[BG_STATE] = state
 
 		const ac = new AbortController()
 		const signal = ac.signal
@@ -58,7 +62,7 @@ export function createAgentMessageProcessor<
 			ac.abort()
 			console.log("[XMTP Agent] Stopping message processor...")
 		}
-		;(globalThis as any)[BG_STOP] = stop
+		;(globalThis as Record<symbol, unknown>)[BG_STOP] = stop
 
 		process.once("SIGINT", stop)
 		process.once("SIGTERM", stop)
@@ -192,7 +196,7 @@ export function createAgentMessageProcessor<
 			}
 		})
 
-		opts.xmtpAgent.on("error", (error: Error) => {
+		opts.xmtpAgent.on("error", async (error: Error) => {
 			state.lastErrAt = Date.now()
 			state.consecutiveErrors++
 			console.error("[XMTP Agent] Agent error:", error)
@@ -216,10 +220,10 @@ export function createAgentMessageProcessor<
 
 // Optional helpers to inspect/stop from your server code
 export function getBgState(): BgState | undefined {
-	return (globalThis as any)[BG_STATE] as BgState | undefined
+	return (globalThis as Record<symbol, unknown>)[BG_STATE] as BgState | undefined
 }
 
 export function stopBackground(): void {
-	const fn = (globalThis as any)[BG_STOP] as (() => void) | undefined
+	const fn = (globalThis as Record<symbol, unknown>)[BG_STOP] as (() => void) | undefined
 	if (fn) fn()
 }

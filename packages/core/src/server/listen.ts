@@ -321,8 +321,8 @@ export async function listen({
 		})
 		console.log(`✅ Hybrid server running on port ${httpPort}`)
 		console.log(`🎧 Background message listener is active`)
-	} catch (error: any) {
-		if (error.code === "EADDRINUSE") {
+	} catch (error: unknown) {
+		if (error instanceof Error && 'code' in error && error.code === "EADDRINUSE") {
 			console.error(
 				`❌ Port ${httpPort} is already in use. Please stop the existing server or use a different port.`
 			)
