@@ -31,7 +31,9 @@ export function runDev() {
 			env: {
 				...process.env,
 				// Force tsx to exit cleanly on file changes
-				TSX_WATCH_IGNORE_PATHS: "node_modules/**"
+				TSX_WATCH_IGNORE_PATHS: "node_modules/**",
+				// Enable source map support for better stack traces
+				NODE_OPTIONS: "--enable-source-maps"
 			}
 		})
 

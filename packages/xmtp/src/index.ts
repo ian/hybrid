@@ -9,6 +9,17 @@ export {
 } from "./constants"
 
 // ===================================================================
+// XMTP Client and Connection Management
+// ===================================================================
+export {
+	createXMTPClient,
+	XMTPConnectionManager,
+	logAgentDetails,
+	validateEnvironment
+} from "./client"
+export type { XMTPConnectionConfig } from "./client"
+
+// ===================================================================
 // XMTP Plugin for Agent Integration
 // ===================================================================
 export { XMTPPlugin } from "./plugin"

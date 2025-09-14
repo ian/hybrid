@@ -4,12 +4,12 @@
  * Type definitions for both the XMTP core client and service client library.
  */
 
-import { Client, Conversation, DecodedMessage } from "@xmtp/agent-sdk"
 import { GroupUpdated } from "@xmtp/content-type-group-updated"
 import { Reaction } from "@xmtp/content-type-reaction"
 import { Reply } from "@xmtp/content-type-reply"
 import { TransactionReference } from "@xmtp/content-type-transaction-reference"
 import { WalletSendCallsParams } from "@xmtp/content-type-wallet-send-calls"
+import { Client, Conversation, DecodedMessage } from "@xmtp/node-sdk"
 import type { Resolver } from "./resolver/resolver"
 
 export type HonoVariables = {

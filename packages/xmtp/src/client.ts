@@ -133,7 +133,6 @@ async function clearXMTPDatabase(address: string, env: string) {
 }
 
 export async function createXMTPClient(
-	// signer: Signer,
 	privateKey: string,
 	opts?: {
 		persist?: boolean

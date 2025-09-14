@@ -1,5 +1,11 @@
 // import xmtpEndpoints from "./endpoints"
-import { Agent, createSigner, createUser, getTestUrl } from "@xmtp/agent-sdk"
+import {
+	Agent,
+	XmtpEnv,
+	createSigner,
+	createUser,
+	getTestUrl
+} from "@xmtp/agent-sdk"
 import { Hono } from "hono"
 
 import type { HonoVariables } from "./types"
@@ -36,7 +42,11 @@ export function XMTPPlugin({
 		description: "Provides XMTP messaging functionality",
 		apply: async (app, context) => {
 			// Initialize XMTP client and start background message processor
-			const { XMTP_WALLET_KEY, XMTP_ENCRYPTION_KEY } = process.env
+			const {
+				XMTP_WALLET_KEY,
+				XMTP_ENCRYPTION_KEY,
+				XMTP_ENV = "production"
+			} = process.env
 
 			if (!XMTP_WALLET_KEY) {
 				throw new Error("XMTP_WALLET_KEY must be set")
@@ -55,12 +65,18 @@ export function XMTPPlugin({
 
 			// 2. Spin up the agent
 			const agent = await Agent.create(signer, {
-				env: "dev", // or 'production'
+				env: XMTP_ENV as XmtpEnv,
 				dbPath: null // in-memory store; provide a path to persist
 			})
 
 			// 3. Respond to text messages
 			agent.on("text", async (ctx) => {
+				console.log("Text message received", ctx)
+				await ctx.conversation.send("Hello from my XMTP Agent! 👋")
+			})
+
+			agent.on("group", async (ctx) => {
+				console.log("Group message received", ctx)
 				await ctx.conversation.send("Hello from my XMTP Agent! 👋")
 			})
 
