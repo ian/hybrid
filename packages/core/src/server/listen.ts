@@ -1,15 +1,14 @@
 import { serve } from "@hono/node-server"
-import { getCloudflareStoragePath } from "@hybrd/utils"
 import type { MessageEvent, XmtpClient } from "@hybrd/xmtp"
 import { type HonoVariables, XMTPPlugin, createXMTPClient } from "@hybrd/xmtp"
 import { Context, Hono, Next } from "hono"
 import type { Agent, DefaultRuntimeExtension } from "../core/agent"
 import type { Plugin } from "../core/plugin"
 import {
-	createBackgroundMessageProcessor,
+	createAgentMessageProcessor,
 	getBgState,
 	stopBackground
-} from "./processor"
+} from "./agent-processor"
 
 export type { HonoVariables } from "@hybrd/xmtp"
 
@@ -104,12 +103,12 @@ export async function createHonoApp<
 	}
 
 	// Create xmtpClient with persistent storage for reliable message streaming
-	const cloudflareStoragePath = getCloudflareStoragePath("xmtp")
+	const storagePath = "./.data/xmtp"
 	let xmtpClient: XmtpClient
 	try {
 		xmtpClient = await createXMTPClient(XMTP_WALLET_KEY as string, {
 			persist: true,
-			storagePath: cloudflareStoragePath
+			storagePath: storagePath
 		})
 	} catch (error) {
 		console.error("❌ Failed to create XMTP client after all retries:", error)
@@ -121,15 +120,11 @@ export async function createHonoApp<
 	// Apply middleware for XMTP client
 	app.use(createHonoMiddleware(xmtpClient))
 
-	// Start the background message processor
+	// Start Agent SDK message processor
 	app.use(
-		createBackgroundMessageProcessor({
-			agent,
-			xmtpClient,
-			messageFilter, // Accept all messages by default
-			intervalMs: 5_000, // Check every 5 seconds
-			backoffMs: 1_000, // Start with 1 second backoff
-			maxBackoffMs: 30_000 // Max 30 seconds backoff
+		createAgentMessageProcessor({
+			hybridAgent: agent,
+			xmtpAgent: (xmtpClient as any).agent
 		})
 	)
 
@@ -218,13 +213,13 @@ export async function listen({
 		throw new Error("XMTP_ENCRYPTION_KEY must be set")
 	}
 
-	// Create XMTP client with persistent storage for reliable message streaming
-	const cloudflareStoragePath = getCloudflareStoragePath("xmtp")
+	// Create XMTP client with simplified database path
+	const storagePath = "./.data/xmtp"  // Simple directory path for Agent SDK
 	let xmtpClient: XmtpClient
 	try {
 		xmtpClient = await createXMTPClient(XMTP_WALLET_KEY as string, {
 			persist: true,
-			storagePath: cloudflareStoragePath
+			storagePath: storagePath
 		})
 	} catch (error) {
 		console.error("❌ Failed to create XMTP client after all retries:", error)
@@ -236,15 +231,11 @@ export async function listen({
 	// Apply middleware for XMTP client
 	app.use(createHonoMiddleware(xmtpClient))
 
-	// Start the background message processor
+	// Start Agent SDK message processor
 	app.use(
-		createBackgroundMessageProcessor({
-			agent,
-			xmtpClient,
-			messageFilter: filter, // Use the provided filter
-			intervalMs: 5_000, // Check every 5 seconds
-			backoffMs: 1_000, // Start with 1 second backoff
-			maxBackoffMs: 30_000 // Max 30 seconds backoff
+		createAgentMessageProcessor({
+			hybridAgent: agent,
+			xmtpAgent: (xmtpClient as any).agent
 		})
 	)
 

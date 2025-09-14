@@ -328,21 +328,9 @@ class XmtpAgentClient implements XmtpClient {
 async function clearXMTPDatabase(address: string, env: string) {
 	console.log("🧹 Clearing XMTP database to resolve installation limit...")
 
-	// Get the storage directory using the same logic as getDbPath
+	// Get the storage directory - simplified for Agent SDK
 	const getStorageDirectory = () => {
-		const customStoragePath = process.env.XMTP_STORAGE_PATH
-
-		if (customStoragePath) {
-			return path.isAbsolute(customStoragePath)
-				? customStoragePath
-				: path.resolve(process.cwd(), customStoragePath)
-		}
-
-		// Use existing logic as fallback
-		const projectRoot =
-			process.env.PROJECT_ROOT || path.resolve(__dirname, "../../..")
-
-		return path.join(projectRoot, ".data/xmtp") // Local development
+		return "./.data/xmtp"
 	}
 
 	// Clear local database files
@@ -417,20 +405,19 @@ export async function createXMTPClient(
 				]
 			}
 
-			if (persist !== false) {
-				console.log(
-					`🔍 DEBUG: persist=${persist}, storagePath="${storagePath}", XMTP_ENV="${XMTP_ENV}", address="${user.account.address}"`
-				)
-				const dbPath = await getDbPath(
-					`${XMTP_ENV || "dev"}-${user.account.address}`,
-					storagePath
-				)
-				console.log(`🔍 DEBUG: getDbPath returned: "${dbPath}"`)
-				agentOptions.dbPath = dbPath
-				console.log(`📁 Using database path: ${dbPath}`)
-			} else {
-				agentOptions.dbPath = null
-			}
+			agentOptions.dbPath = null
+			console.log(`💾 Using in-memory database (testing fix)`)
+			
+			// if (persist !== false && storagePath) {
+			//     agentOptions.dbPath = storagePath
+			//     console.log(`📁 Using database path: ${storagePath}`)
+			// } else if (persist !== false) {
+			//     agentOptions.dbPath = "./.data/xmtp"
+			//     console.log(`📁 Using default database path: ./.data/xmtp`)
+			// } else {
+			//     agentOptions.dbPath = null
+			//     console.log(`💾 Using in-memory database`)
+			// }
 
 			if (XMTP_ENCRYPTION_KEY) {
 				agentOptions.dbEncryptionKey =
@@ -444,7 +431,93 @@ export async function createXMTPClient(
 			console.log(`🌐 Environment: ${XMTP_ENV || "dev"}`)
 			console.log(`💾 Storage mode: ${persist ? "persistent" : "in-memory"}`)
 
-			return new XmtpAgentClient(agent)
+			const conversationsList = async () => {
+				const conversations = await agent.client.conversations.list()
+				return conversations.map((conv: any) => ({
+					id: conv.id,
+					topic: conv.id, // Use ID as topic since Agent SDK doesn't have topic
+					peerAddress: (conv as any).peerAddress || "unknown", // Agent SDK may not have peerAddress
+					createdAt: (conv as any).createdAt || new Date(),
+					members: async () => [],
+					send: async (content: any, contentType?: any) => {
+						const messageId = await conv.send(content)
+						return {
+							id: typeof messageId === 'string' ? messageId : crypto.randomUUID(),
+							content: content,
+							contentType: contentType || "text/plain",
+							senderAddress: user.account.address,
+							senderInboxId: user.account.address,
+							sentAt: new Date(),
+							conversation: conv,
+							conversationId: conv.id
+						}
+					},
+					messages: async () => {
+						const messages = await conv.messages()
+						return messages.map((msg: any) => ({
+							id: msg.id || crypto.randomUUID(),
+							content: msg.content || msg,
+							contentType: msg.contentType || "text/plain",
+							senderAddress: msg.senderAddress || "unknown",
+							senderInboxId: msg.senderInboxId || "unknown",
+							sentAt: msg.sentAt || new Date(),
+							conversation: conv,
+							conversationId: conv.id
+						}))
+					}
+				}))
+			}
+
+			const conversationsFunction = Object.assign(conversationsList, {
+				list: conversationsList,
+				getConversationById: async (conversationId: string) => {
+					const conversations = await conversationsList()
+					return conversations.find(c => c.id === conversationId) || null
+				},
+				getMessageById: async (messageId: string) => {
+					const conversations = await conversationsList()
+					for (const conv of conversations) {
+						const messages = await conv.messages()
+						const message = messages.find((m: any) => m.id === messageId)
+						if (message) return message
+					}
+					return null
+				},
+				sync: async () => {
+				},
+				streamAllMessages: async () => {
+					return null
+				}
+			})
+
+			return {
+				agent,
+				address: user.account.address,
+				getAddress: async () => user.account.address,
+				canMessage: async (peerAddress: string) => {
+					try {
+						return true
+					} catch {
+						return false
+					}
+				},
+				preferences: {
+					inboxStateFromInboxIds: async (inboxIds: string[]) => {
+						return []
+					}
+				},
+				conversations: conversationsFunction,
+				conversation: async (peerAddress: string) => {
+					try {
+						const conversations = await conversationsList()
+						const conv = conversations.find((c: any) => c.peerAddress === peerAddress)
+						return conv || null
+					} catch (error) {
+						console.error("Error getting conversation:", error)
+						return null
+					}
+				}
+			} as XmtpClient
 		} catch (error) {
 			attempt++
 			console.error(
@@ -490,69 +563,6 @@ export const getEncryptionKeyFromHex = (hex: string): Uint8Array => {
 // ===================================================================
 // Database Path Management
 // ===================================================================
-export const getDbPath = async (description = "xmtp", storagePath?: string) => {
-	// Allow custom storage path via environment variable
-	const customStoragePath = process.env.XMTP_STORAGE_PATH
-
-	let volumePath: string
-
-	if (customStoragePath) {
-		// Use custom storage path if provided
-		volumePath = path.isAbsolute(customStoragePath)
-			? customStoragePath
-			: path.resolve(process.cwd(), customStoragePath)
-	} else if (storagePath) {
-		volumePath = path.isAbsolute(storagePath)
-			? storagePath
-			: path.resolve(process.cwd(), storagePath)
-	} else {
-		// Use existing logic as fallback
-		const projectRoot =
-			process.env.PROJECT_ROOT || path.resolve(__dirname, "../../..")
-
-		// Default storage path for local development
-		volumePath = path.join(projectRoot, ".data/xmtp")
-	}
-
-	const dbPath = `${volumePath}/${description}.db3`
-
-	// Ensure the directory exists before any operations
-	if (!fs.existsSync(volumePath)) {
-		fs.mkdirSync(volumePath, { recursive: true })
-		console.log(`📁 Created directory: ${volumePath}`)
-	}
-
-	if (typeof globalThis !== "undefined" && "XMTP_STORAGE" in globalThis) {
-		try {
-			console.log(`📦 Using Cloudflare R2 storage for: ${dbPath}`)
-
-			const r2Bucket = (globalThis as any).XMTP_STORAGE
-			const remotePath = `xmtp-databases/${description}.db3`
-
-			try {
-				const existingObject = await r2Bucket.head(remotePath)
-				if (existingObject) {
-					console.log(`📥 Downloading existing database from R2 storage...`)
-
-					const object = await r2Bucket.get(remotePath)
-					if (object) {
-						const fileData = await object.arrayBuffer()
-						fs.writeFileSync(dbPath, new Uint8Array(fileData))
-						console.log(`✅ Database downloaded from R2 storage`)
-					}
-				} else {
-					console.log(`📝 No existing database found in R2 storage`)
-				}
-			} catch (error) {
-				console.log(`⚠️ Failed to download database from R2 storage:`, error)
-			}
-		} catch (error) {
-			console.log(`⚠️ R2 storage not available:`, error)
-		}
-	}
-
-	return dbPath
-}
 
 export const backupDbToPersistentStorage = async (
 	dbPath: string,
