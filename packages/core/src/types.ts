@@ -9,10 +9,10 @@ import { UIMessage } from "ai"
  * - Extended: AgentRuntime & { userId: string } (adds userId field)
  */
 import type {
+	XmtpClient,
 	XmtpConversation,
 	XmtpMessage,
 	XmtpSender,
-	XmtpServiceClient,
 	XmtpSubjects
 } from "@hybrd/xmtp"
 
@@ -23,7 +23,7 @@ export interface BaseRuntime extends Record<string, unknown> {
 	rootMessage: XmtpMessage
 	sender: XmtpSender
 	subjects: XmtpSubjects
-	xmtpClient: XmtpServiceClient
+	xmtpClient: XmtpClient
 }
 
 export type AgentRuntime = BaseRuntime & {

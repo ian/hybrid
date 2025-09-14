@@ -233,6 +233,9 @@ importers:
 
   packages/xmtp:
     dependencies:
+      '@xmtp/agent-sdk':
+        specifier: ^0.0.12
+        version: 0.0.12(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@xmtp/content-type-group-updated':
         specifier: 2.0.2
         version: 2.0.2
@@ -285,6 +288,31 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.8.6)(tsx@4.20.5)
+
+  test:
+    dependencies:
+      '@hybrd/ponder':
+        specifier: workspace:*
+        version: link:../packages/ponder
+      '@openrouter/ai-sdk-provider':
+        specifier: ^1.1.2
+        version: 1.2.0(ai@5.0.28(zod@3.25.76))(zod@3.25.76)
+      hybrid:
+        specifier: workspace:*
+        version: link:../packages/core
+    devDependencies:
+      '@hybrd/cli':
+        specifier: workspace:*
+        version: link:../packages/cli
+      '@types/node':
+        specifier: ^22.8.6
+        version: 22.17.2
+      tsx:
+        specifier: ^4.20.5
+        version: 4.20.5
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
 
 packages:
 
@@ -787,6 +815,16 @@ packages:
   '@noble/hashes@1.8.0':
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
+
+  '@noble/secp256k1@2.3.0':
+    resolution: {integrity: sha512-0TQed2gcBbIrh7Ccyw+y/uZQvbJwm7Ao4scBUxqpBCcsOlZG0O4KGfjtNAy/li4W8n1xt3dxrwJ0beZ2h2G6Kw==}
+
+  '@openrouter/ai-sdk-provider@1.2.0':
+    resolution: {integrity: sha512-stuIwq7Yb7DNmk3GuCtz+oS3nZOY4TXEV3V5KsknDGQN7Fpu3KRMQVWRc1J073xKdf0FC9EHOctSyzsACmp5Ag==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      ai: ^5.0.0
+      zod: ^3.24.1 || ^v4
 
   '@opensea/seaport-js@4.0.5':
     resolution: {integrity: sha512-hyJEHSCFmO7kv2G+ima0kCpt0kvLa6QOSHb1HJuLd8DS3bao0gOa/Q3AhM3xUqO6SZZ8aD9njhu1EDqjC/5pOw==}
@@ -1324,6 +1362,10 @@ packages:
   '@walletconnect/window-metadata@1.0.1':
     resolution: {integrity: sha512-9koTqyGrM2cqFRW517BPY/iEtUDx2r1+Pwwu5m7sJ7ka79wi3EyqhqcICk/yDmv6jAS1rjKgTKXlEhanYjijcA==}
 
+  '@xmtp/agent-sdk@0.0.12':
+    resolution: {integrity: sha512-MgQeil6+21vMVGvFPksyoTXxf37EcoFOX/2rbquraQ7MDFqf+YKfODQVykuuOYQngKI9iUk0S/D299gTCvKrbA==}
+    engines: {node: '>=20'}
+
   '@xmtp/content-type-group-updated@2.0.2':
     resolution: {integrity: sha512-ZUGLtzWALo5jimk5hYBVXjbdaKT6zP6a9wK0Urzl9H+Xv2w+H3fYDhwAidU0PXTcLL81qlUM6joxKVlsF5udvA==}
 
@@ -1332,6 +1374,9 @@ packages:
 
   '@xmtp/content-type-reaction@2.0.2':
     resolution: {integrity: sha512-v7wGMycSsUi8NyLR+ytjDhNY4Nr4p8qNwKx8LZPlA8IwLacq2Bp2vKxlOAnGX7m5XP9ivpBNNZvkpR5Limvz1g==}
+
+  '@xmtp/content-type-remote-attachment@2.0.2':
+    resolution: {integrity: sha512-gV2yU6UWsLQcJ228B7jOvtzUyK/+TfG0EUevxbz3OUuWpVpoo110qAa3HWUlahL1fWuaoFSX9GmESyw2UJWAQw==}
 
   '@xmtp/content-type-reply@2.0.2':
     resolution: {integrity: sha512-tks5WEevzOzUTmpvpJjxLH5jil3cHSddWgS5MPfm8bGU5hCUfy8uojlVaFEUbBBjpDVwU1o++SW5h5HggHKsgg==}
@@ -1349,8 +1394,16 @@ packages:
     resolution: {integrity: sha512-bQ5MJiCQ9Ah+bQmsxWHONyJBkt0O3fyYnVefAkeadlnVUsE8yoyvABsm+GLhjpqpffukaydCLBXar+kSUPGHLQ==}
     engines: {node: '>=18'}
 
+  '@xmtp/node-bindings@1.4.0':
+    resolution: {integrity: sha512-NfpbDc0gdhDY+5x1gxlv3I/5EtGLuwfkQszy08HXQHCchFrdpyA3NcnM9C2OQK7992H7f+bGEUlzaRze6Iqrbw==}
+    engines: {node: '>=18'}
+
   '@xmtp/node-sdk@4.0.3':
     resolution: {integrity: sha512-dw9V68whU63eYeC5+MskWLf6VbnSSy2WW+d+FhpjkOHP2fM4KL8vbZZKTCk2zUhesvQggS6/BZbSmDOKxTfK6A==}
+    engines: {node: '>=20'}
+
+  '@xmtp/node-sdk@4.1.0':
+    resolution: {integrity: sha512-tDXrwVnxUzyrjlmFE9FuBpR2j8OtE4hrDMLdBpEvoTjMHvWiPyzaxHoE8FZLOaSoW/zwncGHLH0VE59j7PQx+g==}
     engines: {node: '>=20'}
 
   '@xmtp/proto@3.86.0':
@@ -4026,6 +4079,13 @@ snapshots:
 
   '@noble/hashes@1.8.0': {}
 
+  '@noble/secp256k1@2.3.0': {}
+
+  '@openrouter/ai-sdk-provider@1.2.0(ai@5.0.28(zod@3.25.76))(zod@3.25.76)':
+    dependencies:
+      ai: 5.0.28(zod@3.25.76)
+      zod: 3.25.76
+
   '@opensea/seaport-js@4.0.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       ethers: 6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -5363,6 +5423,21 @@ snapshots:
       '@walletconnect/window-getters': 1.0.1
       tslib: 1.14.1
 
+  '@xmtp/agent-sdk@0.0.12(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)':
+    dependencies:
+      '@xmtp/content-type-reaction': 2.0.2
+      '@xmtp/content-type-remote-attachment': 2.0.2
+      '@xmtp/content-type-reply': 2.0.2
+      '@xmtp/content-type-text': 2.0.2
+      '@xmtp/node-sdk': 4.1.0
+      uint8arrays: 5.1.0
+      viem: 2.34.0(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - zod
+
   '@xmtp/content-type-group-updated@2.0.2':
     dependencies:
       '@xmtp/content-type-primitives': 2.0.2
@@ -5375,6 +5450,12 @@ snapshots:
   '@xmtp/content-type-reaction@2.0.2':
     dependencies:
       '@xmtp/content-type-primitives': 2.0.2
+
+  '@xmtp/content-type-remote-attachment@2.0.2':
+    dependencies:
+      '@noble/secp256k1': 2.3.0
+      '@xmtp/content-type-primitives': 2.0.2
+      '@xmtp/proto': 3.86.0
 
   '@xmtp/content-type-reply@2.0.2':
     dependencies:
@@ -5395,12 +5476,21 @@ snapshots:
 
   '@xmtp/node-bindings@1.3.6': {}
 
+  '@xmtp/node-bindings@1.4.0': {}
+
   '@xmtp/node-sdk@4.0.3':
     dependencies:
       '@xmtp/content-type-group-updated': 2.0.2
       '@xmtp/content-type-primitives': 2.0.2
       '@xmtp/content-type-text': 2.0.2
       '@xmtp/node-bindings': 1.3.6
+
+  '@xmtp/node-sdk@4.1.0':
+    dependencies:
+      '@xmtp/content-type-group-updated': 2.0.2
+      '@xmtp/content-type-primitives': 2.0.2
+      '@xmtp/content-type-text': 2.0.2
+      '@xmtp/node-bindings': 1.4.0
 
   '@xmtp/proto@3.86.0':
     dependencies:

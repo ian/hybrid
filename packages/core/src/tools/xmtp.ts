@@ -7,9 +7,126 @@
  * @module XMTPTools
  */
 
+import {
+	ContentTypeReaction,
+	ContentTypeReply,
+	ContentTypeText,
+	Reply,
+	logger
+} from "@hybrd/xmtp"
 import { z } from "zod"
 import { createTool } from "../core/tool"
-import { logger } from "@hybrd/xmtp"
+
+/**
+ * Get Message Tool
+ *
+ * Retrieves a specific message by ID from the XMTP service.
+ *
+ * @tool getMessage
+ * @category Communication
+ *
+ * @param {string} messageId - The message ID to retrieve
+ *
+ * @returns {Promise<{success: boolean, message?: object, error?: string}>}
+ */
+export const getMessageTool = createTool({
+	id: "getMessage",
+	description: "Get a specific message by ID from XMTP",
+	inputSchema: z.object({
+		messageId: z.string().describe("The message ID to retrieve")
+	}),
+	outputSchema: z.object({
+		success: z.boolean(),
+		message: z
+			.object({
+				id: z.string(),
+				conversationId: z.string(),
+				content: z
+					.union([z.string(), z.record(z.unknown()), z.unknown()])
+					.optional(),
+				senderInboxId: z.string(),
+				sentAt: z.date(),
+				contentType: z
+					.object({
+						typeId: z.string(),
+						authorityId: z.string().optional(),
+						versionMajor: z.number().optional(),
+						versionMinor: z.number().optional()
+					})
+					.optional()
+			})
+			.optional(),
+		error: z.string().optional()
+	}),
+	execute: async ({ input, runtime }) => {
+		const startTime = performance.now()
+		logger.debug(
+			`📜 [Tool:getMessage] Starting execution for message: ${input.messageId}`
+		)
+
+		try {
+			const { xmtpClient, conversation } = runtime
+			const { messageId } = input
+
+			if (!xmtpClient) {
+				const endTime = performance.now()
+				logger.debug(
+					`📜 [Tool:getMessage] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`
+				)
+				return {
+					success: false,
+					error: "XMTP service not available"
+				}
+			}
+
+			console.log(`📜 [getMessage] Retrieving message ${messageId}`)
+
+			const sendStartTime = performance.now()
+			const message = await xmtpClient.conversations.getMessageById(messageId)
+			const sendEndTime = performance.now()
+			logger.debug(
+				`📜 [Tool:getMessage] XMTP client getMessage completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`
+			)
+
+			if (!message) {
+				const endTime = performance.now()
+				logger.debug(
+					`📜 [Tool:getMessage] Failed in ${(endTime - startTime).toFixed(2)}ms`
+				)
+				return {
+					success: false,
+					error: "Failed to get message"
+				}
+			}
+
+			console.log(
+				`✅ [getMessage] Retrieved message from ${message.senderInboxId}`
+			)
+
+			const endTime = performance.now()
+			logger.debug(
+				`📜 [Tool:getMessage] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`
+			)
+
+			return {
+				success: true,
+				message: message
+			}
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : String(error)
+			const endTime = performance.now()
+			logger.error(
+				`❌ [Tool:getMessage] Error in ${(endTime - startTime).toFixed(2)}ms:`,
+				errorMessage
+			)
+			return {
+				success: false,
+				error: errorMessage
+			}
+		}
+	}
+})
 
 /**
  * Send Reaction Tool
@@ -50,60 +167,77 @@ export const sendReactionTool = createTool({
 	}),
 	execute: async ({ input, runtime }) => {
 		const startTime = performance.now()
-		logger.debug(`👀 [Tool:sendReaction] Starting execution with emoji: ${input.emoji}`)
-		
+
+		logger.debug(
+			`👀 [Tool:sendReaction] Starting execution with emoji: ${input.emoji}`
+		)
+
 		try {
 			const xmtpClient = runtime.xmtpClient
-			const currentMessage = runtime.message
+			const { referenceMessageId, emoji } = input
+			const { message, conversation } = runtime
+			// const currentMessage = runtime.message
 
 			if (!xmtpClient) {
 				const endTime = performance.now()
-				logger.debug(`👀 [Tool:sendReaction] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				logger.debug(
+					`👀 [Tool:sendReaction] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`
+				)
 				const errorMsg = "❌ XMTP service not available"
 				return { success: false, emoji: input.emoji, error: errorMsg }
 			}
 
-			if (!currentMessage) {
-				const endTime = performance.now()
-				logger.debug(`👀 [Tool:sendReaction] Failed - no current message in ${(endTime - startTime).toFixed(2)}ms`)
-				const errorMsg = "❌ No message to react to"
-				return { success: false, emoji: input.emoji, error: errorMsg }
-			}
-
-			// Use provided reference message ID or current message ID
-			const messageIdToReactTo = input.referenceMessageId || currentMessage.id
+			const messageIdToReactTo = input.referenceMessageId
 
 			console.log(
 				`👀 [sendReaction] Sending ${input.emoji} reaction to message ${messageIdToReactTo}`
 			)
 
 			const sendStartTime = performance.now()
-			const reactionResult = await xmtpClient.sendReaction({
-				messageId: messageIdToReactTo,
-				emoji: input.emoji,
-				action: "added"
-			})
-			const sendEndTime = performance.now()
-			logger.debug(`👀 [Tool:sendReaction] XMTP client sendReaction completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
 
-			if (!reactionResult.success) {
+			const reaction = {
+				schema: "unicode",
+				reference: message.id,
+				action: "added",
+				contentType: ContentTypeReaction,
+				content: emoji
+			}
+
+			const reactionResult = await conversation.send(
+				reaction,
+				ContentTypeReaction
+			)
+
+			const sendEndTime = performance.now()
+			logger.debug(
+				`👀 [Tool:sendReaction] XMTP client sendReaction completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`
+			)
+
+			if (!reactionResult) {
 				const endTime = performance.now()
-				logger.debug(`👀 [Tool:sendReaction] Failed in ${(endTime - startTime).toFixed(2)}ms: ${reactionResult.error}`)
-				const errorMsg = `❌ Failed to send reaction: ${reactionResult.error || "Unknown error"}`
+				logger.debug(
+					`👀 [Tool:sendReaction] Failed in ${(endTime - startTime).toFixed(2)}ms`
+				)
+				const errorMsg = `❌ Failed to send reaction`
 				return { success: false, emoji: input.emoji, error: errorMsg }
 			}
 
 			console.log(`✅ [sendReaction] Successfully sent ${input.emoji} reaction`)
-			
+
 			const endTime = performance.now()
-			logger.debug(`👀 [Tool:sendReaction] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`)
-			
+			logger.debug(
+				`👀 [Tool:sendReaction] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`
+			)
+
 			return { success: true, emoji: input.emoji }
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : String(error)
 			const endTime = performance.now()
-			logger.error(`❌ [Tool:sendReaction] Error in ${(endTime - startTime).toFixed(2)}ms:`, errorMessage)
+			logger.error(
+				`❌ [Tool:sendReaction] Error in ${(endTime - startTime).toFixed(2)}ms:`,
+				errorMessage
+			)
 			return { success: false, emoji: input.emoji, error: errorMessage }
 		}
 	}
@@ -150,15 +284,20 @@ export const sendMessageTool = createTool({
 	}),
 	execute: async ({ input, runtime }) => {
 		const startTime = performance.now()
-		logger.debug(`💬 [Tool:sendMessage] Starting execution with content: "${input.content.substring(0, 50)}${input.content.length > 50 ? "..." : ""}"`)
-		
+		logger.debug(
+			`💬 [Tool:sendMessage] Starting execution with content: "${input.content.substring(0, 50)}${input.content.length > 50 ? "..." : ""}"`
+		)
+
 		try {
 			const xmtpClient = runtime.xmtpClient
 			const { content, recipientAddress, conversationId } = input
+			const { conversation } = runtime
 
 			if (!xmtpClient) {
 				const endTime = performance.now()
-				logger.debug(`💬 [Tool:sendMessage] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				logger.debug(
+					`💬 [Tool:sendMessage] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`
+				)
 				return {
 					success: false,
 					content,
@@ -184,38 +323,45 @@ export const sendMessageTool = createTool({
 
 			// Send the message using the XMTP client
 			const sendStartTime = performance.now()
-			const messageResult = await xmtpClient.sendMessage({
-				content
-			})
+			const messageId = await conversation.send(content)
 			const sendEndTime = performance.now()
-			logger.debug(`💬 [Tool:sendMessage] XMTP client sendMessage completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+			logger.debug(
+				`💬 [Tool:sendMessage] XMTP client sendMessage completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`
+			)
 
-			if (!messageResult.success) {
+			if (!messageId) {
 				const endTime = performance.now()
-				logger.debug(`💬 [Tool:sendMessage] Failed in ${(endTime - startTime).toFixed(2)}ms: ${messageResult.error}`)
+				logger.debug(
+					`💬 [Tool:sendMessage] Failed in ${(endTime - startTime).toFixed(2)}ms`
+				)
 				return {
 					success: false,
 					content,
-					error: messageResult.error || "Failed to send message"
+					error: "Failed to send message"
 				}
 			}
 
 			console.log(`✅ [sendMessage] Message sent successfully`)
-			
+
 			const endTime = performance.now()
-			logger.debug(`💬 [Tool:sendMessage] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`)
+			logger.debug(
+				`💬 [Tool:sendMessage] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`
+			)
 
 			return {
 				success: true,
-				messageId: messageResult.data?.conversationId,
-				conversationId: messageResult.data?.conversationId,
+				messageId,
+				conversationId: conversation.id,
 				content
 			}
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : String(error)
 			const endTime = performance.now()
-			logger.error(`❌ [Tool:sendMessage] Error in ${(endTime - startTime).toFixed(2)}ms:`, errorMessage)
+			logger.error(
+				`❌ [Tool:sendMessage] Error in ${(endTime - startTime).toFixed(2)}ms:`,
+				errorMessage
+			)
 			return {
 				success: false,
 				content: input.content,
@@ -257,66 +403,83 @@ export const sendReplyTool = createTool({
 	}),
 	execute: async ({ input, runtime }) => {
 		const startTime = performance.now()
-		logger.debug(`↩️ [Tool:sendReply] Starting execution with content: "${input.content.substring(0, 50)}${input.content.length > 50 ? "..." : ""}"`)
-		
+		logger.debug(
+			`↩️ [Tool:sendReply] Starting execution with content: "${input.content.substring(0, 50)}${input.content.length > 50 ? "..." : ""}"`
+		)
+
 		try {
-			const xmtpClient = runtime.xmtpClient
-			const currentMessage = runtime.message
+			const { xmtpClient, conversation } = runtime
 			const { content, replyToMessageId } = input
 
 			if (!xmtpClient) {
 				const endTime = performance.now()
-				logger.debug(`↩️ [Tool:sendReply] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
+				logger.debug(
+					`↩️ [Tool:sendReply] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`
+				)
 				return {
 					success: false,
 					content,
+					replyToMessageId: replyToMessageId || "",
 					error: "XMTP service not available"
 				}
 			}
 
-			if (!currentMessage && !replyToMessageId) {
+			if (!replyToMessageId) {
 				const endTime = performance.now()
-				logger.debug(`↩️ [Tool:sendReply] Failed - no message to reply to in ${(endTime - startTime).toFixed(2)}ms`)
+				logger.debug(
+					`↩️ [Tool:sendReply] Failed - no message to reply to in ${(endTime - startTime).toFixed(2)}ms`
+				)
 				return {
 					success: false,
 					content,
+					replyToMessageId: "",
 					error: "No message to reply to"
 				}
 			}
 
-			const targetMessageId = replyToMessageId || currentMessage?.id
+			const targetMessageId = replyToMessageId //|| currentMessage?.id
 
 			console.log(
 				`↩️ [sendReply] Sending reply to message ${targetMessageId}: "${content.substring(0, 50)}${content.length > 50 ? "..." : ""}"`
 			)
 
-			const sendStartTime = performance.now()
-			const replyResult = await xmtpClient.sendReply({
-				content,
-				messageId: targetMessageId
-			})
-			const sendEndTime = performance.now()
-			logger.debug(`↩️ [Tool:sendReply] XMTP client sendReply completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
+			const reply: Reply = {
+				reference: replyToMessageId,
+				contentType: ContentTypeText,
+				content
+			}
 
-			if (!replyResult.success) {
+			const sendStartTime = performance.now()
+			const replyMessageId = await conversation.send(reply, ContentTypeReply)
+			const sendEndTime = performance.now()
+			logger.debug(
+				`↩️ [Tool:sendReply] XMTP client sendReply completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`
+			)
+
+			if (!replyMessageId) {
 				const endTime = performance.now()
-				logger.debug(`↩️ [Tool:sendReply] Failed in ${(endTime - startTime).toFixed(2)}ms: ${replyResult.error}`)
+				logger.debug(
+					`↩️ [Tool:sendReply] Failed in ${(endTime - startTime).toFixed(2)}ms`
+				)
 				return {
 					success: false,
 					content,
+					messageId: replyMessageId,
 					replyToMessageId: targetMessageId,
-					error: replyResult.error || "Failed to send reply"
+					error: "Failed to send reply"
 				}
 			}
 
 			console.log(`✅ [sendReply] Reply sent successfully`)
-			
+
 			const endTime = performance.now()
-			logger.debug(`↩️ [Tool:sendReply] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`)
+			logger.debug(
+				`↩️ [Tool:sendReply] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`
+			)
 
 			return {
 				success: true,
-				messageId: replyResult.data?.conversationId,
+				messageId: replyMessageId,
 				replyToMessageId: targetMessageId,
 				content
 			}
@@ -324,109 +487,15 @@ export const sendReplyTool = createTool({
 			const errorMessage =
 				error instanceof Error ? error.message : String(error)
 			const endTime = performance.now()
-			logger.error(`❌ [Tool:sendReply] Error in ${(endTime - startTime).toFixed(2)}ms:`, errorMessage)
+			logger.error(
+				`❌ [Tool:sendReply] Error in ${(endTime - startTime).toFixed(2)}ms:`,
+				errorMessage
+			)
 			return {
 				success: false,
 				content: input.content,
-				replyToMessageId: input.replyToMessageId,
-				error: errorMessage
-			}
-		}
-	}
-})
-
-/**
- * Get Message Tool
- *
- * Retrieves a specific message by ID from the XMTP service.
- *
- * @tool getMessage
- * @category Communication
- *
- * @param {string} messageId - The message ID to retrieve
- *
- * @returns {Promise<{success: boolean, message?: object, error?: string}>}
- */
-export const getMessageTool = createTool({
-	id: "getMessage",
-	description: "Get a specific message by ID from XMTP",
-	inputSchema: z.object({
-		messageId: z.string().describe("The message ID to retrieve")
-	}),
-	outputSchema: z.object({
-		success: z.boolean(),
-		message: z
-			.object({
-				id: z.string(),
-				conversationId: z.string(),
-				content: z.union([z.string(), z.record(z.unknown())]),
-				senderInboxId: z.string(),
-				sentAt: z.string(),
-				contentType: z
-					.object({
-						typeId: z.string(),
-						authorityId: z.string().optional(),
-						versionMajor: z.number().optional(),
-						versionMinor: z.number().optional()
-					})
-					.optional()
-			})
-			.optional(),
-		error: z.string().optional()
-	}),
-	execute: async ({ input, runtime }) => {
-		const startTime = performance.now()
-		logger.debug(`📜 [Tool:getMessage] Starting execution for message: ${input.messageId}`)
-		
-		try {
-			const xmtpClient = runtime.xmtpClient
-			const { messageId } = input
-
-			if (!xmtpClient) {
-				const endTime = performance.now()
-				logger.debug(`📜 [Tool:getMessage] Failed - no XMTP client in ${(endTime - startTime).toFixed(2)}ms`)
-				return {
-					success: false,
-					error: "XMTP service not available"
-				}
-			}
-
-			console.log(`📜 [getMessage] Retrieving message ${messageId}`)
-
-			const sendStartTime = performance.now()
-			const messageResult = await xmtpClient.getMessage({
-				messageId
-			})
-			const sendEndTime = performance.now()
-			logger.debug(`📜 [Tool:getMessage] XMTP client getMessage completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`)
-
-			if (!messageResult.success) {
-				const endTime = performance.now()
-				logger.debug(`📜 [Tool:getMessage] Failed in ${(endTime - startTime).toFixed(2)}ms: ${messageResult.error}`)
-				return {
-					success: false,
-					error: messageResult.error || "Failed to get message"
-				}
-			}
-
-			console.log(
-				`✅ [getMessage] Retrieved message from ${messageResult.data?.senderInboxId}`
-			)
-			
-			const endTime = performance.now()
-			logger.debug(`📜 [Tool:getMessage] Total execution completed in ${(endTime - startTime).toFixed(2)}ms`)
-
-			return {
-				success: true,
-				message: messageResult.data
-			}
-		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : String(error)
-			const endTime = performance.now()
-			logger.error(`❌ [Tool:getMessage] Error in ${(endTime - startTime).toFixed(2)}ms:`, errorMessage)
-			return {
-				success: false,
+				replyToMessageId: input.replyToMessageId || "",
+				messageId: "",
 				error: errorMessage
 			}
 		}
@@ -447,8 +516,8 @@ export const getMessageTool = createTool({
  * @property {Tool} getMessage - Get a specific message by ID
  */
 export const xmtpTools = {
+	getMessage: getMessageTool,
 	sendMessage: sendMessageTool,
 	sendReply: sendReplyTool,
-	sendReaction: sendReactionTool,
-	getMessage: getMessageTool
+	sendReaction: sendReactionTool
 }

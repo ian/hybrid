@@ -6,13 +6,7 @@ export { createTool, toolFactory } from "./core/tool"
 export type { Tool, ToolConfig } from "./core/tool"
 export { listen } from "./server/listen"
 export type { ListenOptions } from "./server/listen"
-export { getBgState, stopBackground } from "./server/processor"
 export * from "./types"
-
-// Re-export XMTP types and utilities
-import type { MessageListenerConfig, Reaction } from "@hybrd/xmtp"
-
-export type { MessageListenerConfig, Reaction }
 
 // Re-export tools standard library
 export * from "./tools"
