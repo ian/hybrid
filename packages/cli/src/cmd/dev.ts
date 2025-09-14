@@ -25,7 +25,7 @@ export function runDev() {
 			currentChild.kill("SIGTERM")
 		}
 
-		currentChild = spawn("tsx", ["--watch", "src/agent.ts"], {
+		currentChild = spawn("npx", ["tsx", "--watch", "src/agent.ts"], {
 			stdio: "inherit",
 			shell: true,
 			env: {

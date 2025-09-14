@@ -66,14 +66,17 @@ class XmtpAgentClient implements XmtpClient {
 		}
 	}
 
-	conversations = Object.assign(
-		async (): Promise<XmtpConversation[]> => {
-			const conversations = await this.agent.conversations()
+	conversations = (() => {
+		const self = this;
+		
+		const conversationFunction = async (): Promise<XmtpConversation[]> => {
+			const conversations = await self.agent.client.conversations.list()
 			return conversations.map((conv: any) => ({
 				id: conv.id,
 				topic: conv.topic,
 				peerAddress: conv.peerAddress,
 				createdAt: conv.createdAt,
+				members: async () => [], // Add missing members property as function
 				send: async (content: any, contentType?: any) => {
 					const message = await conv.send(content)
 					return {
@@ -101,44 +104,155 @@ class XmtpAgentClient implements XmtpClient {
 					}))
 				}
 			}))
-		},
-		{
-			async list(): Promise<XmtpConversation[]> {
-				console.warn(
-					"conversations.list() method not implemented with Agent SDK"
-				)
-				return []
-			},
-			async getConversationById(
-				conversationId: string
-			): Promise<XmtpConversation | null> {
-				console.warn(
-					"conversations.getConversationById() method not implemented with Agent SDK"
-				)
+		};
+
+		conversationFunction.list = async (): Promise<XmtpConversation[]> => {
+			const conversations = await self.agent.client.conversations.list()
+			return conversations.map((conv: any) => ({
+				id: conv.id,
+				topic: conv.topic,
+				peerAddress: conv.peerAddress,
+				createdAt: conv.createdAt,
+				members: async () => [], // Add missing members property as function
+				send: async (content: any, contentType?: any) => {
+					const message = await conv.send(content)
+					return {
+						id: message.id,
+						content: message.content,
+						contentType,
+						senderAddress: message.senderAddress,
+						senderInboxId: (message as any).senderInboxId,
+						sentAt: message.sentAt,
+						conversation: conv,
+						conversationId: conv.id
+					}
+				},
+				messages: async () => {
+					const messages = await conv.messages()
+					return messages.map((msg: any) => ({
+						id: msg.id,
+						content: msg.content,
+						contentType: msg.contentType,
+						senderAddress: msg.senderAddress,
+						senderInboxId: msg.senderInboxId,
+						sentAt: msg.sentAt,
+						conversation: conv,
+						conversationId: conv.id
+					}))
+				}
+			}))
+		};
+
+		conversationFunction.getConversationById = async (
+			conversationId: string
+		): Promise<XmtpConversation | null> => {
+			try {
+				const conversations = await self.agent.client.conversations.list()
+				const conv = conversations.find((c: any) => c.id === conversationId)
+				if (!conv) return null
+				
+				return {
+					id: conv.id,
+					topic: conv.topic,
+					peerAddress: conv.peerAddress,
+					createdAt: conv.createdAt,
+					members: async () => [], // Add missing members property as function
+					send: async (content: any, contentType?: any) => {
+						const message = await conv.send(content)
+						return {
+							id: message.id,
+							content: message.content,
+							contentType,
+							senderAddress: message.senderAddress,
+							senderInboxId: (message as any).senderInboxId,
+							sentAt: message.sentAt,
+							conversation: conv,
+							conversationId: conv.id
+						}
+					},
+					messages: async () => {
+						const messages = await conv.messages()
+						return messages.map((msg: any) => ({
+							id: msg.id,
+							content: msg.content,
+							contentType: msg.contentType,
+							senderAddress: msg.senderAddress,
+							senderInboxId: msg.senderInboxId,
+							sentAt: msg.sentAt,
+							conversation: conv,
+							conversationId: conv.id
+						}))
+					}
+				}
+			} catch (error) {
+				console.error("Error getting conversation by ID:", error)
 				return null
-			},
-			async getMessageById(messageId: string): Promise<XmtpMessage | null> {
-				console.warn(
-					"conversations.getMessageById() method not implemented with Agent SDK"
-				)
+			}
+		};
+
+		conversationFunction.getMessageById = async (messageId: string): Promise<XmtpMessage | null> => {
+			try {
+				const conversations = await self.agent.client.conversations.list()
+				for (const conv of conversations) {
+					const messages = await conv.messages()
+					const message = messages.find((msg: any) => msg.id === messageId)
+					if (message) {
+						return {
+							id: message.id,
+							content: message.content,
+							contentType: message.contentType,
+							senderAddress: message.senderAddress,
+							senderInboxId: message.senderInboxId,
+							sentAt: message.sentAt,
+							conversation: conv,
+							conversationId: conv.id
+						}
+					}
+				}
 				return null
-			},
-			async sync(): Promise<void> {
-				console.warn(
-					"conversations.sync() method not implemented with Agent SDK"
-				)
-				return
-			},
-			async streamAllMessages(): Promise<any> {
-				console.warn(
-					"conversations.streamAllMessages() method not implemented with Agent SDK"
-				)
+			} catch (error) {
+				console.error("Error getting message by ID:", error)
+				return null
+			}
+		};
+
+		conversationFunction.sync = async (): Promise<void> => {
+			try {
+				await self.agent.client.conversations.sync()
+			} catch (error) {
+				console.error("Error syncing conversations:", error)
+			}
+		};
+
+		conversationFunction.streamAllMessages = async (): Promise<any> => {
+			try {
+				const stream = await self.agent.client.conversations.streamAllMessages()
+				return {
+					[Symbol.asyncIterator]: async function* () {
+						for await (const message of stream) {
+							yield {
+								id: message.id,
+								content: message.content,
+								contentType: message.contentType,
+								senderAddress: message.senderAddress,
+								senderInboxId: message.senderInboxId,
+								sentAt: message.sentAt,
+								conversation: message.conversation,
+								conversationId: message.conversation?.id
+							}
+						}
+					}
+				}
+			} catch (error) {
+				console.error("Error streaming messages:", error)
 				return {
 					[Symbol.asyncIterator]: async function* () {}
 				}
 			}
-		}
-	)
+		};
+
+		return conversationFunction;
+	})()
 
 	async conversation(peerAddress: string): Promise<XmtpConversation | null> {
 		try {
