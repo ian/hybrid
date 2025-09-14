@@ -76,7 +76,7 @@
 				"useImportType": "off"
 			},
 			"suspicious": {
-				"noExplicitAny": "off" // We trust Vercelians to use any only when necessary
+				"noExplicitAny": "error" // Prevent usage of 'any' type - use proper types instead
 			},
 			"nursery": {
 				"noStaticElementInteractions": "warn",

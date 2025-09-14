@@ -69,14 +69,7 @@ export interface XmtpMessage {
 	conversationId?: string
 }
 
-export interface MessageListenerConfig {
-	client: XmtpClient
-	filter?: {
-		senderAddress?: string
-		conversationId?: string
-	}
-	resolver?: (messageOrCtx: any) => Promise<MessageEvent>
-}
+// MessageListenerConfig moved to ./lib/message-listener.ts to avoid duplicate exports
 
 export type XmtpSender = {
 	address: string

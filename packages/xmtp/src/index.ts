@@ -6,8 +6,8 @@
 
 export * from "./client"
 export * from "./constants"
-// export * from "./lib/message-listener" // Deprecated - use AgentMessageListener instead
-export * from "./lib/agent-message-listener"
+export * from "./lib/message-listener"
+// export * from "./lib/agent-message-listener" // Temporarily disabled due to missing @xmtp/agent-sdk dependency
 export * from "./lib/subjects"
 export * from "./resolver"
 export * from "./resolver/basename-resolver"
@@ -72,11 +72,12 @@ export type {
 // ===================================================================
 // XMTP Agent SDK Exports
 // ===================================================================
-export {
-	createUser,
-	createSigner,
-	Agent
-} from "@xmtp/agent-sdk"
+// NOTE: Temporarily commented out due to missing @xmtp/agent-sdk dependency
+// export {
+// 	createUser,
+// 	createSigner,
+// 	Agent
+// } from "@xmtp/agent-sdk"
 
 // ===================================================================
 // XMTP Content Types

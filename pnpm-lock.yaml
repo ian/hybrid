@@ -264,7 +264,7 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       viem:
-        specifier: ^2.22.17
+        specifier: ^2.33.3
         version: 2.34.0(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
     devDependencies:
       '@config/biome':

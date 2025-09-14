@@ -28,7 +28,7 @@
 		"hono": "^4.7.4",
 		"jsonwebtoken": "^9.0.2",
 		"uint8arrays": "^5.1.0",
-		"viem": "^2.22.17"
+		"viem": "^2.33.3"
 	},
 	"devDependencies": {
 		"@config/biome": "workspace:*",

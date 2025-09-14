@@ -1,6 +1,7 @@
 import {
 	type MessageEvent,
-	AgentMessageListener,
+	MessageListener,
+	type MessageListenerConfig,
 	XmtpClient,
 	createAuthenticatedXmtpClient,
 	generateXMTPToolsToken
@@ -110,9 +111,11 @@ export function createBackgroundMessageProcessor<
 			transport: http()
 		})
 
-		// Create message listener using Agent SDK
-		const listener = new AgentMessageListener({
-			client: opts.xmtpClient,
+		// Create message listener using XMTP SDK
+		// Type assertion is safe here as both clients implement the same interface
+		const listener = new MessageListener({
+			publicClient: publicClient as MessageListenerConfig["publicClient"],
+			xmtpClient: opts.xmtpClient,
 			filter: opts.messageFilter
 		})
 
@@ -147,7 +150,8 @@ export function createBackgroundMessageProcessor<
 				const serviceUrl = process.env.AGENT_URL || "http://localhost:8454"
 				const serviceToken = generateXMTPToolsToken({
 					action: "send",
-					conversationId: messageEvent.message.conversationId || messageEvent.conversation.id,
+					conversationId:
+						messageEvent.message.conversationId || messageEvent.conversation.id,
 					content: messageEvent.message.content?.toString() || ""
 				})
 				const serviceClient = createAuthenticatedXmtpClient(
@@ -157,7 +161,8 @@ export function createBackgroundMessageProcessor<
 
 				// Create base runtime context
 				const baseRuntime: AgentRuntime = {
-					chatId: messageEvent.message.conversationId || messageEvent.conversation.id,
+					chatId:
+						messageEvent.message.conversationId || messageEvent.conversation.id,
 					messages: messages,
 					conversation: messageEvent.conversation,
 					message: messageEvent.message,
