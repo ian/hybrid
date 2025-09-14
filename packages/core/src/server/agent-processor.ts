@@ -22,7 +22,7 @@ interface AgentMessageProcessorOptions<
 	TRuntimeExtension = Record<string, never>
 > {
 	hybridAgent: HybridAgent<TRuntimeExtension>
-	xmtpAgent: any // Agent SDK instance
+	xmtpAgent: any
 }
 
 export function createAgentMessageProcessor<
@@ -103,7 +103,7 @@ export function createAgentMessageProcessor<
 						topic: ctx.conversation.topic || ctx.conversation.id,
 						peerAddress: ctx.conversation.peerAddress || ctx.message.senderAddress,
 						createdAt: ctx.conversation.createdAt || new Date(),
-						send: async (content: any) => {
+						send: async (content: string) => {
 							return await ctx.conversation.send(content)
 						},
 						messages: async () => {
@@ -201,7 +201,7 @@ export function createAgentMessageProcessor<
 		opts.xmtpAgent.start().then(() => {
 			state.agentRunning = true
 			console.log("[XMTP Agent] Agent started and listening for messages")
-		}).catch((error: any) => {
+		}).catch((error: Error) => {
 			console.error("[XMTP Agent] Failed to start agent:", error)
 		})
 

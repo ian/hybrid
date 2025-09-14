@@ -6,7 +6,7 @@ export { createTool, toolFactory } from "./core/tool"
 export type { Tool, ToolConfig } from "./core/tool"
 export { listen } from "./server/listen"
 export type { ListenOptions } from "./server/listen"
-export { getBgState, stopBackground } from "./server/processor"
+export { getBgState, stopBackground } from "./server/agent-processor"
 export * from "./types"
 
 // Re-export XMTP types and utilities
