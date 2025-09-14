@@ -440,7 +440,7 @@ export async function createXMTPClient(
 			const agent = await Agent.create(signer, agentOptions)
 
 			console.log("✅ XMTP Agent created")
-			console.log(`🔑 Wallet address: ${(agent as any).address || "unknown"}`)
+			console.log(`🔑 Wallet address: ${user.account.address}`)
 			console.log(`🌐 Environment: ${XMTP_ENV || "dev"}`)
 			console.log(`💾 Storage mode: ${persist ? "persistent" : "in-memory"}`)
 
