@@ -41,10 +41,6 @@ export type {
 export class Agent<TRuntimeExtension = DefaultRuntimeExtension> {
 	/** Agent's unique identifier */
 	public readonly name: string
-	/** Optional description of the agent */
-	public readonly description?: string
-	/** Optional metadata associated with the agent */
-	public readonly metadata?: Record<string, unknown>
 	/** Agent configuration */
 	private readonly config: AgentConfig<TRuntimeExtension>
 	/** Default parameters for text generation */
@@ -83,7 +79,6 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension> {
 	 */
 	constructor(config: AgentConfig<TRuntimeExtension>) {
 		this.name = config.name
-		this.metadata = config.metadata
 		this.config = config
 		this.plugins = new PluginRegistryImpl<PluginContext>()
 
@@ -273,8 +268,6 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension> {
 	getConfig() {
 		return {
 			name: this.name,
-			description: this.description,
-			metadata: this.metadata,
 			hasModel: !!this.config.model,
 			hasTools: !!this.config.tools,
 			hasInstructions: !!this.config.instructions

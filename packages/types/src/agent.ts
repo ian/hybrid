@@ -47,8 +47,6 @@ export interface AgentConfig<TRuntimeExtension = DefaultRuntimeExtension> {
 	createRuntime?: (
 		runtime: AgentRuntime
 	) => TRuntimeExtension | Promise<TRuntimeExtension>
-	/** Optional metadata for the agent */
-	metadata?: Record<string, unknown>
 	/** Maximum number of steps the agent can take */
 	maxSteps?: number
 	/** Maximum tokens for generation */
