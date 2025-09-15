@@ -1,10 +1,10 @@
-import { UIMessage } from "ai"
 import type {
 	XmtpClient,
+	// XmtpClient,
+	// XmtpSender,
+	// XmtpSubjects
 	XmtpConversation,
-	XmtpMessage,
-	XmtpSender,
-	XmtpSubjects
+	XmtpMessage
 } from "./xmtp"
 
 /**
@@ -15,17 +15,17 @@ import type {
  * - Basic: AgentRuntime (just chatId and messages)
  * - Extended: AgentRuntime & { userId: string } (adds userId field)
  */
-export interface BaseRuntime extends Record<string, unknown> {
+export interface AgentRuntime {
 	conversation: XmtpConversation
 	message: XmtpMessage
-	parentMessage?: XmtpMessage
-	rootMessage: XmtpMessage
-	sender: XmtpSender
-	subjects: XmtpSubjects
+	// parentMessage?: XmtpMessage
+	// rootMessage: XmtpMessage
+	// sender: XmtpSender
+	// subjects: XmtpSubjects
 	xmtpClient: XmtpClient
 }
 
-export type AgentRuntime = BaseRuntime & {
-	chatId?: string
-	messages: Array<UIMessage>
-}
+// export type AgentRuntime = BaseRuntime & {
+// 	chatId?: string
+// 	messages: Array<UIMessage>
+// }

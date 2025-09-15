@@ -6,7 +6,15 @@ import {
 	getTestUrl
 } from "@xmtp/agent-sdk"
 
-import type { Plugin, PluginContext } from "@hybrd/types"
+import type {
+	AgentMessage,
+	AgentRuntime,
+	Plugin,
+	PluginContext,
+	XmtpConversation
+} from "@hybrd/types"
+import { randomUUID } from "node:crypto"
+import { createXMTPClient } from "./client"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
@@ -42,20 +50,44 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 			const user = createUser(XMTP_WALLET_KEY as `0x${string}`)
 			const signer = createSigner(user)
 
+			const xmtpClient = await createXMTPClient(
+				XMTP_WALLET_KEY as `0x${string}`
+			)
+
 			const xmtp = await XmtpAgent.create(signer, {
 				env: XMTP_ENV as XmtpEnv,
 				dbPath: null // in-memory store; provide a path to persist
 			})
 
-			xmtp.on("text", async (ctx) => {
-				console.log("Text message received", ctx)
-				// await agent.generate([
-				// 	{
-				// 		role: "user",
-				// 		content: "Hello from my XMTP Agent! 👋"
-				// 	}
-				// ])
-				await ctx.conversation.send("Hello from my XMTP Agent! 👋")
+			xmtp.on("text", async ({ conversation, message }) => {
+				console.log("Text message received", message)
+
+				const messages: AgentMessage[] = [
+					{
+						id: randomUUID(),
+						role: "user",
+						parts: [{ type: "text", text: message.content }]
+					}
+				]
+
+				// const sender = await this.resolver.createXmtpSender(
+				// 	message.senderInboxId,
+				// 	message.conversationId
+				// )
+
+				const baseRuntime: AgentRuntime = {
+					conversation: conversation as XmtpConversation,
+					message: message,
+					xmtpClient
+				}
+
+				const runtime = await agent.createRuntimeContext(baseRuntime)
+
+				const { text } = await agent.generate(messages, {
+					runtime
+				})
+
+				await conversation.send(text)
 			})
 
 			xmtp.on("group", async (ctx) => {

@@ -8,7 +8,7 @@ export type {
 	ToolGenerator
 } from "./agent"
 
-export type { Agent } from "./agent"
+export type { Agent, AgentMessage } from "./agent"
 
 // Tool types
 export type {
@@ -25,17 +25,13 @@ export type {
 } from "./plugin"
 
 // Runtime types
-export type {
-	AgentRuntime,
-	BaseRuntime
-} from "./runtime"
+export type { AgentRuntime } from "./runtime"
 
 // XMTP types
 export type {
 	HonoVariables,
 	XmtpClient,
 	XmtpConversation,
-	XmtpCredentials,
 	XmtpMessage,
 	XmtpSender,
 	XmtpSubjects

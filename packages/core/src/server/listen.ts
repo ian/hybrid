@@ -199,14 +199,7 @@ export async function listen({
 
 	// Apply plugins from listen options
 	for (const plugin of plugins) {
-		try {
-			console.log(`🔌 Applying plugin: ${plugin.name}`)
-			await plugin.apply(app, context)
-			console.log(`✅ Plugin applied: ${plugin.name}`)
-		} catch (error) {
-			console.error(`❌ Failed to apply plugin ${plugin.name}:`, error)
-			throw error
-		}
+		await plugin.apply(app, context)
 	}
 
 	app.get("/health", (c) => {

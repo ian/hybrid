@@ -34,9 +34,3 @@ export type XmtpSender = {
 	basename?: string
 }
 export type XmtpSubjects = Record<string, `0x${string}`>
-
-export interface XmtpCredentials {
-	inboxId: string
-	xmtpServiceUrl: string
-	xmtpServiceToken: string
-}

@@ -10,6 +10,8 @@ import type { Plugin, PluginRegistry } from "./plugin"
 import type { AgentRuntime } from "./runtime"
 import type { AnyTool } from "./tool"
 
+export type AgentMessage = UIMessage
+
 export interface Agent<
 	TRuntimeExtension = Record<string, never>,
 	TPluginContext = unknown
@@ -26,7 +28,7 @@ export interface Agent<
 	 * @returns Generated text completion result
 	 */
 	generate(
-		messages: UIMessage[],
+		messages: AgentMessage[],
 		options: GenerateOptions<TRuntimeExtension>
 	): Promise<Awaited<ReturnType<typeof generateText>>>
 
@@ -37,7 +39,7 @@ export interface Agent<
 	 * @returns Streaming response that can be consumed
 	 */
 	stream(
-		messages: UIMessage[],
+		messages: AgentMessage[],
 		options: StreamOptions<TRuntimeExtension>
 	): Promise<Response>
 
@@ -60,7 +62,7 @@ export interface Agent<
 	 */
 	getInstructions(options: {
 		runtime: AgentRuntime & TRuntimeExtension
-		messages?: UIMessage[]
+		messages?: AgentMessage[]
 	}): Promise<string | undefined>
 
 	/**
@@ -71,7 +73,7 @@ export interface Agent<
 	 */
 	getTools(options: {
 		runtime: AgentRuntime & TRuntimeExtension
-		messages?: UIMessage[]
+		messages?: AgentMessage[]
 	}): Promise<Record<string, AnyTool<TRuntimeExtension>> | undefined>
 
 	/**
@@ -101,7 +103,7 @@ export type DefaultRuntimeExtension = Record<string, never>
 export type ToolGenerator<TRuntimeExtension = DefaultRuntimeExtension> =
 	(props: {
 		runtime: AgentRuntime & TRuntimeExtension
-		messages: UIMessage[]
+		messages: AgentMessage[]
 	}) =>
 		| Record<string, AnyTool<TRuntimeExtension>>
 		| Promise<Record<string, AnyTool<TRuntimeExtension>>>
@@ -127,7 +129,7 @@ export interface AgentConfig<TRuntimeExtension = DefaultRuntimeExtension> {
 	instructions:
 		| string
 		| ((props: {
-				messages: UIMessage[]
+				messages: AgentMessage[]
 				runtime: AgentRuntime & TRuntimeExtension
 		  }) => string | Promise<string>)
 	/** Function to create the runtime extension, type will be inferred */
@@ -171,7 +173,7 @@ export interface StreamOptions<TRuntimeExtension = DefaultRuntimeExtension>
 	/** Optional telemetry configuration */
 	telemetry?: NonNullable<TelemetrySettings>
 	/** Callback when streaming finishes */
-	onFinish?: UIMessageStreamOnFinishCallback<UIMessage>
+	onFinish?: UIMessageStreamOnFinishCallback<AgentMessage>
 }
 
 /**

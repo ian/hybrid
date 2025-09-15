@@ -130,7 +130,7 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension>
 		return {
 			model,
 			tools,
-			instructions: render(instructions, runtime)
+			instructions: render(instructions, runtime as Record<string, unknown>)
 		}
 	}
 
