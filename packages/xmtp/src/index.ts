@@ -13,6 +13,7 @@ export {
 // ===================================================================
 export {
 	createXMTPClient,
+	createSigner as createXMTPSigner,
 	logAgentDetails,
 	validateEnvironment,
 	XMTPConnectionManager

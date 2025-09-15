@@ -211,9 +211,7 @@ export async function listen({
 	// 	})
 	// )
 
-	const xmtpPlugin = XMTPPlugin({
-		// filter
-	})
+	const xmtpPlugin = XMTPPlugin()
 
 	// Right now we always apply the XMTP plugin, but this may change in the future.
 	await xmtpPlugin.apply(app, context)

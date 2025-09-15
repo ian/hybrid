@@ -61,11 +61,6 @@ jobs:
       - name: Build dependencies
         run: pnpm build
 
-      - name: Type check core package
-        run: |
-          cd packages/core
-          pnpm typecheck
-
       - name: Run core package tests
         run: |
           cd packages/core

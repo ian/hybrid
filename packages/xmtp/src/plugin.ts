@@ -1,4 +1,3 @@
-// import xmtpEndpoints from "./endpoints"
 import {
 	Agent as XmtpAgent,
 	XmtpEnv,
@@ -19,18 +18,11 @@ export type { Plugin }
  * This plugin integrates XMTP messaging capabilities into the agent's
  * HTTP server. It mounts the XMTP endpoints for handling XMTP tools requests.
  */
-export function XMTPPlugin({
-	// filter
-	foo
-}: {
-	// filter?: MessageListenerConfig["filter"]
-	foo?: string
-} = {}): Plugin<PluginContext> {
+export function XMTPPlugin(): Plugin<PluginContext> {
 	return {
 		name: "xmtp",
 		description: "Provides XMTP messaging functionality",
 		apply: async (app, context) => {
-			// Initialize XMTP client and start background message processor
 			const {
 				XMTP_WALLET_KEY,
 				XMTP_DB_ENCRYPTION_KEY,
@@ -45,10 +37,7 @@ export function XMTPPlugin({
 				throw new Error("XMTP_DB_ENCRYPTION_KEY must be set")
 			}
 
-			// Mount the XMTP endpoints at /xmtp-tools
-			// app.route("/xmtp-tools", xmtpEndpoints)
-
-			const user = createUser()
+			const user = createUser(XMTP_WALLET_KEY as `0x${string}`)
 			const signer = createSigner(user)
 
 			const agent = await XmtpAgent.create(signer, {
