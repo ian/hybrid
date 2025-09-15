@@ -152,13 +152,13 @@ Your **QStash-based webhook system** already provides superior reliability compa
 
 ### Environment Variables
 
-| Variable              | Description                              | Default                                 |
-| --------------------- | ---------------------------------------- | --------------------------------------- |
-| `XMTP_STORAGE_PATH`   | Custom path for XMTP database storage    | `.data/xmtp` (relative to project root) |
-| `XMTP_WALLET_KEY`     | Private key for XMTP wallet              | Required                                |
-| `XMTP_ENCRYPTION_KEY` | Encryption key for database              | Required for persistent mode            |
-| `XMTP_ENV`            | XMTP environment (`dev` or `production`) | `dev`                                   |
-| `PROJECT_ROOT`        | Override project root path               | Auto-detected                           |
+| Variable                 | Description                              | Default                                 |
+| ------------------------ | ---------------------------------------- | --------------------------------------- |
+| `XMTP_STORAGE_PATH`      | Custom path for XMTP database storage    | `.data/xmtp` (relative to project root) |
+| `XMTP_WALLET_KEY`        | Private key for XMTP wallet              | Required                                |
+| `XMTP_DB_ENCRYPTION_KEY` | Encryption key for database              | Required for persistent mode            |
+| `XMTP_ENV`               | XMTP environment (`dev` or `production`) | `dev`                                   |
+| `PROJECT_ROOT`           | Override project root path               | Auto-detected                           |
 
 ### Connection Configuration
 

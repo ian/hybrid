@@ -99,7 +99,7 @@ Create a `.env` file with:
 # Required
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 XMTP_WALLET_KEY=your_generated_wallet_key
-XMTP_ENCRYPTION_KEY=your_generated_encryption_key
+XMTP_DB_ENCRYPTION_KEY=your_generated_encryption_key
 
 # Optional
 XMTP_ENV=dev

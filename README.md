@@ -250,7 +250,7 @@ OPENROUTER_API_KEY="your_openai_api_key"
 
 # XMTP Configuration
 XMTP_WALLET_KEY="0x..."  # Private key for XMTP agent
-XMTP_ENCRYPTION_KEY="..."  # Database encryption key
+XMTP_DB_ENCRYPTION_KEY="..."  # Database encryption key
 XMTP_ENV="dev"  # dev, production
 ```
 
@@ -376,7 +376,7 @@ XMTP_ENV="dev"                           # dev or production
 
 # Optional
 PORT="8454"                              # Port for the agent server
-XMTP_ENCRYPTION_KEY="..."                     # For secure data encryption
+XMTP_DB_ENCRYPTION_KEY="..."                     # For secure data encryption
 ```
 
 ## 🚀 Deployment
@@ -479,7 +479,7 @@ Configure XMTP authentication with environment variables:
 # XMTP Configuration
 XMTP_WALLET_KEY="0x..."  # Your XMTP wallet private key
 XMTP_ENV="dev"  # dev or production
-XMTP_ENCRYPTION_KEY="..."  # For secure data encryption
+XMTP_DB_ENCRYPTION_KEY="..."  # For secure data encryption
 ```
 
 ### XMTP Client Usage

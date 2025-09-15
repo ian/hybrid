@@ -66,17 +66,17 @@ export function getValidatedPayload(c: Context): XMTPToolsPayload | null {
 
 /**
  * Gets the JWT secret for token signing, with lazy initialization
- * Uses XMTP_ENCRYPTION_KEY environment variable for consistency
+ * Uses XMTP_DB_ENCRYPTION_KEY environment variable for consistency
  * Only falls back to development secret in development/test environments
  */
 function getJwtSecret(): string {
-	const secret = process.env.XMTP_ENCRYPTION_KEY
+	const secret = process.env.XMTP_DB_ENCRYPTION_KEY
 	const nodeEnv = process.env.NODE_ENV || "development"
 
 	// In production, require a real JWT secret
 	if (nodeEnv === "production" && !secret) {
 		throw new Error(
-			"XMTP_ENCRYPTION_KEY environment variable is required in production. " +
+			"XMTP_DB_ENCRYPTION_KEY environment variable is required in production. " +
 				"Generate a secure random secret for JWT token signing."
 		)
 	}
@@ -85,7 +85,7 @@ function getJwtSecret(): string {
 	if (!secret) {
 		console.warn(
 			"⚠️  [SECURITY] Using fallback JWT secret for development. " +
-				"Set XMTP_ENCRYPTION_KEY environment variable for production."
+				"Set XMTP_DB_ENCRYPTION_KEY environment variable for production."
 		)
 		return "fallback-secret-for-dev-only"
 	}
@@ -151,7 +151,7 @@ export function generateXMTPToolsToken(
 ): string {
 	const startTime = performance.now()
 	logger.debug("🔐 [JWT] Starting token generation...")
-	
+
 	const now = Math.floor(Date.now() / 1000)
 	const fullPayload: XMTPToolsPayload = {
 		...payload,
@@ -162,10 +162,12 @@ export function generateXMTPToolsToken(
 	const token = jwt.sign(fullPayload, getJwtSecret(), {
 		expiresIn: JWT_EXPIRY
 	})
-	
+
 	const endTime = performance.now()
-	logger.debug(`🔐 [JWT] Token generation completed in ${(endTime - startTime).toFixed(2)}ms`)
-	
+	logger.debug(
+		`🔐 [JWT] Token generation completed in ${(endTime - startTime).toFixed(2)}ms`
+	)
+
 	return token
 }
 
@@ -195,7 +197,7 @@ export function generateXMTPToolsToken(
 export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 	const startTime = performance.now()
 	logger.debug("🔐 [JWT] Starting token validation...")
-	
+
 	// First try API key authentication
 	if (token === getApiKey()) {
 		logger.debug("🔑 [Auth] Using API key authentication")
@@ -207,9 +209,11 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 			issued: now,
 			expires: now + 3600 // API keys are valid for 1 hour
 		}
-		
+
 		const endTime = performance.now()
-		logger.debug(`🔐 [JWT] API key validation completed in ${(endTime - startTime).toFixed(2)}ms`)
+		logger.debug(
+			`🔐 [JWT] API key validation completed in ${(endTime - startTime).toFixed(2)}ms`
+		)
 		return result
 	}
 
@@ -223,12 +227,16 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 		if (decoded.expires < now) {
 			console.warn("🔒 XMTP tools token has expired")
 			const endTime = performance.now()
-			logger.debug(`🔐 [JWT] Token validation failed (expired) in ${(endTime - startTime).toFixed(2)}ms`)
+			logger.debug(
+				`🔐 [JWT] Token validation failed (expired) in ${(endTime - startTime).toFixed(2)}ms`
+			)
 			return null
 		}
 
 		const endTime = performance.now()
-		logger.debug(`🔐 [JWT] JWT validation completed in ${(endTime - startTime).toFixed(2)}ms`)
+		logger.debug(
+			`🔐 [JWT] JWT validation completed in ${(endTime - startTime).toFixed(2)}ms`
+		)
 		return decoded
 	} catch (error) {
 		console.error(
@@ -236,7 +244,9 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 			error
 		)
 		const endTime = performance.now()
-		logger.debug(`🔐 [JWT] Token validation failed in ${(endTime - startTime).toFixed(2)}ms`)
+		logger.debug(
+			`🔐 [JWT] Token validation failed in ${(endTime - startTime).toFixed(2)}ms`
+		)
 		return null
 	}
 }

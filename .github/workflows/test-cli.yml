@@ -230,10 +230,10 @@ jobs:
           fi
 
           echo "🔐 .env file contents (without sensitive data):"
-          grep -v "your_wallet_key_here\|your_encryption_key_here\|XMTP_WALLET_KEY=\|XMTP_ENCRYPTION_KEY=" .env || echo "No non-sensitive content found"
+          grep -v "your_wallet_key_here\|your_encryption_key_here\|XMTP_WALLET_KEY=\|XMTP_DB_ENCRYPTION_KEY=" .env || echo "No non-sensitive content found"
           echo "🔐 Sensitive environment variables (masked):"
           grep "XMTP_WALLET_KEY=" .env | sed 's/=0x.*/=0x[MASKED]/' || echo "XMTP_WALLET_KEY not found"
-          grep "XMTP_ENCRYPTION_KEY=" .env | sed 's/=.*$/=[MASKED]/' || echo "XMTP_ENCRYPTION_KEY not found"
+          grep "XMTP_DB_ENCRYPTION_KEY=" .env | sed 's/=.*$/=[MASKED]/' || echo "XMTP_DB_ENCRYPTION_KEY not found"
 
           echo "🔍 Validating environment variables..."
 
@@ -246,12 +246,12 @@ jobs:
           echo "✅ XMTP_WALLET_KEY is present and correctly formatted"
 
           # Check for encryption key
-          if ! grep -q "XMTP_ENCRYPTION_KEY=" .env; then
-            echo "❌ XMTP_ENCRYPTION_KEY not found"
-            echo "Expected format: XMTP_ENCRYPTION_KEY=..."
+          if ! grep -q "XMTP_DB_ENCRYPTION_KEY=" .env; then
+            echo "❌ XMTP_DB_ENCRYPTION_KEY not found"
+            echo "Expected format: XMTP_DB_ENCRYPTION_KEY=..."
             exit 1
           fi
-          echo "✅ XMTP_ENCRYPTION_KEY is present"
+          echo "✅ XMTP_DB_ENCRYPTION_KEY is present"
         working-directory: test-project
 
       - name: Test interactive project creation

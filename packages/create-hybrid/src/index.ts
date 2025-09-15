@@ -193,7 +193,7 @@ async function updateTemplateFiles(
 		const envContent = `# Required
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 XMTP_WALLET_KEY=your_wallet_key_here
-XMTP_ENCRYPTION_KEY=your_encryption_key_here
+XMTP_DB_ENCRYPTION_KEY=your_encryption_key_here
 
 # Optional
 XMTP_ENV=dev
