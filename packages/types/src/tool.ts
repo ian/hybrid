@@ -51,7 +51,7 @@ export interface Tool<
 }
 
 export type AnyTool<TRuntimeExtension = DefaultRuntimeExtension> = Tool<
-	z.ZodTypeAny,
-	z.ZodTypeAny,
+	any,
+	any,
 	TRuntimeExtension
 >
