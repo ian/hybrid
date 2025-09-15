@@ -12,10 +12,6 @@ import type { Plugin, PluginContext } from "@hybrd/types"
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
 
-export interface XMTPPluginContext extends PluginContext {
-	// Additional XMTP-specific context properties can be added here
-}
-
 /**
  * XMTP Plugin that provides XMTP functionality to the agent
  *
@@ -29,7 +25,7 @@ export function XMTPPlugin({
 }: {
 	// filter?: MessageListenerConfig["filter"]
 	foo?: string
-} = {}): Plugin<XMTPPluginContext> {
+} = {}): Plugin<PluginContext> {
 	return {
 		name: "xmtp",
 		description: "Provides XMTP messaging functionality",
