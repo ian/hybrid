@@ -7,14 +7,13 @@ import {
 	getTestUrl
 } from "@xmtp/agent-sdk"
 
-import type { Plugin } from "@hybrd/types"
+import type { Plugin, PluginContext } from "@hybrd/types"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
 
-export interface XMTPPluginContext {
-	agent: unknown
-	[key: string]: unknown
+export interface XMTPPluginContext extends PluginContext {
+	// Additional XMTP-specific context properties can be added here
 }
 
 /**

@@ -7,6 +7,9 @@ export type {
 	ToolGenerator
 } from "./agent"
 
+// Agent interface (forward declaration)
+export type { Agent } from "./plugin"
+
 // Tool types
 export type {
 	AnyTool,

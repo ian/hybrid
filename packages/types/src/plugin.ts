@@ -1,6 +1,11 @@
 import type { Hono } from "hono"
 import type { HonoVariables } from "./xmtp"
 
+// Forward declaration for Agent to avoid circular dependency
+export interface Agent<TRuntimeExtension = Record<string, never>> {
+	name: string
+}
+
 /**
  * Plugin interface for extending the agent's Hono app
  *
@@ -48,5 +53,5 @@ export interface PluginRegistry<TContext = unknown> {
 }
 
 export interface PluginContext {
-	[key: string]: unknown
+	agent: Agent
 }
