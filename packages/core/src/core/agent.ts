@@ -4,7 +4,9 @@ import type {
 	AnyTool,
 	DefaultRuntimeExtension,
 	GenerateOptions,
+	Agent as IAgent,
 	Plugin,
+	PluginContext,
 	StreamOptions,
 	ToolGenerator
 } from "@hybrd/types"
@@ -19,7 +21,6 @@ import {
 	streamText
 } from "ai"
 import { render } from "../lib/render"
-import type { PluginContext } from "../server/listen"
 import { ListenOptions, listen } from "../server/listen"
 import { PluginRegistry as PluginRegistryImpl } from "./plugin"
 import { toAISDKTools } from "./tool"
@@ -38,7 +39,9 @@ export type {
  * This class provides a flexible interface for creating AI agents with
  * dynamic configuration, tool support, and streaming capabilities.
  */
-export class Agent<TRuntimeExtension = DefaultRuntimeExtension> {
+export class Agent<TRuntimeExtension = DefaultRuntimeExtension>
+	implements IAgent<TRuntimeExtension, PluginContext>
+{
 	/** Agent's unique identifier */
 	public readonly name: string
 	/** Agent configuration */

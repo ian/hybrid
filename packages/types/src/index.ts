@@ -3,12 +3,12 @@ export type {
 	AgentConfig,
 	DefaultRuntimeExtension,
 	GenerateOptions,
+	ListenOptions,
 	StreamOptions,
 	ToolGenerator
 } from "./agent"
 
-// Agent interface (forward declaration)
-export type { Agent } from "./plugin"
+export type { Agent } from "./agent"
 
 // Tool types
 export type {

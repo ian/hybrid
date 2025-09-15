@@ -2,6 +2,7 @@ import { serve } from "@hono/node-server"
 import type {
 	DefaultRuntimeExtension,
 	HonoVariables,
+	PluginContext,
 	XmtpClient
 } from "@hybrd/types"
 // import { getCloudflareStoragePath } from "@hybrd/utils"
@@ -90,33 +91,10 @@ export async function createHonoApp<
 >({ agent }: CreateHonoAppOptions<TRuntimeExtension>) {
 	const app = new Hono<{ Variables: HonoVariables }>()
 
-	// Apply middleware for XMTP client
-	// app.use(createHonoMiddleware(xmtpClient))
-
-	// Start the background message processor
-	// app.use(
-	// 	createBackgroundMessageProcessor({
-	// 		agent,
-	// 		xmtpClient,
-	// 		messageFilter, // Accept all messages by default
-	// 		intervalMs: 5_000, // Check every 5 seconds
-	// 		backoffMs: 1_000, // Start with 1 second backoff
-	// 		maxBackoffMs: 30_000 // Max 30 seconds backoff
-	// 	})
-	// )
-
 	// Mount XMTP tools routes
 	// app.route("/xmtp-tools", xmtpApp) // This line is removed as per the edit hint
 
 	return app
-}
-
-/**
- * Context type for plugins that need agent information
- */
-export interface PluginContext {
-	agent: Agent<DefaultRuntimeExtension>
-	[key: string]: unknown
 }
 
 /**
@@ -174,9 +152,9 @@ export async function listen({
 	plugins = []
 }: ListenOptions) {
 	const app = new Hono<{ Variables: HonoVariables }>()
-	const context: PluginContext = {
+	const context = {
 		agent
-	}
+	} as PluginContext
 
 	// // Initialize XMTP client and start background message processor
 	// const { XMTP_WALLET_KEY, XMTP_DB_ENCRYPTION_KEY } = process.env

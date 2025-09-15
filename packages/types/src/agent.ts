@@ -6,8 +6,95 @@ import type {
 	generateText,
 	streamText
 } from "ai"
+import type { Plugin, PluginRegistry } from "./plugin"
 import type { AgentRuntime } from "./runtime"
 import type { AnyTool } from "./tool"
+
+export interface Agent<
+	TRuntimeExtension = Record<string, never>,
+	TPluginContext = unknown
+> {
+	/** Agent's unique identifier */
+	readonly name: string
+	/** Plugin registry for extending the agent's HTTP server */
+	readonly plugins: PluginRegistry<TPluginContext>
+
+	/**
+	 * Generates a text completion using the agent's configuration.
+	 * @param messages - Conversation messages to generate from
+	 * @param options - Generation options including runtime context
+	 * @returns Generated text completion result
+	 */
+	generate(
+		messages: UIMessage[],
+		options: GenerateOptions<TRuntimeExtension>
+	): Promise<Awaited<ReturnType<typeof generateText>>>
+
+	/**
+	 * Streams a text completion using the agent's configuration.
+	 * @param messages - Conversation messages to generate from
+	 * @param options - Streaming options including runtime context
+	 * @returns Streaming response that can be consumed
+	 */
+	stream(
+		messages: UIMessage[],
+		options: StreamOptions<TRuntimeExtension>
+	): Promise<Response>
+
+	/**
+	 * Gets the agent's configuration for debugging and inspection.
+	 * @returns Object containing agent configuration details
+	 */
+	getConfig(): {
+		name: string
+		hasModel: boolean
+		hasTools: boolean
+		hasInstructions: boolean
+	}
+
+	/**
+	 * Gets the agent's instructions without running generation.
+	 * Useful for external integrations that need instructions separately.
+	 * @param options - Options containing runtime context and optional messages
+	 * @returns Resolved instructions string
+	 */
+	getInstructions(options: {
+		runtime: AgentRuntime & TRuntimeExtension
+		messages?: UIMessage[]
+	}): Promise<string | undefined>
+
+	/**
+	 * Gets the agent's tools without running generation.
+	 * Useful for external integrations that need tools separately.
+	 * @param options - Options containing runtime context and optional messages
+	 * @returns Resolved tools object
+	 */
+	getTools(options: {
+		runtime: AgentRuntime & TRuntimeExtension
+		messages?: UIMessage[]
+	}): Promise<Record<string, AnyTool<TRuntimeExtension>> | undefined>
+
+	/**
+	 * Creates the complete runtime context by merging base runtime with custom extension.
+	 * @param baseRuntime - The base runtime context containing XMTP properties
+	 * @returns Complete runtime context with custom extensions applied
+	 */
+	createRuntimeContext(
+		baseRuntime: AgentRuntime
+	): Promise<AgentRuntime & TRuntimeExtension>
+
+	/**
+	 * Registers a plugin with the agent
+	 * @param plugin - The plugin to register
+	 */
+	use(plugin: Plugin<TPluginContext>): void
+
+	/**
+	 * Starts listening for messages and events using the agent instance.
+	 * @param opts - Configuration options for the listener, excluding the agent property
+	 */
+	listen(opts: Omit<ListenOptions, "agent">): Promise<void>
+}
 
 export type DefaultRuntimeExtension = Record<string, never>
 
@@ -85,4 +172,16 @@ export interface StreamOptions<TRuntimeExtension = DefaultRuntimeExtension>
 	telemetry?: NonNullable<TelemetrySettings>
 	/** Callback when streaming finishes */
 	onFinish?: UIMessageStreamOnFinishCallback<UIMessage>
+}
+
+/**
+ * Options for starting the agent listener
+ * @property agent - The agent instance to use
+ * @property port - The port number to listen on (defaults to 8454)
+ * @property plugins - Optional array of plugins to apply to the server
+ */
+export interface ListenOptions {
+	agent: Agent<unknown, unknown>
+	port: string
+	plugins?: Plugin<unknown>[]
 }

@@ -76,7 +76,7 @@ export class PluginRegistry<T = Record<string, never>> {
 	 */
 	async applyAll(
 		app: Hono<{ Variables: HonoVariables }>,
-		context?: T
+		context: T
 	): Promise<void> {
 		const plugins = this.getAll()
 

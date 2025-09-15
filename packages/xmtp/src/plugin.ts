@@ -29,6 +29,8 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				XMTP_ENV = "production"
 			} = process.env
 
+			const { agent } = context
+
 			if (!XMTP_WALLET_KEY) {
 				throw new Error("XMTP_WALLET_KEY must be set")
 			}
@@ -40,26 +42,32 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 			const user = createUser(XMTP_WALLET_KEY as `0x${string}`)
 			const signer = createSigner(user)
 
-			const agent = await XmtpAgent.create(signer, {
+			const xmtp = await XmtpAgent.create(signer, {
 				env: XMTP_ENV as XmtpEnv,
 				dbPath: null // in-memory store; provide a path to persist
 			})
 
-			agent.on("text", async (ctx) => {
+			xmtp.on("text", async (ctx) => {
 				console.log("Text message received", ctx)
+				// await agent.generate([
+				// 	{
+				// 		role: "user",
+				// 		content: "Hello from my XMTP Agent! 👋"
+				// 	}
+				// ])
 				await ctx.conversation.send("Hello from my XMTP Agent! 👋")
 			})
 
-			agent.on("group", async (ctx) => {
+			xmtp.on("group", async (ctx) => {
 				console.log("Group message received", ctx)
 				await ctx.conversation.send("Hello from my XMTP Agent! 👋")
 			})
 
-			agent.on("start", () => {
-				console.log(`We are online: ${getTestUrl(agent)}`)
+			xmtp.on("start", () => {
+				console.log(`We are online: ${getTestUrl(xmtp)}`)
 			})
 
-			await agent.start()
+			await xmtp.start()
 		}
 	}
 }
