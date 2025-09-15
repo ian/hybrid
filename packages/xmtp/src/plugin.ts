@@ -48,17 +48,14 @@ export function XMTPPlugin({
 			// Mount the XMTP endpoints at /xmtp-tools
 			// app.route("/xmtp-tools", xmtpEndpoints)
 
-			// 1. Create a local user + signer (you can plug in your own wallet signer)
 			const user = createUser()
 			const signer = createSigner(user)
 
-			// 2. Spin up the agent
 			const agent = await XmtpAgent.create(signer, {
 				env: XMTP_ENV as XmtpEnv,
 				dbPath: null // in-memory store; provide a path to persist
 			})
 
-			// 3. Respond to text messages
 			agent.on("text", async (ctx) => {
 				console.log("Text message received", ctx)
 				await ctx.conversation.send("Hello from my XMTP Agent! 👋")
@@ -69,7 +66,6 @@ export function XMTPPlugin({
 				await ctx.conversation.send("Hello from my XMTP Agent! 👋")
 			})
 
-			// 4. Log when we're ready
 			agent.on("start", () => {
 				console.log(`We are online: ${getTestUrl(agent)}`)
 			})

@@ -347,7 +347,7 @@ export const generateEncryptionKeyHex = () => {
  * @param hex - The hex string
  * @returns The encryption key as Uint8Array
  */
-export const getEncryptionKeyFromHex = (hex: string): Uint8Array => {
+const getEncryptionKeyFromHex = (hex: string): Uint8Array => {
 	return fromString(hex, "hex")
 }
 
@@ -420,7 +420,7 @@ export const getDbPath = async (description = "xmtp", storagePath?: string) => {
 	return dbPath
 }
 
-export const backupDbToPersistentStorage = async (
+const backupDbToPersistentStorage = async (
 	dbPath: string,
 	description: string
 ) => {
@@ -533,9 +533,9 @@ export function validateEnvironment(vars: string[]): Record<string, string> {
 }
 
 /**
- * Diagnose XMTP environment and identity issues
+ * Diagnose XMTP environment and identity issues (internal use only)
  */
-export async function diagnoseXMTPIdentityIssue(
+async function diagnoseXMTPIdentityIssue(
 	client: XmtpClient,
 	inboxId: string,
 	environment: string
@@ -824,116 +824,3 @@ export async function createXMTPConnectionManager(
 // ===================================================================
 // User Address Resolution with Auto-Refresh
 // ===================================================================
-
-/**
- * Resolve user address from inbox ID with automatic identity refresh on association errors
- */
-export async function resolveUserAddress(
-	client: XmtpClient,
-	senderInboxId: string,
-	maxRetries = 2
-): Promise<string> {
-	let attempt = 0
-
-	while (attempt < maxRetries) {
-		try {
-			console.log(
-				`🔍 Resolving user address (attempt ${attempt + 1}/${maxRetries})...`
-			)
-
-			const inboxState = await client.preferences.inboxStateFromInboxIds([
-				senderInboxId
-			])
-
-			const firstInbox = inboxState[0]
-			if (
-				inboxState.length > 0 &&
-				firstInbox?.identifiers &&
-				firstInbox.identifiers.length > 0
-			) {
-				const userAddress = firstInbox.identifiers[0]?.identifier
-				if (userAddress) {
-					console.log("✅ Resolved user address:", userAddress)
-					return userAddress
-				}
-			}
-
-			console.log("⚠️ No identifiers found in inbox state")
-			return "unknown"
-		} catch (error) {
-			attempt++
-
-			if (
-				error instanceof Error &&
-				error.message.includes("Association error: Missing identity update")
-			) {
-				console.log(
-					`🔄 Identity association error during address resolution (attempt ${attempt}/${maxRetries})`
-				)
-
-				if (attempt < maxRetries) {
-					console.log(
-						"🔧 Attempting automatic identity refresh for address resolution..."
-					)
-
-					try {
-						// Force a conversation sync to refresh identity state
-						console.log("📡 Syncing conversations to refresh identity...")
-						await client.conversations.sync()
-
-						// Small delay before retry
-						console.log("⏳ Waiting 2s before retry...")
-						await new Promise((resolve) => setTimeout(resolve, 2000))
-
-						console.log(
-							"✅ Identity sync completed, retrying address resolution..."
-						)
-					} catch (refreshError) {
-						console.log(`❌ Identity refresh failed:`, refreshError)
-					}
-				} else {
-					console.error("❌ Failed to resolve user address after all retries")
-					console.error("💡 Identity association issue persists")
-
-					// Run diagnostic
-					try {
-						const diagnosis = await diagnoseXMTPIdentityIssue(
-							client,
-							senderInboxId,
-							process.env.XMTP_ENV || "dev"
-						)
-
-						console.log("🔍 XMTP Identity Diagnosis:")
-						diagnosis.suggestions.forEach((suggestion) => {
-							console.error(`💡 ${suggestion}`)
-						})
-					} catch (diagError) {
-						console.warn("⚠️ Could not run XMTP identity diagnosis:", diagError)
-					}
-
-					return "unknown"
-				}
-			} else {
-				// For other errors, don't retry
-				console.error("❌ Error resolving user address:", error)
-				return "unknown"
-			}
-		}
-	}
-
-	return "unknown"
-}
-
-export const startPeriodicBackup = (
-	dbPath: string,
-	description: string,
-	intervalMs = 300000
-) => {
-	return setInterval(async () => {
-		try {
-			await backupDbToPersistentStorage(dbPath, description)
-		} catch (error) {
-			console.log(`⚠️ Periodic backup failed:`, error)
-		}
-	}, intervalMs)
-}

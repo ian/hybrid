@@ -13,9 +13,9 @@ export {
 // ===================================================================
 export {
 	createXMTPClient,
-	XMTPConnectionManager,
 	logAgentDetails,
-	validateEnvironment
+	validateEnvironment,
+	XMTPConnectionManager
 } from "./client"
 export type { XMTPConnectionConfig } from "./client"
 
@@ -23,7 +23,7 @@ export type { XMTPConnectionConfig } from "./client"
 // XMTP Plugin for Agent Integration
 // ===================================================================
 export { XMTPPlugin } from "./plugin"
-export type { Plugin, XMTPPluginContext } from "./plugin"
+export type { Plugin } from "./plugin"
 
 // ===================================================================
 // JWT Utilities for XMTP Tools
