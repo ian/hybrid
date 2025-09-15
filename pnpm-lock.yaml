@@ -94,6 +94,9 @@ importers:
       '@hybrd/ponder':
         specifier: workspace:*
         version: link:../ponder
+      '@hybrd/types':
+        specifier: workspace:*
+        version: link:../types
       '@hybrd/utils':
         specifier: workspace:*
         version: link:../utils
@@ -177,6 +180,9 @@ importers:
 
   packages/ponder:
     dependencies:
+      '@hybrd/types':
+        specifier: workspace:*
+        version: link:../types
       hono:
         specifier: catalog:stack
         version: 4.9.2
@@ -193,6 +199,52 @@ importers:
       rimraf:
         specifier: ^5.0.10
         version: 5.0.10
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(postcss@8.5.6)(tsx@4.20.5)(typescript@5.9.2)
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@22.8.6)(tsx@4.20.5)
+
+  packages/types:
+    dependencies:
+      '@xmtp/content-type-group-updated':
+        specifier: '*'
+        version: 2.0.2
+      '@xmtp/content-type-reaction':
+        specifier: '*'
+        version: 2.0.2
+      '@xmtp/content-type-reply':
+        specifier: '*'
+        version: 2.0.2
+      '@xmtp/content-type-transaction-reference':
+        specifier: '*'
+        version: 2.0.2
+      '@xmtp/content-type-wallet-send-calls':
+        specifier: '*'
+        version: 2.0.0
+      '@xmtp/node-sdk':
+        specifier: '*'
+        version: 4.1.0
+      ai:
+        specifier: ^5.0.28
+        version: 5.0.28(zod@3.25.76)
+      hono:
+        specifier: '*'
+        version: 4.9.2
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+    devDependencies:
+      '@config/biome':
+        specifier: workspace:*
+        version: link:../../config/biome
+      '@config/tsconfig':
+        specifier: workspace:*
+        version: link:../../config/typescript
+      '@types/node':
+        specifier: catalog:stack
+        version: 22.8.6
       tsup:
         specifier: ^8.5.0
         version: 8.5.0(postcss@8.5.6)(tsx@4.20.5)(typescript@5.9.2)
@@ -233,6 +285,9 @@ importers:
 
   packages/xmtp:
     dependencies:
+      '@hybrd/types':
+        specifier: workspace:*
+        version: link:../types
       '@xmtp/agent-sdk':
         specifier: ^0.0.12
         version: 0.0.12(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)

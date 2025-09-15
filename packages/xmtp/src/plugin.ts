@@ -1,26 +1,20 @@
 // import xmtpEndpoints from "./endpoints"
 import {
-	Agent,
+	Agent as XmtpAgent,
 	XmtpEnv,
 	createSigner,
 	createUser,
 	getTestUrl
 } from "@xmtp/agent-sdk"
-import { Hono } from "hono"
 
-import type { HonoVariables } from "./types"
+import type { Plugin } from "@hybrd/types"
 
-export interface Plugin<TContext = unknown> {
-	name: string
-	description?: string
-	apply: (
-		app: Hono<{ Variables: HonoVariables }>,
-		context?: TContext
-	) => void | Promise<void>
-}
+// Re-export types from @hybrd/types for backward compatibility
+export type { Plugin }
 
 export interface XMTPPluginContext {
 	agent: unknown
+	[key: string]: unknown
 }
 
 /**
@@ -64,7 +58,7 @@ export function XMTPPlugin({
 			const signer = createSigner(user)
 
 			// 2. Spin up the agent
-			const agent = await Agent.create(signer, {
+			const agent = await XmtpAgent.create(signer, {
 				env: XMTP_ENV as XmtpEnv,
 				dbPath: null // in-memory store; provide a path to persist
 			})

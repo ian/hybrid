@@ -1,9 +1,17 @@
+import type {
+	AgentConfig,
+	AgentRuntime,
+	AnyTool,
+	DefaultRuntimeExtension,
+	GenerateOptions,
+	Plugin,
+	StreamOptions,
+	ToolGenerator
+} from "@hybrd/types"
 import { randomUUID } from "@hybrd/utils"
 import {
 	LanguageModel,
-	TelemetrySettings,
 	UIMessage,
-	UIMessageStreamOnFinishCallback,
 	convertToModelMessages,
 	generateText,
 	smoothStream,
@@ -11,101 +19,18 @@ import {
 	streamText
 } from "ai"
 import { render } from "../lib/render"
-
-type AnyTool<TRuntimeExtension = DefaultRuntimeExtension> = Tool<any, any, TRuntimeExtension>
 import type { PluginContext } from "../server/listen"
 import { ListenOptions, listen } from "../server/listen"
-import type { AgentRuntime } from "../types"
-import type { Plugin } from "./plugin"
-import { PluginRegistry } from "./plugin"
-import { Tool, toAISDKTools } from "./tool"
+import { PluginRegistry as PluginRegistryImpl } from "./plugin"
+import { toAISDKTools } from "./tool"
 
-export type DefaultRuntimeExtension = Record<string, never>
-
-/**
- * Function that generates tools dynamically based on messages and runtime context.
- * Allows for context-aware tool selection and configuration.
- */
-export type ToolGenerator<TRuntimeExtension = DefaultRuntimeExtension> =
-	(props: {
-		messages: UIMessage[]
-		runtime: AgentRuntime & TRuntimeExtension
-	}) =>
-		| Record<string, AnyTool<TRuntimeExtension>>
-		| Promise<Record<string, AnyTool<TRuntimeExtension>>>
-
-/**
- * Configuration interface for creating an Agent instance.
- * Supports both static and dynamic configuration through functions.
- */
-export interface AgentConfig<TRuntimeExtension = DefaultRuntimeExtension> {
-	/** Unique identifier for the agent */
-	name: string
-	/** Language model to use, can be static or dynamically resolved */
-	model:
-		| LanguageModel
-		| ((props: {
-				runtime: AgentRuntime & TRuntimeExtension
-		  }) => LanguageModel | Promise<LanguageModel>)
-	/** Tools available to the agent, can be static or dynamically generated */
-	tools?:
-		| Record<string, AnyTool<TRuntimeExtension>>
-		| ToolGenerator<TRuntimeExtension>
-	/** Instructions for the agent, can be static or dynamically resolved */
-	instructions:
-		| string
-		| ((props: {
-				messages: UIMessage[]
-				runtime: AgentRuntime & TRuntimeExtension
-		  }) => string | Promise<string>)
-	/** Function to create the runtime extension, type will be inferred */
-	createRuntime?: (
-		runtime: AgentRuntime
-	) => TRuntimeExtension | Promise<TRuntimeExtension>
-	/** Optional metadata for the agent */
-	metadata?: Record<string, unknown>
-	/** Maximum number of steps the agent can take */
-	maxSteps?: number
-	/** Maximum tokens for generation */
-	maxTokens?: number
-	/** Temperature for generation (0.0 to 2.0) */
-	temperature?: number
-}
-
-/**
- * Options for text generation with the agent.
- * Extends AI SDK parameters while adding agent-specific options.
- */
-export interface GenerateOptions<TRuntimeExtension = DefaultRuntimeExtension>
-	extends Omit<
-		Parameters<typeof generateText>[0],
-		"model" | "tools" | "instructions" | "onFinish"
-	> {
-	/** Maximum tokens for generation */
-	maxTokens?: number
-	/** Runtime context for the agent */
-	runtime: AgentRuntime & TRuntimeExtension
-	/** Optional telemetry configuration */
-	telemetry?: NonNullable<TelemetrySettings>
-}
-
-/**
- * Options for streaming text with the agent.
- * Extends AI SDK parameters while adding agent-specific options.
- */
-export interface StreamOptions<TRuntimeExtension = DefaultRuntimeExtension>
-	extends Omit<
-		Parameters<typeof streamText>[0],
-		"model" | "tools" | "instructions" | "onFinish"
-	> {
-	/** Maximum tokens for generation */
-	maxTokens?: number
-	/** Runtime context for the agent */
-	runtime: AgentRuntime & TRuntimeExtension
-	/** Optional telemetry configuration */
-	telemetry?: NonNullable<TelemetrySettings>
-	/** Callback when streaming finishes */
-	onFinish?: UIMessageStreamOnFinishCallback<UIMessage>
+// Re-export types from @hybrd/types for backward compatibility
+export type {
+	AgentConfig,
+	DefaultRuntimeExtension,
+	GenerateOptions,
+	StreamOptions,
+	ToolGenerator
 }
 
 /**
@@ -150,7 +75,7 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension> {
 		>
 	>
 	/** Plugin registry for extending the agent's HTTP server */
-	public readonly plugins: PluginRegistry<PluginContext>
+	public readonly plugins: PluginRegistryImpl<PluginContext>
 
 	/**
 	 * Creates a new Agent instance with the specified configuration.
@@ -160,7 +85,7 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension> {
 		this.name = config.name
 		this.metadata = config.metadata
 		this.config = config
-		this.plugins = new PluginRegistry<PluginContext>()
+		this.plugins = new PluginRegistryImpl<PluginContext>()
 
 		this.generationDefaults = {
 			maxOutputTokens: config.maxTokens,

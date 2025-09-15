@@ -1,11 +1,16 @@
 import { serve } from "@hono/node-server"
+import type {
+	DefaultRuntimeExtension,
+	HonoVariables,
+	XmtpClient
+} from "@hybrd/types"
 // import { getCloudflareStoragePath } from "@hybrd/utils"
-import { type HonoVariables, XMTPPlugin, XmtpClient } from "@hybrd/xmtp"
+import { XMTPPlugin } from "@hybrd/xmtp"
 import { Context, Hono, Next } from "hono"
-import type { Agent, DefaultRuntimeExtension } from "../core/agent"
+import type { Agent } from "../core/agent"
 import type { Plugin } from "../core/plugin"
 
-export type { HonoVariables } from "@hybrd/xmtp"
+export type { HonoVariables }
 
 /**
  * Creates Hono middleware to inject XMTP client into request context
@@ -111,6 +116,7 @@ export async function createHonoApp<
  */
 export interface PluginContext {
 	agent: Agent<DefaultRuntimeExtension>
+	[key: string]: unknown
 }
 
 /**

@@ -212,7 +212,7 @@ export async function createXMTPClient(
 			console.log(`🌐 Environment: ${XMTP_ENV || "dev"}`)
 			console.log(`💾 Storage mode: persistent`)
 
-			return client
+			return client as unknown as XmtpClient
 		} catch (error) {
 			attempt++
 

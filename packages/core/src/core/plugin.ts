@@ -1,38 +1,8 @@
-import type { HonoVariables } from "@hybrd/xmtp"
+import type { HonoVariables, Plugin } from "@hybrd/types"
 import type { Hono } from "hono"
 
-/**
- * Plugin interface for extending the agent's Hono app
- *
- * @description
- * Plugins allow you to extend the agent's HTTP server with additional
- * routes, middleware, and functionality. Each plugin receives the Hono
- * app instance and can modify it as needed.
- *
- * @template T - Optional context type that can be passed to the plugin
- */
-export interface Plugin<T = Record<string, never>> {
-	/**
-	 * Unique identifier for the plugin
-	 */
-	name: string
-
-	/**
-	 * Optional description of what the plugin does
-	 */
-	description?: string
-
-	/**
-	 * Function that applies the plugin to the Hono app
-	 *
-	 * @param app - The Hono app instance to extend
-	 * @param context - Optional context data passed to the plugin
-	 */
-	apply: (
-		app: Hono<{ Variables: HonoVariables }>,
-		context?: T
-	) => void | Promise<void>
-}
+// Re-export types from @hybrd/types for backward compatibility
+export type { Plugin }
 
 /**
  * Plugin registry that manages all registered plugins
