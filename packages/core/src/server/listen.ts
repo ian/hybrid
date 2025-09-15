@@ -75,7 +75,7 @@ export type CreateHonoAppOptions<TRuntimeExtension = DefaultRuntimeExtension> =
  * @returns Promise that resolves to a configured Hono app instance
  *
  * @throws {Error} When XMTP_WALLET_KEY environment variable is not set
- * @throws {Error} When XMTP_ENCRYPTION_KEY environment variable is not set
+ * @throws {Error} When XMTP_DB_ENCRYPTION_KEY environment variable is not set
  *
  * @example
  * ```typescript
@@ -179,14 +179,14 @@ export async function listen({
 	}
 
 	// // Initialize XMTP client and start background message processor
-	// const { XMTP_WALLET_KEY, XMTP_ENCRYPTION_KEY } = process.env
+	// const { XMTP_WALLET_KEY, XMTP_DB_ENCRYPTION_KEY } = process.env
 
 	// if (!XMTP_WALLET_KEY) {
 	// 	throw new Error("XMTP_WALLET_KEY must be set")
 	// }
 
-	// if (!XMTP_ENCRYPTION_KEY) {
-	// 	throw new Error("XMTP_ENCRYPTION_KEY must be set")
+	// if (!XMTP_DB_ENCRYPTION_KEY) {
+	// 	throw new Error("XMTP_DB_ENCRYPTION_KEY must be set")
 	// }
 
 	// Create XMTP client with persistent storage for reliable message streaming

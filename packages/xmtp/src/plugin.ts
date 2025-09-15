@@ -33,7 +33,7 @@ export function XMTPPlugin({
 			// Initialize XMTP client and start background message processor
 			const {
 				XMTP_WALLET_KEY,
-				XMTP_ENCRYPTION_KEY,
+				XMTP_DB_ENCRYPTION_KEY,
 				XMTP_ENV = "production"
 			} = process.env
 
@@ -41,8 +41,8 @@ export function XMTPPlugin({
 				throw new Error("XMTP_WALLET_KEY must be set")
 			}
 
-			if (!XMTP_ENCRYPTION_KEY) {
-				throw new Error("XMTP_ENCRYPTION_KEY must be set")
+			if (!XMTP_DB_ENCRYPTION_KEY) {
+				throw new Error("XMTP_DB_ENCRYPTION_KEY must be set")
 			}
 
 			// Mount the XMTP endpoints at /xmtp-tools

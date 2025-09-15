@@ -153,7 +153,7 @@ export async function createXMTPClient(
 		)
 	}
 
-	const { XMTP_ENCRYPTION_KEY, XMTP_ENV } = process.env
+	const { XMTP_DB_ENCRYPTION_KEY, XMTP_ENV } = process.env
 
 	// Get the wallet address to use the correct database
 	const identifier = await signer.getIdentifier()
@@ -174,11 +174,13 @@ export async function createXMTPClient(
 				)
 			}
 
-			if (!XMTP_ENCRYPTION_KEY) {
-				throw new Error("XMTP_ENCRYPTION_KEY must be set for persistent mode")
+			if (!XMTP_DB_ENCRYPTION_KEY) {
+				throw new Error(
+					"XMTP_DB_ENCRYPTION_KEY must be set for persistent mode"
+				)
 			}
 
-			const dbEncryptionKey = getEncryptionKeyFromHex(XMTP_ENCRYPTION_KEY)
+			const dbEncryptionKey = getEncryptionKeyFromHex(XMTP_DB_ENCRYPTION_KEY)
 			const dbPath = await getDbPath(
 				`${XMTP_ENV || "dev"}-${address}`,
 				storagePath
@@ -278,8 +280,8 @@ export async function createXMTPClient(
 					// Try to refresh identity by creating a persistent client first
 					try {
 						console.log("📝 Creating persistent client to refresh identity...")
-						const tempEncryptionKey = XMTP_ENCRYPTION_KEY
-							? getEncryptionKeyFromHex(XMTP_ENCRYPTION_KEY)
+						const tempEncryptionKey = XMTP_DB_ENCRYPTION_KEY
+							? getEncryptionKeyFromHex(XMTP_DB_ENCRYPTION_KEY)
 							: getEncryptionKeyFromHex(generateEncryptionKeyHex())
 						const tempClient = await Client.create(signer, {
 							dbEncryptionKey: tempEncryptionKey,

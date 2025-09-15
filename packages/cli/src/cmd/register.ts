@@ -24,7 +24,7 @@ export async function registerWallet() {
 	// Validate required environment variables
 	const { XMTP_WALLET_KEY } = validateEnvironment([
 		"XMTP_WALLET_KEY",
-		"XMTP_ENCRYPTION_KEY"
+		"XMTP_DB_ENCRYPTION_KEY"
 	])
 
 	if (!XMTP_WALLET_KEY) {
