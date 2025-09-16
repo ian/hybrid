@@ -1,4 +1,4 @@
-name: Test Hybrid CLI
+name: Test CLI
 
 on: push
 

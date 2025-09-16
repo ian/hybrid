@@ -64,7 +64,7 @@ jobs:
       - name: Run core package tests
         run: |
           cd packages/core
-          pnpm test:run
+          pnpm test
 
   test-compatibility:
     name: Test Tool Schema Compatibility
