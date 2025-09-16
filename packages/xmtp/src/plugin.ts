@@ -11,7 +11,8 @@ import type {
 	AgentRuntime,
 	Plugin,
 	PluginContext,
-	XmtpConversation
+	XmtpConversation,
+	XmtpMessage
 } from "@hybrd/types"
 import { randomUUID } from "node:crypto"
 import { createXMTPClient, getDbPath } from "./client"
@@ -138,51 +139,20 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				dbPath: agentDbPath
 			})
 
-			// Shared helpers for XMTP agent events
-			function isRecord(value: unknown): value is Record<string, unknown> {
-				return typeof value === "object" && value !== null
-			}
-
-			function extractUserTextFromMessage(msg: unknown): string {
-				if (isRecord(msg) && "content" in msg) {
-					const content = (msg as Record<string, unknown>).content
-					if (typeof content === "string") return content
-					if (isRecord(content)) {
-						if (typeof content.content === "string") return content.content
-						if (typeof content.reference === "string")
-							return `Reference: ${content.reference}`
-						try {
-							return JSON.stringify(content)
-						} catch {
-							return String(content)
-						}
-					}
-					try {
-						return JSON.stringify(content)
-					} catch {
-						return String(content)
-					}
-				}
+			xmtp.on("reaction", async ({ conversation, message }) => {
 				try {
-					return JSON.stringify(msg)
-				} catch {
-					return String(msg)
-				}
-			}
-
-			async function processWithAgent(
-				conversation: XmtpConversation,
-				msg: unknown
-			): Promise<void> {
-				try {
-					const text = extractUserTextFromMessage(msg)
+					const text = message.content.content
 					const messages: AgentMessage[] = [
-						{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }
+						{
+							id: randomUUID(),
+							role: "user",
+							parts: [{ type: "text", text }]
+						}
 					]
 
 					const baseRuntime: AgentRuntime = {
-						conversation,
-						message: msg as unknown as any,
+						conversation: conversation as XmtpConversation,
+						message: message as XmtpMessage,
 						xmtpClient
 					}
 
@@ -190,62 +160,55 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					const { text: reply } = await agent.generate(messages, { runtime })
 					await conversation.send(reply)
 				} catch (err) {
-					console.error("❌ Error processing event:", err)
-				}
-			}
-
-			xmtp.on("reaction", async (ctx) => {
-				try {
-					const message = (ctx as unknown as { message?: unknown }).message
-					let conversation = (ctx as { conversation?: XmtpConversation })
-						.conversation
-					if (
-						!conversation &&
-						isRecord(message) &&
-						typeof (message as Record<string, unknown>).conversationId ===
-							"string"
-					) {
-						const convo = await xmtpClient.conversations.getConversationById(
-							(message as Record<string, unknown>).conversationId as string
-						)
-						if (convo) conversation = convo as XmtpConversation
-					}
-					if (conversation && message)
-						await processWithAgent(conversation, message)
-				} catch (err) {
 					console.error("❌ Error handling reaction:", err)
 				}
 			})
 
-			xmtp.on("reply", async (ctx) => {
+			xmtp.on("reply", async ({ conversation, message }) => {
 				try {
-					const message = (ctx as unknown as { message?: unknown }).message
-					let conversation = (ctx as { conversation?: XmtpConversation })
-						.conversation
-					if (
-						!conversation &&
-						isRecord(message) &&
-						typeof (message as Record<string, unknown>).conversationId ===
-							"string"
-					) {
-						const convo = await xmtpClient.conversations.getConversationById(
-							(message as Record<string, unknown>).conversationId as string
-						)
-						if (convo) conversation = convo as XmtpConversation
+					// TODO - why isn't this typed better?
+					const text = message.content.content as string
+					const messages: AgentMessage[] = [
+						{
+							id: randomUUID(),
+							role: "user",
+							parts: [{ type: "text", text }]
+						}
+					]
+
+					const baseRuntime: AgentRuntime = {
+						conversation: conversation as XmtpConversation,
+						message: message as XmtpMessage,
+						xmtpClient
 					}
-					if (conversation && message)
-						await processWithAgent(conversation, message)
+
+					const runtime = await agent.createRuntimeContext(baseRuntime)
+					const { text: reply } = await agent.generate(messages, { runtime })
+					await conversation.send(reply)
 				} catch (err) {
 					console.error("❌ Error handling reply:", err)
 				}
 			})
 
 			xmtp.on("text", async ({ conversation, message }) => {
-				console.log(
-					"Message",
-					(message as unknown as { content?: unknown })?.content
-				)
-				await processWithAgent(conversation as XmtpConversation, message)
+				try {
+					const text = message.content
+					const messages: AgentMessage[] = [
+						{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }
+					]
+
+					const baseRuntime: AgentRuntime = {
+						conversation: conversation as XmtpConversation,
+						message: message as XmtpMessage,
+						xmtpClient
+					}
+
+					const runtime = await agent.createRuntimeContext(baseRuntime)
+					const { text: reply } = await agent.generate(messages, { runtime })
+					await conversation.send(reply)
+				} catch (err) {
+					console.error("❌ Error handling text:", err)
+				}
 			})
 
 			xmtp.on("dm", async ({ conversation }) => {

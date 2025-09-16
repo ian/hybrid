@@ -8,8 +8,7 @@
 		},
 		"build:watch": {
 			"dependsOn": ["^build:watch"],
-			"cache": false,
-			"persistent": false
+			"cache": false
 		},
 		"dev": {
 			"dependsOn": ["^dev"],
