@@ -2,6 +2,7 @@
 	"name": "@hybrd/xmtp",
 	"version": "1.3.2",
 	"type": "module",
+	"files": ["dist", "src"],
 	"exports": {
 		".": {
 			"types": "./src/index.ts",
