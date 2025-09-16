@@ -88,3 +88,12 @@ pnpm typecheck
 # Run linting
 pnpm lint
 ```
+
+## Links
+
+- Main repo: [github.com/ian/hybrid](https://github.com/ian/hybrid)
+- Website & docs: [hybrid.dev](https://hybrid.dev)
+
+## License
+
+ISC

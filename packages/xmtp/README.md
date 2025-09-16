@@ -2,6 +2,11 @@
 
 This package provides an enhanced XMTP client with robust connection management, retry logic, and health monitoring capabilities.
 
+## Links
+
+- Main repo: [github.com/ian/hybrid](https://github.com/ian/hybrid)
+- Website & docs: [hybrid.dev](https://hybrid.dev)
+
 ## 🆙 Upgraded Features
 
 - **XMTP Node SDK**: Upgraded to `^3.1.0` (latest version)

@@ -6,13 +6,13 @@ A Hybrid XMTP agent built with TypeScript and AI capabilities.
 
 ### Prerequisites
 
-- Node.js 20 or higher
+- Node.js 20 or higher (Node 22 recommended)
 
 ### Installation
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 ```
 
 ### Setup
@@ -36,13 +36,13 @@ npm install
 
 ```bash
 # Start development server with auto-reload
-npm run dev
+pnpm dev
 
 # Build for production
-npm run build
+pnpm build
 
 # Start production server
-npm start
+pnpm start
 ```
 
 ## 📁 Project Structure

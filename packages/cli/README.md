@@ -4,7 +4,7 @@ An open-source agent framework for building conversational AI agents on XMTP.
 
 Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
 
-See [http://hybriddev.com](http://hybrid.dev) for more information.
+See [hybrid.dev](https://hybrid.dev) for more information.
 
 ## 📦 Quickstart
 
@@ -49,13 +49,7 @@ hybrid register
 
 This generates secure wallet and encryption keys for your XMTP agent.
 
-### 5. Register your wallet with XMTP
-
-```bash
-hybrid register
-```
-
-  ### 6. Start developing
+  ### 5. Start developing
 
 ```bash
 hybrid dev
