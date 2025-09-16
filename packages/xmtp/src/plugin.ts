@@ -87,14 +87,6 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 											}
 										})()
 
-							const messages: AgentMessage[] = [
-								{
-									id: randomUUID(),
-									role: "user",
-									parts: [{ type: "text", text: content }]
-								}
-							]
-
 							const conversation =
 								await xmtpClient.conversations.getConversationById(
 									msg.conversationId
@@ -106,6 +98,14 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 								)
 								continue
 							}
+
+							const messages: AgentMessage[] = [
+								{
+									id: randomUUID(),
+									role: "user",
+									parts: [{ type: "text", text: content }]
+								}
+							]
 
 							const baseRuntime: AgentRuntime = {
 								conversation: conversation as XmtpConversation,
@@ -138,42 +138,114 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				dbPath: agentDbPath
 			})
 
-			xmtp.on("reaction", async ({ message }) => {
-				console.log(`Reaction: ${message.content}`)
-			})
+			// Shared helpers for XMTP agent events
+			function isRecord(value: unknown): value is Record<string, unknown> {
+				return typeof value === "object" && value !== null
+			}
 
-			xmtp.on("reply", async ({ message }) => {
-				console.log(`Reply: ${message.content.reference}`)
-			})
-
-			xmtp.on("text", async ({ conversation, message }) => {
-				console.log("Message", message.content)
-
-				try {
-					const messages: AgentMessage[] = [
-						{
-							id: randomUUID(),
-							role: "user",
-							parts: [{ type: "text", text: message.content }]
+			function extractUserTextFromMessage(msg: unknown): string {
+				if (isRecord(msg) && "content" in msg) {
+					const content = (msg as Record<string, unknown>).content
+					if (typeof content === "string") return content
+					if (isRecord(content)) {
+						if (typeof content.content === "string") return content.content
+						if (typeof content.reference === "string")
+							return `Reference: ${content.reference}`
+						try {
+							return JSON.stringify(content)
+						} catch {
+							return String(content)
 						}
+					}
+					try {
+						return JSON.stringify(content)
+					} catch {
+						return String(content)
+					}
+				}
+				try {
+					return JSON.stringify(msg)
+				} catch {
+					return String(msg)
+				}
+			}
+
+			async function processWithAgent(
+				conversation: XmtpConversation,
+				msg: unknown
+			): Promise<void> {
+				try {
+					const text = extractUserTextFromMessage(msg)
+					const messages: AgentMessage[] = [
+						{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }
 					]
 
 					const baseRuntime: AgentRuntime = {
-						conversation: conversation as XmtpConversation,
-						message: message,
+						conversation,
+						message: msg as unknown as any,
 						xmtpClient
 					}
 
 					const runtime = await agent.createRuntimeContext(baseRuntime)
-
-					const { text } = await agent.generate(messages, {
-						runtime
-					})
-
-					await conversation.send(text)
+					const { text: reply } = await agent.generate(messages, { runtime })
+					await conversation.send(reply)
 				} catch (err) {
-					console.error("❌ Error handling text message:", err)
+					console.error("❌ Error processing event:", err)
 				}
+			}
+
+			xmtp.on("reaction", async (ctx) => {
+				try {
+					const message = (ctx as unknown as { message?: unknown }).message
+					let conversation = (ctx as { conversation?: XmtpConversation })
+						.conversation
+					if (
+						!conversation &&
+						isRecord(message) &&
+						typeof (message as Record<string, unknown>).conversationId ===
+							"string"
+					) {
+						const convo = await xmtpClient.conversations.getConversationById(
+							(message as Record<string, unknown>).conversationId as string
+						)
+						if (convo) conversation = convo as XmtpConversation
+					}
+					if (conversation && message)
+						await processWithAgent(conversation, message)
+				} catch (err) {
+					console.error("❌ Error handling reaction:", err)
+				}
+			})
+
+			xmtp.on("reply", async (ctx) => {
+				try {
+					const message = (ctx as unknown as { message?: unknown }).message
+					let conversation = (ctx as { conversation?: XmtpConversation })
+						.conversation
+					if (
+						!conversation &&
+						isRecord(message) &&
+						typeof (message as Record<string, unknown>).conversationId ===
+							"string"
+					) {
+						const convo = await xmtpClient.conversations.getConversationById(
+							(message as Record<string, unknown>).conversationId as string
+						)
+						if (convo) conversation = convo as XmtpConversation
+					}
+					if (conversation && message)
+						await processWithAgent(conversation, message)
+				} catch (err) {
+					console.error("❌ Error handling reply:", err)
+				}
+			})
+
+			xmtp.on("text", async ({ conversation, message }) => {
+				console.log(
+					"Message",
+					(message as unknown as { content?: unknown })?.content
+				)
+				await processWithAgent(conversation as XmtpConversation, message)
 			})
 
 			xmtp.on("dm", async ({ conversation }) => {
