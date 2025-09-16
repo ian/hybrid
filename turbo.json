@@ -7,8 +7,8 @@
 			"outputs": [".cache/tsbuildinfo.json", ".react-email/**", "dist/**"]
 		},
 		"build:watch": {
-			"dependsOn": ["^build:watch"],
-			"cache": false
+			"cache": false,
+			"persistent": true
 		},
 		"dev": {
 			"dependsOn": ["^dev"],
