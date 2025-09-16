@@ -54,7 +54,6 @@ export function createHonoMiddleware(client: XmtpClient) {
 export type CreateHonoAppOptions<TRuntimeExtension = DefaultRuntimeExtension> =
 	{
 		agent: Agent<TRuntimeExtension>
-		// messageFilter: MessageListenerConfig["filter"]
 	}
 
 /**
@@ -112,7 +111,6 @@ export async function createHonoApp<
 export type ListenOptions = {
 	agent: Agent
 	port: string
-	// filter?: MessageListenerConfig["filter"]
 	plugins?: Plugin<PluginContext>[]
 }
 
