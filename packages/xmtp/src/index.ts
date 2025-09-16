@@ -1,4 +1,10 @@
-export { Agent, createSigner, createUser, getTestUrl } from "@xmtp/agent-sdk"
+export {
+	Agent,
+	createSigner,
+	createUser,
+	filter,
+	getTestUrl
+} from "@xmtp/agent-sdk"
 
 export type * from "./types"
 

@@ -1,3 +1,33 @@
+# Basic Example
+
+This example demonstrates using Hybrid with XMTP Agent SDK filters.
+
+```typescript
+import { createOpenRouter } from "@openrouter/ai-sdk-provider"
+import { Agent, filter } from "hybrid"
+
+export const openrouter = createOpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY
+})
+
+const agent = new Agent({
+  name: "My Hybrid Agent",
+  model: openrouter("x-ai/grok-4"),
+  instructions: "Be helpful and conversational"
+})
+
+await agent.listen({
+  port: process.env.PORT || "8454",
+  filters: [
+    filter.isText,
+    filter.not(filter.fromSelf),
+    filter.startsWith("@agent")
+  ]
+})
+```
+
+See XMTP Agent SDK filter docs: https://github.com/xmtp/xmtp-js/tree/main/sdks/agent-sdk#3-builtin-filters
+
 # {{projectName}}
 
 A Hybrid XMTP agent built with TypeScript and AI capabilities.

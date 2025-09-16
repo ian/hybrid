@@ -82,11 +82,12 @@ hybrid/
 
 ## 📝 Basic Example
 
-Here's a basic agent implementation using Hybrid:
+Here's a basic agent implementation using Hybrid with XMTP Agent SDK filters:
 
 ```typescript
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { Agent, type MessageListenerConfig, type Reaction } from "hybrid"
+import { Agent } from "hybrid"
+import { filter } from "hybrid"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
@@ -96,23 +97,13 @@ const agent = new Agent({
 	name: "Basic Agent",
 	model: openrouter("x-ai/grok-4"),
 	instructions:
-		"You are a XMTP agent that responds to messages and reactions. Try and be as conversational as possible."
+		"You are a XMTP agent that responds to messages and reactions. Be conversational."
 })
 
-// We don't want the agent to respond to every message, this shows how to filter for only replies.
-const replyOnlyFilter: MessageListenerConfig["filter"] = async ({ message }) => {
-	const isReply = message.contentType.typeId === "reply"
-
-	if (isReply) {
-		return true
-	}
-
-	return false
-}
-
-agent.listen({
+// Only process text messages that start with @agent and are not from self
+await agent.listen({
 	port: process.env.PORT || "8454",
-	filter: replyOnlyFilter
+	filters: [filter.isText, filter.not(filter.fromSelf), filter.startsWith("@agent")]
 })
 ```
 
@@ -334,16 +325,25 @@ const agent = new Agent({
 
 ### Message Filtering
 
-Control which messages your agent responds to:
+Use XMTP Agent SDK's built-in filters and combinators:
 
 ```typescript
-const filter: MessageListenerConfig["filter"] = async ({ message }) => {
-  // Custom logic for filtering messages
-  // Return true to process, false to ignore
-  const content = message.content?.toString()?.toLowerCase()
-  return content?.includes("@myagent") || content?.includes("help")
-}
+import { filter } from "hybrid"
+
+await agent.listen({
+  port: process.env.PORT || "8454",
+  filters: [
+    // Built-in type guards
+    filter.isText,
+    // Exclude messages sent by the agent itself
+    filter.not(filter.fromSelf),
+    // Match a specific prefix in text content
+    filter.startsWith("@agent")
+  ]
+})
 ```
+
+See XMTP Agent SDK filter docs for all options and the `withFilter` helper: [XMTP Agent SDK – Built-in filters](https://github.com/xmtp/xmtp-js/tree/main/sdks/agent-sdk#3-builtin-filters).
 
 ### Environment Variables
 

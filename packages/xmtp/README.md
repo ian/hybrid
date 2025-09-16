@@ -7,6 +7,35 @@ This package provides an enhanced XMTP client with robust connection management,
 - Main repo: [github.com/ian/hybrid](https://github.com/ian/hybrid)
 - Website & docs: [hybrid.dev](https://hybrid.dev)
 
+### XMTP Plugin Filters
+
+You can scope which messages are processed by providing XMTP Agent SDK filters to the plugin. These are the same built-in filters and combinators documented in the Agent SDK.
+
+```typescript
+import { XMTPPlugin } from "@hybrd/xmtp"
+import { filter } from "hybrid"
+
+// As a standalone plugin instance
+const xmtp = XMTPPlugin({
+  filters: [
+    filter.isText,
+    filter.not(filter.fromSelf),
+    filter.startsWith("@agent")
+  ]
+})
+```
+
+When using the Hybrid server `listen()` helper, pass `filters` directly (the helper wires them into `XMTPPlugin` under the hood):
+
+```typescript
+await agent.listen({
+  port: process.env.PORT || "8454",
+  filters: [filter.isText, filter.startsWith("@agent")] 
+})
+```
+
+See the Agent SDK documentation for all available filters and the `withFilter` helper: https://github.com/xmtp/xmtp-js/tree/main/sdks/agent-sdk#3-builtin-filters
+
 ## 🆙 Upgraded Features
 
 - **XMTP Node SDK**: Upgraded to `^3.1.0` (latest version)

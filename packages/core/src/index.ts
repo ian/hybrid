@@ -8,5 +8,8 @@ export type { Tool, ToolConfig } from "./core/tool"
 export { listen } from "./server/listen"
 export type { ListenOptions } from "./server/listen"
 
+// Re-export XMTP Agent SDK filters for convenience
+export { filter } from "@hybrd/xmtp"
+
 // Re-export tools standard library
 export * from "./tools"
