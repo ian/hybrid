@@ -5,7 +5,6 @@ import type {
 	PluginContext,
 	XmtpClient
 } from "@hybrd/types"
-// import { getCloudflareStoragePath } from "@hybrd/utils"
 import { XMTPPlugin } from "@hybrd/xmtp"
 import { Context, Hono, Next } from "hono"
 import type { Agent } from "../core/agent"
@@ -239,6 +238,3 @@ export async function listen({
 		}
 	}
 }
-
-// Re-export the background processor helpers
-// export { getBgState, stopBackground }
