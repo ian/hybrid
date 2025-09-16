@@ -3,6 +3,7 @@ import type {
 	DefaultRuntimeExtension,
 	HonoVariables,
 	PluginContext,
+	XMTPFilter,
 	XmtpClient
 } from "@hybrd/types"
 import { XMTPPlugin } from "@hybrd/xmtp"
@@ -110,6 +111,7 @@ export async function createHonoApp<
 export type ListenOptions = {
 	agent: Agent
 	port: string
+	filters?: XMTPFilter[]
 	plugins?: Plugin<PluginContext>[]
 }
 
@@ -145,7 +147,7 @@ export type ListenOptions = {
 export async function listen({
 	agent,
 	port,
-	// filter,
+	filters = [],
 	plugins = []
 }: ListenOptions) {
 	const app = new Hono<{ Variables: HonoVariables }>()
@@ -153,7 +155,7 @@ export async function listen({
 		agent
 	} as PluginContext
 
-	const xmtpPlugin = XMTPPlugin()
+	const xmtpPlugin = XMTPPlugin({ filters })
 
 	// Right now we always apply the XMTP plugin, but this may change in the future.
 	await xmtpPlugin.apply(app, context)

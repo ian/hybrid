@@ -34,3 +34,12 @@ export type XmtpSender = {
 	basename?: string
 }
 export type XmtpSubjects = Record<string, `0x${string}`>
+
+/**
+ * XMTP message filter compatible with @xmtp/agent-sdk filters
+ */
+export type XMTPFilter = (
+	message: XmtpMessage,
+	client: XmtpClient,
+	conversation: XmtpConversation
+) => boolean | Promise<boolean>

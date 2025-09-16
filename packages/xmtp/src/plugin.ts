@@ -11,6 +11,8 @@ import type {
 	AgentRuntime,
 	Plugin,
 	PluginContext,
+	XMTPFilter,
+	XmtpClient,
 	XmtpConversation,
 	XmtpMessage
 } from "@hybrd/types"
@@ -20,6 +22,10 @@ import { createXMTPClient, getDbPath } from "./client"
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
 
+export type XMTPPluginOptions = {
+	filters?: XMTPFilter[]
+}
+
 /**
  * XMTP Plugin that provides XMTP functionality to the agent
  *
@@ -27,7 +33,9 @@ export type { Plugin }
  * This plugin integrates XMTP messaging capabilities into the agent's
  * HTTP server. It mounts the XMTP endpoints for handling XMTP tools requests.
  */
-export function XMTPPlugin(): Plugin<PluginContext> {
+export function XMTPPlugin({
+	filters = []
+}: XMTPPluginOptions = {}): Plugin<PluginContext> {
 	return {
 		name: "xmtp",
 		description: "Provides XMTP messaging functionality",
@@ -67,6 +75,22 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				console.log(`📬 Existing conversations: ${convos.length}`)
 			} catch {}
 
+			function combineFilters(providedFilters: XMTPFilter[]) {
+				return async (
+					message: XmtpMessage,
+					client: XmtpClient,
+					conversation: XmtpConversation
+				) => {
+					for (const filter of providedFilters) {
+						const passed = await filter(message, client, conversation)
+						if (!passed) return false
+					}
+					return true
+				}
+			}
+
+			const evaluateFilters = combineFilters(filters)
+
 			// Start a reliable node client stream to process incoming messages
 			async function startNodeStream() {
 				try {
@@ -98,6 +122,24 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 									`⚠️ XMTP conversation not found: ${msg.conversationId}`
 								)
 								continue
+							}
+
+							// Apply filters if provided
+							if (filters.length > 0) {
+								try {
+									const passes = await evaluateFilters(
+										msg as XmtpMessage,
+										xmtpClient as XmtpClient,
+										conversation as XmtpConversation
+									)
+									if (!passes) continue
+								} catch (err) {
+									console.error(
+										"❌ Error evaluating filters (node stream):",
+										err
+									)
+									continue
+								}
 							}
 
 							const messages: AgentMessage[] = [
@@ -141,6 +183,14 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 
 			xmtp.on("reaction", async ({ conversation, message }) => {
 				try {
+					if (filters.length > 0) {
+						const passes = await evaluateFilters(
+							message as XmtpMessage,
+							xmtpClient as XmtpClient,
+							conversation as XmtpConversation
+						)
+						if (!passes) return
+					}
 					const text = message.content.content
 					const messages: AgentMessage[] = [
 						{
@@ -166,6 +216,14 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 
 			xmtp.on("reply", async ({ conversation, message }) => {
 				try {
+					if (filters.length > 0) {
+						const passes = await evaluateFilters(
+							message as XmtpMessage,
+							xmtpClient as XmtpClient,
+							conversation as XmtpConversation
+						)
+						if (!passes) return
+					}
 					// TODO - why isn't this typed better?
 					const text = message.content.content as string
 					const messages: AgentMessage[] = [
@@ -192,6 +250,14 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 
 			xmtp.on("text", async ({ conversation, message }) => {
 				try {
+					if (filters.length > 0) {
+						const passes = await evaluateFilters(
+							message as XmtpMessage,
+							xmtpClient as XmtpClient,
+							conversation as XmtpConversation
+						)
+						if (!passes) return
+					}
 					const text = message.content
 					const messages: AgentMessage[] = [
 						{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }

@@ -30,6 +30,7 @@ export type { AgentRuntime } from "./runtime"
 // XMTP types
 export type {
 	HonoVariables,
+	XMTPFilter,
 	XmtpClient,
 	XmtpConversation,
 	XmtpMessage,
