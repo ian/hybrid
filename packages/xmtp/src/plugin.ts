@@ -140,8 +140,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 
 			xmtp.on("text", async ({ conversation, message }) => {
 				try {
-					console.log("Text message received", message)
-
+					console.log("DM received", message.content)
 					const messages: AgentMessage[] = [
 						{
 							id: randomUUID(),
@@ -168,9 +167,9 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				}
 			})
 
-			xmtp.on("group", async (ctx) => {
-				console.log("Group message received", ctx)
-				await ctx.conversation.send("Hello from my XMTP Agent! 👋")
+			xmtp.on("group", async ({ conversation }) => {
+				console.log("Group message received")
+				await conversation.send("Hello from my XMTP Agent! 👋")
 			})
 
 			xmtp.on("start", () => {
