@@ -138,9 +138,18 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				dbPath: agentDbPath
 			})
 
+			xmtp.on("reaction", async ({ message }) => {
+				console.log(`Reaction: ${message.content}`)
+			})
+
+			xmtp.on("reply", async ({ message }) => {
+				console.log(`Reply: ${message.content.reference}`)
+			})
+
 			xmtp.on("text", async ({ conversation, message }) => {
+				console.log("Message", message.content)
+
 				try {
-					console.log("DM received", message.content)
 					const messages: AgentMessage[] = [
 						{
 							id: randomUUID(),
@@ -167,9 +176,12 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				}
 			})
 
+			xmtp.on("dm", async ({ conversation }) => {
+				await conversation.send("Welcome to our DM!")
+			})
+
 			xmtp.on("group", async ({ conversation }) => {
-				console.log("Group message received")
-				await conversation.send("Hello from my XMTP Agent! 👋")
+				console.log("Group invited", conversation.id)
 			})
 
 			xmtp.on("start", () => {
