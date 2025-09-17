@@ -222,28 +222,23 @@ export async function listen({
 		process.exit(1)
 	})
 
-	const server = serve({
-		fetch: app.fetch,
-		port: httpPort
-	})
-
-	// Handle server errors (including EADDRINUSE)
-	server.on("error", async (error: any) => {
+	try {
+		serve({
+			fetch: app.fetch,
+			port: httpPort
+		})
+		console.log(`listening on localhost:${httpPort}`)
+		logger.debug(`✅ Hybrid server running on port ${httpPort}`)
+		logger.debug(`🎧 Background message listener is active`)
+	} catch (error: any) {
 		if (error.code === "EADDRINUSE") {
 			console.error(
 				`❌ Port ${httpPort} is already in use. Please stop the existing server or use a different port.`
 			)
+			process.exit(1)
 		} else {
 			console.error("Server error:", error)
+			process.exit(1)
 		}
-		await shutdown()
-		process.exit(1)
-	})
-
-	// Handle successful server startup
-	server.on("listening", () => {
-		console.log(`listening on localhost:${httpPort}`)
-		logger.debug(`✅ Hybrid server running on port ${httpPort}`)
-		logger.debug(`🎧 Background message listener is active`)
-	})
+	}
 }
