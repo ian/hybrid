@@ -288,6 +288,9 @@ importers:
       '@hybrd/types':
         specifier: workspace:*
         version: link:../types
+      '@hybrd/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@xmtp/agent-sdk':
         specifier: ^0.0.12
         version: 0.0.12(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
