@@ -8,6 +8,7 @@ import {
 } from "./basename-resolver"
 import { ENSResolver } from "./ens-resolver"
 import { XmtpResolver } from "./xmtp-resolver"
+import { logger } from "../../../core/src/lib/logger"
 
 interface ResolverOptions {
 	/**
@@ -293,14 +294,14 @@ export class Resolver {
 		if (address) {
 			// Try basename first since that's what we expect for this address
 			const basenameResult = await this.getBasename(address)
-			console.log(
+			logger.debug(
 				`🔍 [RESOLVER] Direct basename lookup for ${address}:`,
 				basenameResult
 			)
 
 			// Try to get a human-readable name
 			const resolvedName = await this.resolveAddressToName(address)
-			console.log(
+			logger.debug(
 				`🔍 [RESOLVER] Universal name resolution for ${address}:`,
 				resolvedName
 			)

@@ -1,4 +1,5 @@
 import type { XmtpClient, XmtpMessage } from "../types"
+import { logger } from "../../../core/src/lib/logger"
 
 interface XmtpResolverOptions {
 	/**
@@ -61,7 +62,7 @@ export class XmtpResolver {
 		// Check cache first (fastest)
 		const cached = this.getCachedAddress(inboxId)
 		if (cached) {
-			console.log(
+			logger.debug(
 				`✅ [XmtpResolver] Resolved user address from cache: ${cached}`
 			)
 			return cached
@@ -81,7 +82,7 @@ export class XmtpResolver {
 					)
 					if (userAddress) {
 						this.setCachedAddress(inboxId, userAddress)
-						console.log(
+						logger.debug(
 							`✅ [XmtpResolver] Resolved user address: ${userAddress}`
 						)
 						return userAddress
@@ -93,13 +94,13 @@ export class XmtpResolver {
 			userAddress = await this.resolveFromInboxState(inboxId)
 			if (userAddress) {
 				this.setCachedAddress(inboxId, userAddress)
-				console.log(
+				logger.debug(
 					`✅ [XmtpResolver] Resolved user address via fallback: ${userAddress}`
 				)
 				return userAddress
 			}
 
-			console.log(`⚠️ [XmtpResolver] No identifiers found for inbox ${inboxId}`)
+			logger.debug(`⚠️ [XmtpResolver] No identifiers found for inbox ${inboxId}`)
 			return null
 		} catch (error) {
 			console.error(
@@ -117,7 +118,7 @@ export class XmtpResolver {
 		// Check cache first
 		const cached = this.getCachedMessage(messageId)
 		if (cached !== undefined) {
-			console.log(
+			logger.debug(
 				cached
 					? `✅ [XmtpResolver] Found message from cache: ${cached.id}`
 					: `✅ [XmtpResolver] Found cached null message for: ${messageId}`
@@ -126,16 +127,16 @@ export class XmtpResolver {
 		}
 
 		try {
-			console.log(`🔍 [XmtpResolver] Finding message: ${messageId}`)
+			logger.debug(`🔍 [XmtpResolver] Finding message: ${messageId}`)
 			const message = await this.client.conversations.getMessageById(messageId)
 
 			if (message) {
 				this.setCachedMessage(messageId, message)
-				console.log(`✅ [XmtpResolver] Found and cached message: ${message.id}`)
+				logger.debug(`✅ [XmtpResolver] Found and cached message: ${message.id}`)
 				return message
 			}
 
-			console.log(`⚠️ [XmtpResolver] Message not found: ${messageId}`)
+			logger.debug(`⚠️ [XmtpResolver] Message not found: ${messageId}`)
 			this.setCachedMessage(messageId, null)
 			return null
 		} catch (error) {
@@ -156,7 +157,7 @@ export class XmtpResolver {
 		const rootCacheKey = `root:${messageId}`
 		const cached = this.getCachedMessage(rootCacheKey)
 		if (cached !== undefined) {
-			console.log(
+			logger.debug(
 				cached
 					? `✅ [XmtpResolver] Found root message from cache: ${cached.id}`
 					: `✅ [XmtpResolver] Found cached null root for: ${messageId}`

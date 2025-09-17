@@ -1,6 +1,6 @@
 import { Context } from "hono"
 import jwt from "jsonwebtoken"
-import { logger } from "./logger"
+import { logger } from "../../../core/src/lib/logger"
 
 export interface XMTPToolsPayload {
 	action: "send" | "reply" | "react" | "transaction" | "blockchain-event"
@@ -83,7 +83,7 @@ function getJwtSecret(): string {
 
 	// In development/test, allow fallback but warn only when actually used
 	if (!secret) {
-		console.warn(
+		logger.warn(
 			"⚠️  [SECURITY] Using fallback JWT secret for development. " +
 				"Set XMTP_DB_ENCRYPTION_KEY environment variable for production."
 		)
@@ -112,7 +112,7 @@ function getApiKey(): string {
 
 	// In development/test, allow fallback but warn only when actually used
 	if (!apiKey) {
-		console.warn(
+		logger.warn(
 			"⚠️  [SECURITY] Using fallback API key for development. " +
 				"Set XMTP_API_KEY environment variable for production."
 		)
@@ -225,7 +225,7 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 		// Additional expiry check
 		const now = Math.floor(Date.now() / 1000)
 		if (decoded.expires < now) {
-			console.warn("🔒 XMTP tools token has expired")
+			logger.warn("🔒 XMTP tools token has expired")
 			const endTime = performance.now()
 			logger.debug(
 				`🔐 [JWT] Token validation failed (expired) in ${(endTime - startTime).toFixed(2)}ms`
@@ -239,7 +239,7 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 		)
 		return decoded
 	} catch (error) {
-		console.error(
+		logger.error(
 			"🔒 Invalid XMTP tools token and not matching API key:",
 			error
 		)

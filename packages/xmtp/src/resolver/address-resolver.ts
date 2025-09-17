@@ -1,4 +1,5 @@
 import type { XmtpClient } from "../types"
+import { logger } from "../../../core/src/lib/logger"
 
 interface AddressResolverOptions {
 	/**
@@ -41,7 +42,7 @@ export class AddressResolver {
 		// Check cache first (fastest)
 		const cached = this.getCachedAddress(inboxId)
 		if (cached) {
-			console.log(`✅ Resolved user address from cache: ${cached}`)
+			logger.debug(`✅ Resolved user address from cache: ${cached}`)
 			return cached
 		}
 
@@ -59,7 +60,7 @@ export class AddressResolver {
 					)
 					if (userAddress) {
 						this.setCachedAddress(inboxId, userAddress)
-						console.log(`✅ Resolved user address: ${userAddress}`)
+						logger.debug(`✅ Resolved user address: ${userAddress}`)
 						return userAddress
 					}
 				}
@@ -69,11 +70,11 @@ export class AddressResolver {
 			userAddress = await this.resolveFromInboxState(inboxId)
 			if (userAddress) {
 				this.setCachedAddress(inboxId, userAddress)
-				console.log(`✅ Resolved user address via fallback: ${userAddress}`)
+				logger.debug(`✅ Resolved user address via fallback: ${userAddress}`)
 				return userAddress
 			}
 
-			console.log(`⚠️ No identifiers found for inbox ${inboxId}`)
+			logger.debug(`⚠️ No identifiers found for inbox ${inboxId}`)
 			return null
 		} catch (error) {
 			console.error(`❌ Error resolving user address for ${inboxId}:`, error)
@@ -101,10 +102,10 @@ export class AddressResolver {
 				if (ethIdentifier) {
 					return ethIdentifier.identifier
 				} else {
-					console.log(`⚠️ No Ethereum identifier found for inbox ${inboxId}`)
+					logger.debug(`⚠️ No Ethereum identifier found for inbox ${inboxId}`)
 				}
 			} else {
-				console.log(
+				logger.debug(
 					`⚠️ Sender not found in conversation members for inbox ${inboxId}`
 				)
 			}
@@ -175,7 +176,7 @@ export class AddressResolver {
 	 * Pre-populate cache from existing conversations
 	 */
 	async prePopulateCache(): Promise<void> {
-		console.log("🔄 Pre-populating address cache...")
+		logger.debug("🔄 Pre-populating address cache...")
 		try {
 			const conversations = await this.client.conversations.list()
 			let cachedCount = 0
@@ -200,7 +201,7 @@ export class AddressResolver {
 				}
 			}
 
-			console.log(`✅ Pre-cached ${cachedCount} address mappings`)
+			logger.debug(`✅ Pre-cached ${cachedCount} address mappings`)
 		} catch (error) {
 			console.error("Error pre-populating cache:", error)
 		}
@@ -211,7 +212,7 @@ export class AddressResolver {
 	 */
 	clearCache(): void {
 		this.cache.clear()
-		console.log("🗑️ Address cache cleared")
+		logger.debug("🗑️ Address cache cleared")
 	}
 
 	/**

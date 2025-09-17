@@ -11,11 +11,11 @@ import {
 	ContentTypeReaction,
 	ContentTypeReply,
 	ContentTypeText,
-	Reply,
-	logger
+	Reply
 } from "@hybrd/xmtp"
 import { z } from "zod"
 import { createTool } from "../core/tool"
+import { logger } from "../lib/logger"
 
 /**
  * Get Message Tool
@@ -79,7 +79,7 @@ export const getMessageTool = createTool({
 				}
 			}
 
-			console.log(`📜 [getMessage] Retrieving message ${messageId}`)
+			logger.debug(`📜 [getMessage] Retrieving message ${messageId}`)
 
 			const sendStartTime = performance.now()
 			const message = await xmtpClient.conversations.getMessageById(messageId)
@@ -99,7 +99,7 @@ export const getMessageTool = createTool({
 				}
 			}
 
-			console.log(
+			logger.debug(
 				`✅ [getMessage] Retrieved message from ${message.senderInboxId}`
 			)
 
@@ -187,7 +187,7 @@ export const sendReactionTool = createTool({
 
 			const messageIdToReactTo = input.referenceMessageId
 
-			console.log(
+			logger.debug(
 				`👀 [sendReaction] Sending ${input.emoji} reaction to message ${messageIdToReactTo}`
 			)
 
@@ -220,7 +220,7 @@ export const sendReactionTool = createTool({
 				return { success: false, emoji: input.emoji, error: errorMsg }
 			}
 
-			console.log(`✅ [sendReaction] Successfully sent ${input.emoji} reaction`)
+			logger.debug(`✅ [sendReaction] Successfully sent ${input.emoji} reaction`)
 
 			const endTime = performance.now()
 			logger.debug(
@@ -303,7 +303,7 @@ export const sendMessageTool = createTool({
 				}
 			}
 
-			console.log(
+			logger.debug(
 				`💬 [sendMessage] Sending message: "${content.substring(0, 50)}${content.length > 50 ? "..." : ""}"`
 			)
 
@@ -311,7 +311,7 @@ export const sendMessageTool = createTool({
 
 			// If no conversation ID provided, create or find conversation with recipient
 			if (!targetConversationId && recipientAddress) {
-				console.log(
+				logger.debug(
 					`🔍 [sendMessage] Creating/finding conversation with ${recipientAddress}`
 				)
 				// This would depend on your XMTP client implementation
@@ -339,7 +339,7 @@ export const sendMessageTool = createTool({
 				}
 			}
 
-			console.log(`✅ [sendMessage] Message sent successfully`)
+			logger.debug(`✅ [sendMessage] Message sent successfully`)
 
 			const endTime = performance.now()
 			logger.debug(
@@ -437,7 +437,7 @@ export const sendReplyTool = createTool({
 
 			const targetMessageId = replyToMessageId //|| currentMessage?.id
 
-			console.log(
+			logger.debug(
 				`↩️ [sendReply] Sending reply to message ${targetMessageId}: "${content.substring(0, 50)}${content.length > 50 ? "..." : ""}"`
 			)
 
@@ -468,7 +468,7 @@ export const sendReplyTool = createTool({
 				}
 			}
 
-			console.log(`✅ [sendReply] Reply sent successfully`)
+			logger.debug(`✅ [sendReply] Reply sent successfully`)
 
 			const endTime = performance.now()
 			logger.debug(

@@ -1,8 +1,6 @@
 /**
- * @deprecated Use the global logger from @hybrd/core/lib/logger instead
- * This logger is kept for backward compatibility but will be removed in a future version
- * Logger instance for conditional XMTP debug logging
- * Only logs when XMTP_DEBUG environment variable is set
+ * Global logger instance for conditional debug logging
+ * Supports both DEBUG and XMTP_DEBUG environment variables for backward compatibility
  * Compatible with common logger interfaces
  */
 export const logger = {

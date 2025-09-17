@@ -7,6 +7,7 @@ import type {
 } from "@hybrd/types"
 import { Tool as AISDKTool, type UIMessage } from "ai"
 import { z } from "zod"
+import { logger } from "../lib/logger"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { AnyTool, DefaultRuntimeExtension, Tool, ToolConfig }
@@ -65,11 +66,19 @@ export function toAISDKTool<
 		description: tool.description,
 		inputSchema: tool.inputSchema,
 		execute: async (args: z.infer<typeof tool.inputSchema>) => {
-			return tool.execute({
+			const startTime = performance.now()
+			logger.debug(`🔧 [${tool.description}] Executing with input:`, args)
+			
+			const result = await tool.execute({
 				input: args,
 				runtime,
 				messages
 			})
+			
+			const endTime = performance.now()
+			logger.debug(`✅ [${tool.description}] Completed in ${(endTime - startTime).toFixed(2)}ms with result:`, result)
+			
+			return result
 		}
 	}
 }
