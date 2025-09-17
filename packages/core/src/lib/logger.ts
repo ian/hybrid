@@ -4,29 +4,29 @@
  * Compatible with common logger interfaces
  */
 export const logger = {
-	debug: (message: string, ...args: any[]): void => {
+	debug: (...args: any[]): void => {
 		if (typeof process !== 'undefined' && (process.env?.DEBUG || process.env?.XMTP_DEBUG)) {
-			console.log(message, ...args)
+			console.log(...args)
 		}
 	},
-	log: (message: string, ...args: any[]): void => {
+	log: (...args: any[]): void => {
 		if (typeof process !== 'undefined' && (process.env?.DEBUG || process.env?.XMTP_DEBUG)) {
-			console.log(message, ...args)
+			console.log(...args)
 		}
 	},
-	info: (message: string, ...args: any[]): void => {
+	info: (...args: any[]): void => {
 		if (typeof process !== 'undefined' && (process.env?.DEBUG || process.env?.XMTP_DEBUG)) {
-			console.info(message, ...args)
+			console.info(...args)
 		}
 	},
-	warn: (message: string, ...args: any[]): void => {
+	warn: (...args: any[]): void => {
 		if (typeof process !== 'undefined' && (process.env?.DEBUG || process.env?.XMTP_DEBUG)) {
-			console.warn(message, ...args)
+			console.warn(...args)
 		}
 	},
-	error: (message: string, ...args: any[]): void => {
+	error: (...args: any[]): void => {
 		if (typeof process !== 'undefined' && (process.env?.DEBUG || process.env?.XMTP_DEBUG)) {
-			console.error(message, ...args)
+			console.error(...args)
 		}
 	}
 }
