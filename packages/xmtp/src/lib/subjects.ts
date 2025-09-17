@@ -1,6 +1,6 @@
 import type { BasenameResolver } from "../resolver/basename-resolver"
 import type { ENSResolver } from "../resolver/ens-resolver"
-import { logger } from "../../../core/src/lib/logger"
+import { logger } from "@hybrd/utils"
 
 /**
  * Extract basenames/ENS names from message content using @mention pattern

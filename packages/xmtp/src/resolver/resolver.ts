@@ -8,7 +8,7 @@ import {
 } from "./basename-resolver"
 import { ENSResolver } from "./ens-resolver"
 import { XmtpResolver } from "./xmtp-resolver"
-import { logger } from "../../../core/src/lib/logger"
+import { logger } from "@hybrd/utils"
 
 interface ResolverOptions {
 	/**

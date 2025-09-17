@@ -1,6 +1,6 @@
 import { Context } from "hono"
 import jwt from "jsonwebtoken"
-import { logger } from "../../../core/src/lib/logger"
+import { logger } from "@hybrd/utils"
 
 export interface XMTPToolsPayload {
 	action: "send" | "reply" | "react" | "transaction" | "blockchain-event"
@@ -225,7 +225,7 @@ export function validateXMTPToolsToken(token: string): XMTPToolsPayload | null {
 		// Additional expiry check
 		const now = Math.floor(Date.now() / 1000)
 		if (decoded.expires < now) {
-			logger.warn("🔒 XMTP tools token has expired")
+			console.log("🔒 XMTP tools token has expired")
 			const endTime = performance.now()
 			logger.debug(
 				`🔐 [JWT] Token validation failed (expired) in ${(endTime - startTime).toFixed(2)}ms`

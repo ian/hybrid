@@ -1,5 +1,5 @@
 import type { XmtpClient, XmtpMessage } from "../types"
-import { logger } from "../../../core/src/lib/logger"
+import { logger } from "@hybrd/utils"
 
 interface XmtpResolverOptions {
 	/**

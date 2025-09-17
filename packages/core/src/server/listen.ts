@@ -10,7 +10,7 @@ import { XMTPPlugin } from "@hybrd/xmtp"
 import { Context, Hono, Next } from "hono"
 import type { Agent } from "../core/agent"
 import type { Plugin } from "../core/plugin"
-import { logger } from "../lib/logger"
+import { logger } from "@hybrd/utils"
 
 export type { HonoVariables }
 

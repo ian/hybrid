@@ -7,7 +7,7 @@ import {
 } from "viem"
 import { mainnet } from "viem/chains"
 import { L2ResolverAbi } from "../abi/l2_resolver"
-import { logger } from "../../../core/src/lib/logger"
+import { logger } from "@hybrd/utils"
 
 // Base L2 Resolver Address mapping by chain ID
 // const BASENAME_L2_RESOLVER_ADDRESSES: Record<number, Address> = {

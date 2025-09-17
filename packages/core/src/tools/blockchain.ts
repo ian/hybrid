@@ -28,7 +28,7 @@ import {
 } from "viem/chains"
 import { z } from "zod"
 import { createTool } from "../core/tool"
-import { logger } from "../lib/logger"
+import { logger } from "@hybrd/utils"
 
 // Supported chains configuration
 const SUPPORTED_CHAINS = {

@@ -39,7 +39,6 @@ export type { Plugin } from "./plugin"
 // ===================================================================
 export { generateXMTPToolsToken } from "./lib/jwt"
 export type { XMTPToolsPayload } from "./lib/jwt"
-export { logger } from "./lib/logger"
 
 // ===================================================================
 // XMTP Core SDK Exports

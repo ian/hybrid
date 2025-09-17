@@ -7,7 +7,7 @@ import type {
 } from "@hybrd/types"
 import { Tool as AISDKTool, type UIMessage } from "ai"
 import { z } from "zod"
-import { logger } from "../lib/logger"
+import { logger } from "@hybrd/utils"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { AnyTool, DefaultRuntimeExtension, Tool, ToolConfig }

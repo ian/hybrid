@@ -13,7 +13,7 @@ import { privateKeyToAccount } from "viem/accounts"
 import { sepolia } from "viem/chains"
 import { revokeOldInstallations } from "../scripts/revoke-installations"
 import { XmtpClient } from "./types"
-import { logger } from "../../core/src/lib/logger"
+import { logger } from "@hybrd/utils"
 
 // ===================================================================
 // Module Setup

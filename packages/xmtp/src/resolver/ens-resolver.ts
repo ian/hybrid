@@ -1,5 +1,5 @@
 import { type Address, PublicClient } from "viem"
-import { logger } from "../../../core/src/lib/logger"
+import { logger } from "@hybrd/utils"
 
 interface ENSResolverOptions {
 	/**

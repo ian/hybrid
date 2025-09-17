@@ -23,6 +23,7 @@
 	},
 	"dependencies": {
 		"@hybrd/types": "workspace:*",
+		"@hybrd/utils": "workspace:*",
 		"@xmtp/agent-sdk": "^0.0.12",
 		"@xmtp/content-type-group-updated": "2.0.2",
 		"@xmtp/content-type-reaction": "2.0.2",

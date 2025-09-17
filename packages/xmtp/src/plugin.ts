@@ -18,7 +18,7 @@ import type {
 } from "@hybrd/types"
 import { randomUUID } from "node:crypto"
 import { createXMTPClient, getDbPath } from "./client"
-import { logger } from "../../core/src/lib/logger"
+import { logger } from "@hybrd/utils"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }

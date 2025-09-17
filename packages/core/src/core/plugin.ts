@@ -1,6 +1,6 @@
 import type { HonoVariables, Plugin } from "@hybrd/types"
 import type { Hono } from "hono"
-import { logger } from "../lib/logger"
+import { logger } from "@hybrd/utils"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
