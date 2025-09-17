@@ -7,14 +7,14 @@ import {
 } from "@xmtp/agent-sdk"
 
 import type {
-	AgentMessage,
-	AgentRuntime,
-	Plugin,
-	PluginContext,
-	XMTPFilter,
-	XmtpClient,
-	XmtpConversation,
-	XmtpMessage
+    AgentMessage,
+    AgentRuntime,
+    Plugin,
+    PluginContext,
+    XMTPFilter,
+    XmtpClient,
+    XmtpConversation,
+    XmtpMessage
 } from "@hybrd/types"
 import { randomUUID } from "node:crypto"
 import { createXMTPClient, getDbPath } from "./client"
@@ -39,7 +39,7 @@ export function XMTPPlugin({
 	return {
 		name: "xmtp",
 		description: "Provides XMTP messaging functionality",
-		apply: async (app, context) => {
+        apply: async (app, context): Promise<void> => {
 			const {
 				XMTP_WALLET_KEY,
 				XMTP_DB_ENCRYPTION_KEY,
