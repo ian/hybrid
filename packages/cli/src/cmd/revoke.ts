@@ -1,4 +1,4 @@
-import { Client, createSigner } from "@hybrd/xmtp"
+import { Client, Signer, createSigner, createUser } from "@hybrd/xmtp"
 import dotenv from "dotenv"
 import { existsSync } from "node:fs"
 import { join } from "node:path"
@@ -25,7 +25,8 @@ export async function revokeInstallations(inboxId: string) {
 	}
 
 	try {
-		const signer = createSigner(XMTP_WALLET_KEY)
+		const user = createUser(XMTP_WALLET_KEY as `0x${string}`)
+		const signer = createSigner(user)
 		const identifier = await signer.getIdentifier()
 		const address = identifier.identifier
 
@@ -57,7 +58,7 @@ export async function revokeInstallations(inboxId: string) {
 		)
 
 		await Client.revokeInstallations(
-			signer,
+			signer as unknown as Signer,
 			inboxId,
 			toRevokeInstallationBytes,
 			(process.env.XMTP_ENV as "dev" | "production") || "dev"

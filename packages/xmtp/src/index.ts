@@ -1,73 +1,45 @@
-// ===================================================================
-// XMTP Package - Main Entry Point
-// ===================================================================
-// This package provides a clean interface to XMTP functionality
-// Re-exports core XMTP SDK types and utilities
+export {
+	Agent,
+	createSigner,
+	createUser,
+	filter,
+	getTestUrl
+} from "@xmtp/agent-sdk"
 
-export * from "./client"
-export * from "./constants"
-export * from "./lib/message-listener"
-export * from "./lib/subjects"
-export * from "./resolver"
-export * from "./resolver/basename-resolver"
-export * from "./resolver/ens-resolver"
-export * from "./resolver/xmtp-resolver"
-export * from "./service-client"
-export * from "./types"
+export type * from "./types"
+
+export {
+	DEFAULT_AMOUNT,
+	DEFAULT_OPTIONS,
+	MAX_USDC_AMOUNT
+} from "./constants"
+// NodeNext/Node16 requires explicit extensions for relative imports
+// NodeNext/Node16 requires explicit extensions for relative imports
+
+// ===================================================================
+// XMTP Client and Connection Management
+// ===================================================================
+export {
+    createXMTPClient,
+    createSigner as createXMTPSigner,
+    logAgentDetails,
+    validateEnvironment,
+    XMTPConnectionManager
+} from "./client"
+export type { XMTPConnectionConfig } from "./client"
 
 // ===================================================================
 // XMTP Plugin for Agent Integration
 // ===================================================================
 export { XMTPPlugin } from "./plugin"
-export type { Plugin, XMTPPluginContext } from "./plugin"
+export type { Plugin } from "./plugin"
 
 // ===================================================================
 // JWT Utilities for XMTP Tools
 // ===================================================================
 export { generateXMTPToolsToken } from "./lib/jwt"
-export { logger } from "./lib/logger"
 export type { XMTPToolsPayload } from "./lib/jwt"
-
-// ===================================================================
-// Enhanced XMTP Client & Connection Management
-// ===================================================================
-export {
-	// Enhanced connection management
-	XMTPConnectionManager,
-	createXMTPConnectionManager,
-	type XMTPConnectionConfig,
-	type XMTPConnectionHealth
-} from "./client"
-
-// ===================================================================
-// XMTP Service Client (for external service communication)
-// ===================================================================
-export {
-	XmtpServiceClient,
-	createXmtpServiceClient
-} from "./service-client"
-
-// Service Client Types
-export type {
-	GetMessageParams,
-	GetRootMessageParams,
-	// Function parameter types
-	SendMessageParams,
-	// Response types
-	SendMessageResponse,
-	SendReactionParams,
-	SendReactionResponse,
-	SendReplyParams,
-	SendReplyResponse,
-	SendTransactionParams,
-	SendTransactionResponse,
-	TransactionCall,
-	TransactionRequest,
-	XmtpRootMessageResponse,
-	XmtpServiceClientConfig,
-	XmtpServiceMessage,
-	XmtpServiceResponse
-} from "./types"
+export { logger } from "./lib/logger"
 
 // ===================================================================
 // XMTP Core SDK Exports
@@ -115,28 +87,3 @@ export {
 	ContentTypeWalletSendCalls,
 	type WalletSendCallsParams
 } from "@xmtp/content-type-wallet-send-calls"
-
-// ===================================================================
-// Local Client Utilities
-// ===================================================================
-export {
-	backupDbToPersistentStorage,
-	createSigner,
-	createUser,
-	createXMTPClient,
-	diagnoseXMTPIdentityIssue,
-	generateEncryptionKeyHex,
-	getEncryptionKeyFromHex,
-	logAgentDetails,
-	startPeriodicBackup,
-	validateEnvironment
-} from "./client"
-
-// ===================================================================
-// Application Constants
-// ===================================================================
-export {
-	DEFAULT_AMOUNT,
-	DEFAULT_OPTIONS,
-	MAX_USDC_AMOUNT
-} from "./constants"

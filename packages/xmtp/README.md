@@ -2,6 +2,40 @@
 
 This package provides an enhanced XMTP client with robust connection management, retry logic, and health monitoring capabilities.
 
+## Links
+
+- Main repo: [github.com/ian/hybrid](https://github.com/ian/hybrid)
+- Website & docs: [hybrid.dev](https://hybrid.dev)
+
+### XMTP Plugin Filters
+
+You can scope which messages are processed by providing XMTP Agent SDK filters to the plugin. These are the same built-in filters and combinators documented in the Agent SDK.
+
+```typescript
+import { XMTPPlugin } from "@hybrd/xmtp"
+import { filter } from "hybrid"
+
+// As a standalone plugin instance
+const xmtp = XMTPPlugin({
+  filters: [
+    filter.isText,
+    filter.not(filter.fromSelf),
+    filter.startsWith("@agent")
+  ]
+})
+```
+
+When using the Hybrid server `listen()` helper, pass `filters` directly (the helper wires them into `XMTPPlugin` under the hood):
+
+```typescript
+await agent.listen({
+  port: process.env.PORT || "8454",
+  filters: [filter.isText, filter.startsWith("@agent")] 
+})
+```
+
+See the Agent SDK documentation for all available filters and the `withFilter` helper: https://github.com/xmtp/xmtp-js/tree/main/sdks/agent-sdk#3-builtin-filters
+
 ## 🆙 Upgraded Features
 
 - **XMTP Node SDK**: Upgraded to `^3.1.0` (latest version)
@@ -152,13 +186,13 @@ Your **QStash-based webhook system** already provides superior reliability compa
 
 ### Environment Variables
 
-| Variable              | Description                              | Default                                 |
-| --------------------- | ---------------------------------------- | --------------------------------------- |
-| `XMTP_STORAGE_PATH`   | Custom path for XMTP database storage    | `.data/xmtp` (relative to project root) |
-| `XMTP_WALLET_KEY`     | Private key for XMTP wallet              | Required                                |
-| `XMTP_ENCRYPTION_KEY` | Encryption key for database              | Required for persistent mode            |
-| `XMTP_ENV`            | XMTP environment (`dev` or `production`) | `dev`                                   |
-| `PROJECT_ROOT`        | Override project root path               | Auto-detected                           |
+| Variable                 | Description                              | Default                                 |
+| ------------------------ | ---------------------------------------- | --------------------------------------- |
+| `XMTP_STORAGE_PATH`      | Custom path for XMTP database storage    | `.data/xmtp` (relative to project root) |
+| `XMTP_WALLET_KEY`        | Private key for XMTP wallet              | Required                                |
+| `XMTP_DB_ENCRYPTION_KEY` | Encryption key for database              | Required for persistent mode            |
+| `XMTP_ENV`               | XMTP environment (`dev` or `production`) | `dev`                                   |
+| `PROJECT_ROOT`           | Override project root path               | Auto-detected                           |
 
 ### Connection Configuration
 

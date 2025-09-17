@@ -6,13 +6,12 @@
 	"bin": {
 		"create-hybrid": "./dist/index.js"
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist", "src"],
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"types": "./src/index.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
 		}
 	},
 	"scripts": {
@@ -39,13 +38,7 @@
 	"engines": {
 		"node": ">=20"
 	},
-	"keywords": [
-		"hybrid",
-		"xmtp",
-		"agent",
-		"cli",
-		"create"
-	],
+	"keywords": ["hybrid", "xmtp", "agent", "cli", "create"],
 	"author": "Ian Hunter",
 	"license": "MIT",
 	"repository": {

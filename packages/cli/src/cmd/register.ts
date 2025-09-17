@@ -1,6 +1,6 @@
 import {
-	createSigner,
 	createXMTPClient,
+	createXMTPSigner,
 	logAgentDetails,
 	validateEnvironment
 } from "@hybrd/xmtp"
@@ -24,7 +24,7 @@ export async function registerWallet() {
 	// Validate required environment variables
 	const { XMTP_WALLET_KEY } = validateEnvironment([
 		"XMTP_WALLET_KEY",
-		"XMTP_ENCRYPTION_KEY"
+		"XMTP_DB_ENCRYPTION_KEY"
 	])
 
 	if (!XMTP_WALLET_KEY) {
@@ -35,7 +35,7 @@ export async function registerWallet() {
 
 	try {
 		console.log("🔑 Creating signer...")
-		const signer = createSigner(XMTP_WALLET_KEY)
+		const signer = createXMTPSigner(XMTP_WALLET_KEY)
 
 		// Get wallet address for logging
 		const identifier = await signer.getIdentifier()

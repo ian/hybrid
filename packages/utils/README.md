@@ -288,6 +288,11 @@ This package uses the following external dependencies:
 - [`@hybrd/xmtp`](../xmtp) - XMTP client integration
 - [`@hybrd/cli`](../cli) - Command-line interface
 
+## Links
+
+- Main repo: [github.com/ian/hybrid](https://github.com/ian/hybrid)
+- Website & docs: [hybrid.dev](https://hybrid.dev)
+
 ## License
 
-MIT
+ISC

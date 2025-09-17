@@ -24,7 +24,7 @@ export async function generateKeys(writeToFile = false) {
 		try {
 			const envContent = `# XMTP Configuration
 XMTP_WALLET_KEY=${walletKey}
-XMTP_ENCRYPTION_KEY=${encryptionKeyHex}
+XMTP_DB_ENCRYPTION_KEY=${encryptionKeyHex}
 XMTP_ENV=production
 
 # OpenRouter Configuration
@@ -47,13 +47,13 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 			console.log("\n📋 Use these environment variables instead:")
 			console.log("=".repeat(60))
 			console.log(`XMTP_WALLET_KEY=${walletKey}`)
-			console.log(`XMTP_ENCRYPTION_KEY=${encryptionKeyHex}`)
+			console.log(`XMTP_DB_ENCRYPTION_KEY=${encryptionKeyHex}`)
 			console.log(`XMTP_ENV=production`)
 			console.log("=".repeat(60))
 		}
 	} else {
 		console.log(`XMTP_WALLET_KEY=${walletKey}`)
-		console.log(`XMTP_ENCRYPTION_KEY=${encryptionKeyHex}`)
+		console.log(`XMTP_DB_ENCRYPTION_KEY=${encryptionKeyHex}`)
 		console.log(`XMTP_ENV=production`)
 		console.log(`\n# Your public key (wallet address): ${publicKey}`)
 	}

@@ -240,7 +240,7 @@ describe("CLI Integration Tests", () => {
 			expect(existsSync(join(projectPath, ".env"))).toBe(true)
 			const envContent = readFileSync(join(projectPath, ".env"), "utf8")
 			expect(envContent).toContain("XMTP_WALLET_KEY=0x")
-			expect(envContent).toContain("XMTP_ENCRYPTION_KEY=")
+			expect(envContent).toContain("XMTP_DB_ENCRYPTION_KEY=")
 
 			cleanupTempProject(projectName)
 		})
@@ -263,7 +263,7 @@ describe("CLI Integration Tests", () => {
 			// Verify .env file contains keys
 			const envContent = readFileSync(join(projectPath, ".env"), "utf8")
 			expect(envContent).toContain("XMTP_WALLET_KEY=0x")
-			expect(envContent).toContain("XMTP_ENCRYPTION_KEY=")
+			expect(envContent).toContain("XMTP_DB_ENCRYPTION_KEY=")
 
 			cleanupTempProject(projectName)
 		})

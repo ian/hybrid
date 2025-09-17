@@ -4,7 +4,7 @@ An open-source agent framework for building conversational AI agents on XMTP.
 
 Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
 
-See [http://hybriddev.com](http://hybrid.dev) for more information.
+See [hybrid.dev](https://hybrid.dev) for more information.
 
 ## 📦 Quickstart
 
@@ -49,18 +49,38 @@ hybrid register
 
 This generates secure wallet and encryption keys for your XMTP agent.
 
-### 5. Register your wallet with XMTP
-
-```bash
-hybrid register
-```
-
-  ### 6. Start developing
+  ### 5. Start developing
 
 ```bash
 hybrid dev
 ```
 
-Your agent will start listening for XMTP messages and you're ready to build! 
+Your agent will start listening for XMTP messages and you're ready to build!
 
 Go to [https://xmtp.chat/dm/](https://xmtp.chat/dm/) and send a message to your agent.
+
+## 🎯 Filters via XMTP Agent SDK
+
+Use the native filters from `@xmtp/agent-sdk` to control which messages the agent processes. Pass them into `listen({ filters })`:
+
+```typescript
+import { Agent } from "hybrid"
+import { filter } from "hybrid"
+
+const agent = new Agent({
+  name: "My Agent",
+  model: openrouter("x-ai/grok-4"),
+  instructions: "Be helpful"
+})
+
+await agent.listen({
+  port: process.env.PORT || "8454",
+  filters: [
+    filter.isText,
+    filter.not(filter.fromSelf),
+    filter.startsWith("@agent")
+  ]
+})
+```
+
+See the Agent SDK filter docs for all options and combinators: https://github.com/xmtp/xmtp-js/tree/main/sdks/agent-sdk#3-builtin-filters

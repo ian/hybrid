@@ -1,3 +1,33 @@
+# Basic Example
+
+This example demonstrates using Hybrid with XMTP Agent SDK filters.
+
+```typescript
+import { createOpenRouter } from "@openrouter/ai-sdk-provider"
+import { Agent, filter } from "hybrid"
+
+export const openrouter = createOpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY
+})
+
+const agent = new Agent({
+  name: "My Hybrid Agent",
+  model: openrouter("x-ai/grok-4"),
+  instructions: "Be helpful and conversational"
+})
+
+await agent.listen({
+  port: process.env.PORT || "8454",
+  filters: [
+    filter.isText,
+    filter.not(filter.fromSelf),
+    filter.startsWith("@agent")
+  ]
+})
+```
+
+See XMTP Agent SDK filter docs: https://github.com/xmtp/xmtp-js/tree/main/sdks/agent-sdk#3-builtin-filters
+
 # {{projectName}}
 
 A Hybrid XMTP agent built with TypeScript and AI capabilities.
@@ -6,13 +36,13 @@ A Hybrid XMTP agent built with TypeScript and AI capabilities.
 
 ### Prerequisites
 
-- Node.js 20 or higher
+- Node.js 20 or higher (Node 22 recommended)
 
 ### Installation
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 ```
 
 ### Setup
@@ -36,13 +66,13 @@ npm install
 
 ```bash
 # Start development server with auto-reload
-npm run dev
+pnpm dev
 
 # Build for production
-npm run build
+pnpm build
 
 # Start production server
-npm start
+pnpm start
 ```
 
 ## 📁 Project Structure
@@ -99,7 +129,7 @@ Create a `.env` file with:
 # Required
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 XMTP_WALLET_KEY=your_generated_wallet_key
-XMTP_ENCRYPTION_KEY=your_generated_encryption_key
+XMTP_DB_ENCRYPTION_KEY=your_generated_encryption_key
 
 # Optional
 XMTP_ENV=dev

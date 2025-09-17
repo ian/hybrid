@@ -1,15 +1,8 @@
-import { Hono } from "hono"
+import type { Plugin, PluginContext } from "@hybrd/types"
 import { app as ponderApp } from "./endpoints"
 
-export interface Plugin<TContext = unknown> {
-	name: string
-	description?: string
-	apply: (app: Hono, context?: TContext) => void | Promise<void>
-}
-
-export interface PluginContext {
-	agent: unknown
-}
+// Re-export types from @hybrd/types for backward compatibility
+export type { Plugin, PluginContext }
 
 /**
  * Ponder Plugin that provides blockchain event handling functionality

@@ -1,17 +1,17 @@
 import { serve } from "@hono/node-server"
-import { getCloudflareStoragePath } from "@hybrd/utils"
-import type { MessageListenerConfig, XmtpClient } from "@hybrd/xmtp"
-import { type HonoVariables, XMTPPlugin, createXMTPClient } from "@hybrd/xmtp"
+import type {
+	DefaultRuntimeExtension,
+	HonoVariables,
+	PluginContext,
+	XMTPFilter,
+	XmtpClient
+} from "@hybrd/types"
+import { XMTPPlugin } from "@hybrd/xmtp"
 import { Context, Hono, Next } from "hono"
-import type { Agent, DefaultRuntimeExtension } from "../core/agent"
+import type { Agent } from "../core/agent"
 import type { Plugin } from "../core/plugin"
-import {
-	createBackgroundMessageProcessor,
-	getBgState,
-	stopBackground
-} from "./processor"
 
-export type { HonoVariables } from "@hybrd/xmtp"
+export type { HonoVariables }
 
 /**
  * Creates Hono middleware to inject XMTP client into request context
@@ -54,7 +54,6 @@ export function createHonoMiddleware(client: XmtpClient) {
 export type CreateHonoAppOptions<TRuntimeExtension = DefaultRuntimeExtension> =
 	{
 		agent: Agent<TRuntimeExtension>
-		messageFilter: MessageListenerConfig["filter"]
 	}
 
 /**
@@ -76,7 +75,7 @@ export type CreateHonoAppOptions<TRuntimeExtension = DefaultRuntimeExtension> =
  * @returns Promise that resolves to a configured Hono app instance
  *
  * @throws {Error} When XMTP_WALLET_KEY environment variable is not set
- * @throws {Error} When XMTP_ENCRYPTION_KEY environment variable is not set
+ * @throws {Error} When XMTP_DB_ENCRYPTION_KEY environment variable is not set
  *
  * @example
  * ```typescript
@@ -88,52 +87,13 @@ export type CreateHonoAppOptions<TRuntimeExtension = DefaultRuntimeExtension> =
  */
 export async function createHonoApp<
 	TRuntimeExtension = DefaultRuntimeExtension
->({ agent, messageFilter }: CreateHonoAppOptions<TRuntimeExtension>) {
+>({ agent }: CreateHonoAppOptions<TRuntimeExtension>) {
 	const app = new Hono<{ Variables: HonoVariables }>()
-
-	const { XMTP_WALLET_KEY, XMTP_ENCRYPTION_KEY, XMTP_ENV } = process.env
-
-	if (!XMTP_WALLET_KEY) {
-		throw new Error("XMTP_WALLET_KEY must be set")
-	}
-
-	if (!XMTP_ENCRYPTION_KEY) {
-		throw new Error("XMTP_ENCRYPTION_KEY must be set")
-	}
-
-	// Create xmtpClient with persistent storage for reliable message streaming
-	const cloudflareStoragePath = getCloudflareStoragePath("xmtp")
-	const xmtpClient = await createXMTPClient(XMTP_WALLET_KEY as string, {
-		persist: true,
-		storagePath: cloudflareStoragePath
-	})
-
-	// Apply middleware for XMTP client
-	app.use(createHonoMiddleware(xmtpClient))
-
-	// Start the background message processor
-	app.use(
-		createBackgroundMessageProcessor({
-			agent,
-			xmtpClient,
-			messageFilter, // Accept all messages by default
-			intervalMs: 5_000, // Check every 5 seconds
-			backoffMs: 1_000, // Start with 1 second backoff
-			maxBackoffMs: 30_000 // Max 30 seconds backoff
-		})
-	)
 
 	// Mount XMTP tools routes
 	// app.route("/xmtp-tools", xmtpApp) // This line is removed as per the edit hint
 
 	return app
-}
-
-/**
- * Context type for plugins that need agent information
- */
-export interface PluginContext {
-	agent: Agent<DefaultRuntimeExtension>
 }
 
 /**
@@ -151,7 +111,7 @@ export interface PluginContext {
 export type ListenOptions = {
 	agent: Agent
 	port: string
-	filter?: MessageListenerConfig["filter"]
+	filters?: XMTPFilter[]
 	plugins?: Plugin<PluginContext>[]
 }
 
@@ -187,50 +147,15 @@ export type ListenOptions = {
 export async function listen({
 	agent,
 	port,
-	filter,
+	filters = [],
 	plugins = []
 }: ListenOptions) {
 	const app = new Hono<{ Variables: HonoVariables }>()
-	const context: PluginContext = {
+	const context = {
 		agent
-	}
+	} as PluginContext
 
-	// Initialize XMTP client and start background message processor
-	const { XMTP_WALLET_KEY, XMTP_ENCRYPTION_KEY } = process.env
-
-	if (!XMTP_WALLET_KEY) {
-		throw new Error("XMTP_WALLET_KEY must be set")
-	}
-
-	if (!XMTP_ENCRYPTION_KEY) {
-		throw new Error("XMTP_ENCRYPTION_KEY must be set")
-	}
-
-	// Create XMTP client with persistent storage for reliable message streaming
-	const cloudflareStoragePath = getCloudflareStoragePath("xmtp")
-	const xmtpClient = await createXMTPClient(XMTP_WALLET_KEY as string, {
-		persist: true,
-		storagePath: cloudflareStoragePath
-	})
-
-	// Apply middleware for XMTP client
-	app.use(createHonoMiddleware(xmtpClient))
-
-	// Start the background message processor
-	app.use(
-		createBackgroundMessageProcessor({
-			agent,
-			xmtpClient,
-			messageFilter: filter, // Use the provided filter
-			intervalMs: 5_000, // Check every 5 seconds
-			backoffMs: 1_000, // Start with 1 second backoff
-			maxBackoffMs: 30_000 // Max 30 seconds backoff
-		})
-	)
-
-	const xmtpPlugin = XMTPPlugin({
-		filter
-	})
+	const xmtpPlugin = XMTPPlugin({ filters })
 
 	// Right now we always apply the XMTP plugin, but this may change in the future.
 	await xmtpPlugin.apply(app, context)
@@ -240,14 +165,7 @@ export async function listen({
 
 	// Apply plugins from listen options
 	for (const plugin of plugins) {
-		try {
-			console.log(`🔌 Applying plugin: ${plugin.name}`)
-			await plugin.apply(app, context)
-			console.log(`✅ Plugin applied: ${plugin.name}`)
-		} catch (error) {
-			console.error(`❌ Failed to apply plugin ${plugin.name}:`, error)
-			throw error
-		}
+		await plugin.apply(app, context)
 	}
 
 	app.get("/health", (c) => {
@@ -269,11 +187,11 @@ export async function listen({
 		console.log("Waiting for graceful termination...")
 
 		// Stop background processor first
-		try {
-			stopBackground()
-		} catch (error) {
-			console.error("Error stopping background processor:", error)
-		}
+		// try {
+		// 	stopBackground()
+		// } catch (error) {
+		// 	console.error("Error stopping background processor:", error)
+		// }
 
 		// Give some time for cleanup
 		await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -322,6 +240,3 @@ export async function listen({
 		}
 	}
 }
-
-// Re-export the background processor helpers
-export { getBgState, stopBackground }
