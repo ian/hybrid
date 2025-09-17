@@ -1,5 +1,5 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { Agent } from "hybrid"
+import { Agent, xmtpTools } from "hybrid"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
@@ -8,8 +8,12 @@ export const openrouter = createOpenRouter({
 const agent = new Agent({
 	name: "My Hybrid Agent",
 	model: openrouter("x-ai/grok-4"),
-	instructions:
-		"You are a XMTP agent that responds to messages and reactions. Try and be as conversational as possible."
+	tools: xmtpTools,
+	instructions: `
+	You are a XMTP agent that responds to messages and reactions. Try and be as conversational as possible.
+	After you receive a message you should always use sendReactionTool with 👀 on the message you received.
+	You must always respond to the user with a text message.
+	`
 })
 
 agent.listen({

@@ -149,7 +149,6 @@ export const sendReactionTool = createTool({
 	inputSchema: z.object({
 		emoji: z
 			.string()
-			.default("👀")
 			.describe(
 				"The emoji to send as a reaction (supports common emoji like 👍, ❤️, 🔥, etc.)"
 			),
@@ -176,7 +175,6 @@ export const sendReactionTool = createTool({
 			const xmtpClient = runtime.xmtpClient
 			const { referenceMessageId, emoji } = input
 			const { message, conversation } = runtime
-			// const currentMessage = runtime.message
 
 			if (!xmtpClient) {
 				const endTime = performance.now()
