@@ -7,6 +7,7 @@ import {
 } from "viem"
 import { mainnet } from "viem/chains"
 import { L2ResolverAbi } from "../abi/l2_resolver"
+import { logger } from "@hybrd/utils"
 
 // Base L2 Resolver Address mapping by chain ID
 // const BASENAME_L2_RESOLVER_ADDRESSES: Record<number, Address> = {
@@ -139,23 +140,23 @@ export class BasenameResolver {
 	 */
 	private async initializeResolver(): Promise<void> {
 		if (this.resolverAddress && this.chainId) {
-			console.log(
+			logger.debug(
 				`🔄 BasenameResolver already initialized for chain ${this.chainId} with resolver ${this.resolverAddress}`
 			)
 			return
 		}
 
 		try {
-			console.log("🔄 Initializing BasenameResolver...")
+			logger.debug("🔄 Initializing BasenameResolver...")
 			this.chainId = await this.baseClient.getChainId()
-			console.log(`🔗 Chain ID detected: ${this.chainId}`)
+			logger.debug(`🔗 Chain ID detected: ${this.chainId}`)
 
 			this.resolverAddress = getResolverAddress()
-			console.log(
+			logger.debug(
 				`📍 Resolver address for chain ${this.chainId}: ${this.resolverAddress}`
 			)
 
-			console.log(
+			logger.debug(
 				`✅ Initialized BasenameResolver for chain ${this.chainId} with resolver ${this.resolverAddress}`
 			)
 		} catch (error) {

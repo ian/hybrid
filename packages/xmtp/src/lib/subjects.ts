@@ -1,5 +1,6 @@
 import type { BasenameResolver } from "../resolver/basename-resolver"
 import type { ENSResolver } from "../resolver/ens-resolver"
+import { logger } from "@hybrd/utils"
 
 /**
  * Extract basenames/ENS names from message content using @mention pattern
@@ -38,7 +39,7 @@ export async function resolveSubjects(
 		return subjects
 	}
 
-	console.log(
+	logger.debug(
 		`🔍 Found ${mentionedNames.length} name mentions:`,
 		mentionedNames
 	)
@@ -49,20 +50,20 @@ export async function resolveSubjects(
 
 			// Check if it's an ENS name (.eth but not .base.eth)
 			if (ensResolver.isENSName(mentionedName)) {
-				console.log(`🔍 Resolving ENS name: ${mentionedName}`)
+				logger.debug(`🔍 Resolving ENS name: ${mentionedName}`)
 				resolvedAddress = await ensResolver.resolveENSName(mentionedName)
 			} else {
 				// It's a basename (.base.eth or other format)
-				console.log(`🔍 Resolving basename: ${mentionedName}`)
+				logger.debug(`🔍 Resolving basename: ${mentionedName}`)
 				resolvedAddress =
 					await basenameResolver.getBasenameAddress(mentionedName)
 			}
 
 			if (resolvedAddress) {
 				subjects[mentionedName] = resolvedAddress as `0x${string}`
-				console.log(`✅ Resolved ${mentionedName} → ${resolvedAddress}`)
+				logger.debug(`✅ Resolved ${mentionedName} → ${resolvedAddress}`)
 			} else {
-				console.log(`❌ Could not resolve address for: ${mentionedName}`)
+				logger.debug(`❌ Could not resolve address for: ${mentionedName}`)
 			}
 		} catch (error) {
 			console.error(`❌ Error resolving ${mentionedName}:`, error)

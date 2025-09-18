@@ -1,4 +1,5 @@
 import { type Address, PublicClient } from "viem"
+import { logger } from "@hybrd/utils"
 
 interface ENSResolverOptions {
 	/**
@@ -48,33 +49,33 @@ export class ENSResolver {
 	 * Resolve an ENS name to an Ethereum address
 	 */
 	async resolveENSName(ensName: string): Promise<Address | null> {
-		console.log(`🔍 Resolving ENS name: ${ensName}`)
+		logger.debug(`🔍 Resolving ENS name: ${ensName}`)
 
 		try {
 			// Check cache first
 			const cached = this.getCachedAddress(ensName)
 			if (cached) {
-				console.log(`✅ Resolved ENS from cache: ${ensName} → ${cached}`)
+				logger.debug(`✅ Resolved ENS from cache: ${ensName} → ${cached}`)
 				return cached as Address
 			}
 
-			console.log(`📭 No cached address found for ENS: ${ensName}`)
+			logger.debug(`📭 No cached address found for ENS: ${ensName}`)
 
 			// Resolve using mainnet ENS
-			console.log("🔄 Reading ENS contract...")
+			logger.debug("🔄 Reading ENS contract...")
 			const address = await this.mainnetClient.getEnsAddress({
 				name: ensName
 			})
 
-			console.log(`📋 ENS contract returned address: "${address}"`)
+			logger.debug(`📋 ENS contract returned address: "${address}"`)
 
 			if (address && address !== "0x0000000000000000000000000000000000000000") {
 				this.setCachedAddress(ensName, address)
-				console.log(`✅ Resolved ENS: ${ensName} → ${address}`)
+				logger.debug(`✅ Resolved ENS: ${ensName} → ${address}`)
 				return address
 			}
 
-			console.log(`❌ No address found for ENS: ${ensName}`)
+			logger.debug(`❌ No address found for ENS: ${ensName}`)
 			return null
 		} catch (error) {
 			console.error(`❌ Error resolving ENS name ${ensName}:`, error)
@@ -89,35 +90,35 @@ export class ENSResolver {
 	 * Resolve an address to its primary ENS name (reverse resolution)
 	 */
 	async resolveAddressToENS(address: Address): Promise<string | null> {
-		console.log(`🔍 Reverse resolving address to ENS: ${address}`)
+		logger.debug(`🔍 Reverse resolving address to ENS: ${address}`)
 
 		try {
 			// Check cache first
 			const cached = this.getCachedENSName(address)
 			if (cached) {
-				console.log(
+				logger.debug(
 					`✅ Resolved ENS from reverse cache: ${address} → ${cached}`
 				)
 				return cached
 			}
 
-			console.log(`📭 No cached ENS name found for address: ${address}`)
+			logger.debug(`📭 No cached ENS name found for address: ${address}`)
 
 			// Reverse resolve using mainnet ENS
-			console.log("🔄 Reading ENS reverse resolver...")
+			logger.debug("🔄 Reading ENS reverse resolver...")
 			const ensName = await this.mainnetClient.getEnsName({
 				address: address
 			})
 
-			console.log(`📋 ENS reverse resolver returned: "${ensName}"`)
+			logger.debug(`📋 ENS reverse resolver returned: "${ensName}"`)
 
 			if (ensName && ensName.length > 0) {
 				this.setCachedENSName(address, ensName)
-				console.log(`✅ Reverse resolved: ${address} → ${ensName}`)
+				logger.debug(`✅ Reverse resolved: ${address} → ${ensName}`)
 				return ensName
 			}
 
-			console.log(`❌ No ENS name found for address: ${address}`)
+			logger.debug(`❌ No ENS name found for address: ${address}`)
 			return null
 		} catch (error) {
 			console.error(`❌ Error reverse resolving address ${address}:`, error)

@@ -13,6 +13,7 @@ import { privateKeyToAccount } from "viem/accounts"
 import { sepolia } from "viem/chains"
 import { revokeOldInstallations } from "../scripts/revoke-installations"
 import { XmtpClient } from "./types"
+import { logger } from "@hybrd/utils"
 
 // ===================================================================
 // Module Setup
@@ -73,7 +74,7 @@ export const createSigner = (key: string): Signer => {
 
 // Function to clear XMTP database when hitting installation limits
 async function clearXMTPDatabase(address: string, env: string) {
-	console.log("🧹 Clearing XMTP database to resolve installation limit...")
+	logger.debug("🧹 Clearing XMTP database to resolve installation limit...")
 
 	// Get the storage directory using the same logic as getDbPath
 	const getStorageDirectory = () => {
@@ -120,9 +121,9 @@ async function clearXMTPDatabase(address: string, env: string) {
 					const fullPath = path.join(dir, file)
 					try {
 						fs.unlinkSync(fullPath)
-						console.log(`✅ Removed: ${fullPath}`)
+						logger.debug(`✅ Removed: ${fullPath}`)
 					} catch (err) {
-						console.log(`⚠️ Could not remove ${fullPath}:`, err)
+						logger.debug(`⚠️ Could not remove ${fullPath}:`, err)
 					}
 				}
 			}
@@ -161,7 +162,7 @@ export async function createXMTPClient(
 
 	while (attempt < maxRetries) {
 		try {
-			console.log(
+			logger.debug(
 				`🔄 Attempt ${attempt + 1}/${maxRetries} to create XMTP client...`
 			)
 
@@ -185,7 +186,7 @@ export async function createXMTPClient(
 				`${XMTP_ENV || "dev"}-${address}`,
 				storagePath
 			)
-			console.log(`📁 Using database path: ${dbPath}`)
+			logger.debug(`📁 Using database path: ${dbPath}`)
 
 			// Always create a fresh client and sync it
 			const client = await Client.create(signer, {
@@ -201,7 +202,7 @@ export async function createXMTPClient(
 			})
 
 			// Force sync conversations to ensure we have the latest data
-			console.log("📡 Syncing conversations to ensure latest state...")
+			logger.debug("📡 Syncing conversations to ensure latest state...")
 			await client.conversations.sync()
 
 			await backupDbToPersistentStorage(

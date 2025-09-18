@@ -28,6 +28,7 @@ import {
 } from "viem/chains"
 import { z } from "zod"
 import { createTool } from "../core/tool"
+import { logger } from "@hybrd/utils"
 
 // Supported chains configuration
 const SUPPORTED_CHAINS = {
@@ -96,7 +97,7 @@ export const getBalanceTool = createTool({
 				transport: http(rpcUrl)
 			})
 
-			console.log(`🔍 [getBalance] Checking balance for ${address} on ${chain}`)
+			logger.debug(`🔍 [getBalance] Checking balance for ${address} on ${chain}`)
 
 			const balanceWei = await client.getBalance({
 				address: address as Address
@@ -104,7 +105,7 @@ export const getBalanceTool = createTool({
 
 			const balance = formatEther(balanceWei)
 
-			console.log(
+			logger.debug(
 				`✅ [getBalance] Balance: ${balance} ${chainConfig.nativeCurrency.symbol}`
 			)
 
@@ -183,7 +184,7 @@ export const getTransactionTool = createTool({
 				transport: http(rpcUrl)
 			})
 
-			console.log(
+			logger.debug(
 				`🔍 [getTransaction] Looking up transaction ${hash} on ${chain}`
 			)
 
@@ -197,7 +198,7 @@ export const getTransactionTool = createTool({
 				})
 				.catch(() => null) // Transaction might be pending
 
-			console.log(
+			logger.debug(
 				`✅ [getTransaction] Found transaction from ${transaction.from} to ${transaction.to}`
 			)
 
@@ -292,7 +293,7 @@ export const sendTransactionTool = createTool({
 				transport: http(rpcUrl)
 			})
 
-			console.log(
+			logger.debug(
 				`💸 [sendTransaction] Sending ${amount} ${chainConfig.nativeCurrency.symbol} to ${to} on ${chain}`
 			)
 
@@ -301,7 +302,7 @@ export const sendTransactionTool = createTool({
 				value: parseEther(amount)
 			})
 
-			console.log(`✅ [sendTransaction] Transaction sent: ${hash}`)
+			logger.debug(`✅ [sendTransaction] Transaction sent: ${hash}`)
 
 			return {
 				success: true,
@@ -379,7 +380,7 @@ export const getBlockTool = createTool({
 				transport: http(rpcUrl)
 			})
 
-			console.log(
+			logger.debug(
 				`🔍 [getBlock] Getting block ${blockNumber || "latest"} on ${chain}`
 			)
 
@@ -387,7 +388,7 @@ export const getBlockTool = createTool({
 				blockNumber: blockNumber ? BigInt(blockNumber) : undefined
 			})
 
-			console.log(
+			logger.debug(
 				`✅ [getBlock] Found block ${block.number} with ${block.transactions.length} transactions`
 			)
 
@@ -455,12 +456,12 @@ export const getGasPriceTool = createTool({
 				transport: http(rpcUrl)
 			})
 
-			console.log(`⛽ [getGasPrice] Getting gas price for ${chain}`)
+			logger.debug(`⛽ [getGasPrice] Getting gas price for ${chain}`)
 
 			const gasPrice = await client.getGasPrice()
 			const gasPriceGwei = formatEther(gasPrice * BigInt(1000000000)) // Convert to gwei
 
-			console.log(`✅ [getGasPrice] Current gas price: ${gasPriceGwei} gwei`)
+			logger.debug(`✅ [getGasPrice] Current gas price: ${gasPriceGwei} gwei`)
 
 			return {
 				success: true,

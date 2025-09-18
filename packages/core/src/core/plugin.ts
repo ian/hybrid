@@ -1,5 +1,6 @@
 import type { HonoVariables, Plugin } from "@hybrd/types"
 import type { Hono } from "hono"
+import { logger } from "@hybrd/utils"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
@@ -82,9 +83,9 @@ export class PluginRegistry<T = Record<string, never>> {
 
 		for (const plugin of plugins) {
 			try {
-				console.log(`🔌 Applying plugin: ${plugin.name}`)
+				logger.debug(`🔌 Applying plugin: ${plugin.name}`)
 				await plugin.apply(app, context)
-				console.log(`✅ Plugin applied: ${plugin.name}`)
+				logger.debug(`✅ Plugin applied: ${plugin.name}`)
 			} catch (error) {
 				console.error(`❌ Failed to apply plugin ${plugin.name}:`, error)
 				throw error

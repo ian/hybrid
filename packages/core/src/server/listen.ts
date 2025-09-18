@@ -10,6 +10,7 @@ import { XMTPPlugin } from "@hybrd/xmtp"
 import { Context, Hono, Next } from "hono"
 import type { Agent } from "../core/agent"
 import type { Plugin } from "../core/plugin"
+import { logger } from "@hybrd/utils"
 
 export type { HonoVariables }
 
@@ -184,7 +185,7 @@ export async function listen({
 
 	// Setup graceful shutdown
 	const shutdown = async () => {
-		console.log("Waiting for graceful termination...")
+		logger.debug("Waiting for graceful termination...")
 
 		// Stop background processor first
 		// try {
@@ -226,8 +227,9 @@ export async function listen({
 			fetch: app.fetch,
 			port: httpPort
 		})
-		console.log(`✅ Hybrid server running on port ${httpPort}`)
-		console.log(`🎧 Background message listener is active`)
+		console.log(`listening on localhost:${httpPort}`)
+		logger.debug(`✅ Hybrid server running on port ${httpPort}`)
+		logger.debug(`🎧 Background message listener is active`)
 	} catch (error: any) {
 		if (error.code === "EADDRINUSE") {
 			console.error(

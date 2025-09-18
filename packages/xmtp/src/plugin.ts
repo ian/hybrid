@@ -18,6 +18,7 @@ import type {
 } from "@hybrd/types"
 import { randomUUID } from "node:crypto"
 import { createXMTPClient, getDbPath } from "./client"
+import { logger } from "@hybrd/utils"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
@@ -72,7 +73,7 @@ export function XMTPPlugin({
 					`We are online: http://xmtp.chat/dm/${addrFromClient}?env=${XMTP_ENV}`
 				)
 				const convos = await xmtpClient.conversations.list()
-				console.log(`📬 Existing conversations: ${convos.length}`)
+				logger.debug(`📬 Existing conversations: ${convos.length}`)
 			} catch {}
 
 			function combineFilters(providedFilters: XMTPFilter[]) {
@@ -94,9 +95,9 @@ export function XMTPPlugin({
 			// Start a reliable node client stream to process incoming messages
 			async function startNodeStream() {
 				try {
-					console.log("🎧 XMTP node client stream initializing")
+					logger.debug("🎧 XMTP node client stream initializing")
 					const stream = await xmtpClient.conversations.streamAllMessages()
-					console.log("🎧 XMTP node client stream started")
+					logger.debug("🎧 XMTP node client stream started")
 					for await (const msg of stream) {
 						try {
 							if (msg.senderInboxId === xmtpClient.inboxId) continue
@@ -118,7 +119,7 @@ export function XMTPPlugin({
 								)
 
 							if (!conversation) {
-								console.warn(
+								logger.warn(
 									`⚠️ XMTP conversation not found: ${msg.conversationId}`
 								)
 								continue
@@ -134,7 +135,7 @@ export function XMTPPlugin({
 									)
 									if (!passes) continue
 								} catch (err) {
-									console.error(
+									logger.error(
 										"❌ Error evaluating filters (node stream):",
 										err
 									)
@@ -160,11 +161,11 @@ export function XMTPPlugin({
 							const { text } = await agent.generate(messages, { runtime })
 							await conversation.send(text)
 						} catch (err) {
-							console.error("❌ Error processing XMTP message:", err)
+							logger.error("❌ Error processing XMTP message:", err)
 						}
 					}
 				} catch (err) {
-					console.error("❌ XMTP node client stream failed:", err)
+					logger.error("❌ XMTP node client stream failed:", err)
 				}
 			}
 
@@ -180,7 +181,7 @@ export function XMTPPlugin({
 			const agentDbPath = await getDbPath(
 				`agent-${XMTP_ENV || "dev"}-${address}`
 			)
-			console.log(`📁 Using agent listener database path: ${agentDbPath}`)
+			logger.debug(`📁 Using agent listener database path: ${agentDbPath}`)
 
 			const xmtp = await XmtpAgent.create(signer, {
 				env: XMTP_ENV as XmtpEnv,
@@ -216,7 +217,7 @@ export function XMTPPlugin({
 					const { text: reply } = await agent.generate(messages, { runtime })
 					await conversation.send(reply)
 				} catch (err) {
-					console.error("❌ Error handling reaction:", err)
+					logger.error("❌ Error handling reaction:", err)
 				}
 			})
 
@@ -250,7 +251,7 @@ export function XMTPPlugin({
 					const { text: reply } = await agent.generate(messages, { runtime })
 					await conversation.send(reply)
 				} catch (err) {
-					console.error("❌ Error handling reply:", err)
+					logger.error("❌ Error handling reply:", err)
 				}
 			})
 
@@ -279,7 +280,7 @@ export function XMTPPlugin({
 					const { text: reply } = await agent.generate(messages, { runtime })
 					await conversation.send(reply)
 				} catch (err) {
-					console.error("❌ Error handling text:", err)
+					logger.error("❌ Error handling text:", err)
 				}
 			})
 
@@ -288,16 +289,16 @@ export function XMTPPlugin({
 			})
 
 			xmtp.on("group", async ({ conversation }) => {
-				console.log("Group invited", conversation.id)
+				logger.debug("Group invited", conversation.id)
 			})
 
 			xmtp.on("start", () => {
-				console.log(`We are online: ${getTestUrl(xmtp)}`)
+				logger.debug(`We are online: ${getTestUrl(xmtp)}`)
 			})
 
 			void xmtp
 				.start()
-				.then(() => console.log("✅ XMTP agent listener started"))
+				.then(() => logger.debug("✅ XMTP agent listener started"))
 				.catch((err) =>
 					console.error("❌ XMTP agent listener failed to start:", err)
 				)
