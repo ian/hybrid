@@ -47,7 +47,7 @@ export type {
 	Behavior,
 	BehaviorConfig,
 	BehaviorContext,
-	BehaviorFactory,
 	BehaviorInstance,
+	BehaviorObject,
 	BehaviorRegistry
 } from "./behavior"

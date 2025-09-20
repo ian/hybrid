@@ -1,10 +1,10 @@
 # Basic Example
 
-This example demonstrates using Hybrid with XMTP Agent SDK filters.
+This example demonstrates using Hybrid with the **Behavior-Based Plugin System** and XMTP Agent SDK filters.
 
 ```typescript
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { Agent, filter } from "hybrid"
+import { Agent, behaviors, filters } from "@hybrd/core"
 
 export const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY
@@ -18,11 +18,51 @@ const agent = new Agent({
 
 await agent.listen({
   port: process.env.PORT || "8454",
+  behaviors: [
+    behaviors.reactWith({ reaction: "👀" }),
+    behaviors.threadedReply()
+  ],
   filters: [
-    filter.isText,
-    filter.not(filter.fromSelf),
-    filter.startsWith("@agent")
+    filters.isText,
+    filters.not(filters.fromSelf),
+    filters.startsWith("@agent")
   ]
+})
+```
+
+## 🎯 Behavior-Based Plugin System
+
+The behavior system allows you to customize your agent's responses without writing custom code. Behaviors execute before or after the main agent response.
+
+### Available Built-in Behaviors
+
+#### `reactWith(reaction, options?)`
+Adds reactions to incoming messages.
+
+```typescript
+// React with eyes to all messages
+behaviors.reactWith("👀")
+
+// React with thumbs up only to messages containing "good"
+behaviors.reactWith("👍", {
+  reactToAll: false,
+  filter: (context) => context.message.content.includes("good")
+})
+
+// Disable a behavior
+behaviors.reactWith("😀", { enabled: false })
+```
+
+#### `threadedReply(config)`
+Ensures replies are threaded to the original message.
+
+```typescript
+// Always thread replies
+behaviors.threadedReply()
+
+// Only thread replies to messages containing questions
+behaviors.threadedReply({
+  filter: (context) => context.message.content.includes("?")
 })
 ```
 

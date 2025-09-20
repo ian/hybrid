@@ -1,9 +1,5 @@
-import type {
-	AgentRuntime,
-	XmtpClient,
-	XmtpConversation,
-	XmtpMessage
-} from "./index"
+import type { AgentRuntime } from "./runtime"
+import type { XmtpClient, XmtpConversation, XmtpMessage } from "./xmtp"
 
 /**
  * Configuration options for a behavior
@@ -34,7 +30,7 @@ export interface BehaviorContext<TRuntimeExtension = Record<string, never>> {
 /**
  * A behavior that can be executed before or after agent responses
  */
-export interface Behavior<TRuntimeExtension = Record<string, never>> {
+export interface BehaviorObject<TRuntimeExtension = Record<string, never>> {
 	/** Unique identifier for the behavior */
 	id: string
 	/** Human-readable name for the behavior */
@@ -43,23 +39,24 @@ export interface Behavior<TRuntimeExtension = Record<string, never>> {
 	description: string
 	/** Configuration for the behavior */
 	config: BehaviorConfig
-	/** Whether this behavior should run before the agent responds */
-	preResponse?: boolean
-	/** Whether this behavior should run after the agent responds */
-	postResponse?: boolean
 	/**
-	 * Execute the behavior with the given context
+	 * Execute the behavior before the agent responds
 	 * @param context - The context in which to execute the behavior
 	 */
-	execute(context: BehaviorContext<TRuntimeExtension>): Promise<void> | void
+	pre?(context: BehaviorContext<TRuntimeExtension>): Promise<void> | void
+	/**
+	 * Execute the behavior after the agent responds
+	 * @param context - The context in which to execute the behavior
+	 */
+	post?(context: BehaviorContext<TRuntimeExtension>): Promise<void> | void
 }
 
 /**
  * Factory function to create a behavior instance
  */
-export type BehaviorFactory<TConfig = Record<string, unknown>> = (
+export type Behavior<TConfig = Record<string, unknown>> = (
 	config: TConfig & BehaviorConfig
-) => Behavior
+) => BehaviorObject
 
 /**
  * Pre-configured behavior instance that can be used directly
@@ -73,7 +70,7 @@ export interface BehaviorRegistry {
 	/**
 	 * Register a behavior with the registry
 	 */
-	register(behavior: Behavior): void
+	register(behavior: BehaviorObject): void
 
 	/**
 	 * Register multiple behaviors at once
@@ -83,27 +80,27 @@ export interface BehaviorRegistry {
 	/**
 	 * Get all registered behaviors
 	 */
-	getAll(): Behavior[]
+	getAll(): BehaviorObject[]
 
 	/**
 	 * Get behaviors that should run before the agent responds
 	 */
-	getPreResponseBehaviors(): Behavior[]
+	getPreBehaviors(): BehaviorObject[]
 
 	/**
 	 * Get behaviors that should run after the agent responds
 	 */
-	getPostResponseBehaviors(): Behavior[]
+	getPostBehaviors(): BehaviorObject[]
 
 	/**
 	 * Execute all pre-response behaviors
 	 */
-	executePreResponse(context: BehaviorContext): Promise<void>
+	executePre(context: BehaviorContext): Promise<void>
 
 	/**
 	 * Execute all post-response behaviors
 	 */
-	executePostResponse(context: BehaviorContext): Promise<void>
+	executePost(context: BehaviorContext): Promise<void>
 
 	/**
 	 * Clear all registered behaviors
@@ -115,12 +112,12 @@ export interface BehaviorRegistry {
  * Concrete implementation of the BehaviorRegistry interface
  */
 export class BehaviorRegistryImpl implements BehaviorRegistry {
-	private behaviors: Behavior[] = []
+	private behaviors: BehaviorObject[] = []
 
 	/**
 	 * Register a behavior with the registry
 	 */
-	register(behavior: Behavior): void {
+	register(behavior: BehaviorObject): void {
 		this.behaviors.push(behavior)
 	}
 
@@ -128,43 +125,42 @@ export class BehaviorRegistryImpl implements BehaviorRegistry {
 	 * Register multiple behaviors at once
 	 */
 	registerAll(behaviors: Behavior[]): void {
-		this.behaviors.push(...behaviors)
+		// Create behavior instances from factory functions with default config
+		const behaviorInstances = behaviors.map((behavior) => behavior({}))
+		this.behaviors.push(...behaviorInstances)
 	}
 
 	/**
 	 * Get all registered behaviors
 	 */
-	getAll(): Behavior[] {
+	getAll(): BehaviorObject[] {
 		return [...this.behaviors]
 	}
 
 	/**
 	 * Get behaviors that should run before the agent responds
 	 */
-	getPreResponseBehaviors(): Behavior[] {
-		return this.behaviors.filter((behavior) => behavior.preResponse)
+	getPreBehaviors(): BehaviorObject[] {
+		return this.behaviors.filter((behavior) => behavior.pre)
 	}
 
 	/**
 	 * Get behaviors that should run after the agent responds
 	 */
-	getPostResponseBehaviors(): Behavior[] {
-		return this.behaviors.filter((behavior) => behavior.postResponse)
+	getPostBehaviors(): BehaviorObject[] {
+		return this.behaviors.filter((behavior) => behavior.post)
 	}
 
 	/**
 	 * Execute all pre-response behaviors
 	 */
-	async executePreResponse(context: BehaviorContext): Promise<void> {
-		const behaviors = this.getPreResponseBehaviors()
+	async executePre(context: BehaviorContext): Promise<void> {
+		const behaviors = this.getPreBehaviors()
 		for (const behavior of behaviors) {
 			try {
-				await behavior.execute(context)
+				await behavior.pre?.(context)
 			} catch (error) {
-				console.error(
-					`Error executing pre-response behavior ${behavior.id}:`,
-					error
-				)
+				console.error(`Error executing pre behavior ${behavior.id}:`, error)
 			}
 		}
 	}
@@ -172,16 +168,13 @@ export class BehaviorRegistryImpl implements BehaviorRegistry {
 	/**
 	 * Execute all post-response behaviors
 	 */
-	async executePostResponse(context: BehaviorContext): Promise<void> {
-		const behaviors = this.getPostResponseBehaviors()
+	async executePost(context: BehaviorContext): Promise<void> {
+		const behaviors = this.getPostBehaviors()
 		for (const behavior of behaviors) {
 			try {
-				await behavior.execute(context)
+				await behavior.post?.(context)
 			} catch (error) {
-				console.error(
-					`Error executing post-response behavior ${behavior.id}:`,
-					error
-				)
+				console.error(`Error executing post behavior ${behavior.id}:`, error)
 			}
 		}
 	}

@@ -172,7 +172,7 @@ export function XMTPPlugin({
 									conversation: conversation as XmtpConversation,
 									message: msg as XmtpMessage
 								}
-								await pluginContext.behaviors!.executePreResponse(
+								await pluginContext.behaviors!.executePre(
 									behaviorContext
 								)
 							}
@@ -188,7 +188,7 @@ export function XMTPPlugin({
 									message: msg as XmtpMessage,
 									response: text
 								}
-								await pluginContext.behaviors!.executePostResponse(
+								await pluginContext.behaviors!.executePost(
 									behaviorContext
 								)
 							}
@@ -257,7 +257,7 @@ export function XMTPPlugin({
 							conversation: conversation as XmtpConversation,
 							message: message as XmtpMessage
 						}
-						await context.behaviors.executePreResponse(behaviorContext)
+						await context.behaviors.executePre(behaviorContext)
 					}
 
 					const { text: reply } = await agent.generate(messages, { runtime })
@@ -271,7 +271,7 @@ export function XMTPPlugin({
 							message: message as XmtpMessage,
 							response: reply
 						}
-						await context.behaviors.executePostResponse(behaviorContext)
+						await context.behaviors.executePost(behaviorContext)
 					}
 
 					await conversation.send(reply)
@@ -316,7 +316,7 @@ export function XMTPPlugin({
 							conversation: conversation as XmtpConversation,
 							message: message as XmtpMessage
 						}
-						await context.behaviors.executePreResponse(behaviorContext)
+						await context.behaviors.executePre(behaviorContext)
 					}
 
 					const { text: reply } = await agent.generate(messages, { runtime })
@@ -330,7 +330,7 @@ export function XMTPPlugin({
 							message: message as XmtpMessage,
 							response: reply
 						}
-						await context.behaviors.executePostResponse(behaviorContext)
+						await context.behaviors.executePost(behaviorContext)
 					}
 
 					await conversation.send(reply)
@@ -370,7 +370,7 @@ export function XMTPPlugin({
 							conversation: conversation as XmtpConversation,
 							message: message as XmtpMessage
 						}
-						await context.behaviors.executePreResponse(behaviorContext)
+						await context.behaviors.executePre(behaviorContext)
 					}
 
 					const { text: reply } = await agent.generate(messages, { runtime })
@@ -384,7 +384,7 @@ export function XMTPPlugin({
 							message: message as XmtpMessage,
 							response: reply
 						}
-						await context.behaviors.executePostResponse(behaviorContext)
+						await context.behaviors.executePost(behaviorContext)
 					}
 
 					await conversation.send(reply)

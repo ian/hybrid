@@ -1,9 +1,11 @@
-import type { BehaviorContext, BehaviorFactory } from "@hybrd/types"
+import type { Behavior, BehaviorContext, BehaviorObject } from "@hybrd/types"
 
 /**
  * Configuration for the threadedReply behavior
  */
 export interface ThreadedReplyConfig {
+	/** Whether the behavior is enabled */
+	enabled?: boolean
 	/** Whether to always thread replies */
 	alwaysThread?: boolean
 	/** Optional filter function to determine when to thread replies */
@@ -15,7 +17,9 @@ export interface ThreadedReplyConfig {
 /**
  * Creates a behavior that ensures replies are threaded to the original message
  */
-export const threadedReply: BehaviorFactory<ThreadedReplyConfig> = (config) => {
+export const threadedReply: Behavior<ThreadedReplyConfig> = (
+	config: ThreadedReplyConfig
+): BehaviorObject => {
 	return {
 		id: "threaded-reply",
 		name: "Threaded Reply",
@@ -28,9 +32,7 @@ export const threadedReply: BehaviorFactory<ThreadedReplyConfig> = (config) => {
 				customThreadId: config.customThreadId?.toString()
 			}
 		},
-		preResponse: false,
-		postResponse: true,
-		async execute(context: BehaviorContext) {
+		async post(context: BehaviorContext) {
 			// Check if behavior is enabled
 			if (!this.config.enabled) return
 
