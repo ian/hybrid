@@ -1,5 +1,5 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { Agent, filter } from "hybrid"
+import { Agent, behaviors, filters } from "hybrid"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
@@ -14,9 +14,10 @@ const agent = new Agent({
 
 await agent.listen({
 	port: process.env.PORT || "8454",
+	behaviors: [behaviors.reactWith("👀"), behaviors.threadedReply()],
 	filters: [
-		filter.isText,
-		filter.not(filter.fromSelf),
-		filter.startsWith("@agent")
+		filters.isText,
+		filters.not(filters.fromSelf),
+		filters.startsWith("@agent")
 	]
 })
