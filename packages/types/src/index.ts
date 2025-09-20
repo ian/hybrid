@@ -30,9 +30,9 @@ export type { AgentRuntime } from "./runtime"
 // XMTP types
 export type {
 	HonoVariables,
-	XMTPFilter,
 	XmtpClient,
 	XmtpConversation,
+	XMTPFilter,
 	XmtpMessage,
 	XmtpSender,
 	XmtpSubjects
@@ -40,3 +40,14 @@ export type {
 
 // Resolver types
 export type { Resolver } from "./resolver"
+
+// Behavior types
+export { BehaviorRegistryImpl } from "./behavior"
+export type {
+	Behavior,
+	BehaviorConfig,
+	BehaviorContext,
+	BehaviorFactory,
+	BehaviorInstance,
+	BehaviorRegistry
+} from "./behavior"

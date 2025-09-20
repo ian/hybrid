@@ -1,16 +1,18 @@
 import { serve } from "@hono/node-server"
 import type {
+	BehaviorInstance,
 	DefaultRuntimeExtension,
 	HonoVariables,
 	PluginContext,
 	XMTPFilter,
 	XmtpClient
 } from "@hybrd/types"
+import { BehaviorRegistryImpl } from "@hybrd/types"
+import { logger } from "@hybrd/utils"
 import { XMTPPlugin } from "@hybrd/xmtp"
 import { Context, Hono, Next } from "hono"
 import type { Agent } from "../core/agent"
 import type { Plugin } from "../core/plugin"
-import { logger } from "@hybrd/utils"
 
 export type { HonoVariables }
 
@@ -108,12 +110,14 @@ export async function createHonoApp<
  * @property port - The port number to listen on (defaults to 8454)
  * @property filter - Optional message filter for XMTP messages
  * @property plugins - Optional array of plugins to apply to the server
+ * @property behaviors - Optional array of behaviors to apply to message processing
  */
 export type ListenOptions = {
 	agent: Agent
 	port: string
 	filters?: XMTPFilter[]
 	plugins?: Plugin<PluginContext>[]
+	behaviors?: BehaviorInstance[]
 }
 
 /**
@@ -149,12 +153,19 @@ export async function listen({
 	agent,
 	port,
 	filters = [],
-	plugins = []
+	plugins = [],
+	behaviors = []
 }: ListenOptions) {
 	const app = new Hono<{ Variables: HonoVariables }>()
 	const context = {
-		agent
-	} as PluginContext
+		agent,
+		behaviors: behaviors.length > 0 ? new BehaviorRegistryImpl() : undefined
+	} as PluginContext & { behaviors?: BehaviorRegistryImpl }
+
+	// Register behaviors if provided
+	if (behaviors.length > 0 && context.behaviors) {
+		context.behaviors.registerAll(behaviors)
+	}
 
 	const xmtpPlugin = XMTPPlugin({ filters })
 

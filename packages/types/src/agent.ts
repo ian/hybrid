@@ -6,6 +6,7 @@ import type {
 	generateText,
 	streamText
 } from "ai"
+import type { BehaviorInstance } from "./behavior"
 import type { Plugin, PluginRegistry } from "./plugin"
 import type { AgentRuntime } from "./runtime"
 import type { AnyTool } from "./tool"
@@ -182,10 +183,12 @@ export interface StreamOptions<TRuntimeExtension = DefaultRuntimeExtension>
  * @property agent - The agent instance to use
  * @property port - The port number to listen on (defaults to 8454)
  * @property plugins - Optional array of plugins to apply to the server
+ * @property behaviors - Optional array of behaviors to apply to message processing
  */
 export interface ListenOptions {
 	agent: Agent<unknown, unknown>
 	port: string
 	filters?: XMTPFilter[]
 	plugins?: Plugin<unknown>[]
+	behaviors?: BehaviorInstance[]
 }

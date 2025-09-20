@@ -9,6 +9,8 @@ import {
 import type {
 	AgentMessage,
 	AgentRuntime,
+	BehaviorContext,
+	BehaviorRegistry,
 	Plugin,
 	PluginContext,
 	XMTPFilter,
@@ -16,9 +18,9 @@ import type {
 	XmtpConversation,
 	XmtpMessage
 } from "@hybrd/types"
+import { logger } from "@hybrd/utils"
 import { randomUUID } from "node:crypto"
 import { createXMTPClient, getDbPath } from "./client"
-import { logger } from "@hybrd/utils"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
@@ -48,6 +50,9 @@ export function XMTPPlugin({
 			} = process.env
 
 			const { agent } = context
+			const pluginContext = context as PluginContext & {
+				behaviors?: BehaviorRegistry
+			}
 
 			if (!XMTP_WALLET_KEY) {
 				throw new Error("XMTP_WALLET_KEY must be set")
@@ -158,7 +163,36 @@ export function XMTPPlugin({
 							}
 
 							const runtime = await agent.createRuntimeContext(baseRuntime)
+
+							// Execute pre-response behaviors
+							if (pluginContext.behaviors) {
+								const behaviorContext: BehaviorContext = {
+									runtime,
+									client: xmtpClient as XmtpClient,
+									conversation: conversation as XmtpConversation,
+									message: msg as XmtpMessage
+								}
+								await pluginContext.behaviors!.executePreResponse(
+									behaviorContext
+								)
+							}
+
 							const { text } = await agent.generate(messages, { runtime })
+
+							// Execute post-response behaviors
+							if (pluginContext.behaviors) {
+								const behaviorContext: BehaviorContext = {
+									runtime,
+									client: xmtpClient as XmtpClient,
+									conversation: conversation as XmtpConversation,
+									message: msg as XmtpMessage,
+									response: text
+								}
+								await pluginContext.behaviors!.executePostResponse(
+									behaviorContext
+								)
+							}
+
 							await conversation.send(text)
 						} catch (err) {
 							logger.error("❌ Error processing XMTP message:", err)
@@ -214,7 +248,32 @@ export function XMTPPlugin({
 					}
 
 					const runtime = await agent.createRuntimeContext(baseRuntime)
+
+					// Execute pre-response behaviors
+					if (context.behaviors) {
+						const behaviorContext: BehaviorContext = {
+							runtime,
+							client: xmtpClient as XmtpClient,
+							conversation: conversation as XmtpConversation,
+							message: message as XmtpMessage
+						}
+						await context.behaviors.executePreResponse(behaviorContext)
+					}
+
 					const { text: reply } = await agent.generate(messages, { runtime })
+
+					// Execute post-response behaviors
+					if (context.behaviors) {
+						const behaviorContext: BehaviorContext = {
+							runtime,
+							client: xmtpClient as XmtpClient,
+							conversation: conversation as XmtpConversation,
+							message: message as XmtpMessage,
+							response: reply
+						}
+						await context.behaviors.executePostResponse(behaviorContext)
+					}
+
 					await conversation.send(reply)
 				} catch (err) {
 					logger.error("❌ Error handling reaction:", err)
@@ -248,7 +307,32 @@ export function XMTPPlugin({
 					}
 
 					const runtime = await agent.createRuntimeContext(baseRuntime)
+
+					// Execute pre-response behaviors
+					if (context.behaviors) {
+						const behaviorContext: BehaviorContext = {
+							runtime,
+							client: xmtpClient as XmtpClient,
+							conversation: conversation as XmtpConversation,
+							message: message as XmtpMessage
+						}
+						await context.behaviors.executePreResponse(behaviorContext)
+					}
+
 					const { text: reply } = await agent.generate(messages, { runtime })
+
+					// Execute post-response behaviors
+					if (context.behaviors) {
+						const behaviorContext: BehaviorContext = {
+							runtime,
+							client: xmtpClient as XmtpClient,
+							conversation: conversation as XmtpConversation,
+							message: message as XmtpMessage,
+							response: reply
+						}
+						await context.behaviors.executePostResponse(behaviorContext)
+					}
+
 					await conversation.send(reply)
 				} catch (err) {
 					logger.error("❌ Error handling reply:", err)
@@ -277,7 +361,32 @@ export function XMTPPlugin({
 					}
 
 					const runtime = await agent.createRuntimeContext(baseRuntime)
+
+					// Execute pre-response behaviors
+					if (context.behaviors) {
+						const behaviorContext: BehaviorContext = {
+							runtime,
+							client: xmtpClient as XmtpClient,
+							conversation: conversation as XmtpConversation,
+							message: message as XmtpMessage
+						}
+						await context.behaviors.executePreResponse(behaviorContext)
+					}
+
 					const { text: reply } = await agent.generate(messages, { runtime })
+
+					// Execute post-response behaviors
+					if (context.behaviors) {
+						const behaviorContext: BehaviorContext = {
+							runtime,
+							client: xmtpClient as XmtpClient,
+							conversation: conversation as XmtpConversation,
+							message: message as XmtpMessage,
+							response: reply
+						}
+						await context.behaviors.executePostResponse(behaviorContext)
+					}
+
 					await conversation.send(reply)
 				} catch (err) {
 					logger.error("❌ Error handling text:", err)

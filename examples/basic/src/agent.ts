@@ -1,5 +1,5 @@
+import { Agent, behaviors, filters } from "@hybrd/core"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { Agent, behaviors, filters } from "hybrid"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
@@ -14,7 +14,10 @@ const agent = new Agent({
 
 await agent.listen({
 	port: process.env.PORT || "8454",
-	behaviors: [behaviors.reactWith("👀"), behaviors.threadedReply()],
+	behaviors: [
+		behaviors.reactWith({ reaction: "👀" }),
+		behaviors.threadedReply()
+	],
 	filters: [
 		filters.isText,
 		filters.not(filters.fromSelf),
