@@ -19,38 +19,68 @@ const agent = new Agent({
 		"You are a XMTP agent that responds to messages and reactions. Try and be as conversational as possible."
 })
 
-await agent.listen({
+// Example 1: Agent with threaded replies
+const threadedAgent = new Agent({
+	name: "Threaded Reply Agent",
+	model: openrouter("x-ai/grok-4"),
+	instructions:
+		"You are a threaded reply agent that responds to messages. Always be helpful and conversational."
+})
+
+await threadedAgent.listen({
 	port: process.env.PORT || "8454",
 	behaviors: [
-		// React with eyes to all messages
-		behaviors.reactWith("👀"),
-
-		// Always thread replies
+		// Always thread replies - this will reply to the original message
 		behaviors.threadedReply(),
 
-		// React with thumbs up only to messages containing "good"
-		behaviors.reactWith("👍", {
-			reactToAll: false,
-			filter: (context) => context.message.content.includes("good")
-		}),
-
-		// React with fire only to messages containing "awesome"
-		behaviors.reactWith("🔥", {
-			reactToAll: false,
-			filter: (context) => context.message.content.includes("awesome")
-		}),
-
-		// Disable a behavior by setting enabled: false
-		behaviors.reactWith("😀", { enabled: false })
+		// React with eyes to all messages
+		behaviors.reactWith("👀")
 	],
 	filters: [
 		filters.isText,
 		filters.not(filters.fromSelf),
-		filters.startsWith("@agent")
+		filters.startsWith("@threaded")
+	]
+})
+
+// Example 2: Agent with normal replies (no threading)
+const normalAgent = new Agent({
+	name: "Normal Reply Agent",
+	model: openrouter("x-ai/grok-4"),
+	instructions:
+		"You are a normal reply agent that responds to messages. Always be helpful and conversational."
+})
+
+await normalAgent.listen({
+	port: process.env.PORT2 || "8455",
+	behaviors: [
+		// No threading behavior - this will send top-level messages
+		behaviors.reactWith("👀")
+	],
+	filters: [
+		filters.isText,
+		filters.not(filters.fromSelf),
+		filters.startsWith("@normal")
 	]
 })
 
 /**
+ * Testing Threaded vs Normal Replies:
+ *
+ * To test the threading functionality:
+ *
+ * 1. Start both agents:
+ *    yarn dev:threaded  # Starts agent on port 8454 with threading
+ *    yarn dev:normal    # Starts agent on port 8455 without threading
+ *
+ * 2. Send messages to each:
+ *    @threaded hello    # This will reply as a thread
+ *    @normal hello      # This will reply as a top-level message
+ *
+ * 3. In XMTP, you should see:
+ *    - Threaded agent: Creates a thread conversation
+ *    - Normal agent: Creates separate top-level messages
+ *
  * How Behaviors Work:
  *
  * 1. **Pre-Response Behaviors** (execute before agent responds):
@@ -58,20 +88,21 @@ await agent.listen({
  *    - Custom behaviors that modify the message or context
  *
  * 2. **Post-Response Behaviors** (execute after agent responds):
- *    - threadedReply: Ensures responses are threaded
- *    - Custom behaviors that modify the response
+ *    - threadedReply: Sets sendOptions.threaded = true to control reply behavior
+ *    - Custom behaviors that modify the response or send options
  *
  * 3. **Execution Flow**:
  *    Message received → Pre-response behaviors → Agent generates response →
- *    Post-response behaviors → Response sent
+ *    Post-response behaviors → Response sent with threading options
  *
- * 4. **Error Handling**:
+ * 4. **Send Options Middleware**:
+ *    - Behaviors can modify sendOptions to control HOW responses are sent
+ *    - threaded: boolean - whether to reply to original message
+ *    - contentType: string - override content type
+ *    - metadata: object - additional send metadata
+ *
+ * 5. **Error Handling**:
  *    - Behaviors execute in isolation
  *    - Errors don't crash the main processing
  *    - Comprehensive logging for debugging
- *
- * 5. **Configuration Options**:
- *    - enabled: Enable/disable behaviors dynamically
- *    - Custom filters for conditional execution
- *    - Configurable parameters for each behavior type
  */

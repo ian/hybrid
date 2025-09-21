@@ -133,6 +133,9 @@ pnpm start
 ## 🛠️ Available Scripts
 
 - `npm run dev` - Start development server with hot reload
+- `npm run dev:threaded` - Start threaded reply agent on port 8454
+- `npm run dev:normal` - Start normal reply agent on port 8455
+- `npm run dev:both` - Start both agents concurrently
 - `npm run build` - Build the project for production
 - `npm run start` - Start the production server
 - `npm run test` - Run tests
@@ -141,6 +144,46 @@ pnpm start
 - `npm run lint` - Lint and fix code
 - `npm run format` - Format code
 - `npm run typecheck` - Check TypeScript types
+
+## 🧪 Testing Threaded Replies
+
+### Quick Test
+
+```bash
+# 1. Start both agents
+npm run dev:both
+
+# 2. Send messages via XMTP:
+#    @threaded hello    # Will reply as a thread
+#    @normal hello      # Will reply as top-level message
+```
+
+### Manual Testing
+
+1. **Threaded Agent** (port 8454):
+   ```bash
+   npm run dev:threaded
+   ```
+   Responds to `@threaded` messages with **threaded replies**
+
+2. **Normal Agent** (port 8455):
+   ```bash
+   npm run dev:normal
+   ```
+   Responds to `@normal` messages with **top-level messages**
+
+### What to Expect
+
+- **Threaded Agent**: Creates threaded conversations (replies nested under original message)
+- **Normal Agent**: Creates separate top-level messages for each response
+
+### Unit Tests
+
+```bash
+npm test
+```
+
+Tests verify that the `threadedReply` behavior correctly sets `sendOptions.threaded = true`.
 
 ## 🤖 Agent Configuration
 

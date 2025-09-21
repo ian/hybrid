@@ -7,6 +7,9 @@
 	"scripts": {
 		"clean": "hybrid clean",
 		"dev": "hybrid dev",
+		"dev:threaded": "PORT=8454 tsx src/agent.ts",
+		"dev:normal": "PORT2=8455 tsx src/agent.ts",
+		"dev:both": "concurrently \"npm run dev:threaded\" \"npm run dev:normal\"",
 		"build": "hybrid build",
 		"start": "hybrid start",
 		"test": "vitest",
@@ -26,6 +29,7 @@
 		"@biomejs/biome": "^1.9.4",
 		"@types/node": "^22.0.0",
 		"@hybrd/cli": "latest",
+		"concurrently": "^8.2.2",
 		"tsx": "^4.20.5",
 		"typescript": "^5.8.3",
 		"vitest": "^3.2.4"

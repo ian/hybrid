@@ -41,9 +41,10 @@ export const threadedReply: Behavior<ThreadedReplyConfig> = (
 			}
 
 			// Set send options to enable threading
-			if (context.sendOptions) {
-				context.sendOptions.threaded = true
+			if (!context.sendOptions) {
+				context.sendOptions = {}
 			}
+			context.sendOptions.threaded = true
 		}
 	}
 }
