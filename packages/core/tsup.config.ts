@@ -4,7 +4,7 @@ export default defineConfig({
 	entry: {
 		index: "src/index.ts",
 		"tools/index": "src/tools/index.ts",
-		"ponder/index": "src/behaviors/index.ts"
+		"behaviors/index": "src/behaviors/index.ts"
 	},
 	format: ["cjs", "esm"],
 	dts: true,

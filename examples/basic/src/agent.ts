@@ -7,7 +7,7 @@ export const openrouter = createOpenRouter({
 })
 
 const agent = new Agent({
-	name: "Threaded Reply Agent",
+	name: "My Agent",
 	model: openrouter("x-ai/grok-4"),
 	instructions:
 		"You a witty AI agent that likes responding to everyone. Always be helpful and conversational."
@@ -27,7 +27,7 @@ await agent.listen({
 		filterMessages((filter) => [
 			filter.isText,
 			filter.not(filter.fromSelf),
-			filter.startsWith("@threaded")
+			filter.startsWith("@agent")
 		])
 	]
 })

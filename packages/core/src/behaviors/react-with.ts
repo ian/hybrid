@@ -1,4 +1,6 @@
 import type { BehaviorContext, BehaviorObject } from "@hybrd/types"
+import { logger } from "@hybrd/utils"
+import { ContentTypeReaction } from "@hybrd/xmtp"
 
 export interface ReactWithOptions {
 	reactToAll?: boolean
@@ -29,11 +31,23 @@ export function reactWith(
 			}
 
 			try {
-				console.log(
-					`🤖 Would react with ${reaction} to message ${context.message.id}`
+				const reactionMessage = {
+					schema: "unicode",
+					reference: context.message.id,
+					action: "added",
+					contentType: ContentTypeReaction,
+					content: reaction
+				}
+
+				await context.conversation.send(reactionMessage, ContentTypeReaction)
+				logger.debug(
+					`✅ [react-with] Reacted with ${reaction} to message ${context.message.id}`
 				)
 			} catch (error) {
-				console.error(`Failed to add reaction ${reaction}:`, error)
+				logger.error(
+					`❌ [react-with] Failed to add reaction ${reaction}:`,
+					error
+				)
 			}
 		}
 	}
