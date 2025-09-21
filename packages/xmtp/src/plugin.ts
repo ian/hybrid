@@ -24,10 +24,6 @@ import { createXMTPClient, getDbPath } from "./client"
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
 
-export type XMTPPluginOptions = {
-	// No options needed anymore - filters should be passed as filterMessages behavior
-}
-
 /**
  * Send a response with threading support
  */
@@ -57,9 +53,7 @@ async function sendResponse(
  * This plugin integrates XMTP messaging capabilities into the agent's
  * HTTP server. It mounts the XMTP endpoints for handling XMTP tools requests.
  */
-export function XMTPPlugin(
-	_options: XMTPPluginOptions = {}
-): Plugin<PluginContext> {
+export function XMTPPlugin(): Plugin<PluginContext> {
 	return {
 		name: "xmtp",
 		description: "Provides XMTP messaging functionality",
