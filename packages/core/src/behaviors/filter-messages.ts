@@ -20,7 +20,11 @@ export function filterMessages(
 			}
 		},
 		async pre(context: BehaviorContext) {
-			if (filterArray.length === 0) return
+			if (filterArray.length === 0) {
+				// No filters, continue to next behavior
+				await context.next?.()
+				return
+			}
 
 			for (const filterFn of filterArray) {
 				try {
@@ -30,16 +34,21 @@ export function filterMessages(
 						context.conversation
 					)
 					if (!passes) {
+						// Message filtered, set flag and stop the chain
 						if (!context.sendOptions) {
 							context.sendOptions = {}
 						}
 						context.sendOptions.filtered = true
-						break
+						// Don't call next() - this stops the middleware chain
+						return
 					}
 				} catch (error) {
 					console.error("Error executing message filter:", error)
 				}
 			}
+
+			// All filters passed, continue to next behavior
+			await context.next?.()
 		}
 	}
 }

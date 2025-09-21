@@ -25,10 +25,6 @@ export function reactWith(
 		async pre(context: BehaviorContext) {
 			if (!this.config.enabled) return
 
-			console.debug({
-				sendOptions: context.sendOptions
-			})
-
 			// Check if message was filtered out by filterMessages behavior
 			if (context.sendOptions?.filtered) {
 				logger.debug(

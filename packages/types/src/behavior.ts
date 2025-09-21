@@ -36,6 +36,16 @@ export interface BehaviorContext<TRuntimeExtension = Record<string, never>> {
 		/** Additional metadata */
 		metadata?: Record<string, unknown>
 	}
+	/**
+	 * Continue to the next behavior in the middleware chain
+	 * If not called, the behavior chain stops processing
+	 */
+	next?: () => Promise<void>
+	/**
+	 * Whether the middleware chain was stopped early
+	 * This gets set to true when a behavior doesn't call next()
+	 */
+	stopped?: boolean
 }
 
 /**
@@ -100,12 +110,12 @@ export interface BehaviorRegistry {
 	getPostBehaviors(): BehaviorObject[]
 
 	/**
-	 * Execute all pre-response behaviors
+	 * Execute all pre-response behaviors as a middleware chain
 	 */
 	executePre(context: BehaviorContext): Promise<void>
 
 	/**
-	 * Execute all post-response behaviors
+	 * Execute all post-response behaviors as a middleware chain
 	 */
 	executePost(context: BehaviorContext): Promise<void>
 
@@ -158,31 +168,75 @@ export class BehaviorRegistryImpl implements BehaviorRegistry {
 	}
 
 	/**
-	 * Execute all pre-response behaviors
+	 * Execute all pre-response behaviors as a middleware chain
 	 */
 	async executePre(context: BehaviorContext): Promise<void> {
 		const behaviors = this.getPreBehaviors()
-		for (const behavior of behaviors) {
+
+		// Create a middleware chain
+		let currentIndex = 0
+		const next = async (): Promise<void> => {
+			if (currentIndex >= behaviors.length) {
+				return
+			}
+
+			const behavior = behaviors[currentIndex]
+			if (!behavior) {
+				return
+			}
+			currentIndex++
+
 			try {
 				await behavior.pre?.(context)
 			} catch (error) {
 				console.error(`Error executing pre behavior "${behavior.id}":`, error)
 			}
 		}
+
+		// Set the next function in the context
+		context.next = next
+
+		// Start the chain
+		await next()
+
+		// Check if the chain was stopped early
+		context.stopped = currentIndex < behaviors.length
 	}
 
 	/**
-	 * Execute all post-response behaviors
+	 * Execute all post-response behaviors as a middleware chain
 	 */
 	async executePost(context: BehaviorContext): Promise<void> {
 		const behaviors = this.getPostBehaviors()
-		for (const behavior of behaviors) {
+
+		// Create a middleware chain
+		let currentIndex = 0
+		const next = async (): Promise<void> => {
+			if (currentIndex >= behaviors.length) {
+				return
+			}
+
+			const behavior = behaviors[currentIndex]
+			if (!behavior) {
+				return
+			}
+			currentIndex++
+
 			try {
 				await behavior.post?.(context)
 			} catch (error) {
 				console.error(`Error executing post behavior "${behavior.id}":`, error)
 			}
 		}
+
+		// Set the next function in the context
+		context.next = next
+
+		// Start the chain
+		await next()
+
+		// Check if the chain was stopped early
+		context.stopped = currentIndex < behaviors.length
 	}
 
 	/**

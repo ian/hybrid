@@ -10,7 +10,6 @@ import type { BehaviorObject } from "./behavior"
 import type { Plugin, PluginRegistry } from "./plugin"
 import type { AgentRuntime } from "./runtime"
 import type { AnyTool } from "./tool"
-import type { XMTPFilter } from "./xmtp"
 
 export type AgentMessage = UIMessage
 
