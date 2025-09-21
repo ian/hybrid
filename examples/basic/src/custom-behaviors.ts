@@ -18,8 +18,6 @@ export const autoReply: Behavior<{
 }> = (config) => {
 	return {
 		id: "auto-reply",
-		name: "Auto Reply",
-		description: "Sends automatic replies to specific messages",
 		config: { enabled: config.enabled ?? true },
 
 		async pre(context: BehaviorContext) {
@@ -47,8 +45,6 @@ export const messageLogger: Behavior<{
 }> = (config) => {
 	return {
 		id: "message-logger",
-		name: "Message Logger",
-		description: "Logs incoming messages for analytics",
 		config: { enabled: config.enabled ?? true },
 
 		async pre(context: BehaviorContext) {
@@ -87,8 +83,6 @@ export const rateLimiter: Behavior<{
 
 	return {
 		id: "rate-limiter",
-		name: "Rate Limiter",
-		description: "Prevents spam responses to the same user",
 		config: { enabled: config.enabled ?? true },
 
 		async pre(context: BehaviorContext) {
@@ -123,8 +117,6 @@ export const contentFilter: Behavior<{
 }> = (config) => {
 	return {
 		id: "content-filter",
-		name: "Content Filter",
-		description: "Filters out inappropriate content",
 		config: { enabled: config.enabled ?? true },
 
 		async pre(context: BehaviorContext) {
@@ -167,8 +159,6 @@ export const emojiCounter: Behavior<{
 
 	return {
 		id: "emoji-counter",
-		name: "Emoji Counter",
-		description: "Reacts to messages with lots of emojis",
 		config: { enabled: config.enabled ?? true },
 
 		async pre(context: BehaviorContext) {

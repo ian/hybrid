@@ -27,8 +27,6 @@ const createReactWithBehavior: Behavior<{
 
 	return {
 		id: `react-with-${reaction}`,
-		name: `React with ${reaction}`,
-		description: `Automatically react with ${reaction} to incoming messages`,
 		config: {
 			enabled: options.enabled ?? true,
 			config: {

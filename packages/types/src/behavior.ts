@@ -33,10 +33,6 @@ export interface BehaviorContext<TRuntimeExtension = Record<string, never>> {
 export interface BehaviorObject<TRuntimeExtension = Record<string, never>> {
 	/** Unique identifier for the behavior */
 	id: string
-	/** Human-readable name for the behavior */
-	name: string
-	/** Description of what the behavior does */
-	description: string
 	/** Configuration for the behavior */
 	config: BehaviorConfig
 	/**
@@ -160,7 +156,7 @@ export class BehaviorRegistryImpl implements BehaviorRegistry {
 			try {
 				await behavior.pre?.(context)
 			} catch (error) {
-				console.error(`Error executing pre behavior ${behavior.id}:`, error)
+				console.error(`Error executing pre behavior "${behavior.id}":`, error)
 			}
 		}
 	}
@@ -174,7 +170,7 @@ export class BehaviorRegistryImpl implements BehaviorRegistry {
 			try {
 				await behavior.post?.(context)
 			} catch (error) {
-				console.error(`Error executing post behavior ${behavior.id}:`, error)
+				console.error(`Error executing post behavior "${behavior.id}":`, error)
 			}
 		}
 	}

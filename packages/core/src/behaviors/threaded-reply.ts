@@ -22,8 +22,6 @@ export const threadedReply: Behavior<ThreadedReplyConfig> = (
 ): BehaviorObject => {
 	return {
 		id: "threaded-reply",
-		name: "Threaded Reply",
-		description: "Ensures all replies are threaded to the original message",
 		config: {
 			enabled: config.enabled ?? true,
 			config: {
