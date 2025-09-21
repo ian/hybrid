@@ -1,20 +1,30 @@
 import type { BehaviorContext, BehaviorObject, XMTPFilter } from "@hybrd/types"
+import { filter } from "@hybrd/xmtp"
 
-export function filterMessages(filters: XMTPFilter[]): BehaviorObject {
+// Type alias to avoid circular reference
+type FilterType = typeof filter
+
+export function filterMessages(
+	filters: XMTPFilter[] | ((filter: FilterType) => XMTPFilter[])
+): BehaviorObject {
+	// Resolve filters to array format
+	const filterArray: XMTPFilter[] =
+		typeof filters === "function" ? filters(filter) : filters
+
 	return {
 		id: "filter-messages",
 		config: {
 			enabled: true,
 			config: {
-				filters: filters.length
+				filters: filterArray.length
 			}
 		},
 		async pre(context: BehaviorContext) {
-			if (filters.length === 0) return
+			if (filterArray.length === 0) return
 
-			for (const filter of filters) {
+			for (const filterFn of filterArray) {
 				try {
-					const passes = await filter(
+					const passes = await filterFn(
 						context.message,
 						context.client,
 						context.conversation

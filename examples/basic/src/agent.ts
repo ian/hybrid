@@ -1,4 +1,4 @@
-import { Agent, behaviors, filters } from "@hybrd/core"
+import { Agent, behaviors } from "@hybrd/core"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 
 export const openrouter = createOpenRouter({
@@ -23,10 +23,10 @@ await agent.listen({
 		behaviors.threadedReply,
 
 		// Filter messages based on criteria
-		behaviors.filterMessages([
-			filters.isText,
-			filters.not(filters.fromSelf),
-			filters.startsWith("@threaded")
+		behaviors.filterMessages((filter) => [
+			filter.isText,
+			filter.not(filter.fromSelf),
+			filter.startsWith("@threaded")
 		])
 	]
 })
