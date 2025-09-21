@@ -28,11 +28,11 @@ export default function (plop) {
 					actions.push({
 						type: "add",
 						path: path.join(packagesDir, dir, "README.md"),
-						templateFile: "plop-templates/README.hbs",
+						templateFile: "readmes.hbs",
 						force: true, // overwrite if README already exists
 						data: {
 							name: pkg.name,
-							title: pkg.name?.replace(/^@.*\//, "") || dir,
+							title: pkg.name || dir,
 							description: pkg.description || "",
 							keywords: pkg.keywords || []
 						}

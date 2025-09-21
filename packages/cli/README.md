@@ -1,4 +1,4 @@
-# cli
+# @hybrd/cli
 
 This package is part of the Hybrid monorepo.
 

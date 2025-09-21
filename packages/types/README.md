@@ -1,4 +1,4 @@
-# types
+# @hybrd/types
 
 This package is part of the Hybrid monorepo.
 
