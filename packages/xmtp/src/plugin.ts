@@ -200,6 +200,14 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 								await pluginContext.behaviors.executePost(behaviorContext)
 							}
 
+							// Check if message was filtered out by filterMessages behavior
+							if (behaviorContext?.sendOptions?.filtered) {
+								logger.debug(
+									`🔇 [XMTP Plugin] Skipping response due to message being filtered`
+								)
+								return
+							}
+
 							// Send the response with threading support
 							await sendResponse(conversation, text, msg.id, behaviorContext)
 						} catch (err) {
@@ -284,6 +292,14 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						}
 					}
 
+					// Check if message was filtered out by filterMessages behavior
+					if (behaviorContext?.sendOptions?.filtered) {
+						logger.debug(
+							`🔇 [XMTP Plugin] Skipping reaction response due to message being filtered`
+						)
+						return
+					}
+
 					await sendResponse(
 						conversation as XmtpConversation,
 						reply,
@@ -350,6 +366,14 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						}
 					}
 
+					// Check if message was filtered out by filterMessages behavior
+					if (behaviorContext?.sendOptions?.filtered) {
+						logger.debug(
+							`🔇 [XMTP Plugin] Skipping reply response due to message being filtered`
+						)
+						return
+					}
+
 					await sendResponse(
 						conversation as XmtpConversation,
 						reply,
@@ -409,6 +433,14 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 							message: message as XmtpMessage,
 							response: reply
 						}
+					}
+
+					// Check if message was filtered out by filterMessages behavior
+					if (behaviorContext?.sendOptions?.filtered) {
+						logger.debug(
+							`🔇 [XMTP Plugin] Skipping text response due to message being filtered`
+						)
+						return
 					}
 
 					await sendResponse(
