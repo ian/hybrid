@@ -4,6 +4,7 @@
 	"license": "ISC",
 	"description": "",
 	"private": true,
+	"type": "module",
 	"engines": {
 		"node": "22"
 	},
@@ -22,10 +23,12 @@
 		"lint": "turbo run lint --continue --ui stream",
 		"lint:fix": "turbo run lint:fix --continue --ui stream",
 		"typecheck": "turbo run typecheck --ui stream",
+		"readmes": "plop readmes",
 		"release": "pnpm build && pnpm -r publish --force --access public --no-git-checks"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
+		"plop": "^4.0.3",
 		"tsx": "4.19.3",
 		"turbo": "2.5.0",
 		"typescript": "5.9.2"

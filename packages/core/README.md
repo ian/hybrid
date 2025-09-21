@@ -1,6 +1,6 @@
-# Hybrid - Typescript Framework for building commerce-connected AI Agents.
+# hybrid
 
-An open-source agent framework for building conversational AI agents on XMTP. 
+This package is part of the Hybrid monorepo.
 
 Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
 
@@ -56,31 +56,3 @@ hybrid dev
 ```
 
 Your agent will start listening for XMTP messages and you're ready to build!
-
-Go to [https://xmtp.chat/dm/](https://xmtp.chat/dm/) and send a message to your agent.
-
-## 🎯 Filters via XMTP Agent SDK
-
-Use the native filters from `@xmtp/agent-sdk` to control which messages the agent processes. Pass them into `listen({ filters })`:
-
-```typescript
-import { Agent } from "hybrid"
-import { filter } from "hybrid"
-
-const agent = new Agent({
-  name: "My Agent",
-  model: openrouter("x-ai/grok-4"),
-  instructions: "Be helpful"
-})
-
-await agent.listen({
-  port: process.env.PORT || "8454",
-  filters: [
-    filter.isText,
-    filter.not(filter.fromSelf),
-    filter.startsWith("@agent")
-  ]
-})
-```
-
-See the Agent SDK filter docs for all options and combinators: https://github.com/xmtp/xmtp-js/tree/main/sdks/agent-sdk#3-builtin-filters
