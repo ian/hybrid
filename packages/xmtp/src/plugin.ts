@@ -20,6 +20,7 @@ import type {
 import { logger } from "@hybrd/utils"
 import { randomUUID } from "node:crypto"
 import { createXMTPClient, getDbPath } from "./client"
+import { ContentTypeReply, ContentTypeText, type Reply } from "./index"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
@@ -35,11 +36,33 @@ async function sendResponse(
 ) {
 	const shouldThread = behaviorContext?.sendOptions?.threaded ?? false
 
+	console.debug({
+		shouldThread,
+		originalMessageId,
+		text
+	})
+
 	if (shouldThread) {
 		// Send as a reply to the original message
-		await conversation.send(text, {
-			replyTo: originalMessageId
-		} as any)
+		try {
+			const reply: Reply = {
+				reference: originalMessageId,
+				contentType: ContentTypeText,
+				content: text
+			}
+			await conversation.send(reply, ContentTypeReply)
+			logger.debug(
+				`✅ [sendResponse] Threaded reply sent successfully to message ${originalMessageId}`
+			)
+		} catch (error) {
+			logger.error(
+				`❌ [sendResponse] Failed to send threaded reply to message ${originalMessageId}:`,
+				error
+			)
+			// Fall back to regular message if threaded reply fails
+			logger.debug(`🔄 [sendResponse] Falling back to regular message`)
+			await conversation.send(text)
+		}
 	} else {
 		// Send as a regular message
 		await conversation.send(text)

@@ -15,19 +15,20 @@ const agent = new Agent({
 
 await agent.listen({
 	port: process.env.PORT || "8454",
+	// Behaviors run in order
 	behaviors: [
-		// Adds 👀 reaction messages the agent will respond to.
-		reactWith("👀"),
-
-		// Always thread replies instead of replying in top level messages.
-		// This will have the agent reply to the original message.
-		threadedReply(),
-
 		// Filter messages based on criteria
 		filterMessages((filter) => [
 			filter.isText,
 			filter.not(filter.fromSelf),
 			filter.startsWith("@agent")
-		])
+		]),
+
+		// Adds 👀 reaction messages the agent will respond to.
+		reactWith("👀"),
+
+		// Always thread replies instead of replying in top level messages.
+		// This will have the agent reply to the original message.
+		threadedReply()
 	]
 })

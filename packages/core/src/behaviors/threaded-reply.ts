@@ -10,6 +10,11 @@ export function threadedReply(): BehaviorObject {
 			}
 		},
 		async post(context: BehaviorContext) {
+			// Check if message was filtered out by filterMessages behavior
+			if (context.sendOptions?.filtered) {
+				return
+			}
+
 			if (!context.sendOptions) {
 				context.sendOptions = {}
 			}

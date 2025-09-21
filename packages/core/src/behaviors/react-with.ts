@@ -25,6 +25,18 @@ export function reactWith(
 		async pre(context: BehaviorContext) {
 			if (!this.config.enabled) return
 
+			console.debug({
+				sendOptions: context.sendOptions
+			})
+
+			// Check if message was filtered out by filterMessages behavior
+			if (context.sendOptions?.filtered) {
+				logger.debug(
+					`🔇 [react-with] Skipping reaction due to message being filtered`
+				)
+				return
+			}
+
 			if (!options.reactToAll && options.filter) {
 				const shouldReact = await options.filter(context)
 				if (!shouldReact) return
