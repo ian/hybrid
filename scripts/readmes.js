@@ -1,8 +1,8 @@
-import fs from "fs"
-import path from "path"
+import fs from "node:fs"
+import path from "node:path"
 
 export default function (plop) {
-	plop.setGenerator("readmes", {
+	plop.setGenerator("packages", {
 		description: "Generate README.md for all packages (except skipped ones)",
 		prompts: [], // automated from package.json
 		actions: () => {

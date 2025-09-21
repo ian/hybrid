@@ -23,7 +23,7 @@
 		"lint": "turbo run lint --continue --ui stream",
 		"lint:fix": "turbo run lint:fix --continue --ui stream",
 		"typecheck": "turbo run typecheck --ui stream",
-		"readmes": "plop readmes",
+		"readmes": "plop --plopfile scripts/readmes.js packages",
 		"release": "pnpm build && pnpm -r publish --force --access public --no-git-checks"
 	},
 	"devDependencies": {
