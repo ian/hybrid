@@ -14,6 +14,11 @@
 			"types": "./src/tools/index.ts",
 			"import": "./dist/tools/index.js",
 			"require": "./dist/tools/index.cjs"
+		},
+		"./behaviors": {
+			"types": "./src/behaviors/index.ts",
+			"import": "./dist/ponder/index.js",
+			"require": "./dist/ponder/index.cjs"
 		}
 	},
 	"scripts": {

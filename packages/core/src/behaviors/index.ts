@@ -1,3 +1,6 @@
+// Re-export XMTP Agent SDK filters for convenience
+export { filter } from "@hybrd/xmtp"
+
 export * from "./filter-messages"
 export { filterMessages } from "./filter-messages"
 export * from "./react-with"
