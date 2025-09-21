@@ -137,6 +137,6 @@ describe("Filter Messages Behavior", () => {
 
 		const behavior = filterMessages(filters)
 
-		expect(behavior.config.config.filters).toBe(3)
+		expect(behavior.config.config?.filters).toBe(3)
 	})
 })
