@@ -162,12 +162,20 @@ export async function listen({
 		behaviors: behaviors.length > 0 ? new BehaviorRegistryImpl() : undefined
 	} as PluginContext & { behaviors?: BehaviorRegistryImpl }
 
+	// Convert filters to a behavior for backward compatibility
+	if (filters.length > 0) {
+		// Import the filterMessages behavior dynamically
+		const { filterMessages } = await import("../behaviors/message-filter")
+		const filterBehavior = filterMessages(filters)
+		behaviors = [...behaviors, () => filterBehavior]
+	}
+
 	// Register behaviors if provided
 	if (behaviors.length > 0 && context.behaviors) {
 		context.behaviors.registerAll(behaviors)
 	}
 
-	const xmtpPlugin = XMTPPlugin({ filters })
+	const xmtpPlugin = XMTPPlugin({})
 
 	// Right now we always apply the XMTP plugin, but this may change in the future.
 	await xmtpPlugin.apply(app, context)

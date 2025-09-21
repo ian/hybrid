@@ -184,6 +184,7 @@ export interface StreamOptions<TRuntimeExtension = DefaultRuntimeExtension>
  * @property port - The port number to listen on (defaults to 8454)
  * @property plugins - Optional array of plugins to apply to the server
  * @property behaviors - Optional array of behaviors to apply to message processing
+ * @deprecated filters - Use behaviors.messageFilter() instead
  */
 export interface ListenOptions {
 	agent: Agent<unknown, unknown>

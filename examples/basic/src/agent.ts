@@ -20,11 +20,13 @@ await agent.listen({
 
 		// Always thread replies instead of replying in top level messages.
 		// This will have the agent reply to the original message.
-		behaviors.threadedReply()
-	],
-	filters: [
-		filters.isText,
-		filters.not(filters.fromSelf),
-		filters.startsWith("@threaded")
+		behaviors.threadedReply(),
+
+		// Filter messages based on criteria
+		behaviors.filterMessages([
+			filters.isText,
+			filters.not(filters.fromSelf),
+			filters.startsWith("@threaded")
+		])
 	]
 })

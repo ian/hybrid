@@ -26,6 +26,7 @@ import { createXMTPClient, getDbPath } from "./client"
 export type { Plugin }
 
 export type XMTPPluginOptions = {
+	/** @deprecated Use behaviors.messageFilter() instead of passing filters here */
 	filters?: XMTPFilter[]
 }
 
@@ -61,6 +62,12 @@ async function sendResponse(
 export function XMTPPlugin({
 	filters = []
 }: XMTPPluginOptions = {}): Plugin<PluginContext> {
+	// Log deprecation warning if filters are used
+	if (filters.length > 0) {
+		console.warn(
+			"⚠️ XMTPPlugin: filters parameter is deprecated. Use behaviors.messageFilter() instead."
+		)
+	}
 	return {
 		name: "xmtp",
 		description: "Provides XMTP messaging functionality",
@@ -195,6 +202,11 @@ export function XMTPPlugin({
 									message: msg as XmtpMessage
 								}
 								await pluginContext.behaviors.executePre(behaviorContext)
+
+								// Check if message was filtered out by any behavior
+								if (behaviorContext.sendOptions?.filtered) {
+									continue // Skip processing this message
+								}
 							}
 
 							const { text } = await agent.generate(messages, { runtime })

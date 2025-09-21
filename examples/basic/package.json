@@ -22,14 +22,14 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@openrouter/ai-sdk-provider": "^1.1.2",
-		"hybrid": "latest"
+		"@openrouter/ai-sdk-provider": "^1.1.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"@types/node": "^22.0.0",
 		"@hybrd/cli": "latest",
+		"@types/node": "^22.0.0",
 		"concurrently": "^8.2.2",
+		"hybrid": "link:/Users/ian/Projects/01/hybrid/packages/core",
 		"tsx": "^4.20.5",
 		"typescript": "^5.8.3",
 		"vitest": "^3.2.4"

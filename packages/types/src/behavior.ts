@@ -31,6 +31,8 @@ export interface BehaviorContext<TRuntimeExtension = Record<string, never>> {
 		threaded?: boolean
 		/** Content type override */
 		contentType?: string
+		/** Whether this message should be filtered out and not processed */
+		filtered?: boolean
 		/** Additional metadata */
 		metadata?: Record<string, unknown>
 	}

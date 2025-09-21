@@ -1,3 +1,5 @@
+export * from "./message-filter"
+export { filterMessages } from "./message-filter"
 export * from "./react-with"
 export * from "./threaded-reply"
 
