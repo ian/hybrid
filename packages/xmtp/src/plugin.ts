@@ -30,6 +30,28 @@ export type XMTPPluginOptions = {
 }
 
 /**
+ * Send a response with threading support
+ */
+async function sendResponse(
+	conversation: XmtpConversation,
+	text: string,
+	originalMessageId: string,
+	behaviorContext?: BehaviorContext
+) {
+	const shouldThread = behaviorContext?.sendOptions?.threaded ?? false
+
+	if (shouldThread) {
+		// Send as a reply to the original message
+		await conversation.send(text, {
+			replyTo: originalMessageId
+		} as any)
+	} else {
+		// Send as a regular message
+		await conversation.send(text)
+	}
+}
+
+/**
  * XMTP Plugin that provides XMTP functionality to the agent
  *
  * @description
@@ -172,28 +194,27 @@ export function XMTPPlugin({
 									conversation: conversation as XmtpConversation,
 									message: msg as XmtpMessage
 								}
-								await pluginContext.behaviors!.executePre(
-									behaviorContext
-								)
+								await pluginContext.behaviors.executePre(behaviorContext)
 							}
 
 							const { text } = await agent.generate(messages, { runtime })
 
-							// Execute post-response behaviors
-							if (pluginContext.behaviors) {
-								const behaviorContext: BehaviorContext = {
-									runtime,
-									client: xmtpClient as XmtpClient,
-									conversation: conversation as XmtpConversation,
-									message: msg as XmtpMessage,
-									response: text
-								}
-								await pluginContext.behaviors!.executePost(
-									behaviorContext
-								)
+							// Create behavior context for send options
+							const behaviorContext: BehaviorContext = {
+								runtime,
+								client: xmtpClient as XmtpClient,
+								conversation: conversation as XmtpConversation,
+								message: msg as XmtpMessage,
+								response: text
 							}
 
-							await conversation.send(text)
+							// Execute post-response behaviors
+							if (pluginContext.behaviors) {
+								await pluginContext.behaviors.executePost(behaviorContext)
+							}
+
+							// Send the response with threading support
+							await sendResponse(conversation, text, msg.id, behaviorContext)
 						} catch (err) {
 							logger.error("❌ Error processing XMTP message:", err)
 						}
@@ -263,8 +284,9 @@ export function XMTPPlugin({
 					const { text: reply } = await agent.generate(messages, { runtime })
 
 					// Execute post-response behaviors
+					let behaviorContext: BehaviorContext | undefined
 					if (context.behaviors) {
-						const behaviorContext: BehaviorContext = {
+						behaviorContext = {
 							runtime,
 							client: xmtpClient as XmtpClient,
 							conversation: conversation as XmtpConversation,
@@ -272,9 +294,23 @@ export function XMTPPlugin({
 							response: reply
 						}
 						await context.behaviors.executePost(behaviorContext)
+					} else {
+						// Create minimal context for send options
+						behaviorContext = {
+							runtime,
+							client: xmtpClient as XmtpClient,
+							conversation: conversation as XmtpConversation,
+							message: message as XmtpMessage,
+							response: reply
+						}
 					}
 
-					await conversation.send(reply)
+					await sendResponse(
+						conversation as XmtpConversation,
+						reply,
+						message.id,
+						behaviorContext
+					)
 				} catch (err) {
 					logger.error("❌ Error handling reaction:", err)
 				}
@@ -322,8 +358,9 @@ export function XMTPPlugin({
 					const { text: reply } = await agent.generate(messages, { runtime })
 
 					// Execute post-response behaviors
+					let behaviorContext: BehaviorContext | undefined
 					if (context.behaviors) {
-						const behaviorContext: BehaviorContext = {
+						behaviorContext = {
 							runtime,
 							client: xmtpClient as XmtpClient,
 							conversation: conversation as XmtpConversation,
@@ -331,9 +368,23 @@ export function XMTPPlugin({
 							response: reply
 						}
 						await context.behaviors.executePost(behaviorContext)
+					} else {
+						// Create minimal context for send options
+						behaviorContext = {
+							runtime,
+							client: xmtpClient as XmtpClient,
+							conversation: conversation as XmtpConversation,
+							message: message as XmtpMessage,
+							response: reply
+						}
 					}
 
-					await conversation.send(reply)
+					await sendResponse(
+						conversation as XmtpConversation,
+						reply,
+						message.id,
+						behaviorContext
+					)
 				} catch (err) {
 					logger.error("❌ Error handling reply:", err)
 				}
@@ -376,8 +427,9 @@ export function XMTPPlugin({
 					const { text: reply } = await agent.generate(messages, { runtime })
 
 					// Execute post-response behaviors
+					let behaviorContext: BehaviorContext | undefined
 					if (context.behaviors) {
-						const behaviorContext: BehaviorContext = {
+						behaviorContext = {
 							runtime,
 							client: xmtpClient as XmtpClient,
 							conversation: conversation as XmtpConversation,
@@ -385,9 +437,23 @@ export function XMTPPlugin({
 							response: reply
 						}
 						await context.behaviors.executePost(behaviorContext)
+					} else {
+						// Create minimal context for send options
+						behaviorContext = {
+							runtime,
+							client: xmtpClient as XmtpClient,
+							conversation: conversation as XmtpConversation,
+							message: message as XmtpMessage,
+							response: reply
+						}
 					}
 
-					await conversation.send(reply)
+					await sendResponse(
+						conversation as XmtpConversation,
+						reply,
+						message.id,
+						behaviorContext
+					)
 				} catch (err) {
 					logger.error("❌ Error handling text:", err)
 				}

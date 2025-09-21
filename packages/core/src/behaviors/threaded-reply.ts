@@ -40,9 +40,10 @@ export const threadedReply: Behavior<ThreadedReplyConfig> = (
 				if (!shouldThread) return
 			}
 
-			// Threaded reply behavior doesn't need to do anything special
-			// The actual threading is handled by the XMTP plugin when sending the response
-			// This behavior serves as a configuration marker for the system
+			// Set send options to enable threading
+			if (context.sendOptions) {
+				context.sendOptions.threaded = true
+			}
 		}
 	}
 }

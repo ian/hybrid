@@ -25,6 +25,15 @@ export interface BehaviorContext<TRuntimeExtension = Record<string, never>> {
 	message: XmtpMessage
 	/** The agent's response (available in post-response behaviors) */
 	response?: string
+	/** Send options that behaviors can modify */
+	sendOptions?: {
+		/** Whether to thread the reply to the original message */
+		threaded?: boolean
+		/** Content type override */
+		contentType?: string
+		/** Additional metadata */
+		metadata?: Record<string, unknown>
+	}
 }
 
 /**

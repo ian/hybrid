@@ -62,20 +62,6 @@ const createReactWithBehavior: Behavior<{
 	}
 }
 
-/**
- * Convenience overload for reactWith with just the reaction
- */
-export function reactWith(reaction: string): BehaviorObject
-/**
- * Convenience overload for reactWith with reaction and options
- */
-export function reactWith(
-	reaction: string,
-	options: ReactWithOptions
-): BehaviorObject
-/**
- * Implementation of reactWith
- */
 export function reactWith(
 	reaction: string,
 	options?: ReactWithOptions
