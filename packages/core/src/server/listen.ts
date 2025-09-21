@@ -1,10 +1,9 @@
 import { serve } from "@hono/node-server"
 import type {
-	BehaviorInstance,
+	BehaviorObject,
 	DefaultRuntimeExtension,
 	HonoVariables,
 	PluginContext,
-	XMTPFilter,
 	XmtpClient
 } from "@hybrd/types"
 import { BehaviorRegistryImpl } from "@hybrd/types"
@@ -115,9 +114,8 @@ export async function createHonoApp<
 export type ListenOptions = {
 	agent: Agent
 	port: string
-	filters?: XMTPFilter[]
 	plugins?: Plugin<PluginContext>[]
-	behaviors?: BehaviorInstance[]
+	behaviors?: BehaviorObject[]
 }
 
 /**
@@ -152,7 +150,6 @@ export type ListenOptions = {
 export async function listen({
 	agent,
 	port,
-	filters = [],
 	plugins = [],
 	behaviors = []
 }: ListenOptions) {
@@ -162,20 +159,12 @@ export async function listen({
 		behaviors: behaviors.length > 0 ? new BehaviorRegistryImpl() : undefined
 	} as PluginContext & { behaviors?: BehaviorRegistryImpl }
 
-	// Convert filters to a behavior for backward compatibility
-	if (filters.length > 0) {
-		// Import the filterMessages behavior dynamically
-		const { filterMessages } = await import("../behaviors/filter-messages")
-		const filterBehavior = filterMessages(filters)
-		behaviors = [...behaviors, () => filterBehavior]
-	}
-
 	// Register behaviors if provided
 	if (behaviors.length > 0 && context.behaviors) {
 		context.behaviors.registerAll(behaviors)
 	}
 
-	const xmtpPlugin = XMTPPlugin({})
+	const xmtpPlugin = XMTPPlugin()
 
 	// Right now we always apply the XMTP plugin, but this may change in the future.
 	await xmtpPlugin.apply(app, context)

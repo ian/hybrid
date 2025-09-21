@@ -82,7 +82,7 @@ export interface BehaviorRegistry {
 	/**
 	 * Register multiple behaviors at once
 	 */
-	registerAll(behaviors: Behavior[]): void
+	registerAll(behaviors: BehaviorObject[]): void
 
 	/**
 	 * Get all registered behaviors
@@ -131,10 +131,9 @@ export class BehaviorRegistryImpl implements BehaviorRegistry {
 	/**
 	 * Register multiple behaviors at once
 	 */
-	registerAll(behaviors: Behavior[]): void {
-		// Create behavior instances from factory functions with default config
-		const behaviorInstances = behaviors.map((behavior) => behavior({}))
-		this.behaviors.push(...behaviorInstances)
+	registerAll(behaviors: BehaviorObject[]): void {
+		// Register behavior objects directly
+		this.behaviors.push(...behaviors)
 	}
 
 	/**

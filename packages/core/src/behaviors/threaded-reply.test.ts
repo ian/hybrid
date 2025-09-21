@@ -4,7 +4,7 @@ import { threadedReply } from "./threaded-reply"
 
 describe("Threaded Reply Behavior", () => {
 	it("should create a behavior with correct id", () => {
-		const behavior = threadedReply({ enabled: true })
+		const behavior = threadedReply()
 
 		expect(behavior.id).toBe("threaded-reply")
 	})
@@ -18,13 +18,13 @@ describe("Threaded Reply Behavior", () => {
 			sendOptions: {}
 		}
 
-		const behavior = threadedReply({ enabled: true })
+		const behavior = threadedReply()
 		await behavior.post?.(context)
 
 		expect(context.sendOptions?.threaded).toBe(true)
 	})
 
-	it("should not set threading when disabled", async () => {
+	it("should always set threading regardless of config", async () => {
 		const context: BehaviorContext = {
 			runtime: {} as any,
 			client: {} as any,
@@ -33,9 +33,9 @@ describe("Threaded Reply Behavior", () => {
 			sendOptions: {}
 		}
 
-		const behavior = threadedReply({ enabled: false })
+		const behavior = threadedReply()
 		await behavior.post?.(context)
 
-		expect(context.sendOptions?.threaded).toBeUndefined()
+		expect(context.sendOptions?.threaded).toBe(true)
 	})
 })

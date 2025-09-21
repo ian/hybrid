@@ -111,7 +111,7 @@ describe("Filter Messages Behavior", () => {
 		expect(context.sendOptions?.filtered).toBeUndefined() // Should not be filtered on error
 	})
 
-	it("should respect enabled/disabled configuration", async () => {
+	it("should always execute filters regardless of config", async () => {
 		const failingFilter = vi.fn().mockResolvedValue(false)
 
 		const context: BehaviorContext = {
@@ -122,14 +122,12 @@ describe("Filter Messages Behavior", () => {
 			sendOptions: {}
 		}
 
-		// Test disabled behavior
-		const disabledBehavior = filterMessages([failingFilter])
-		disabledBehavior.config.enabled = false
+		// Test that filters are always executed
+		const behavior = filterMessages([failingFilter])
+		await behavior.pre?.(context)
 
-		await disabledBehavior.pre?.(context)
-
-		expect(failingFilter).not.toHaveBeenCalled()
-		expect(context.sendOptions?.filtered).toBeUndefined()
+		expect(failingFilter).toHaveBeenCalled()
+		expect(context.sendOptions?.filtered).toBe(true)
 	})
 
 	it("should store filter count in config", () => {

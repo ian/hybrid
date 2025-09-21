@@ -9,7 +9,6 @@ export type {
 	Behavior,
 	BehaviorConfig,
 	BehaviorContext,
-	BehaviorInstance,
 	BehaviorObject,
 	BehaviorRegistry
 } from "@hybrd/types"
