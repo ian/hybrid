@@ -1,5 +1,6 @@
-import { Agent, behaviors } from "@hybrd/core"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
+import { Agent } from "hybrid"
+import { filterMessages, reactWith, threadedReply } from "hybrid/behaviors"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
@@ -16,14 +17,14 @@ await agent.listen({
 	port: process.env.PORT || "8454",
 	behaviors: [
 		// Adds 👀 reaction messages the agent will respond to.
-		behaviors.reactWith("👀"),
+		reactWith("👀"),
 
 		// Always thread replies instead of replying in top level messages.
 		// This will have the agent reply to the original message.
-		behaviors.threadedReply,
+		threadedReply(),
 
 		// Filter messages based on criteria
-		behaviors.filterMessages((filter) => [
+		filterMessages((filter) => [
 			filter.isText,
 			filter.not(filter.fromSelf),
 			filter.startsWith("@threaded")
