@@ -165,7 +165,7 @@ export async function listen({
 	// Convert filters to a behavior for backward compatibility
 	if (filters.length > 0) {
 		// Import the filterMessages behavior dynamically
-		const { filterMessages } = await import("../behaviors/message-filter")
+		const { filterMessages } = await import("../behaviors/filter-messages")
 		const filterBehavior = filterMessages(filters)
 		behaviors = [...behaviors, () => filterBehavior]
 	}
