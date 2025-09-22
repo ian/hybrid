@@ -1,8 +1,11 @@
 {
 	"name": "@hybrd/utils",
-	"version": "1.3.2",
+	"version": "1.4.0",
 	"type": "module",
-	"files": ["dist", "src"],
+	"files": [
+		"dist",
+		"src"
+	],
 	"exports": {
 		".": {
 			"types": "./src/index.ts",

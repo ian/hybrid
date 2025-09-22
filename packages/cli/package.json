@@ -1,12 +1,15 @@
 {
 	"name": "@hybrd/cli",
-	"version": "1.3.2",
+	"version": "1.4.0",
 	"type": "module",
 	"bin": {
 		"hybrid": "./dist/cli.js",
 		"hy": "./dist/cli.js"
 	},
-	"files": ["dist", "src"],
+	"files": [
+		"dist",
+		"src"
+	],
 	"exports": {
 		".": {
 			"types": "./src/index.ts",
