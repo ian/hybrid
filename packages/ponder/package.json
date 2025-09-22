@@ -1,11 +1,8 @@
 {
 	"name": "@hybrd/ponder",
-	"version": "1.2.0",
+	"version": "1.4.0",
 	"type": "module",
-	"files": [
-		"dist",
-		"src"
-	],
+	"files": ["dist", "src"],
 	"exports": {
 		".": {
 			"types": "./src/index.ts",
