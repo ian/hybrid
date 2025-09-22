@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process"
 import { existsSync, readFileSync, readdirSync } from "node:fs"
-import { join } from "node:path"
+import { join, resolve } from "node:path"
 
 interface PackageManager {
 	name: string
@@ -39,26 +39,101 @@ const packageManagers: PackageManager[] = [
 function detectPackageManager(
 	startDir: string = process.cwd()
 ): PackageManager {
-	let currentDir = startDir
+	let currentDir = resolve(startDir)
 
-	// Search up the directory tree until we find a lock file
+	// First, search up for workspace/project root indicators
+	let projectRoot = resolve(startDir)
+	let foundWorkspaceRoot = false
 	while (true) {
-		for (const pm of packageManagers) {
-			if (existsSync(join(currentDir, pm.lockFile))) {
-				return pm
-			}
+		// Strong indicators of workspace/project root (these are definitive)
+		const isWorkspaceRoot =
+			existsSync(join(currentDir, "pnpm-workspace.yaml")) ||
+			existsSync(join(currentDir, "turbo.json"))
+
+		if (isWorkspaceRoot) {
+			projectRoot = currentDir
+			foundWorkspaceRoot = true
+			break
+		}
+
+		// Check if this directory looks like a system directory (stop here)
+		const isSystemDir = [
+			"/usr",
+			"/etc",
+			"/var",
+			"/opt",
+			"/bin",
+			"/sbin",
+			"/lib",
+			"/lib64"
+		].some(
+			(systemPath) =>
+				currentDir.startsWith(`${systemPath}/`) || currentDir === systemPath
+		)
+
+		// Stop if we've gone too far up the directory tree
+		if (isSystemDir) {
+			break
 		}
 
 		// Move up one directory
 		const parentDir = join(currentDir, "..")
 		if (parentDir === currentDir) {
-			// We've reached the root directory
+			// We've reached the filesystem root
 			break
 		}
 		currentDir = parentDir
 	}
 
-	// Default to npm if no lock file is found anywhere in the directory tree
+	// If we didn't find a workspace root, continue searching up the directory tree
+	if (!foundWorkspaceRoot) {
+		let currentSearchDir = join(projectRoot, "..")
+		while (currentSearchDir !== projectRoot) {
+			if (
+				existsSync(join(currentSearchDir, "pnpm-workspace.yaml")) ||
+				existsSync(join(currentSearchDir, "turbo.json"))
+			) {
+				projectRoot = currentSearchDir
+				foundWorkspaceRoot = true
+				break
+			}
+
+			// Check if we've reached a system directory (stop here)
+			const isSystemDir = [
+				"/usr",
+				"/etc",
+				"/var",
+				"/opt",
+				"/bin",
+				"/sbin",
+				"/lib",
+				"/lib64"
+			].some(
+				(systemPath) =>
+					currentSearchDir.startsWith(`${systemPath}/`) ||
+					currentSearchDir === systemPath
+			)
+			if (isSystemDir) {
+				break
+			}
+
+			const nextDir = join(currentSearchDir, "..")
+			if (nextDir === currentSearchDir) {
+				// Reached filesystem root
+				break
+			}
+			currentSearchDir = nextDir
+		}
+	}
+
+	// Now look for lock files in the identified project root
+	for (const pm of packageManagers) {
+		if (existsSync(join(projectRoot, pm.lockFile))) {
+			return pm
+		}
+	}
+
+	// Default to npm if no lock file is found in the project root
 	const npmPm = packageManagers.find((pm) => pm.name === "npm")
 	if (!npmPm) {
 		throw new Error("Could not find npm package manager configuration")
