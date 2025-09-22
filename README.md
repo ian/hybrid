@@ -84,19 +84,7 @@ const agent = new Agent({
 })
 
 await agent.listen({
-	port: process.env.PORT || "8454",
-	behaviors: [
-		// Filter messages based on criteria
-		filterMessages((filter) =>
-			filter.isText() && !filter.fromSelf() && filter.hasMention("@agent")
-		),
-
-		// Adds 👀 reaction messages the agent will respond to
-		reactWith("👀"),
-
-		// Always thread replies instead of replying in top level messages
-		threadedReply()
-	]
+	port: process.env.PORT || "8454"
 })
 ```
 
@@ -111,7 +99,7 @@ await agent.listen({
 	port: process.env.PORT || "8454",
 	behaviors: [
       filterMessages((filter) =>
-        filter.isText() && !filter.fromSelf() && filter.hasMention("@agent")
+        filters.isReply() || filters.isDM() || filters.hasMention("@agent")
       )
     ]
 })
@@ -125,7 +113,7 @@ The filter function receives a `filter` object with methods that return boolean 
 - `filter.isReaction()` - Message is a reaction
 - `filter.isDM()` - Message is a direct message
 - `filter.fromSelf()` - Message is from the agent itself
-- `filter.hasMention(mention)` - Message contains a mention
+- `filter.hasMention(mention:string)` - Message contains a mention
 - `filter.hasContent()` - Message has content
 - `filter.isGroup()` - Message is in a group conversation
 - `filter.isGroupAdmin()` - Message sender is group admin
