@@ -7,9 +7,6 @@
 	"scripts": {
 		"clean": "hybrid clean",
 		"dev": "hybrid dev",
-		"dev:threaded": "PORT=8454 tsx src/agent.ts",
-		"dev:normal": "PORT2=8455 tsx src/agent.ts",
-		"dev:both": "concurrently \"npm run dev:threaded\" \"npm run dev:normal\"",
 		"build": "hybrid build",
 		"start": "hybrid start",
 		"test": "vitest",

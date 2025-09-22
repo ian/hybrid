@@ -18,11 +18,11 @@ await agent.listen({
 	// Behaviors run in order
 	behaviors: [
 		// Filter messages based on criteria
-		filterMessages((filter) => [
-			filter.isText,
-			filter.not(filter.fromSelf),
-			filter.startsWith("@agent")
-		]),
+		filterMessages((filters) => {
+			return (
+				filters.isText() && !filters.fromSelf() && filters.hasMention("@agent")
+			)
+		}),
 
 		// Adds 👀 reaction messages the agent will respond to.
 		reactWith("👀"),

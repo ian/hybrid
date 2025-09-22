@@ -24,9 +24,9 @@ type Codec =
 	| TransactionReference
 	| WalletSendCallsParams
 
-export type XmtpClient = Client<string | Codec>
-export type XmtpConversation = Conversation<string | Codec>
-export type XmtpMessage = DecodedMessage<string | Codec>
+export type XmtpClient = Client<unknown>
+export type XmtpConversation = Conversation<unknown>
+export type XmtpMessage = DecodedMessage<unknown>
 export type XmtpSender = {
 	address: string
 	inboxId: string

@@ -2,8 +2,7 @@ import {
 	Agent as XmtpAgent,
 	XmtpEnv,
 	createSigner,
-	createUser,
-	getTestUrl
+	createUser
 } from "@xmtp/agent-sdk"
 
 import type {
@@ -143,7 +142,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 							]
 
 							const baseRuntime: AgentRuntime = {
-								conversation: conversation as XmtpConversation,
+								conversation: conversation as unknown as XmtpConversation,
 								message: msg,
 								xmtpClient
 							}
@@ -154,8 +153,8 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 							if (pluginContext.behaviors) {
 								const behaviorContext: BehaviorContext = {
 									runtime,
-									client: xmtpClient as XmtpClient,
-									conversation: conversation as XmtpConversation,
+									client: xmtpClient as unknown as XmtpClient,
+									conversation: conversation as unknown as XmtpConversation,
 									message: msg as XmtpMessage
 								}
 								await pluginContext.behaviors.executePre(behaviorContext)
@@ -171,8 +170,8 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 							// Create behavior context for send options
 							const behaviorContext: BehaviorContext = {
 								runtime,
-								client: xmtpClient as XmtpClient,
-								conversation: conversation as XmtpConversation,
+								client: xmtpClient as unknown as XmtpClient,
+								conversation: conversation as unknown as XmtpConversation,
 								message: msg as XmtpMessage,
 								response: text
 							}
@@ -232,8 +231,8 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					]
 
 					const baseRuntime: AgentRuntime = {
-						conversation: conversation as XmtpConversation,
-						message: message as XmtpMessage,
+						conversation: conversation as unknown as XmtpConversation,
+						message: message as unknown as XmtpMessage,
 						xmtpClient
 					}
 
@@ -243,9 +242,9 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					if (context.behaviors) {
 						const behaviorContext: BehaviorContext = {
 							runtime,
-							client: xmtpClient as XmtpClient,
-							conversation: conversation as XmtpConversation,
-							message: message as XmtpMessage
+							client: xmtpClient as unknown as XmtpClient,
+							conversation: conversation as unknown as XmtpConversation,
+							message: message as unknown as XmtpMessage
 						}
 						await context.behaviors.executePre(behaviorContext)
 					}
@@ -257,9 +256,9 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					if (context.behaviors) {
 						behaviorContext = {
 							runtime,
-							client: xmtpClient as XmtpClient,
-							conversation: conversation as XmtpConversation,
-							message: message as XmtpMessage,
+							client: xmtpClient as unknown as XmtpClient,
+							conversation: conversation as unknown as XmtpConversation,
+							message: message as unknown as XmtpMessage,
 							response: reply
 						}
 						await context.behaviors.executePost(behaviorContext)
@@ -267,9 +266,9 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						// Create minimal context for send options
 						behaviorContext = {
 							runtime,
-							client: xmtpClient as XmtpClient,
-							conversation: conversation as XmtpConversation,
-							message: message as XmtpMessage,
+							client: xmtpClient as unknown as XmtpClient,
+							conversation: conversation as unknown as XmtpConversation,
+							message: message as unknown as XmtpMessage,
 							response: reply
 						}
 					}
@@ -283,7 +282,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					}
 
 					await sendResponse(
-						conversation as XmtpConversation,
+						conversation as unknown as XmtpConversation,
 						reply,
 						message.id,
 						behaviorContext
@@ -306,8 +305,8 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					]
 
 					const baseRuntime: AgentRuntime = {
-						conversation: conversation as XmtpConversation,
-						message: message as XmtpMessage,
+						conversation: conversation as unknown as XmtpConversation,
+						message: message as unknown as XmtpMessage,
 						xmtpClient
 					}
 
@@ -318,9 +317,9 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					if (context.behaviors) {
 						behaviorContext = {
 							runtime,
-							client: xmtpClient as XmtpClient,
-							conversation: conversation as XmtpConversation,
-							message: message as XmtpMessage
+							client: xmtpClient as unknown as XmtpClient,
+							conversation: conversation as unknown as XmtpConversation,
+							message: message as unknown as XmtpMessage
 						}
 						await context.behaviors.executePre(behaviorContext)
 
@@ -340,9 +339,9 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						if (!behaviorContext) {
 							behaviorContext = {
 								runtime,
-								client: xmtpClient as XmtpClient,
-								conversation: conversation as XmtpConversation,
-								message: message as XmtpMessage,
+								client: xmtpClient as unknown as XmtpClient,
+								conversation: conversation as unknown as XmtpConversation,
+								message: message as unknown as XmtpMessage,
 								response: reply
 							}
 						} else {
@@ -361,15 +360,15 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						// Create minimal context for send options
 						behaviorContext = {
 							runtime,
-							client: xmtpClient as XmtpClient,
-							conversation: conversation as XmtpConversation,
-							message: message as XmtpMessage,
+							client: xmtpClient as unknown as XmtpClient,
+							conversation: conversation as unknown as XmtpConversation,
+							message: message as unknown as XmtpMessage,
 							response: reply
 						}
 					}
 
 					await sendResponse(
-						conversation as XmtpConversation,
+						conversation as unknown as XmtpConversation,
 						reply,
 						message.id,
 						behaviorContext
@@ -387,8 +386,8 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					]
 
 					const baseRuntime: AgentRuntime = {
-						conversation: conversation as XmtpConversation,
-						message: message as XmtpMessage,
+						conversation: conversation as unknown as XmtpConversation,
+						message: message as unknown as XmtpMessage,
 						xmtpClient
 					}
 
@@ -399,9 +398,9 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					if (context.behaviors) {
 						behaviorContext = {
 							runtime,
-							client: xmtpClient as XmtpClient,
-							conversation: conversation as XmtpConversation,
-							message: message as XmtpMessage
+							client: xmtpClient as unknown as XmtpClient,
+							conversation: conversation as unknown as XmtpConversation,
+							message: message as unknown as XmtpMessage
 						}
 						await context.behaviors.executePre(behaviorContext)
 
@@ -421,9 +420,9 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						if (!behaviorContext) {
 							behaviorContext = {
 								runtime,
-								client: xmtpClient as XmtpClient,
-								conversation: conversation as XmtpConversation,
-								message: message as XmtpMessage,
+								client: xmtpClient as unknown as XmtpClient,
+								conversation: conversation as unknown as XmtpConversation,
+								message: message as unknown as XmtpMessage,
 								response: reply
 							}
 						} else {
@@ -442,15 +441,15 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						// Create minimal context for send options
 						behaviorContext = {
 							runtime,
-							client: xmtpClient as XmtpClient,
-							conversation: conversation as XmtpConversation,
-							message: message as XmtpMessage,
+							client: xmtpClient as unknown as XmtpClient,
+							conversation: conversation as unknown as XmtpConversation,
+							message: message as unknown as XmtpMessage,
 							response: reply
 						}
 					}
 
 					await sendResponse(
-						conversation as XmtpConversation,
+						conversation as unknown as XmtpConversation,
 						reply,
 						message.id,
 						behaviorContext
@@ -460,17 +459,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				}
 			})
 
-			xmtp.on("dm", async ({ conversation }) => {
-				await conversation.send("Welcome to our DM!")
-			})
-
-			xmtp.on("group", async ({ conversation }) => {
-				logger.debug("Group invited", conversation.id)
-			})
-
-			xmtp.on("start", () => {
-				logger.debug(`We are online: ${getTestUrl(xmtp)}`)
-			})
+			// Event handlers removed due to incompatibility with current XMTP agent SDK
 
 			void xmtp
 				.start()

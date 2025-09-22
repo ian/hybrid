@@ -1,23 +1,28 @@
-import type {
-	BehaviorContext,
-	BehaviorObject,
-	XmtpClient,
-	XmtpConversation,
-	XmtpMessage
-} from "@hybrd/types"
+import type { BehaviorContext, BehaviorObject } from "@hybrd/types"
 import { logger } from "@hybrd/utils"
 import { filter } from "@hybrd/xmtp"
 
-// Type alias to avoid circular reference
-type FilterType = typeof filter
-type Filter = FilterType[keyof FilterType]
+// Filter interface that matches XMTP SDK signatures
+interface FilterAPI {
+	fromSelf(): boolean
+	hasContent(): boolean
+	isDM(): boolean
+	isGroup(): boolean
+	isGroupAdmin(): boolean
+	isGroupSuperAdmin(): boolean
+	isReaction(): boolean
+	isRemoteAttachment(): boolean
+	isReply(): boolean
+	isText(): boolean
+	isTextReply(): boolean
+	hasMention(mention: string): boolean
+}
 
 export function filterMessages(
-	filters: Filter[] | ((filter: FilterType) => Filter[])
+	filters: ((api: FilterAPI) => boolean) | ((api: FilterAPI) => boolean)[]
 ): BehaviorObject {
-	// Resolve filters to array format
-	const filterArray: Filter[] =
-		typeof filters === "function" ? filters(filter) : filters
+	// Convert single filter to array
+	const filterArray = Array.isArray(filters) ? filters : [filters]
 
 	return {
 		id: "filter-messages",
@@ -49,6 +54,38 @@ export function filterMessages(
 				`🔍 [filter-messages] Evaluating ${filterArray.length} filters`
 			)
 
+			// Create filter API wrapper
+			const filterAPI: FilterAPI = {
+				fromSelf: () =>
+					filter.fromSelf(context.message as any, context.client as any),
+				hasContent: () => filter.hasContent(context.message as any),
+				isDM: () => filter.isDM(context.conversation as any),
+				isGroup: () => filter.isGroup(context.conversation as any),
+				isGroupAdmin: () =>
+					filter.isGroupAdmin(
+						context.conversation as any,
+						context.message as any
+					),
+				isGroupSuperAdmin: () =>
+					filter.isGroupSuperAdmin(
+						context.conversation as any,
+						context.message as any
+					),
+				isReaction: () => filter.isReaction(context.message as any),
+				isRemoteAttachment: () =>
+					filter.isRemoteAttachment(context.message as any),
+				isReply: () => filter.isReply(context.message as any),
+				isText: () => filter.isText(context.message as any),
+				isTextReply: () => filter.isTextReply(context.message as any),
+				hasMention: (mention: string) => {
+					const content =
+						typeof context.message.content === "string"
+							? context.message.content
+							: String(context.message.content || "")
+					return content.includes(mention)
+				}
+			}
+
 			for (let i = 0; i < filterArray.length; i++) {
 				const filterFn = filterArray[i]
 				logger.debug(
@@ -56,12 +93,7 @@ export function filterMessages(
 				)
 
 				try {
-					const passes = await executeFilter(
-						filterFn,
-						context.message,
-						context.client,
-						context.conversation
-					)
+					const passes = filterFn(filterAPI)
 
 					if (!passes) {
 						logger.debug(
@@ -87,81 +119,5 @@ export function filterMessages(
 			// All filters passed, continue to next behavior
 			await context.next?.()
 		}
-	}
-}
-
-// Execute XMTP filters with their correct signatures based on filter name
-async function executeFilter(
-	filterFn: Filter,
-	message: XmtpMessage,
-	client: XmtpClient,
-	conversation: XmtpConversation
-): Promise<boolean> {
-	// Extract filter name - need to handle the complex Filter type
-	const filterObj = filter as never as Record<string, unknown>
-	const filterName =
-		filterObj.name || String(filterFn).match(/function (\w+)/)?.[1] || "unknown"
-
-	logger.debug(`🔍 [filter-messages] Executing filter: ${filterName}`)
-
-	// Type-safe execution based on known filter signatures
-	switch (filterName) {
-		case "isDM":
-		case "isGroup":
-			// 3-parameter MessageFilter signature
-			return Boolean(
-				await (
-					filterFn as (
-						m: XmtpMessage,
-						c: XmtpClient,
-						cv: XmtpConversation
-					) => boolean | Promise<boolean>
-				)(message, client, conversation)
-			)
-
-		case "fromSelf":
-			// 2-parameter signature
-			return Boolean(
-				await (
-					filterFn as (
-						m: XmtpMessage,
-						c: XmtpClient
-					) => boolean | Promise<boolean>
-				)(message, client)
-			)
-
-		case "isText":
-		case "isReply":
-		case "isReaction":
-		case "isRemoteAttachment":
-		case "hasDefinedContent":
-		case "isTextReply":
-			// 1-parameter signature
-			return Boolean(
-				await (filterFn as (m: XmtpMessage) => boolean | Promise<boolean>)(
-					message
-				)
-			)
-
-		case "or":
-		case "and":
-		case "not":
-			// These are higher-order functions that return MessageFilter functions
-			// They should be called with 3 parameters
-			return Boolean(
-				await (
-					filterFn as (
-						m: XmtpMessage,
-						c: XmtpClient,
-						cv: XmtpConversation
-					) => boolean | Promise<boolean>
-				)(message, client, conversation)
-			)
-
-		default:
-			// Unknown filter - throw error rather than make assumptions
-			throw new Error(
-				`Unknown filter function: ${filterName}. Supported filters: isDM, isGroup, fromSelf, isText, isReply, isReaction, isRemoteAttachment, hasDefinedContent, isTextReply, or, and, not`
-			)
 	}
 }
