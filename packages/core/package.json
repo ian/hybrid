@@ -1,19 +1,9 @@
 {
 	"name": "hybrid",
 	"version": "1.4.1",
-	"keywords": [
-		"xmtp",
-		"agent",
-		"ai",
-		"hybrid",
-		"blockchain",
-		"messaging"
-	],
+	"keywords": ["xmtp", "agent", "ai", "hybrid", "blockchain", "messaging"],
 	"type": "module",
-	"files": [
-		"dist",
-		"src"
-	],
+	"files": ["dist", "src"],
 	"exports": {
 		".": {
 			"types": "./src/index.ts",
@@ -58,7 +48,7 @@
 		"uint8arrays": "^5.1.0",
 		"viem": "^2.33.3",
 		"wagmi": "^2.15.6",
-		"zod": "^3.23.8"
+		"zod": "catalog:stack"
 	},
 	"devDependencies": {
 		"@config/biome": "workspace:*",

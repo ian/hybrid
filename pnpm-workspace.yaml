@@ -5,13 +5,13 @@ packages:
   - harness
 
 catalog:
-  zod: 3.23.8
+  zod: ^3.22.0 || ^4
 
 catalogs:
-  ai: 
+  ai:
     "ai": "^5.0.15"
     "@openrouter/ai-sdk-provider": "^1.1.2"
-    
+
   react19:
     react: 19.0.0
     react-dom: 19.0.0
@@ -21,4 +21,4 @@ catalogs:
   stack:
     "@types/node": 22.8.6
     "hono": 4.9.2
-    "zod":  4.0.17
+    "zod": ^3.22.0 || ^4

@@ -1,19 +1,9 @@
 {
 	"name": "@hybrd/types",
 	"version": "1.4.1",
-	"keywords": [
-		"xmtp",
-		"agent",
-		"ai",
-		"hybrid",
-		"types",
-		"typescript"
-	],
+	"keywords": ["xmtp", "agent", "ai", "hybrid", "types", "typescript"],
 	"type": "module",
-	"files": [
-		"dist",
-		"src"
-	],
+	"files": ["dist", "src"],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -34,7 +24,7 @@
 	},
 	"dependencies": {
 		"ai": "^5.0.28",
-		"zod": "^3.23.8"
+		"zod": "catalog:stack"
 	},
 	"peerDependencies": {
 		"@xmtp/content-type-group-updated": "*",
