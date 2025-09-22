@@ -12,91 +12,6 @@ import { filter } from "@hybrd/xmtp"
 type FilterType = typeof filter
 type Filter = FilterType[keyof FilterType]
 
-// Execute XMTP filters with their correct signatures based on filter name
-async function executeFilter(
-	filterFn: Filter,
-	message: XmtpMessage,
-	client: XmtpClient,
-	conversation: XmtpConversation
-): Promise<boolean> {
-	// Extract filter name - need to handle the complex Filter type
-	const filterObj = filter as never as Record<string, unknown>
-	const filterName =
-		filterObj.name || String(filterFn).match(/function (\w+)/)?.[1] || "unknown"
-
-	logger.debug(`🔍 [filter-messages] Executing filter: ${filterName}`)
-
-	// Type-safe execution based on known filter signatures
-	switch (filterName) {
-		case "isDM":
-		case "isGroup":
-			// 3-parameter MessageFilter signature
-			return Boolean(
-				await (
-					filterFn as (
-						m: XmtpMessage,
-						c: XmtpClient,
-						cv: XmtpConversation
-					) => boolean | Promise<boolean>
-				)(message, client, conversation)
-			)
-
-		case "fromSelf":
-			// 2-parameter signature
-			return Boolean(
-				await (
-					filterFn as (
-						m: XmtpMessage,
-						c: XmtpClient
-					) => boolean | Promise<boolean>
-				)(message, client)
-			)
-
-		case "isText":
-		case "isReply":
-		case "isReaction":
-		case "isRemoteAttachment":
-		case "hasDefinedContent":
-		case "isTextReply":
-			// 1-parameter signature
-			return Boolean(
-				await (filterFn as (m: XmtpMessage) => boolean | Promise<boolean>)(
-					message
-				)
-			)
-
-		case "or":
-		case "and":
-		case "not":
-			// These are higher-order functions that return MessageFilter functions
-			// They should be called with 3 parameters
-			return Boolean(
-				await (
-					filterFn as (
-						m: XmtpMessage,
-						c: XmtpClient,
-						cv: XmtpConversation
-					) => boolean | Promise<boolean>
-				)(message, client, conversation)
-			)
-
-		default:
-			// For unknown filters, assume 3 parameters (maintains test compatibility)
-			logger.debug(
-				`🔍 [filter-messages] Unknown filter ${filterName}, assuming 3 parameters`
-			)
-			return Boolean(
-				await (
-					filterFn as (
-						m: XmtpMessage,
-						c: XmtpClient,
-						cv: XmtpConversation
-					) => boolean | Promise<boolean>
-				)(message, client, conversation)
-			)
-	}
-}
-
 export function filterMessages(
 	filters: Filter[] | ((filter: FilterType) => Filter[])
 ): BehaviorObject {
@@ -171,5 +86,92 @@ export function filterMessages(
 			// All filters passed, continue to next behavior
 			await context.next?.()
 		}
+	}
+}
+
+// Execute XMTP filters with their correct signatures based on filter name
+async function executeFilter(
+	filterFn: Filter,
+	message: XmtpMessage,
+	client: XmtpClient,
+	conversation: XmtpConversation
+): Promise<boolean> {
+	// Extract filter name - need to handle the complex Filter type
+	const filterObj = filter as never as Record<string, unknown>
+	const filterName =
+		filterObj.name || String(filterFn).match(/function (\w+)/)?.[1] || "unknown"
+
+	logger.debug(`🔍 [filter-messages] Executing filter: ${filterName}`)
+
+	// Type-safe execution based on known filter signatures
+	switch (filterName) {
+		case "isDM":
+		case "isGroup":
+			// 3-parameter MessageFilter signature
+			return Boolean(
+				await (
+					filterFn as (
+						m: XmtpMessage,
+						c: XmtpClient,
+						cv: XmtpConversation
+					) => boolean | Promise<boolean>
+				)(message, client, conversation)
+			)
+
+		case "fromSelf":
+			// 2-parameter signature
+			return Boolean(
+				await (
+					filterFn as (
+						m: XmtpMessage,
+						c: XmtpClient
+					) => boolean | Promise<boolean>
+				)(message, client)
+			)
+
+		case "isText":
+		case "isReply":
+		case "isReaction":
+		case "isRemoteAttachment":
+		case "hasDefinedContent":
+		case "isTextReply":
+			// 1-parameter signature
+			return Boolean(
+				await (filterFn as (m: XmtpMessage) => boolean | Promise<boolean>)(
+					message
+				)
+			)
+
+		case "or":
+		case "and":
+		case "not":
+			// These are higher-order functions that return MessageFilter functions
+			// They should be called with 3 parameters
+			return Boolean(
+				await (
+					filterFn as (
+						m: XmtpMessage,
+						c: XmtpClient,
+						cv: XmtpConversation
+					) => boolean | Promise<boolean>
+				)(message, client, conversation)
+			)
+
+		default:
+			// Unknown filter - try to handle gracefully, but log warning
+			logger.warn(
+				`⚠️ [filter-messages] Unknown filter function: ${filterName}. This may be a test mock or custom filter.`
+			)
+
+			// For test compatibility, try 3 parameters first (MessageFilter signature)
+			try {
+				return Boolean(await filterFn(message, client, conversation))
+			} catch {
+				// If 3 params fail, try 1 param
+				logger.debug(
+					`🔍 [filter-messages] 3-param call failed for ${filterName}, trying 1 param`
+				)
+				return Boolean(await filterFn(message))
+			}
 	}
 }
