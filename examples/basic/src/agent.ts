@@ -24,8 +24,8 @@ await agent.listen({
 				filters.isReply() ||
 				filters.isDM() ||
 				filters.hasMention("@agent") ||
-				filters.isReaction("👀")
-			) // Respond to 👀 reactions
+				filters.isReaction("👍")
+			)
 		}),
 
 		// Adds 👀 reaction messages the agent will respond to.
