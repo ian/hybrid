@@ -24,7 +24,7 @@
 		"bump:patch": "tsx scripts/bump.ts patch",
 		"bump:minor": "tsx scripts/bump.ts minor",
 		"bump:major": "tsx scripts/bump.ts major",
-		"release": "pnpm build && && pnpm -r publish --force --access public --no-git-checks"
+		"release": "pnpm build && pnpm -r publish --force --access public --no-git-checks"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
