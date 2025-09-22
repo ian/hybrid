@@ -11,7 +11,6 @@ interface FilterAPI {
 	isGroupAdmin(): boolean
 	isGroupSuperAdmin(): boolean
 	isReaction(): boolean
-	isReaction(emoji?: string): boolean
 	isReaction(emoji?: string, action?: "added" | "removed"): boolean
 	isRemoteAttachment(): boolean
 	isReply(): boolean
