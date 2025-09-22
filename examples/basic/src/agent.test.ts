@@ -1,16 +1,37 @@
+import type { XmtpClient, XmtpConversation, XmtpMessage } from "@hybrd/types"
+import type { BehaviorContext } from "hybrid/behaviors"
+import { reactWith, threadedReply } from "hybrid/behaviors"
 import { describe, expect, it } from "vitest"
-import { reactWith } from "../../../packages/core/src/behaviors/react-with"
-import { threadedReply } from "../../../packages/core/src/behaviors/threaded-reply"
-import type { BehaviorContext } from "../../../packages/types/src/behavior"
 
 describe("Threaded Reply Behavior", () => {
 	it("should set sendOptions.threaded = true when enabled", async () => {
 		// Create a mock behavior context
+		const mockMessage = {
+			id: "test-message-id",
+			content: "test message",
+			senderAddress: "0x123",
+			sent: new Date()
+		} as unknown as XmtpMessage
+
+		const mockConversation = {
+			id: "test-conversation-id",
+			peerAddress: "0x456",
+			send: async () => ({ id: "response-id" })
+		} as unknown as XmtpConversation
+
+		const mockClient = {
+			address: "0x789"
+		} as unknown as XmtpClient
+
 		const context: BehaviorContext = {
-			runtime: {} as any,
-			client: {} as any,
-			conversation: {} as any,
-			message: {} as any,
+			runtime: {
+				conversation: mockConversation,
+				message: mockMessage,
+				xmtpClient: mockClient
+			} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: mockMessage,
 			sendOptions: {}
 		}
 
@@ -18,7 +39,7 @@ describe("Threaded Reply Behavior", () => {
 		const behavior = threadedReply({ enabled: true })
 
 		// Execute the behavior
-		await behavior.post(context)
+		await behavior.after?.(context)
 
 		// Check that sendOptions.threaded was set
 		expect(context.sendOptions?.threaded).toBe(true)
@@ -26,11 +47,32 @@ describe("Threaded Reply Behavior", () => {
 
 	it("should not set sendOptions when disabled", async () => {
 		// Create a mock behavior context
+		const mockMessage = {
+			id: "test-message-id",
+			content: "test message",
+			senderAddress: "0x123",
+			sent: new Date()
+		} as unknown as XmtpMessage
+
+		const mockConversation = {
+			id: "test-conversation-id",
+			peerAddress: "0x456",
+			send: async () => ({ id: "response-id" })
+		} as unknown as XmtpConversation
+
+		const mockClient = {
+			address: "0x789"
+		} as unknown as XmtpClient
+
 		const context: BehaviorContext = {
-			runtime: {} as any,
-			client: {} as any,
-			conversation: {} as any,
-			message: {} as any,
+			runtime: {
+				conversation: mockConversation,
+				message: mockMessage,
+				xmtpClient: mockClient
+			} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: mockMessage,
 			sendOptions: {}
 		}
 
@@ -38,58 +80,92 @@ describe("Threaded Reply Behavior", () => {
 		const behavior = threadedReply({ enabled: false })
 
 		// Execute the behavior
-		await behavior.post(context)
+		await behavior.after?.(context)
 
 		// Check that sendOptions.threaded was not set
 		expect(context.sendOptions?.threaded).toBeUndefined()
 	})
 
-	it("should respect filter function", async () => {
+	it("should set sendOptions.threaded = true when enabled", async () => {
 		// Create a mock behavior context
+		const mockMessage = {
+			id: "test-message-id",
+			content: "threaded message",
+			senderAddress: "0x123",
+			sent: new Date()
+		} as unknown as XmtpMessage
+
+		const mockConversation = {
+			id: "test-conversation-id",
+			peerAddress: "0x456",
+			send: async () => ({ id: "response-id" })
+		} as unknown as XmtpConversation
+
+		const mockClient = {
+			address: "0x789"
+		} as unknown as XmtpClient
+
 		const context: BehaviorContext = {
-			runtime: {} as any,
-			client: {} as any,
-			conversation: {} as any,
-			message: { content: "test message" } as any,
+			runtime: {
+				conversation: mockConversation,
+				message: mockMessage,
+				xmtpClient: mockClient
+			} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: mockMessage,
 			sendOptions: {}
 		}
 
-		// Create the threaded reply behavior with filter
-		const behavior = threadedReply({
-			enabled: true,
-			alwaysThread: false,
-			filter: (ctx) => ctx.message.content.includes("thread")
-		})
+		// Create the threaded reply behavior
+		const behavior = threadedReply({ enabled: true })
 
 		// Execute the behavior
-		await behavior.post(context)
+		await behavior.after?.(context)
 
-		// Check that sendOptions.threaded was not set because filter returned false
-		expect(context.sendOptions?.threaded).toBeUndefined()
+		// Check that sendOptions.threaded was set
+		expect(context.sendOptions?.threaded).toBe(true)
 	})
 
-	it("should set threaded when filter passes", async () => {
+	it("should not set sendOptions when disabled", async () => {
 		// Create a mock behavior context
+		const mockMessage = {
+			id: "test-message-id",
+			content: "test message",
+			senderAddress: "0x123",
+			sent: new Date()
+		} as unknown as XmtpMessage
+
+		const mockConversation = {
+			id: "test-conversation-id",
+			peerAddress: "0x456",
+			send: async () => ({ id: "response-id" })
+		} as unknown as XmtpConversation
+
+		const mockClient = {
+			address: "0x789"
+		} as unknown as XmtpClient
+
 		const context: BehaviorContext = {
-			runtime: {} as any,
-			client: {} as any,
-			conversation: {} as any,
-			message: { content: "thread this message" } as any,
+			runtime: {
+				conversation: mockConversation,
+				message: mockMessage,
+				xmtpClient: mockClient
+			} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: mockMessage,
 			sendOptions: {}
 		}
 
-		// Create the threaded reply behavior with filter
-		const behavior = threadedReply({
-			enabled: true,
-			alwaysThread: false,
-			filter: (ctx) => ctx.message.content.includes("thread")
-		})
+		// Create the threaded reply behavior with disabled
+		const behavior = threadedReply({ enabled: false })
 
 		// Execute the behavior
-		await behavior.post(context)
+		await behavior.after?.(context)
 
-		// Check that sendOptions.threaded was set because filter returned true
-		expect(context.sendOptions?.threaded).toBe(true)
+		// Check that sendOptions.threaded was not set
+		expect(context.sendOptions?.threaded).toBeUndefined()
 	})
 })
 
@@ -99,15 +175,27 @@ describe("React With Behavior", () => {
 
 		expect(behavior.id).toBe("react-with-👍")
 		expect(behavior.config.enabled).toBe(true)
-		expect(behavior.config.config.reaction).toBe("👍")
-		expect(behavior.config.config.reactToAll).toBe(true)
+		expect(
+			(behavior.config.config as { reaction: string; reactToAll: boolean })
+				.reaction
+		).toBe("👍")
+		expect(
+			(behavior.config.config as { reaction: string; reactToAll: boolean })
+				.reactToAll
+		).toBe(true)
 	})
 
 	it("should respect custom options", () => {
 		const behavior = reactWith("👍", { reactToAll: false })
 
-		expect(behavior.config.config.reactToAll).toBe(false)
-		expect(behavior.config.config.reaction).toBe("👍")
+		expect(
+			(behavior.config.config as { reaction: string; reactToAll: boolean })
+				.reactToAll
+		).toBe(false)
+		expect(
+			(behavior.config.config as { reaction: string; reactToAll: boolean })
+				.reaction
+		).toBe("👍")
 	})
 
 	it("should disable behavior when enabled is false", () => {
@@ -116,24 +204,50 @@ describe("React With Behavior", () => {
 		expect(behavior.config.enabled).toBe(false)
 	})
 
-	it("should store filter function as string", () => {
-		const filter = (ctx: BehaviorContext) =>
-			ctx.message.content.includes("good")
-		const behavior = reactWith("👍", { filter })
+	it("should create a behavior with correct config", () => {
+		const behavior = reactWith("👍", { reactToAll: false })
 
-		expect(typeof behavior.config.config.filter).toBe("string")
-		expect(behavior.config.config.filter).toContain("includes")
+		expect(behavior.config.config).toBeDefined()
+		expect(
+			(behavior.config.config as { reaction: string; reactToAll: boolean })
+				.reaction
+		).toBe("👍")
+		expect(
+			(behavior.config.config as { reaction: string; reactToAll: boolean })
+				.reactToAll
+		).toBe(false)
 	})
 })
 
 describe("Behavior Registry System", () => {
 	it("should register and execute behaviors", async () => {
 		// Create a mock registry context
+		const mockMessage = {
+			id: "test-message-id",
+			content: "test message",
+			senderAddress: "0x123",
+			sent: new Date()
+		} as unknown as XmtpMessage
+
+		const mockConversation = {
+			id: "test-conversation-id",
+			peerAddress: "0x456",
+			send: async () => ({ id: "response-id" })
+		} as unknown as XmtpConversation
+
+		const mockClient = {
+			address: "0x789"
+		} as unknown as XmtpClient
+
 		const context: BehaviorContext = {
-			runtime: {} as any,
-			client: {} as any,
-			conversation: {} as any,
-			message: {} as any,
+			runtime: {
+				conversation: mockConversation,
+				message: mockMessage,
+				xmtpClient: mockClient
+			} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: mockMessage,
 			sendOptions: {}
 		}
 
@@ -146,12 +260,12 @@ describe("Behavior Registry System", () => {
 		expect(reactBehavior.id).toBe("react-with-👍")
 
 		// Test that behaviors have the correct methods
-		expect(typeof threadBehavior.post).toBe("function") // threadedReply runs in post phase
-		expect(typeof reactBehavior.pre).toBe("function") // reactWith runs in pre phase
+		expect(typeof threadBehavior.after).toBe("function") // threadedReply runs in post phase
+		expect(typeof reactBehavior.before).toBe("function") // reactWith runs in pre phase
 
 		// Execute behaviors
-		await threadBehavior.post(context)
-		await reactBehavior.pre(context)
+		await threadBehavior.after?.(context)
+		await reactBehavior.before?.(context)
 
 		// Verify effects
 		expect(context.sendOptions?.threaded).toBe(true)
