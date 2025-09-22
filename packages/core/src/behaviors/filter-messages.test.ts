@@ -279,7 +279,11 @@ describe("Filter Messages Behavior", () => {
 		await behavior.pre?.(context)
 
 		// Should call with 3 parameters as fallback
-		expect(mockFilter).toHaveBeenCalledWith(mockMessage, mockClient, mockConversation)
+		expect(mockFilter).toHaveBeenCalledWith(
+			mockMessage,
+			mockClient,
+			mockConversation
+		)
 		expect(context.sendOptions?.filtered).toBeUndefined()
 	})
 })
