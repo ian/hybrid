@@ -1,6 +1,6 @@
 {
 	"name": "create-hybrid",
-	"version": "1.4.0",
+	"version": "1.4.1",
 	"description": "Create a new Hybrid XMTP agent project",
 	"type": "module",
 	"bin": {
