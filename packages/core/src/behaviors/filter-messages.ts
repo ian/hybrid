@@ -19,17 +19,14 @@ interface FilterAPI {
 }
 
 export function filterMessages(
-	filters: ((api: FilterAPI) => boolean) | ((api: FilterAPI) => boolean)[]
+	filters: (api: FilterAPI) => boolean
 ): BehaviorObject {
-	// Convert single filter to array
-	const filterArray = Array.isArray(filters) ? filters : [filters]
-
 	return {
 		id: "filter-messages",
 		config: {
 			enabled: true,
 			config: {
-				filters: filterArray.length
+				filters: 1
 			}
 		},
 		async before(context: BehaviorContext) {
@@ -39,19 +36,6 @@ export function filterMessages(
 					: String(context.message.content || "unknown")
 			logger.debug(
 				`🔍 [filter-messages] Processing message: ${messageContent}...`
-			)
-
-			if (filterArray.length === 0) {
-				logger.debug(
-					`🔍 [filter-messages] No filters configured, continuing chain`
-				)
-				// No filters, continue to next behavior
-				await context.next?.()
-				return
-			}
-
-			logger.debug(
-				`🔍 [filter-messages] Evaluating ${filterArray.length} filters`
 			)
 
 			// Create filter API wrapper
@@ -86,37 +70,30 @@ export function filterMessages(
 				}
 			}
 
-			for (let i = 0; i < filterArray.length; i++) {
-				const filterFn = filterArray[i]
-				logger.debug(
-					`🔍 [filter-messages] Evaluating filter ${i + 1}/${filterArray.length}`
-				)
+			try {
+				const passes = filters(filterAPI)
 
-				try {
-					const passes = filterFn(filterAPI)
-
-					if (!passes) {
-						logger.debug(
-							`🔇 [filter-messages] Filter ${i + 1} failed - message filtered out`
-						)
-						// Message filtered, set flag and stop the chain
-						if (!context.sendOptions) {
-							context.sendOptions = {}
-						}
-						context.sendOptions.filtered = true
-						// Don't call next() - this stops the middleware chain
-						return
+				if (!passes) {
+					logger.debug(
+						`🔇 [filter-messages] Filter failed - message filtered out`
+					)
+					// Message filtered, set flag and stop the chain
+					if (!context.sendOptions) {
+						context.sendOptions = {}
 					}
-
-					logger.debug(`✅ [filter-messages] Filter ${i + 1} passed`)
-				} catch (error) {
-					logger.error("Error executing message filter:", error)
-					throw error // Re-throw to propagate the error
+					context.sendOptions.filtered = true
+					// Don't call next() - this stops the middleware chain
+					return
 				}
+
+				logger.debug(`✅ [filter-messages] Filter passed`)
+			} catch (error) {
+				logger.error("Error executing message filter:", error)
+				throw error // Re-throw to propagate the error
 			}
 
-			logger.debug(`✅ [filter-messages] All filters passed, continuing chain`)
-			// All filters passed, continue to next behavior
+			logger.debug(`✅ [filter-messages] Filter passed, continuing chain`)
+			// Filter passed, continue to next behavior
 			await context.next?.()
 		}
 	}

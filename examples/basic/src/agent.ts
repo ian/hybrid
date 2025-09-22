@@ -19,9 +19,7 @@ await agent.listen({
 	behaviors: [
 		// Filter messages based on criteria
 		filterMessages((filters) => {
-			return (
-				filters.isText() && !filters.fromSelf() && filters.hasMention("@agent")
-			)
+			return filters.isReply() || filters.isDM() || filters.hasMention("@agent")
 		}),
 
 		// Adds 👀 reaction messages the agent will respond to.
