@@ -10,6 +10,3 @@ export type { ListenOptions } from "./server/listen"
 
 // Re-export tools standard library
 export * from "./tools"
-
-// Re-export behaviors for convenience
-export * from "./behaviors"
