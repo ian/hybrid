@@ -4,8 +4,28 @@ import type {
 	XmtpConversation,
 	XmtpMessage
 } from "@hybrd/types"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { filterMessages } from "./filter-messages"
+
+// Import the mocked filter
+import { filter as xmtpFilter } from "@hybrd/xmtp"
+
+// Mock the XMTP filter
+vi.mock("@hybrd/xmtp", () => ({
+	filter: {
+		fromSelf: vi.fn(() => false),
+		hasContent: vi.fn(() => true),
+		isDM: vi.fn(() => false),
+		isGroup: vi.fn(() => true),
+		isGroupAdmin: vi.fn(() => false),
+		isGroupSuperAdmin: vi.fn(() => false),
+		isReaction: vi.fn(() => false),
+		isRemoteAttachment: vi.fn(() => false),
+		isReply: vi.fn(() => false),
+		isText: vi.fn(() => true),
+		isTextReply: vi.fn(() => false)
+	}
+}))
 
 // Mock XMTP types
 const mockClient = {} as XmtpClient
@@ -173,5 +193,228 @@ describe("Filter Messages Behavior", () => {
 		await behavior.before?.(context)
 
 		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should filter messages based on reaction emoji", async () => {
+		// Set up mock for reaction message
+		vi.mocked(xmtpFilter.isReaction).mockReturnValue(true)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				content: {
+					schema: "unicode",
+					reference: "original-msg-id",
+					action: "added",
+					contentType: { toString: () => "reaction" },
+					content: "👍"
+				}
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) => filter.isReaction("👍"))
+
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should filter messages based on reaction action", async () => {
+		// Set up mock for reaction message
+		vi.mocked(xmtpFilter.isReaction).mockReturnValue(true)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				content: {
+					schema: "unicode",
+					reference: "original-msg-id",
+					action: "removed",
+					contentType: { toString: () => "reaction" },
+					content: "👍"
+				}
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) =>
+			filter.isReaction(undefined, "removed")
+		)
+
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should filter messages based on reaction emoji and action", async () => {
+		// Set up mock for reaction message
+		vi.mocked(xmtpFilter.isReaction).mockReturnValue(true)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				content: {
+					schema: "unicode",
+					reference: "original-msg-id",
+					action: "added",
+					contentType: { toString: () => "reaction" },
+					content: "❤️"
+				}
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) => filter.isReaction("❤️", "added"))
+
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should filter out messages with wrong reaction emoji", async () => {
+		// Set up mock for reaction message
+		vi.mocked(xmtpFilter.isReaction).mockReturnValue(true)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				content: {
+					schema: "unicode",
+					reference: "original-msg-id",
+					action: "added",
+					contentType: { toString: () => "reaction" },
+					content: "👍"
+				}
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) => filter.isReaction("❤️"))
+
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+
+	it("should filter out messages with wrong reaction action", async () => {
+		// Set up mock for reaction message
+		vi.mocked(xmtpFilter.isReaction).mockReturnValue(true)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				content: {
+					schema: "unicode",
+					reference: "original-msg-id",
+					action: "added",
+					contentType: { toString: () => "reaction" },
+					content: "👍"
+				}
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) =>
+			filter.isReaction(undefined, "removed")
+		)
+
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+
+	it("should filter out messages with wrong reaction emoji and action", async () => {
+		// Set up mock for reaction message
+		vi.mocked(xmtpFilter.isReaction).mockReturnValue(true)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				content: {
+					schema: "unicode",
+					reference: "original-msg-id",
+					action: "added",
+					contentType: { toString: () => "reaction" },
+					content: "👍"
+				}
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) =>
+			filter.isReaction("❤️", "removed")
+		)
+
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+
+	it("should filter out non-reaction messages when checking reaction details", async () => {
+		// Don't set isReaction to true for non-reaction messages
+		vi.mocked(xmtpFilter.isReaction).mockReturnValue(false)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				content: "This is not a reaction"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) => filter.isReaction("👍"))
+
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+
+	it("should filter out messages without proper reaction content structure", async () => {
+		// Set up mock for reaction message
+		vi.mocked(xmtpFilter.isReaction).mockReturnValue(true)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				content: {
+					// Missing required reaction properties
+					content: "👍"
+				}
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) =>
+			filter.isReaction("👍", "added")
+		)
+
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
 	})
 })

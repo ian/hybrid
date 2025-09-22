@@ -111,6 +111,7 @@ The filter function receives a `filter` object with methods that return boolean 
 - `filter.isText()` - Message is text content
 - `filter.isReply()` - Message is a reply
 - `filter.isReaction()` - Message is a reaction
+- `filter.isReaction(emoji, action?)` - Message is a reaction with specific emoji and/or action ("added" | "removed")
 - `filter.isDM()` - Message is a direct message
 - `filter.fromSelf()` - Message is from the agent itself
 - `filter.hasMention(mention:string)` - Message contains a mention

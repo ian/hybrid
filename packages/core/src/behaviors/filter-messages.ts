@@ -11,6 +11,7 @@ interface FilterAPI {
 	isGroupAdmin(): boolean
 	isGroupSuperAdmin(): boolean
 	isReaction(): boolean
+	isReaction(emoji?: string, action?: "added" | "removed"): boolean
 	isRemoteAttachment(): boolean
 	isReply(): boolean
 	isText(): boolean
@@ -55,7 +56,33 @@ export function filterMessages(
 						context.conversation as any,
 						context.message as any
 					),
-				isReaction: () => filter.isReaction(context.message as any),
+				isReaction: (emoji?: string, action?: "added" | "removed") => {
+					const isReaction = filter.isReaction(context.message as any)
+					if (!isReaction) return false
+
+					// Check if message has reaction content
+					if (
+						!context.message.content ||
+						typeof context.message.content !== "object"
+					)
+						return false
+
+					const reactionContent = context.message.content as any
+
+					// Validate reaction content structure
+					if (!reactionContent.content) return false
+
+					// Check emoji if specified
+					if (emoji && reactionContent.content !== emoji) return false
+
+					// Check action if specified
+					if (action && reactionContent.action !== action) return false
+
+					// If no specific checks requested, just return true
+					if (!emoji && !action) return true
+
+					return true
+				},
 				isRemoteAttachment: () =>
 					filter.isRemoteAttachment(context.message as any),
 				isReply: () => filter.isReply(context.message as any),
