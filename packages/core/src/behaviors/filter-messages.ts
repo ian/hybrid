@@ -1,14 +1,107 @@
-import type { BehaviorContext, BehaviorObject, XMTPFilter } from "@hybrd/types"
+import type {
+	BehaviorContext,
+	BehaviorObject,
+	XmtpClient,
+	XmtpConversation,
+	XmtpMessage
+} from "@hybrd/types"
+import { logger } from "@hybrd/utils"
 import { filter } from "@hybrd/xmtp"
 
 // Type alias to avoid circular reference
 type FilterType = typeof filter
+type Filter = FilterType[keyof FilterType]
+
+// Execute XMTP filters with their correct signatures based on filter name
+async function executeFilter(
+	filterFn: Filter,
+	message: XmtpMessage,
+	client: XmtpClient,
+	conversation: XmtpConversation
+): Promise<boolean> {
+	// Extract filter name - need to handle the complex Filter type
+	const filterObj = filter as never as Record<string, unknown>
+	const filterName =
+		filterObj.name || String(filterFn).match(/function (\w+)/)?.[1] || "unknown"
+
+	logger.debug(`🔍 [filter-messages] Executing filter: ${filterName}`)
+
+	// Type-safe execution based on known filter signatures
+	switch (filterName) {
+		case "isDM":
+		case "isGroup":
+			// 3-parameter MessageFilter signature
+			return Boolean(
+				await (
+					filterFn as (
+						m: XmtpMessage,
+						c: XmtpClient,
+						cv: XmtpConversation
+					) => boolean | Promise<boolean>
+				)(message, client, conversation)
+			)
+
+		case "fromSelf":
+			// 2-parameter signature
+			return Boolean(
+				await (
+					filterFn as (
+						m: XmtpMessage,
+						c: XmtpClient
+					) => boolean | Promise<boolean>
+				)(message, client)
+			)
+
+		case "isText":
+		case "isReply":
+		case "isReaction":
+		case "isRemoteAttachment":
+		case "hasDefinedContent":
+		case "isTextReply":
+			// 1-parameter signature
+			return Boolean(
+				await (filterFn as (m: XmtpMessage) => boolean | Promise<boolean>)(
+					message
+				)
+			)
+
+		case "or":
+		case "and":
+		case "not":
+			// These are higher-order functions that return MessageFilter functions
+			// They should be called with 3 parameters
+			return Boolean(
+				await (
+					filterFn as (
+						m: XmtpMessage,
+						c: XmtpClient,
+						cv: XmtpConversation
+					) => boolean | Promise<boolean>
+				)(message, client, conversation)
+			)
+
+		default:
+			// For unknown filters, assume 3 parameters (maintains test compatibility)
+			logger.debug(
+				`🔍 [filter-messages] Unknown filter ${filterName}, assuming 3 parameters`
+			)
+			return Boolean(
+				await (
+					filterFn as (
+						m: XmtpMessage,
+						c: XmtpClient,
+						cv: XmtpConversation
+					) => boolean | Promise<boolean>
+				)(message, client, conversation)
+			)
+	}
+}
 
 export function filterMessages(
-	filters: XMTPFilter[] | ((filter: FilterType) => XMTPFilter[])
+	filters: Filter[] | ((filter: FilterType) => Filter[])
 ): BehaviorObject {
 	// Resolve filters to array format
-	const filterArray: XMTPFilter[] =
+	const filterArray: Filter[] =
 		typeof filters === "function" ? filters(filter) : filters
 
 	return {
@@ -20,20 +113,45 @@ export function filterMessages(
 			}
 		},
 		async pre(context: BehaviorContext) {
+			const messageContent =
+				typeof context.message.content === "string"
+					? context.message.content.substring(0, 100)
+					: String(context.message.content || "unknown")
+			logger.debug(
+				`🔍 [filter-messages] Processing message: ${messageContent}...`
+			)
+
 			if (filterArray.length === 0) {
+				logger.debug(
+					`🔍 [filter-messages] No filters configured, continuing chain`
+				)
 				// No filters, continue to next behavior
 				await context.next?.()
 				return
 			}
 
-			for (const filterFn of filterArray) {
+			logger.debug(
+				`🔍 [filter-messages] Evaluating ${filterArray.length} filters`
+			)
+
+			for (let i = 0; i < filterArray.length; i++) {
+				const filterFn = filterArray[i]
+				logger.debug(
+					`🔍 [filter-messages] Evaluating filter ${i + 1}/${filterArray.length}`
+				)
+
 				try {
-					const passes = await filterFn(
+					const passes = await executeFilter(
+						filterFn,
 						context.message,
 						context.client,
 						context.conversation
 					)
+
 					if (!passes) {
+						logger.debug(
+							`🔇 [filter-messages] Filter ${i + 1} failed - message filtered out`
+						)
 						// Message filtered, set flag and stop the chain
 						if (!context.sendOptions) {
 							context.sendOptions = {}
@@ -42,11 +160,14 @@ export function filterMessages(
 						// Don't call next() - this stops the middleware chain
 						return
 					}
+
+					logger.debug(`✅ [filter-messages] Filter ${i + 1} passed`)
 				} catch (error) {
-					console.error("Error executing message filter:", error)
+					logger.error("Error executing message filter:", error)
 				}
 			}
 
+			logger.debug(`✅ [filter-messages] All filters passed, continuing chain`)
 			// All filters passed, continue to next behavior
 			await context.next?.()
 		}

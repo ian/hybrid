@@ -235,7 +235,22 @@ export async function listen({
 			fetch: app.fetch,
 			port: httpPort
 		})
-		console.log(`listening on localhost:${httpPort}`)
+
+		// Clean startup messaging
+		console.log(`Starting hybrid ... ✅ DONE`)
+		console.log(`Hybrid listening on http://localhost:${httpPort}`)
+
+		// Get XMTP info for "We are online" message
+		const xmtpWalletKey = process.env.XMTP_WALLET_KEY
+		const xmtpEnv = process.env.XMTP_ENV || "production"
+
+		if (xmtpWalletKey) {
+			const walletAddress = xmtpWalletKey.replace(/^0x/, "") // Remove 0x prefix if present
+			console.log(
+				`Chat with your agent: http://xmtp.chat/dm/${walletAddress}?env=${xmtpEnv}`
+			)
+		}
+
 		logger.debug(`✅ Hybrid server running on port ${httpPort}`)
 		logger.debug(`🎧 Background message listener is active`)
 	} catch (error: any) {

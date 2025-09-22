@@ -1,3 +1,4 @@
+import { logger } from "@hybrd/utils"
 import { ReactionCodec } from "@xmtp/content-type-reaction"
 import { ReplyCodec } from "@xmtp/content-type-reply"
 import { TransactionReferenceCodec } from "@xmtp/content-type-transaction-reference"
@@ -13,7 +14,6 @@ import { privateKeyToAccount } from "viem/accounts"
 import { sepolia } from "viem/chains"
 import { revokeOldInstallations } from "../scripts/revoke-installations"
 import { XmtpClient } from "./types"
-import { logger } from "@hybrd/utils"
 
 // ===================================================================
 // Module Setup
@@ -210,10 +210,9 @@ export async function createXMTPClient(
 				`${XMTP_ENV || "dev"}-${address}`
 			)
 
-			console.log("✅ XMTP XmtpClient created")
-			console.log(`🔑 Wallet address: ${address}`)
-			console.log(`🌐 Environment: ${XMTP_ENV || "dev"}`)
-			console.log(`💾 Storage mode: persistent`)
+			console.log(`Wallet: ${address}`)
+			console.log(`Env: ${XMTP_ENV || "dev"}`)
+			console.log(`Storage: persistent`)
 
 			return client as unknown as XmtpClient
 		} catch (error) {

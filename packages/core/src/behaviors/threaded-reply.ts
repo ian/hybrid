@@ -1,19 +1,22 @@
 import type { BehaviorContext, BehaviorObject } from "@hybrd/types"
 
-export function threadedReply(): BehaviorObject {
+export interface ThreadedReplyOptions {
+	enabled?: boolean
+}
+
+export function threadedReply(
+	options: ThreadedReplyOptions = {}
+): BehaviorObject {
 	return {
 		id: "threaded-reply",
 		config: {
-			enabled: true,
+			enabled: options.enabled ?? true,
 			config: {
 				alwaysThread: true
 			}
 		},
 		async post(context: BehaviorContext) {
-			// Check if message was filtered out by filterMessages behavior
-			if (context.sendOptions?.filtered) {
-				return
-			}
+			if (!this.config.enabled) return
 
 			if (!context.sendOptions) {
 				context.sendOptions = {}

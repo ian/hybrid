@@ -101,18 +101,6 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				XMTP_WALLET_KEY as `0x${string}`
 			)
 
-			// Print chat URL and identity early
-			try {
-				const addrFromClient =
-					xmtpClient.accountIdentifier?.identifier || user.account.address
-				console.log(`🔐 XMTP inbox: ${xmtpClient.inboxId}`)
-				console.log(
-					`We are online: http://xmtp.chat/dm/${addrFromClient}?env=${XMTP_ENV}`
-				)
-				const convos = await xmtpClient.conversations.list()
-				logger.debug(`📬 Existing conversations: ${convos.length}`)
-			} catch {}
-
 			// Start a reliable node client stream to process incoming messages
 			async function startNodeStream() {
 				try {

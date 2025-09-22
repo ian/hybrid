@@ -32,7 +32,6 @@ export type {
 	HonoVariables,
 	XmtpClient,
 	XmtpConversation,
-	XMTPFilter,
 	XmtpMessage,
 	XmtpSender,
 	XmtpSubjects

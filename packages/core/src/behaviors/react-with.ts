@@ -4,7 +4,6 @@ import { ContentTypeReaction } from "@hybrd/xmtp"
 
 export interface ReactWithOptions {
 	reactToAll?: boolean
-	filter?: (context: BehaviorContext) => boolean | Promise<boolean>
 	enabled?: boolean
 }
 
@@ -18,25 +17,11 @@ export function reactWith(
 			enabled: options.enabled ?? true,
 			config: {
 				reaction,
-				reactToAll: options.reactToAll ?? true,
-				filter: options.filter?.toString()
+				reactToAll: options.reactToAll ?? true
 			}
 		},
 		async pre(context: BehaviorContext) {
 			if (!this.config.enabled) return
-
-			// Check if message was filtered out by filterMessages behavior
-			if (context.sendOptions?.filtered) {
-				logger.debug(
-					`🔇 [react-with] Skipping reaction due to message being filtered`
-				)
-				return
-			}
-
-			if (!options.reactToAll && options.filter) {
-				const shouldReact = await options.filter(context)
-				if (!shouldReact) return
-			}
 
 			try {
 				const reactionMessage = {
