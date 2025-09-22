@@ -20,7 +20,7 @@ export function reactWith(
 				reactToAll: options.reactToAll ?? true
 			}
 		},
-		async pre(context: BehaviorContext) {
+		async before(context: BehaviorContext) {
 			if (!this.config.enabled) return
 
 			try {

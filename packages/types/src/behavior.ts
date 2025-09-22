@@ -60,12 +60,12 @@ export interface BehaviorObject<TRuntimeExtension = Record<string, never>> {
 	 * Execute the behavior before the agent responds
 	 * @param context - The context in which to execute the behavior
 	 */
-	pre?(context: BehaviorContext<TRuntimeExtension>): Promise<void> | void
+	before?(context: BehaviorContext<TRuntimeExtension>): Promise<void> | void
 	/**
 	 * Execute the behavior after the agent responds
 	 * @param context - The context in which to execute the behavior
 	 */
-	post?(context: BehaviorContext<TRuntimeExtension>): Promise<void> | void
+	after?(context: BehaviorContext<TRuntimeExtension>): Promise<void> | void
 }
 
 /**
@@ -102,22 +102,22 @@ export interface BehaviorRegistry {
 	/**
 	 * Get behaviors that should run before the agent responds
 	 */
-	getPreBehaviors(): BehaviorObject[]
+	getBeforeBehaviors(): BehaviorObject[]
 
 	/**
 	 * Get behaviors that should run after the agent responds
 	 */
-	getPostBehaviors(): BehaviorObject[]
+	getAfterBehaviors(): BehaviorObject[]
 
 	/**
-	 * Execute all pre-response behaviors as a middleware chain
+	 * Execute all before-response behaviors as a middleware chain
 	 */
-	executePre(context: BehaviorContext): Promise<void>
+	executeBefore(context: BehaviorContext): Promise<void>
 
 	/**
-	 * Execute all post-response behaviors as a middleware chain
+	 * Execute all after-response behaviors as a middleware chain
 	 */
-	executePost(context: BehaviorContext): Promise<void>
+	executeAfter(context: BehaviorContext): Promise<void>
 
 	/**
 	 * Clear all registered behaviors
@@ -156,22 +156,22 @@ export class BehaviorRegistryImpl implements BehaviorRegistry {
 	/**
 	 * Get behaviors that should run before the agent responds
 	 */
-	getPreBehaviors(): BehaviorObject[] {
-		return this.behaviors.filter((behavior) => behavior.pre)
+	getBeforeBehaviors(): BehaviorObject[] {
+		return this.behaviors.filter((behavior) => behavior.before)
 	}
 
 	/**
 	 * Get behaviors that should run after the agent responds
 	 */
-	getPostBehaviors(): BehaviorObject[] {
-		return this.behaviors.filter((behavior) => behavior.post)
+	getAfterBehaviors(): BehaviorObject[] {
+		return this.behaviors.filter((behavior) => behavior.after)
 	}
 
 	/**
-	 * Execute all pre-response behaviors as a middleware chain
+	 * Execute all before-response behaviors as a middleware chain
 	 */
-	async executePre(context: BehaviorContext): Promise<void> {
-		const behaviors = this.getPreBehaviors()
+	async executeBefore(context: BehaviorContext): Promise<void> {
+		const behaviors = this.getBeforeBehaviors()
 
 		// Create a middleware chain
 		let currentIndex = 0
@@ -187,9 +187,12 @@ export class BehaviorRegistryImpl implements BehaviorRegistry {
 			currentIndex++
 
 			try {
-				await behavior.pre?.(context)
+				await behavior.before?.(context)
 			} catch (error) {
-				console.error(`Error executing pre behavior "${behavior.id}":`, error)
+				console.error(
+					`Error executing before behavior "${behavior.id}":`,
+					error
+				)
 			}
 		}
 
@@ -204,10 +207,10 @@ export class BehaviorRegistryImpl implements BehaviorRegistry {
 	}
 
 	/**
-	 * Execute all post-response behaviors as a middleware chain
+	 * Execute all after-response behaviors as a middleware chain
 	 */
-	async executePost(context: BehaviorContext): Promise<void> {
-		const behaviors = this.getPostBehaviors()
+	async executeAfter(context: BehaviorContext): Promise<void> {
+		const behaviors = this.getAfterBehaviors()
 
 		// Create a middleware chain
 		let currentIndex = 0
@@ -223,9 +226,9 @@ export class BehaviorRegistryImpl implements BehaviorRegistry {
 			currentIndex++
 
 			try {
-				await behavior.post?.(context)
+				await behavior.after?.(context)
 			} catch (error) {
-				console.error(`Error executing post behavior "${behavior.id}":`, error)
+				console.error(`Error executing after behavior "${behavior.id}":`, error)
 			}
 		}
 

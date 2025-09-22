@@ -29,7 +29,7 @@ describe("Filter Messages Behavior", () => {
 		}
 
 		const behavior = filterMessages([])
-		await behavior.pre?.(context)
+		await behavior.before?.(context)
 
 		expect(context.sendOptions?.filtered).toBeUndefined()
 	})
@@ -45,7 +45,7 @@ describe("Filter Messages Behavior", () => {
 		}
 
 		const behavior = filterMessages([passingFilter])
-		await behavior.pre?.(context)
+		await behavior.before?.(context)
 
 		expect(passingFilter).toHaveBeenCalledWith(
 			mockMessage,
@@ -68,7 +68,7 @@ describe("Filter Messages Behavior", () => {
 		}
 
 		const behavior = filterMessages([passingFilter, failingFilter])
-		await behavior.pre?.(context)
+		await behavior.before?.(context)
 
 		expect(passingFilter).toHaveBeenCalledWith(
 			mockMessage,
@@ -96,7 +96,7 @@ describe("Filter Messages Behavior", () => {
 		}
 
 		const behavior = filterMessages([passingFilter, errorFilter])
-		await behavior.pre?.(context)
+		await behavior.before?.(context)
 
 		expect(passingFilter).toHaveBeenCalledWith(
 			mockMessage,
@@ -124,7 +124,7 @@ describe("Filter Messages Behavior", () => {
 
 		// Test that filters are always executed
 		const behavior = filterMessages([failingFilter])
-		await behavior.pre?.(context)
+		await behavior.before?.(context)
 
 		expect(failingFilter).toHaveBeenCalled()
 		expect(context.sendOptions?.filtered).toBe(true)
@@ -237,7 +237,7 @@ describe("Filter Messages Behavior", () => {
 			const behavior = filterMessages([filterFn as any])
 
 			// Execute the behavior
-			await behavior.pre?.(context)
+			await behavior.before?.(context)
 
 			// Verify the filter was called correctly based on its type
 			if (filterName === "or" || filterName === "and" || filterName === "not") {
@@ -276,7 +276,7 @@ describe("Filter Messages Behavior", () => {
 		const behavior = filterMessages([mockFilter])
 
 		// Should handle gracefully and not throw
-		await behavior.pre?.(context)
+		await behavior.before?.(context)
 
 		// Should call with 3 parameters as fallback
 		expect(mockFilter).toHaveBeenCalledWith(

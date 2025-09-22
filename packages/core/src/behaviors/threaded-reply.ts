@@ -15,7 +15,7 @@ export function threadedReply(
 				alwaysThread: true
 			}
 		},
-		async post(context: BehaviorContext) {
+		async after(context: BehaviorContext) {
 			if (!this.config.enabled) return
 
 			if (!context.sendOptions) {

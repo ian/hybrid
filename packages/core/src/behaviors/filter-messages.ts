@@ -32,7 +32,7 @@ export function filterMessages(
 				filters: filterArray.length
 			}
 		},
-		async pre(context: BehaviorContext) {
+		async before(context: BehaviorContext) {
 			const messageContent =
 				typeof context.message.content === "string"
 					? context.message.content.substring(0, 100)

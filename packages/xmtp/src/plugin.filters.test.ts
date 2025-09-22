@@ -105,10 +105,10 @@ describe("XMTPPlugin behaviors", () => {
 
 		// Mock behaviors to filter out messages
 		const mockBehaviors = {
-			executePre: vi.fn(async (context: any) => {
+			executeBefore: vi.fn(async (context: any) => {
 				context.sendOptions = { filtered: true }
 			}),
-			executePost: vi.fn(async () => {})
+			executeAfter: vi.fn(async () => {})
 		}
 
 		const context = {
@@ -132,8 +132,8 @@ describe("XMTPPlugin behaviors", () => {
 
 		// Mock behaviors to not filter messages
 		const mockBehaviors = {
-			executePre: vi.fn(async () => {}),
-			executePost: vi.fn(async () => {})
+			executeBefore: vi.fn(async () => {}),
+			executeAfter: vi.fn(async () => {})
 		}
 
 		const context = {

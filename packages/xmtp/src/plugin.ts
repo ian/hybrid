@@ -157,7 +157,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 									conversation: conversation as unknown as XmtpConversation,
 									message: msg as XmtpMessage
 								}
-								await pluginContext.behaviors.executePre(behaviorContext)
+								await pluginContext.behaviors.executeBefore(behaviorContext)
 
 								// Check if message was filtered out by any behavior
 								if (behaviorContext.sendOptions?.filtered) {
@@ -178,7 +178,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 
 							// Execute post-response behaviors
 							if (pluginContext.behaviors) {
-								await pluginContext.behaviors.executePost(behaviorContext)
+								await pluginContext.behaviors.executeAfter(behaviorContext)
 							}
 
 							// Check if message was filtered out by filterMessages behavior
@@ -246,7 +246,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 							conversation: conversation as unknown as XmtpConversation,
 							message: message as unknown as XmtpMessage
 						}
-						await context.behaviors.executePre(behaviorContext)
+						await context.behaviors.executeBefore(behaviorContext)
 					}
 
 					const { text: reply } = await agent.generate(messages, { runtime })
@@ -261,7 +261,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 							message: message as unknown as XmtpMessage,
 							response: reply
 						}
-						await context.behaviors.executePost(behaviorContext)
+						await context.behaviors.executeAfter(behaviorContext)
 					} else {
 						// Create minimal context for send options
 						behaviorContext = {
@@ -321,7 +321,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 							conversation: conversation as unknown as XmtpConversation,
 							message: message as unknown as XmtpMessage
 						}
-						await context.behaviors.executePre(behaviorContext)
+						await context.behaviors.executeBefore(behaviorContext)
 
 						// Check if behaviors were stopped early (e.g., due to filtering)
 						if (behaviorContext.stopped) {
@@ -347,7 +347,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						} else {
 							behaviorContext.response = reply
 						}
-						await context.behaviors.executePost(behaviorContext)
+						await context.behaviors.executeAfter(behaviorContext)
 
 						// Check if post behaviors were stopped early
 						if (behaviorContext.stopped) {
@@ -402,7 +402,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 							conversation: conversation as unknown as XmtpConversation,
 							message: message as unknown as XmtpMessage
 						}
-						await context.behaviors.executePre(behaviorContext)
+						await context.behaviors.executeBefore(behaviorContext)
 
 						// Check if behaviors were stopped early (e.g., due to filtering)
 						if (behaviorContext.stopped) {
@@ -428,7 +428,7 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						} else {
 							behaviorContext.response = reply
 						}
-						await context.behaviors.executePost(behaviorContext)
+						await context.behaviors.executeAfter(behaviorContext)
 
 						// Check if post behaviors were stopped early
 						if (behaviorContext.stopped) {

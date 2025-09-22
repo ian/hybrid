@@ -19,7 +19,7 @@ describe("Threaded Reply Behavior", () => {
 		}
 
 		const behavior = threadedReply()
-		await behavior.post?.(context)
+		await behavior.after?.(context)
 
 		expect(context.sendOptions?.threaded).toBe(true)
 	})
@@ -34,7 +34,7 @@ describe("Threaded Reply Behavior", () => {
 		}
 
 		const behavior = threadedReply()
-		await behavior.post?.(context)
+		await behavior.after?.(context)
 
 		expect(context.sendOptions?.threaded).toBe(true)
 	})
