@@ -79,6 +79,7 @@ export function filterMessages(
 					logger.debug(`✅ [filter-messages] Filter ${i + 1} passed`)
 				} catch (error) {
 					logger.error("Error executing message filter:", error)
+					throw error // Re-throw to propagate the error
 				}
 			}
 
@@ -158,20 +159,9 @@ async function executeFilter(
 			)
 
 		default:
-			// Unknown filter - try to handle gracefully, but log warning
-			logger.warn(
-				`⚠️ [filter-messages] Unknown filter function: ${filterName}. This may be a test mock or custom filter.`
+			// Unknown filter - throw error rather than make assumptions
+			throw new Error(
+				`Unknown filter function: ${filterName}. Supported filters: isDM, isGroup, fromSelf, isText, isReply, isReaction, isRemoteAttachment, hasDefinedContent, isTextReply, or, and, not`
 			)
-
-			// For test compatibility, try 3 parameters first (MessageFilter signature)
-			try {
-				return Boolean(await filterFn(message, client, conversation))
-			} catch {
-				// If 3 params fail, try 1 param
-				logger.debug(
-					`🔍 [filter-messages] 3-param call failed for ${filterName}, trying 1 param`
-				)
-				return Boolean(await filterFn(message))
-			}
 	}
 }

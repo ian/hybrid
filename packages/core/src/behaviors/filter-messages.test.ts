@@ -191,4 +191,95 @@ describe("Filter Messages Behavior", () => {
 
 		expect(behavior.config.config?.filters).toBe(1)
 	})
+
+	it("should handle all known XMTP filter signatures", async () => {
+		// Mock all XMTP filter functions with their expected signatures
+		const mockXmtpFilters = {
+			// 1-parameter filters
+			isText: vi.fn().mockResolvedValue(true),
+			isReply: vi.fn().mockResolvedValue(true),
+			isReaction: vi.fn().mockResolvedValue(true),
+			isRemoteAttachment: vi.fn().mockResolvedValue(true),
+			hasDefinedContent: vi.fn().mockResolvedValue(true),
+			isTextReply: vi.fn().mockResolvedValue(true),
+
+			// 2-parameter filters
+			fromSelf: vi.fn().mockResolvedValue(true),
+
+			// 3-parameter filters
+			isDM: vi.fn().mockResolvedValue(true),
+			isGroup: vi.fn().mockResolvedValue(true),
+
+			// Higher-order function filters (these return filter functions)
+			or: vi.fn().mockReturnValue(vi.fn().mockResolvedValue(true)),
+			and: vi.fn().mockReturnValue(vi.fn().mockResolvedValue(true)),
+			not: vi.fn().mockReturnValue(vi.fn().mockResolvedValue(true)),
+
+			// Helper functions (these return filter functions too)
+			fromSender: vi.fn().mockReturnValue(vi.fn().mockResolvedValue(true)),
+			startsWith: vi.fn().mockReturnValue(vi.fn().mockResolvedValue(true))
+		}
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: mockMessage,
+			sendOptions: {}
+		}
+
+		// Test each filter individually
+		for (const [filterName, filterFn] of Object.entries(mockXmtpFilters)) {
+			// Reset all mocks
+			Object.values(mockXmtpFilters).forEach((mock) => mock.mockClear())
+
+			// Create behavior with just this one filter
+			const behavior = filterMessages([filterFn as any])
+
+			// Execute the behavior
+			await behavior.pre?.(context)
+
+			// Verify the filter was called correctly based on its type
+			if (filterName === "or" || filterName === "and" || filterName === "not") {
+				// Higher-order functions: should be called with their parameters
+				// For simplicity, assume they take an array of filters
+				expect(filterFn).toHaveBeenCalledWith([expect.any(Function)])
+			} else if (filterName === "fromSender" || filterName === "startsWith") {
+				// Helper functions: should be called with their parameters
+				expect(filterFn).toHaveBeenCalledWith(expect.any(String))
+			} else {
+				// Regular filters: should be called with message, client, conversation
+				expect(filterFn).toHaveBeenCalledWith(
+					mockMessage,
+					mockClient,
+					mockConversation
+				)
+			}
+
+			// Should not be filtered out (all filters return true)
+			expect(context.sendOptions?.filtered).toBeUndefined()
+		}
+	})
+
+	it("should handle test mock filter gracefully", async () => {
+		// Create a vitest mock filter (these are detected and handled gracefully)
+		const mockFilter = vi.fn().mockResolvedValue(true)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: mockConversation,
+			message: mockMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages([mockFilter])
+
+		// Should handle gracefully and not throw
+		await behavior.pre?.(context)
+
+		// Should call with 3 parameters as fallback
+		expect(mockFilter).toHaveBeenCalledWith(mockMessage, mockClient, mockConversation)
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
 })
