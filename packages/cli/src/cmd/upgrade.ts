@@ -36,14 +36,29 @@ const packageManagers: PackageManager[] = [
 	}
 ]
 
-function detectPackageManager(cwd: string = process.cwd()): PackageManager {
-	for (const pm of packageManagers) {
-		if (existsSync(join(cwd, pm.lockFile))) {
-			return pm
+function detectPackageManager(
+	startDir: string = process.cwd()
+): PackageManager {
+	let currentDir = startDir
+
+	// Search up the directory tree until we find a lock file
+	while (true) {
+		for (const pm of packageManagers) {
+			if (existsSync(join(currentDir, pm.lockFile))) {
+				return pm
+			}
 		}
+
+		// Move up one directory
+		const parentDir = join(currentDir, "..")
+		if (parentDir === currentDir) {
+			// We've reached the root directory
+			break
+		}
+		currentDir = parentDir
 	}
 
-	// Default to npm if no lock file is found
+	// Default to npm if no lock file is found anywhere in the directory tree
 	const npmPm = packageManagers.find((pm) => pm.name === "npm")
 	if (!npmPm) {
 		throw new Error("Could not find npm package manager configuration")
