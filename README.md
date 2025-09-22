@@ -138,7 +138,7 @@ await agent.listen({
 
 ### Threaded Replies
 
-By default, the agent will reply to the inbound message in a top-level manner. You can change this to a threaded manner by using the `threadedReply` behavior.
+By default, the agent will reply to the dm / group message in a top-level manner. You can change this to a threaded manner by using the `threadedReply` behavior. This will have the agent reply to the original message and start a thread.
 
 ```typescript
 import { threadedReply } from "hybrid/behaviors"
