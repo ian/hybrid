@@ -1,16 +1,17 @@
 import { serve } from "@hono/node-server"
 import type {
+	BehaviorObject,
 	DefaultRuntimeExtension,
 	HonoVariables,
 	PluginContext,
-	XMTPFilter,
 	XmtpClient
 } from "@hybrd/types"
+import { BehaviorRegistryImpl } from "@hybrd/types"
+import { logger } from "@hybrd/utils"
 import { XMTPPlugin } from "@hybrd/xmtp"
 import { Context, Hono, Next } from "hono"
 import type { Agent } from "../core/agent"
 import type { Plugin } from "../core/plugin"
-import { logger } from "@hybrd/utils"
 
 export type { HonoVariables }
 
@@ -108,12 +109,13 @@ export async function createHonoApp<
  * @property port - The port number to listen on (defaults to 8454)
  * @property filter - Optional message filter for XMTP messages
  * @property plugins - Optional array of plugins to apply to the server
+ * @property behaviors - Optional array of behaviors to apply to message processing
  */
 export type ListenOptions = {
 	agent: Agent
 	port: string
-	filters?: XMTPFilter[]
 	plugins?: Plugin<PluginContext>[]
+	behaviors?: BehaviorObject[]
 }
 
 /**
@@ -148,15 +150,21 @@ export type ListenOptions = {
 export async function listen({
 	agent,
 	port,
-	filters = [],
-	plugins = []
+	plugins = [],
+	behaviors = []
 }: ListenOptions) {
 	const app = new Hono<{ Variables: HonoVariables }>()
 	const context = {
-		agent
-	} as PluginContext
+		agent,
+		behaviors: behaviors.length > 0 ? new BehaviorRegistryImpl() : undefined
+	} as PluginContext & { behaviors?: BehaviorRegistryImpl }
 
-	const xmtpPlugin = XMTPPlugin({ filters })
+	// Register behaviors if provided
+	if (behaviors.length > 0 && context.behaviors) {
+		context.behaviors.registerAll(behaviors)
+	}
+
+	const xmtpPlugin = XMTPPlugin()
 
 	// Right now we always apply the XMTP plugin, but this may change in the future.
 	await xmtpPlugin.apply(app, context)
@@ -227,7 +235,22 @@ export async function listen({
 			fetch: app.fetch,
 			port: httpPort
 		})
-		console.log(`listening on localhost:${httpPort}`)
+
+		// Clean startup messaging
+		console.log(`Starting hybrid ... ✅ DONE`)
+		console.log(`Hybrid listening on http://localhost:${httpPort}`)
+
+		// Get XMTP info for "We are online" message
+		const xmtpWalletKey = process.env.XMTP_WALLET_KEY
+		const xmtpEnv = process.env.XMTP_ENV || "production"
+
+		if (xmtpWalletKey) {
+			const walletAddress = xmtpWalletKey.replace(/^0x/, "") // Remove 0x prefix if present
+			console.log(
+				`Chat with your agent: http://xmtp.chat/dm/${walletAddress}?env=${xmtpEnv}`
+			)
+		}
+
 		logger.debug(`✅ Hybrid server running on port ${httpPort}`)
 		logger.debug(`🎧 Background message listener is active`)
 	} catch (error: any) {

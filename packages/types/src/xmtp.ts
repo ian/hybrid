@@ -24,9 +24,9 @@ type Codec =
 	| TransactionReference
 	| WalletSendCallsParams
 
-export type XmtpClient = Client<string | Codec>
-export type XmtpConversation = Conversation<string | Codec>
-export type XmtpMessage = DecodedMessage<string | Codec>
+export type XmtpClient = Client<unknown>
+export type XmtpConversation = Conversation<unknown>
+export type XmtpMessage = DecodedMessage<unknown>
 export type XmtpSender = {
 	address: string
 	inboxId: string
@@ -34,12 +34,3 @@ export type XmtpSender = {
 	basename?: string
 }
 export type XmtpSubjects = Record<string, `0x${string}`>
-
-/**
- * XMTP message filter compatible with @xmtp/agent-sdk filters
- */
-export type XMTPFilter = (
-	message: XmtpMessage,
-	client: XmtpClient,
-	conversation: XmtpConversation
-) => boolean | Promise<boolean>

@@ -4,9 +4,7 @@
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"target": "ES2022",
-		"lib": [
-			"ES2022"
-		],
+		"lib": ["ES2022"],
 		"allowJs": true,
 		"resolveJsonModule": true,
 		"isolatedModules": false,
@@ -22,12 +20,12 @@
 		"moduleResolution": "bundler",
 		"noEmit": true
 	},
-	"exclude": [
-		"node_modules",
-		"build",
-		"dist",
-		".next",
-		".expo",
-		"*.old"
-	]
+	"references": [
+		{ "@hybrd/cli": "packages/cli" },
+		{ "@hybrd/types": "packages/types" },
+		{ "@hybrd/utils": "packages/utils" },
+		{ "@hybrd/xmtp": "packages/xmtp" },
+		{ "hybrid": "packages/core" }
+	],
+	"exclude": ["node_modules", "build", "dist", ".next", ".expo", "*.old"]
 }

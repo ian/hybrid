@@ -10,6 +10,11 @@
 			"import": "./dist/index.js",
 			"require": "./dist/index.cjs"
 		},
+		"./behaviors": {
+			"types": "./src/behaviors/index.ts",
+			"import": "./dist/behaviors/index.js",
+			"require": "./dist/behaviors/index.cjs"
+		},
 		"./tools": {
 			"types": "./src/tools/index.ts",
 			"import": "./dist/tools/index.js",

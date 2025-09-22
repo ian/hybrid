@@ -7,6 +7,7 @@
  * @module XMTPTools
  */
 
+import { logger } from "@hybrd/utils"
 import {
 	ContentTypeReaction,
 	ContentTypeReply,
@@ -15,7 +16,6 @@ import {
 } from "@hybrd/xmtp"
 import { z } from "zod"
 import { createTool } from "../core/tool"
-import { logger } from "@hybrd/utils"
 
 /**
  * Get Message Tool
@@ -186,7 +186,16 @@ export const sendReactionTool = createTool({
 				return { success: false, emoji: input.emoji, error: errorMsg }
 			}
 
-			const messageIdToReactTo = input.referenceMessageId
+			const messageIdToReactTo = input.referenceMessageId || runtime.message.id
+
+			if (!messageIdToReactTo) {
+				const endTime = performance.now()
+				logger.debug(
+					`👀 [Tool:sendReaction] Failed - no message ID to react to in ${(endTime - startTime).toFixed(2)}ms`
+				)
+				const errorMsg = "❌ No message ID available for reaction"
+				return { success: false, emoji: input.emoji, error: errorMsg }
+			}
 
 			logger.debug(
 				`👀 [sendReaction] Sending ${input.emoji} reaction to message ${messageIdToReactTo}`
@@ -196,7 +205,7 @@ export const sendReactionTool = createTool({
 
 			const reaction = {
 				schema: "unicode",
-				reference: message.id,
+				reference: messageIdToReactTo,
 				action: "added",
 				contentType: ContentTypeReaction,
 				content: emoji
@@ -221,7 +230,9 @@ export const sendReactionTool = createTool({
 				return { success: false, emoji: input.emoji, error: errorMsg }
 			}
 
-			logger.debug(`✅ [sendReaction] Successfully sent ${input.emoji} reaction`)
+			logger.debug(
+				`✅ [sendReaction] Successfully sent ${input.emoji} reaction`
+			)
 
 			const endTime = performance.now()
 			logger.debug(

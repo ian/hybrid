@@ -1,6 +1,6 @@
-# Hybrid - Typescript Framework for building commerce-connected AI Agents.
+# @hybrd/cli
 
-An open-source agent framework for building conversational AI agents on XMTP. 
+This package is part of the Hybrid monorepo.
 
 Hybrid makes it easy for developers to create intelligent agents that can understand natural language, process messages, and respond through XMTP's decentralized messaging protocol.
 
@@ -55,6 +55,4 @@ This generates secure wallet and encryption keys for your XMTP agent.
 hybrid dev
 ```
 
-Your agent will start listening for XMTP messages and you're ready to build! 
-
-Go to [https://xmtp.chat/dm/](https://xmtp.chat/dm/) and send a message to your agent.
+Your agent will start listening for XMTP messages and you're ready to build!

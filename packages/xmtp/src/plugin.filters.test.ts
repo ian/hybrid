@@ -98,16 +98,25 @@ afterEach(() => {
 	process.env.XMTP_ENABLE_NODE_STREAM = undefined
 })
 
-describe("XMTPPlugin filters", () => {
-	it("blocks node stream messages when filters return false", async () => {
+describe("XMTPPlugin behaviors", () => {
+	it("blocks node stream messages when behaviors filter out", async () => {
 		const app = new Hono<{ Variables: HonoVariables }>()
 		const agent = createTestAgent()
-		const context = { agent } as unknown as PluginContext
 
-		const plugin = XMTPPlugin({
-			filters: [() => false]
-		})
+		// Mock behaviors to filter out messages
+		const mockBehaviors = {
+			executeBefore: vi.fn(async (context: any) => {
+				context.sendOptions = { filtered: true }
+			}),
+			executeAfter: vi.fn(async () => {})
+		}
 
+		const context = {
+			agent,
+			behaviors: mockBehaviors
+		} as unknown as PluginContext
+
+		const plugin = XMTPPlugin()
 		await plugin.apply(app, context)
 
 		// Allow async stream to tick
@@ -117,16 +126,23 @@ describe("XMTPPlugin filters", () => {
 		expect(agent.generate).not.toHaveBeenCalled()
 	})
 
-	it("allows text handler when filters return true", async () => {
+	it("allows text handler when behaviors don't filter", async () => {
 		const app = new Hono<{ Variables: HonoVariables }>()
 		const agent = createTestAgent()
-		const context = { agent } as unknown as PluginContext
+
+		// Mock behaviors to not filter messages
+		const mockBehaviors = {
+			executeBefore: vi.fn(async () => {}),
+			executeAfter: vi.fn(async () => {})
+		}
+
+		const context = {
+			agent,
+			behaviors: mockBehaviors
+		} as unknown as PluginContext
 
 		process.env.XMTP_ENABLE_NODE_STREAM = "false"
-		const plugin = XMTPPlugin({
-			filters: [() => true]
-		})
-
+		const plugin = XMTPPlugin()
 		await plugin.apply(app, context)
 
 		const mocked = (await import("@xmtp/agent-sdk")) as unknown as MockAgentSdk

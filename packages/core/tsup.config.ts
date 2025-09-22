@@ -3,7 +3,8 @@ import { defineConfig } from "tsup"
 export default defineConfig({
 	entry: {
 		index: "src/index.ts",
-		"tools/index": "src/tools/index.ts"
+		"tools/index": "src/tools/index.ts",
+		"behaviors/index": "src/behaviors/index.ts"
 	},
 	format: ["cjs", "esm"],
 	dts: true,

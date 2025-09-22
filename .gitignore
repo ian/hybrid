@@ -51,4 +51,5 @@ xmtp-development-*
 .data/
 
 .ponder/
+harness/
 scratchpad.md

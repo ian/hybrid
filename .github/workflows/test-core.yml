@@ -1,22 +1,7 @@
 name: Test Core Package
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'packages/core/**'
-      - 'packages/utils/**'
-      - 'packages/xmtp/**'
-      - 'packages/ponder/**'
-      - '.github/workflows/test-core.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'packages/core/**'
-      - 'packages/utils/**'
-      - 'packages/xmtp/**'
-      - 'packages/ponder/**'
-      - '.github/workflows/test-core.yml'
+  pull_request
 
 jobs:
   test-core:

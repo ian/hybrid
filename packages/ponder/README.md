@@ -1,4 +1,4 @@
-# create-hybrid
+# @hybrd/ponder
 
 This package is part of the Hybrid monorepo.
 
