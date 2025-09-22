@@ -70,7 +70,7 @@ Here's a basic agent implementation:
 ```typescript
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { Agent } from "hybrid"
-import { filter } from "hybrid"
+import { filterMessages, reactWith, threadedReply } from "hybrid/behaviors"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
@@ -85,6 +85,18 @@ const agent = new Agent({
 
 await agent.listen({
 	port: process.env.PORT || "8454",
+	behaviors: [
+		// Filter messages based on criteria
+		filterMessages((filter) =>
+			filter.isText() && !filter.fromSelf() && filter.hasMention("@agent")
+		),
+
+		// Adds 👀 reaction messages the agent will respond to
+		reactWith("👀"),
+
+		// Always thread replies instead of replying in top level messages
+		threadedReply()
+	]
 })
 ```
 
@@ -98,16 +110,30 @@ import { filterMessages } from "hybrid/behaviors"
 await agent.listen({
 	port: process.env.PORT || "8454",
 	behaviors: [
-      filterMessages((filter) => [
-        filter.isText, 
-        filter.not(filter.fromSelf), 
-        filter.startsWith("@agent")
-      ])
+      filterMessages((filter) =>
+        filter.isText() && !filter.fromSelf() && filter.hasMention("@agent")
+      )
     ]
 })
 ```
 
-See XMTP Agent SDK filter docs for all for filtering: [XMTP Agent SDK – Built-in filters](https://github.com/xmtp/xmtp-js/tree/main/sdks/agent-sdk#3-builtin-filters).
+The filter function receives a `filter` object with methods that return boolean values. Return `true` to process the message, `false` to filter it out.
+
+**Available filter methods:**
+- `filter.isText()` - Message is text content
+- `filter.isReply()` - Message is a reply
+- `filter.isReaction()` - Message is a reaction
+- `filter.isDM()` - Message is a direct message
+- `filter.fromSelf()` - Message is from the agent itself
+- `filter.hasMention(mention)` - Message contains a mention
+- `filter.hasContent()` - Message has content
+- `filter.isGroup()` - Message is in a group conversation
+- `filter.isGroupAdmin()` - Message sender is group admin
+- `filter.isGroupSuperAdmin()` - Message sender is group super admin
+- `filter.isRemoteAttachment()` - Message has remote attachment
+- `filter.isTextReply()` - Message is a text reply
+
+See XMTP Agent SDK filter docs for all filtering options: [XMTP Agent SDK – Built-in filters](https://github.com/xmtp/xmtp-js/tree/main/sdks/agent-sdk#3-builtin-filters).
 
 ### Reactions
 
