@@ -1,4 +1,4 @@
-# Hybrid - Typescript Framework for building commerce-connected AI Agents.
+# Hybrid - Typescript Framework for building crypto AI Agents.
 
 An open-source agent framework for building conversational AI agents on XMTP. 
 
