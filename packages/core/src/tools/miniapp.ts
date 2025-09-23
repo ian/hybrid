@@ -104,3 +104,17 @@ export const launchMiniappTool = createTool({
 		}
 	}
 })
+
+/**
+ * Collection of miniapp tools for crypto agents
+ *
+ * These tools provide capabilities for launching and delivering miniapps
+ * through conversational interfaces via XMTP messaging.
+ *
+ * @namespace miniAppTools
+ *
+ * @property {Tool} launchMiniapp - Launch a Base miniapp by sending its URL
+ */
+export const miniAppTools = {
+	launchMiniapp: launchMiniappTool
+}

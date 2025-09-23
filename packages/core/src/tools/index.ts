@@ -51,5 +51,6 @@ export {
 
 // Export Miniapp tools
 export {
-	launchMiniappTool
+	launchMiniappTool,
+	miniAppTools
 } from "./miniapp"
