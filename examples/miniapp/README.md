@@ -15,7 +15,13 @@ export const openrouter = createOpenRouter({
 const agent = new Agent({
   name: "Miniapp Agent",
   model: openrouter("x-ai/grok-4"),
-  instructions: "You are a helpful AI agent with onchain capabilities...",
+  instructions: `You are a helpful AI agent with onchain capabilities. You can help users with:
+- Checking wallet balances across multiple chains (Ethereum, Base, Polygon, Arbitrum, Optimism)
+- Sending transactions and checking transaction status
+- Getting current gas prices and estimating transaction costs
+- Providing information about blockchain blocks and network status
+
+You have access to blockchain tools and can perform onchain operations. Always be helpful and explain what you're doing when interacting with blockchain networks.`,
   tools: [
     blockchainTools.getBalance,
     blockchainTools.getTransaction,
@@ -26,7 +32,7 @@ const agent = new Agent({
   ],
   runtime: {
     privateKey: process.env.XMTP_WALLET_KEY,
-    defaultChain: "base"
+    defaultChain: "base" as const
   }
 })
 
@@ -41,7 +47,9 @@ await agent.listen({
         filters.isReaction("👍")
       )
     }),
+
     reactWith("👀"),
+
     threadedReply()
   ]
 })
@@ -97,7 +105,7 @@ Get current gas prices.
 "What's the current gas price on Polygon?"
 ```
 
-# {{projectName}}
+# miniapp-hybrid-agent
 
 A Hybrid XMTP agent with miniapp integration for onchain interactions.
 
@@ -152,11 +160,12 @@ pnpm start
 ## 📁 Project Structure
 
 ```
-{{projectName}}/
+miniapp-hybrid-agent/
 ├── src/
 │   ├── agent.ts          # Main agent implementation with blockchain tools
 │   └── agent.test.ts     # Agent test entry file
-├── dist/                 # Compiled JavaScript (after build)
+├── app/                  # Next.js app directory
+├── public/               # Static assets
 ├── .env                  # Environment variables
 ├── package.json          # Dependencies and scripts
 ├── tsconfig.json         # TypeScript configuration
