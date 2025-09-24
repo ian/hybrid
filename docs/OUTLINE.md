@@ -13,43 +13,109 @@ This outline organizes documentation by developer workflow, focusing on actionab
 
 - **Basic Agent Creation**
   - Agent class fundamentals
-  - Model integration (OpenRouter, other AI providers)
   - Simple agent configuration
   - Running your first agent
 
-- **XMTP Setup**
+- **Introduction to XMTP**
+  - What is XMTP and decentralized messaging
+  - XMTP network overview (dev vs production)
   - Generating XMTP keys
   - Wallet registration with XMTP network
-  - Development vs production environments
   - Testing with XMTP chat interfaces
 
-## Core Features
-*Overview: Main functionality developers use to build intelligent agents*
+## Agent Configuration
+*Overview: Configuring your agent's core functionality*
 
-- **Agent Configuration**
-  - Agent class options and parameters
+- **Prompts & Instructions**
+  - Setting agent personality and behavior
+  - Instruction best practices
+  - Context and conversation management
+  - Agent runtime extensions and custom contexts
+
+- **Models & AI Providers**
+  - Default: OpenRouter AI SDK provider setup
+  - Using OpenAI directly
+  - Using Grok directly  
+  - Using Anthropic directly
+  - AI SDK providers overview and [provider list reference](https://ai-sdk.dev/providers/ai-sdk-providers)
   - Model selection and configuration
-  - Runtime extensions and custom contexts
-  - Instructions and personality setup
 
-- **Message Processing & Filtering**
-  - Built-in filter methods (isDM, isReply, hasMention, etc.)
-  - Custom message filtering logic
-  - Message content type handling
-  - Conversation context management
+- **Behaviors**
+  - How behaviors work in the agent lifecycle
+  - **Message Filtering with `filterMessages`**
+    - `filter.isText()` - Message is text content
+    - `filter.isReply()` - Message is a reply
+    - `filter.isReaction()` - Message is a reaction
+    - `filter.isReaction(emoji, action?)` - Specific emoji/action reactions
+    - `filter.isDM()` - Message is a direct message
+    - `filter.fromSelf()` - Message is from the agent itself
+    - `filter.hasMention(mention)` - Message contains a mention
+    - `filter.hasContent()` - Message has content
+    - `filter.isGroup()` - Message is in a group conversation
+    - `filter.isGroupAdmin()` - Message sender is group admin
+    - `filter.isGroupSuperAdmin()` - Message sender is group super admin
+    - `filter.isRemoteAttachment()` - Message has remote attachment
+    - `filter.isTextReply()` - Message is a text reply
+  - **Automatic Reactions with `reactWith`**
+    - Adding emoji reactions to messages
+    - Reaction timing and behavior
+  - **Threaded Replies with `threadedReply`**
+    - Configuring threaded vs top-level responses
+    - Thread management
+  - **Creating Custom Behaviors**
+    - Behavior lifecycle (before/after/error hooks)
+    - Custom behavior implementation
 
-- **Built-in Behaviors**
-  - Message filtering with `filterMessages`
-  - Automatic reactions with `reactWith`
-  - Threaded replies with `threadedReply`
-  - Creating custom behaviors
-  - Behavior lifecycle (before/after/error hooks)
+## Tools
+*Overview: Built-in and extensible tools for agent functionality*
 
-- **Tools Standard Library**
-  - Blockchain tools (getBalance, sendTransaction, estimateGas, etc.)
-  - XMTP tools (sendMessage, sendReply, sendReaction, getMessage)
+- **Blockchain Tools**
+  - `getBalance` - Get native token balance for any address
+  - `sendTransaction` - Send native tokens to another address
+  - `getTransaction` - Get transaction details by hash
+  - `getBlock` - Get blockchain block information
+  - `getGasPrice` - Get current gas prices
+  - `estimateGas` - Estimate gas costs for transactions
   - Tool configuration and runtime context
+  - Supported chains (Ethereum, Polygon, Arbitrum, Optimism, Base, Sepolia)
+
+- **XMTP Tools**
+  - `sendMessage` - Send messages to XMTP conversations
+  - `sendReply` - Reply to specific messages
+  - `sendReaction` - Send emoji reactions
+  - `getMessage` - Retrieve message details by ID
+  - Content types (text, reactions, replies, attachments)
+  - Group conversation handling
+
+- **Mini App Tools**
+  - Mini app integration capabilities
+  - Tool configuration for mini apps
+  - Usage patterns and examples
+
+- **Creating Custom Tools**
+  - Using `createTool` for custom functionality
+  - Tool schema validation with Zod
+  - Tool runtime extensions
   - Combining multiple tool sets
+
+## Blockchain
+*Overview: Blockchain integration and development tools*
+
+- **Ponder Integration**
+  - Ponder plugin for blockchain event handling
+  - Event indexing and forwarding to agents
+  - Configuration and setup
+  - Use cases and examples
+
+- **Foundry Integration**
+  - Working with Foundry for smart contract development
+  - Integration patterns with Hybrid agents
+  - Testing and deployment workflows
+
+- **Multi-chain Support**
+  - Chain configuration and switching
+  - Transaction handling across chains
+  - Gas management strategies
 
 ## CLI Commands
 *Overview: Command-line tools for development workflow*
@@ -73,23 +139,15 @@ This outline organizes documentation by developer workflow, focusing on actionab
 ## Advanced Topics
 *Overview: Advanced features for sophisticated agent implementations*
 
-- **Custom Tools & Behaviors**
-  - Creating custom tools with `createTool`
-  - Tool schema validation with Zod
-  - Custom behavior implementation
-  - Plugin system integration
-
-- **Blockchain Integration**
-  - Supported chains (Ethereum, Polygon, Arbitrum, Optimism, Base)
-  - Transaction handling and gas management
-  - Multi-chain agent configuration
-  - Ponder plugin for blockchain event handling
+- **Plugin System**
+  - Plugin architecture overview
+  - Creating custom plugins
+  - Plugin integration patterns
 
 - **XMTP Advanced Features**
-  - Content types (text, reactions, replies, attachments)
-  - Group conversation handling
   - Message encryption and security
   - Connection management and error handling
+  - Address resolution (ENS, BaseName)
 
 - **Deployment**
   - Production environment setup
