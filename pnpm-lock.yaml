@@ -40,31 +40,6 @@ importers:
 
   config/typescript: {}
 
-  harness:
-    dependencies:
-      '@hybrd/ponder':
-        specifier: workspace:*
-        version: link:../packages/ponder
-      '@openrouter/ai-sdk-provider':
-        specifier: ^1.1.2
-        version: 1.2.0(ai@5.0.28(zod@3.25.76))(zod@3.25.76)
-      hybrid:
-        specifier: workspace:*
-        version: link:../packages/core
-    devDependencies:
-      '@hybrd/cli':
-        specifier: workspace:*
-        version: link:../packages/cli
-      '@types/node':
-        specifier: ^22.8.6
-        version: 22.17.2
-      tsx:
-        specifier: ^4.20.5
-        version: 4.20.5
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
-
   packages/cli:
     dependencies:
       '@hybrd/xmtp':
@@ -911,13 +886,6 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
-
-  '@openrouter/ai-sdk-provider@1.2.0':
-    resolution: {integrity: sha512-stuIwq7Yb7DNmk3GuCtz+oS3nZOY4TXEV3V5KsknDGQN7Fpu3KRMQVWRc1J073xKdf0FC9EHOctSyzsACmp5Ag==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      ai: ^5.0.0
-      zod: ^3.24.1 || ^v4
 
   '@opensea/seaport-js@4.0.5':
     resolution: {integrity: sha512-hyJEHSCFmO7kv2G+ima0kCpt0kvLa6QOSHb1HJuLd8DS3bao0gOa/Q3AhM3xUqO6SZZ8aD9njhu1EDqjC/5pOw==}
@@ -4611,11 +4579,6 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.19.1
-
-  '@openrouter/ai-sdk-provider@1.2.0(ai@5.0.28(zod@3.25.76))(zod@3.25.76)':
-    dependencies:
-      ai: 5.0.28(zod@3.25.76)
-      zod: 3.25.76
 
   '@opensea/seaport-js@4.0.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
