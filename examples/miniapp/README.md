@@ -7,6 +7,10 @@ import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { Agent } from "hybrid"
 import { filterMessages, reactWith, threadedReply } from "hybrid/behaviors"
 
+// Import miniapp tools (uncomment when workspace is properly configured)
+// import { miniAppTools } from "hybrid/tools"
+const { miniAppTools } = await import("hybrid/tools")
+
 export const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY
 })
@@ -19,9 +23,12 @@ const agent = new Agent({
 - Providing guidance on using OnchainKit components
 - Helping with Farcaster and XMTP interactions
 - Explaining miniapp functionality and user authentication
+- Launching and sharing miniapps via XMTP messages
 
 You work alongside a MiniKit miniapp that provides onchain interactions through OnchainKit components. Focus on being helpful and informative about the miniapp experience.`,
-  tools: [],
+  tools: {
+    ...miniAppTools
+  },
   runtime: {
     privateKey: process.env.XMTP_WALLET_KEY
   }
@@ -61,6 +68,7 @@ This example showcases the integration between:
 - **AI assistance**: OpenRouter-powered AI responses
 - **Message filtering**: Smart filtering for relevant conversations
 - **Threaded replies**: Contextual conversation handling
+- **Miniapp tools**: Launch and share miniapps via XMTP messages
 
 ### Key Integration Points
 - **Dual runtime**: Next.js miniapp frontend + Hybrid agent backend
@@ -169,6 +177,8 @@ npm run dev
 #    @agent what can this miniapp do?
 #    @agent how do I use the wallet component?
 #    @agent tell me about onchainkit
+#    @agent launch miniapp: https://example-miniapp.com
+#    @agent can you share a miniapp with me?
 ```
 
 ### Manual Testing
@@ -186,6 +196,13 @@ npm run dev
 3. **Authentication**:
    ```
    @agent explain the user authentication flow
+   ```
+
+4. **Miniapp Launch Tool**:
+   ```
+   @agent launch this miniapp: https://example-miniapp.com
+   @agent can you share a miniapp with me?
+   @agent launch miniapp https://my-cool-miniapp.base.eth with a custom message
    ```
 
 ### Unit Tests
@@ -212,11 +229,16 @@ const agent = new Agent({
   name: "Miniapp Assistant",
   model: openrouter("anthropic/claude-3-haiku"), // Different model
   instructions: "You are a miniapp specialist that helps users understand...",
-  tools: [], // No tools needed for miniapp assistance
+  tools: {
+    ...miniAppTools // Include miniapp tools for launching and sharing apps
+  },
   runtime: {
     privateKey: process.env.XMTP_WALLET_KEY
   }
 })
+
+// Import miniapp tools if not already imported
+// const { miniAppTools } = await import("hybrid/tools")
 ```
 
 ## 🔧 Environment Variables
@@ -298,6 +320,41 @@ const agent = new Agent({
 - Explaining miniapp functionality and user authentication`
 })
 ```
+
+## 🛠️ Miniapp Tools
+
+The agent includes a `launchMiniapp` tool that enables launching Base miniapps through XMTP messages:
+
+### Available Tools
+
+#### `launchMiniapp`
+- **Purpose**: Launch a Base miniapp by sending its URL via XMTP message
+- **Parameters**:
+  - `miniappUrl` (required): The URL of the Base miniapp to launch
+  - `message` (optional): Accompanying message text
+- **Usage**: Agents can now deliver and launch miniapps from chat conversations
+- **Example**: `@agent launch this miniapp: https://example-miniapp.com`
+
+### Tool Integration
+
+The miniapp tools are integrated into the agent through:
+
+```typescript
+import { miniAppTools } from "hybrid/tools"
+
+const agent = new Agent({
+  // ... other configuration
+  tools: {
+    ...miniAppTools
+  }
+})
+```
+
+This enables the agent to:
+- Share miniapp URLs with users via XMTP
+- Provide contextual messages when launching miniapps
+- Track miniapp launch success/failure
+- Handle errors gracefully when miniapp launches fail
 
 ## 🔗 Useful Links
 

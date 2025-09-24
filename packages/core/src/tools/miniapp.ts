@@ -1,6 +1,6 @@
-import { createTool } from "../core/tool"
 import { logger } from "@hybrd/utils"
 import { z } from "zod"
+import { createTool } from "../core/tool"
 
 /**
  * Launch Miniapp Tool
@@ -20,8 +20,14 @@ export const launchMiniappTool = createTool({
 	id: "launchMiniapp",
 	description: "Launch a Base miniapp by sending its URL via XMTP",
 	inputSchema: z.object({
-		miniappUrl: z.string().url().describe("The URL of the Base miniapp to launch"),
-		message: z.string().optional().describe("Optional accompanying message text")
+		miniappUrl: z
+			.string()
+			.url()
+			.describe("The URL of the Base miniapp to launch"),
+		message: z
+			.string()
+			.optional()
+			.describe("Optional accompanying message text")
 	}),
 	outputSchema: z.object({
 		success: z.boolean(),
@@ -54,9 +60,7 @@ export const launchMiniappTool = createTool({
 
 			const content = message ? `${message}\n\n${miniappUrl}` : miniappUrl
 
-			logger.debug(
-				`🚀 [launchMiniapp] Sending miniapp URL: "${miniappUrl}"`
-			)
+			logger.debug(`🚀 [launchMiniapp] Sending miniapp URL: "${miniappUrl}"`)
 
 			const sendStartTime = performance.now()
 			const messageId = await conversation.send(content)
@@ -90,7 +94,8 @@ export const launchMiniappTool = createTool({
 				content
 			}
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : String(error)
+			const errorMessage =
+				error instanceof Error ? error.message : String(error)
 			const endTime = performance.now()
 			logger.error(
 				`❌ [Tool:launchMiniapp] Error in ${(endTime - startTime).toFixed(2)}ms:`,
@@ -98,7 +103,9 @@ export const launchMiniappTool = createTool({
 			)
 			return {
 				success: false,
-				content: input.message ? `${input.message}\n\n${input.miniappUrl}` : input.miniappUrl,
+				content: input.message
+					? `${input.message}\n\n${input.miniappUrl}`
+					: input.miniappUrl,
 				error: errorMessage
 			}
 		}

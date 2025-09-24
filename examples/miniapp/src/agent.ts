@@ -1,7 +1,8 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { Agent } from "hybrid"
 import { filterMessages, reactWith, threadedReply } from "hybrid/behaviors"
-import { miniAppTools } from "hybrid/tools"
+// TODO: Fix import path - const { miniAppTools } = await import("hybrid/tools")
+const miniAppTools = {}
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
