@@ -1,12 +1,11 @@
 # Miniapp Example
 
-This example demonstrates using Hybrid with **miniapp integration** for onchain interactions. It combines the power of XMTP messaging with blockchain capabilities through OnchainKit and Farcaster miniapp features.
+This example demonstrates a **joint MiniKit and Hybrid project** that combines Farcaster miniapp functionality with XMTP messaging capabilities. It showcases how to integrate OnchainKit components within a miniapp while providing AI-powered assistance through a Hybrid agent.
 
 ```typescript
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { Agent } from "hybrid"
 import { filterMessages, reactWith, threadedReply } from "hybrid/behaviors"
-import { blockchainTools } from "hybrid/tools"
 
 export const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY
@@ -15,24 +14,16 @@ export const openrouter = createOpenRouter({
 const agent = new Agent({
   name: "Miniapp Agent",
   model: openrouter("x-ai/grok-4"),
-  instructions: `You are a helpful AI agent with onchain capabilities. You can help users with:
-- Checking wallet balances across multiple chains (Ethereum, Base, Polygon, Arbitrum, Optimism)
-- Sending transactions and checking transaction status
-- Getting current gas prices and estimating transaction costs
-- Providing information about blockchain blocks and network status
+  instructions: `You are a helpful AI agent integrated with a MiniKit miniapp. You can help users with:
+- Answering questions about the miniapp and its features
+- Providing guidance on using OnchainKit components
+- Helping with Farcaster and XMTP interactions
+- Explaining miniapp functionality and user authentication
 
-You have access to blockchain tools and can perform onchain operations. Always be helpful and explain what you're doing when interacting with blockchain networks.`,
-  tools: [
-    blockchainTools.getBalance,
-    blockchainTools.getTransaction,
-    blockchainTools.sendTransaction,
-    blockchainTools.getBlock,
-    blockchainTools.getGasPrice,
-    blockchainTools.estimateGas
-  ],
+You work alongside a MiniKit miniapp that provides onchain interactions through OnchainKit components. Focus on being helpful and informative about the miniapp experience.`,
+  tools: [],
   runtime: {
-    privateKey: process.env.XMTP_WALLET_KEY,
-    defaultChain: "base" as const
+    privateKey: process.env.XMTP_WALLET_KEY
   }
 })
 
@@ -55,59 +46,31 @@ await agent.listen({
 })
 ```
 
-## 🎯 Miniapp Integration Features
+## 🎯 Joint MiniKit & Hybrid Features
 
-This example includes:
+This example showcases the integration between:
 
-### Onchain Capabilities
-- **Multi-chain support**: Ethereum, Base, Polygon, Arbitrum, Optimism
-- **Balance checking**: Get native token balances for any address
-- **Transaction management**: Send transactions and check status
-- **Gas estimation**: Get current gas prices and estimate costs
-- **Block information**: Access blockchain block data
+### MiniKit Miniapp
+- **Farcaster miniapp SDK**: Full miniapp functionality with user authentication
+- **OnchainKit components**: Rich onchain interactions (Transaction, Swap, Checkout, Wallet, Identity)
+- **Quick Auth**: Secure user identity verification
+- **MiniKit hooks**: Context and state management for miniapp interactions
 
-### Miniapp Components
-- **OnchainKit integration**: Transaction, Swap, Checkout, Wallet, Identity components
-- **Farcaster miniapp SDK**: Authentication and user verification
-- **Viem**: Ethereum interactions and wallet management
+### Hybrid Agent
+- **XMTP messaging**: Direct messaging capabilities through XMTP protocol
+- **AI assistance**: OpenRouter-powered AI responses
+- **Message filtering**: Smart filtering for relevant conversations
+- **Threaded replies**: Contextual conversation handling
 
-### Available Blockchain Tools
+### Key Integration Points
+- **Dual runtime**: Next.js miniapp frontend + Hybrid agent backend
+- **Authentication flow**: MiniKit auth with Farcaster identity
+- **User context**: Shared user data between miniapp and agent
+- **OnchainKit UI**: Rich blockchain interactions in the miniapp interface
 
-#### `getBalance(address, chain)`
-Get native token balance for a wallet address.
+# MiniKit & Hybrid Integration
 
-```typescript
-// Agent can check balances across multiple chains
-"Check my balance on Base: 0x123..."
-```
-
-#### `sendTransaction(to, amount, chain)`
-Send native tokens to another address.
-
-```typescript
-// Agent can send transactions (requires private key)
-"Send 0.1 ETH to 0x456... on Ethereum"
-```
-
-#### `getTransaction(hash, chain)`
-Get transaction details by hash.
-
-```typescript
-// Agent can look up transaction status
-"What's the status of transaction 0xabc...?"
-```
-
-#### `getGasPrice(chain)`
-Get current gas prices.
-
-```typescript
-// Agent can provide gas price information
-"What's the current gas price on Polygon?"
-```
-
-# miniapp-hybrid-agent
-
-A Hybrid XMTP agent with miniapp integration for onchain interactions.
+A joint project demonstrating the integration between MiniKit miniapps and Hybrid XMTP agents, showcasing how to combine Farcaster miniapp functionality with AI-powered messaging.
 
 ## 🚀 Quick Start
 
@@ -129,10 +92,9 @@ pnpm install
    - Generate an API key
    - Add it to your `.env` file
 
-2. **Get your OnchainKit API key**
-   - Visit [Coinbase Developer Platform](https://portal.cdp.coinbase.com/products/onchainkit)
-   - Create an account and generate an API key
-   - Add it to your `.env` file as `NEXT_PUBLIC_ONCHAINKIT_API_KEY`
+2. **Configure MiniKit**
+   - The miniapp uses OnchainKit and MiniKit for onchain interactions
+   - No additional API keys required for basic miniapp functionality
 
 3. **Generate XMTP keys**
    ```bash
@@ -147,30 +109,39 @@ pnpm install
 ### Development
 
 ```bash
-# Start development server with auto-reload
+# Start both the miniapp and agent concurrently
 pnpm dev
+
+# Or run them separately:
+pnpm run dev:miniapp  # Start the Next.js miniapp
+pnpm run dev:hybrid   # Start the Hybrid agent
 
 # Build for production
 pnpm build
 
-# Start production server
-pnpm start
+# Start production servers
+pnpm start:miniapp    # Start the miniapp
+pnpm start:hybrid     # Start the agent
 ```
 
 ## 📁 Project Structure
 
 ```
-miniapp-hybrid-agent/
+miniapp-hybrid-integration/
 ├── src/
-│   ├── agent.ts          # Main agent implementation with blockchain tools
+│   ├── agent.ts          # Hybrid agent for XMTP messaging and AI assistance
 │   └── agent.test.ts     # Agent test entry file
-├── app/                  # Next.js app directory
+├── app/                  # Next.js miniapp with OnchainKit components
+│   ├── api/auth/         # MiniKit authentication endpoint
+│   ├── page.tsx          # Main miniapp interface
+│   ├── layout.tsx        # App layout with providers
+│   └── rootProvider.tsx  # Context providers for miniapp
 ├── public/               # Static assets
 ├── .env                  # Environment variables
 ├── package.json          # Dependencies and scripts
 ├── tsconfig.json         # TypeScript configuration
 ├── vitest.config.ts      # Test configuration
-├── minikit.config.ts     # Miniapp configuration
+├── minikit.config.ts     # MiniKit configuration
 └── README.md             # This file
 ```
 
@@ -186,35 +157,35 @@ miniapp-hybrid-agent/
 - `npm run format` - Format code
 - `npm run typecheck` - Check TypeScript types
 
-## 🧪 Testing Onchain Features
+## 🧪 Testing Integration Features
 
 ### Quick Test
 
 ```bash
-# 1. Start the agent
+# 1. Start both miniapp and agent
 npm run dev
 
 # 2. Send messages via XMTP:
-#    @agent check balance 0x123... on base
-#    @agent what's the gas price on ethereum?
-#    @agent send 0.01 ETH to 0x456... on base
+#    @agent what can this miniapp do?
+#    @agent how do I use the wallet component?
+#    @agent tell me about onchainkit
 ```
 
 ### Manual Testing
 
-1. **Balance Checking**:
+1. **Miniapp Features**:
    ```
-   @agent check my balance on base
-   ```
-
-2. **Gas Price Information**:
-   ```
-   @agent what's the current gas price on ethereum?
+   @agent what components are available in this miniapp?
    ```
 
-3. **Transaction Status**:
+2. **OnchainKit Help**:
    ```
-   @agent check transaction 0xabc123...
+   @agent how do I connect a wallet?
+   ```
+
+3. **Authentication**:
+   ```
+   @agent explain the user authentication flow
    ```
 
 ### Unit Tests
@@ -223,16 +194,14 @@ npm run dev
 npm test
 ```
 
-Tests verify that behaviors work correctly and blockchain tools can be imported.
+Tests verify that behaviors work correctly and the agent responds appropriately to miniapp-related queries.
 
 ## 🤖 Agent Configuration
 
 The agent is configured in `src/agent.ts`. You can customize:
 
 - **AI Model**: Change the model in the `openrouter()` call
-- **Instructions**: Modify the agent's system prompt for onchain interactions
-- **Blockchain Tools**: Add or remove blockchain capabilities
-- **Supported Chains**: Configure which networks the agent can interact with
+- **Instructions**: Modify the agent's system prompt for miniapp assistance
 - **Message Filtering**: Adjust which messages the agent responds to
 - **Port**: Change the server port in `.env`
 
@@ -240,17 +209,12 @@ The agent is configured in `src/agent.ts`. You can customize:
 
 ```typescript
 const agent = new Agent({
-  name: "My Onchain Agent",
+  name: "Miniapp Assistant",
   model: openrouter("anthropic/claude-3-haiku"), // Different model
-  instructions: "You are a DeFi specialist that helps with...",
-  tools: [
-    blockchainTools.getBalance,
-    blockchainTools.getGasPrice,
-    // Add only the tools you need
-  ],
+  instructions: "You are a miniapp specialist that helps users understand...",
+  tools: [], // No tools needed for miniapp assistance
   runtime: {
-    privateKey: process.env.XMTP_WALLET_KEY,
-    defaultChain: "ethereum" // Change default chain
+    privateKey: process.env.XMTP_WALLET_KEY
   }
 })
 ```
@@ -260,7 +224,7 @@ const agent = new Agent({
 Create a `.env` file with:
 
 ```env
-# Required
+# Required for Hybrid agent
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 XMTP_WALLET_KEY=your_generated_wallet_key
 XMTP_DB_ENCRYPTION_KEY=your_generated_encryption_key
@@ -268,9 +232,6 @@ XMTP_DB_ENCRYPTION_KEY=your_generated_encryption_key
 # Optional
 XMTP_ENV=dev
 PORT=8454
-
-# Miniapp specific
-NEXT_PUBLIC_ONCHAINKIT_API_KEY=your_onchainkit_api_key_here
 ```
 
 ## 🧪 Testing
@@ -288,25 +249,22 @@ npm run test:coverage
 
 ## 📚 Key Concepts
 
-### Blockchain Integration
+### MiniKit Integration
 
-The agent uses blockchain tools to interact with multiple EVM chains:
+The miniapp uses MiniKit for Farcaster miniapp functionality:
 
 ```typescript
-import { blockchainTools } from "hybrid/tools"
+import { useMiniKit } from "@coinbase/onchainkit/minikit"
 
-// Available tools:
-blockchainTools.getBalance     // Check wallet balances
-blockchainTools.sendTransaction // Send native tokens
-blockchainTools.getTransaction // Get transaction details
-blockchainTools.getBlock       // Get block information
-blockchainTools.getGasPrice    // Get current gas prices
-blockchainTools.estimateGas    // Estimate transaction costs
+// MiniKit provides:
+useMiniKit()        // Access miniapp context and user data
+setFrameReady()     // Initialize the miniapp frame
+Quick Auth          // User authentication flow
 ```
 
-### Miniapp Features
+### OnchainKit Components
 
-The miniapp includes OnchainKit components for rich onchain interactions:
+The miniapp includes OnchainKit components for rich blockchain interactions:
 
 - **Transaction**: Execute onchain transactions
 - **Swap**: Token swapping interface
@@ -314,32 +272,30 @@ The miniapp includes OnchainKit components for rich onchain interactions:
 - **Wallet**: Wallet connection and management
 - **Identity**: User identity verification
 
-### Message Filtering
+### Hybrid Agent
 
-The agent uses a filter function to determine which messages to respond to:
+The agent provides AI assistance through XMTP messaging:
 
 ```typescript
-filterMessages((filters) => {
-  return (
-    filters.isReply() ||
-    filters.isDM() ||
-    filters.hasMention("@agent") ||
-    filters.isReaction("👍")
-  )
-})
+import { filterMessages, reactWith, threadedReply } from "hybrid/behaviors"
+
+// Available behaviors:
+filterMessages()    // Filter relevant messages
+reactWith()         // React to messages with emojis
+threadedReply()     // Maintain conversation context
 ```
 
 ### Agent Instructions
 
-The system prompt tells the AI how to behave with onchain capabilities:
+The system prompt tells the AI how to assist with miniapp functionality:
 
 ```typescript
 const agent = new Agent({
-  instructions: `You are a helpful AI agent with onchain capabilities. You can help users with:
-- Checking wallet balances across multiple chains
-- Sending transactions and checking transaction status
-- Getting current gas prices and estimating transaction costs
-- Providing information about blockchain blocks and network status`
+  instructions: `You are a helpful AI agent integrated with a MiniKit miniapp. You can help users with:
+- Answering questions about the miniapp and its features
+- Providing guidance on using OnchainKit components
+- Helping with Farcaster and XMTP interactions
+- Explaining miniapp functionality and user authentication`
 })
 ```
 
@@ -347,8 +303,9 @@ const agent = new Agent({
 
 - [Hybrid Documentation](https://hybrid.dev)
 - [XMTP Documentation](https://docs.xmtp.org/)
+- [MiniKit Documentation](https://docs.farcaster.xyz/developers/miniapps)
 - [OnchainKit Documentation](https://docs.base.org/onchainkit)
-- [Farcaster Miniapp SDK](https://docs.farcaster.xyz/developers/miniapps)
+- [Farcaster Documentation](https://docs.farcaster.xyz/)
 - [OpenRouter Models](https://openrouter.ai/docs#models)
 
 ## 🤝 Contributing

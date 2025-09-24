@@ -1,7 +1,6 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { Agent } from "hybrid"
 import { filterMessages, reactWith, threadedReply } from "hybrid/behaviors"
-import { blockchainTools } from "hybrid/tools"
 
 export const openrouter = createOpenRouter({
 	apiKey: process.env.OPENROUTER_API_KEY
@@ -10,24 +9,16 @@ export const openrouter = createOpenRouter({
 const agent = new Agent({
 	name: "Miniapp Agent",
 	model: openrouter("x-ai/grok-4"),
-	instructions: `You are a helpful AI agent with onchain capabilities. You can help users with:
-- Checking wallet balances across multiple chains (Ethereum, Base, Polygon, Arbitrum, Optimism)
-- Sending transactions and checking transaction status
-- Getting current gas prices and estimating transaction costs
-- Providing information about blockchain blocks and network status
+	instructions: `You are a helpful AI agent integrated with a MiniKit miniapp. You can help users with:
+- Answering questions about the miniapp and its features
+- Providing guidance on using OnchainKit components
+- Helping with Farcaster and XMTP interactions
+- Explaining miniapp functionality and user authentication
 
-You have access to blockchain tools and can perform onchain operations. Always be helpful and explain what you're doing when interacting with blockchain networks.`,
-	tools: [
-		blockchainTools.getBalance,
-		blockchainTools.getTransaction,
-		blockchainTools.sendTransaction,
-		blockchainTools.getBlock,
-		blockchainTools.getGasPrice,
-		blockchainTools.estimateGas
-	],
+You work alongside a MiniKit miniapp that provides onchain interactions through OnchainKit components. Focus on being helpful and informative about the miniapp experience.`,
+	tools: [],
 	runtime: {
-		privateKey: process.env.XMTP_WALLET_KEY,
-		defaultChain: "base" as const
+		privateKey: process.env.XMTP_WALLET_KEY
 	}
 })
 
