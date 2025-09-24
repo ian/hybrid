@@ -24,6 +24,12 @@ const EXAMPLES: Example[] = [
 		available: true
 	},
 	{
+		name: "miniapp",
+		description: "Hybrid agent with miniapp integration for onchain interactions",
+		path: "miniapp",
+		available: true
+	},
+	{
 		name: "with-ponder",
 		description: "Agent with Ponder integration for indexing blockchain data",
 		path: "with-ponder",
