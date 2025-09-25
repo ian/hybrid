@@ -131,6 +131,7 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - Supported chains (Ethereum, Polygon, Arbitrum, Optimism, Base, Sepolia)
 
 - **XMTP Tools**
+  - Installing and importing `@hybrd/xmtp`
   - `sendMessage` - Send messages to XMTP conversations
   - `sendReply` - Reply to specific messages
   - `sendReaction` - Send emoji reactions
@@ -153,6 +154,7 @@ This outline organizes documentation by developer workflow, focusing on actionab
 *Overview: Blockchain integration and development tools*
 
 - **Ponder Integration**
+  - Installing and importing `@hybrd/ponder`
   - Ponder plugin for blockchain event handling
   - Event indexing and forwarding to agents
   - Configuration and setup
@@ -186,59 +188,3 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - Hosting provider configuration
   - Environment variable management
   - Monitoring and logging
-
-## API Reference
-*Overview: Comprehensive API documentation for all framework components*
-
-- **Core Classes**
-  - Agent class methods and properties
-  - Plugin and PluginRegistry APIs
-  - Tool and ToolConfig interfaces
-
-- **Behavior System**
-  - BehaviorObject interface
-  - BehaviorContext and lifecycle methods
-  - Built-in behavior implementations
-
-- **Tools API**
-  - Blockchain tools function signatures
-  - XMTP tools function signatures
-  - Runtime extension interfaces
-
-- **Type Definitions**
-  - AgentConfig and runtime types
-  - Message and conversation types
-  - Filter and content type definitions
-
-## Package Reference
-*Overview: Individual package documentation for advanced users*
-
-- **@hybrd/core**
-  - Agent framework core functionality
-  - Server and plugin system
-  - Tool and behavior implementations
-
-- **@hybrd/cli**
-  - Command-line interface implementation
-  - Development server and build tools
-  - Key generation and XMTP operations
-
-- **@hybrd/xmtp**
-  - XMTP client management
-  - Message handling and content types
-  - Address resolution (ENS, BaseName)
-
-- **@hybrd/utils**
-  - Utility functions for common operations
-  - Array, string, and object helpers
-  - Date and UUID utilities
-
-- **@hybrd/types**
-  - TypeScript type definitions
-  - Interface specifications
-  - Runtime and configuration types
-
-- **@hybrd/ponder**
-  - Blockchain event handling plugin
-  - Ponder integration for indexing
-  - Event forwarding to agents
