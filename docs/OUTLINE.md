@@ -25,19 +25,24 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - Agent lifecycle and runtime behavior
   - Connecting AI models to blockchain capabilities
 
-## Getting Started
-*Overview: Initial setup and creating your first agent*
+## Quickstart
+*Overview: Speed run through setup, configuration, and deployment*
 
-- **Installation & Project Setup**
-  - Installing Hybrid CLI
-  - Creating new projects with `create-hybrid`
-  - Available project templates (basic, with-ponder, with-foundry)
-  - Environment configuration (.env setup)
+- **Setup & Installation**
+  - Install Hybrid CLI (`npm install -g @hybrd/cli`)
+  - Create new project (`npx create-hybrid my-agent`)
+  - Generate keys (`hybrid keys`)
+  - Environment setup (.env configuration)
 
-- **Basic Agent Creation**
-  - Agent class fundamentals
-  - Simple agent configuration
-  - Running your first agent
+- **Configure Your Agent**
+  - Basic agent configuration and model setup
+  - Add behaviors and tools
+  - Test locally (`hybrid dev`)
+
+- **Deploy Your Agent**
+  - Build for production (`hybrid build`)
+  - Deploy to hosting platform
+  - Monitor and manage your live agent
 
 ## Core Concepts
 *Overview: Fundamental concepts that make Hybrid agents unique*
