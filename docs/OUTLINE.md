@@ -131,16 +131,6 @@ This outline organizes documentation by developer workflow, focusing on actionab
 ## Tools
 *Overview: Built-in and extensible tools for agent functionality*
 
-- **Blockchain Tools**
-  - `getBalance` - Get native token balance for any address
-  - `sendTransaction` - Send native tokens to another address
-  - `getTransaction` - Get transaction details by hash
-  - `getBlock` - Get blockchain block information
-  - `getGasPrice` - Get current gas prices
-  - `estimateGas` - Estimate gas costs for transactions
-  - Tool configuration and runtime context
-  - Supported chains (Ethereum, Polygon, Arbitrum, Optimism, Base, Sepolia)
-
 - **XMTP Tools**
   - **Introduction to XMTP**
     - What is XMTP and decentralized messaging
@@ -173,6 +163,16 @@ This outline organizes documentation by developer workflow, focusing on actionab
 
 ## Blockchain
 *Overview: Blockchain integration and development tools*
+
+- **Blockchain Tools**
+  - `getBalance` - Get native token balance for any address
+  - `sendTransaction` - Send native tokens to another address
+  - `getTransaction` - Get transaction details by hash
+  - `getBlock` - Get blockchain block information
+  - `getGasPrice` - Get current gas prices
+  - `estimateGas` - Estimate gas costs for transactions
+  - Tool configuration and runtime context
+  - Supported chains (Ethereum, Polygon, Arbitrum, Optimism, Base, Sepolia)
 
 - **Ponder Integration**
   - Installing and importing `@hybrd/ponder`
