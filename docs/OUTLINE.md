@@ -2,6 +2,29 @@
 
 This outline organizes documentation by developer workflow, focusing on actionable features developers can use to build XMTP agents with the Hybrid framework.
 
+## Introduction to Hybrid
+*Overview: Understanding what Hybrid is and why it matters*
+
+- **What is Hybrid and Why?**
+  - Hybrid as a framework for building autonomous agents
+  - Decentralized messaging meets AI agents
+  - Why agents need wallets and financial capabilities
+  - The vision of financially autonomous AI
+
+- **Crypto and Wallet Fundamentals**
+  - Every Hybrid agent gets a wallet address automatically
+  - Agents can spend money and interact with DeFi
+  - ECDSA key generation and wallet security
+  - Understanding gas fees and transaction costs
+  - Agent financial autonomy and spending controls
+
+- **Agent Class Fundamentals**
+  - Basic Agent class structure and configuration
+  - Quintessential agent example walkthrough
+  - How agents process messages and take actions
+  - Agent lifecycle and runtime behavior
+  - Connecting AI models to blockchain capabilities
+
 ## Getting Started
 *Overview: Initial setup and creating your first agent*
 
@@ -15,13 +38,6 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - Agent class fundamentals
   - Simple agent configuration
   - Running your first agent
-
-- **Introduction to XMTP**
-  - What is XMTP and decentralized messaging
-  - XMTP network overview (dev vs production)
-  - Generating XMTP keys
-  - Wallet registration with XMTP network
-  - Testing with XMTP chat interfaces
 
 ## Core Concepts
 *Overview: Fundamental concepts that make Hybrid agents unique*
@@ -131,6 +147,12 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - Supported chains (Ethereum, Polygon, Arbitrum, Optimism, Base, Sepolia)
 
 - **XMTP Tools**
+  - **Introduction to XMTP**
+    - What is XMTP and decentralized messaging
+    - XMTP network overview (dev vs production)
+    - Generating XMTP keys
+    - Wallet registration with XMTP network
+    - Testing with XMTP chat interfaces
   - Installing and importing `@hybrd/xmtp`
   - `sendMessage` - Send messages to XMTP conversations
   - `sendReply` - Reply to specific messages
