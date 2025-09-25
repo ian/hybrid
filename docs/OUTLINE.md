@@ -1,0 +1,236 @@
+# Hybrid Framework Documentation Outline
+
+This outline organizes documentation by developer workflow, focusing on actionable features developers can use to build XMTP agents with the Hybrid framework.
+
+## Quickstart
+*Overview: Speed run through setup, configuration, and deployment*
+
+- **Setup & Installation**
+  - Install Hybrid CLI (`npm install -g @hybrd/cli`)
+  - Create new project (`npx create-hybrid my-agent`)
+  - Generate keys (`hybrid keys`)
+  - Environment setup (.env configuration)
+
+- **Configure Your Agent**
+  - Basic agent configuration and model setup
+  - Add behaviors and tools
+  - Test locally (`hybrid dev`)
+
+- **Deploy Your Agent**
+  - Build for production (`hybrid build`)
+  - Deploy to hosting platform
+  - Monitor and manage your live agent
+
+## Core Concepts
+*Overview: Fundamental concepts that make Hybrid agents unique*
+
+- **What is Hybrid and Why?**
+  - Hybrid as a framework for building autonomous agents
+  - Decentralized messaging meets AI agents
+  - Why agents need wallets and financial capabilities
+  - The vision of financially autonomous AI
+
+- **Crypto and Wallet Fundamentals**
+  - Every Hybrid agent gets a wallet address automatically
+  - Agents can spend money and interact with DeFi
+  - ECDSA key generation and wallet security
+  - Understanding gas fees and transaction costs
+  - Agent financial autonomy and spending controls
+
+- **Agent Class Fundamentals**
+  - Basic Agent class structure and configuration
+  - Quintessential agent example walkthrough
+  - How agents process messages and take actions
+  - Agent lifecycle and runtime behavior
+  - Connecting AI models to blockchain capabilities
+
+- **Messaging Networks and Channels**
+  - XMTP as the primary decentralized messaging network
+  - Understanding messaging protocols and standards
+  - Future support for alternate channels:
+    - Discord integration patterns
+    - Telegram bot capabilities
+    - Twitter/X messaging features
+  - Cross-platform messaging strategies
+  - Channel-specific behavior customization
+
+- **Agent Identity and Authentication**
+  - Wallet-based identity for agents
+  - XMTP network registration and verification
+  - Managing multiple agent identities
+  - Identity persistence across sessions
+
+## Using Hybrid
+*Overview: Command-line tools and development workflow*
+
+- **Key Management**
+  - Generating XMTP keys (`hybrid keys`)
+  - Writing keys to environment files
+  - Key security best practices
+
+- **Development Workflow**
+  - Development server (`hybrid dev`)
+  - Building projects (`hybrid build`)
+  - Project cleanup (`hybrid clean`)
+  - Framework upgrades (`hybrid upgrade`)
+
+- **XMTP Network Operations**
+  - Wallet registration (`hybrid register`)
+  - Revoking installations (`hybrid revoke`)
+  - Managing multiple agent instances
+
+## Agent Configuration
+*Overview: Configuring your agent's core functionality*
+
+- **Prompts & Instructions**
+  - Setting agent personality and behavior
+  - Instruction best practices
+  - Context and conversation management
+  - Agent runtime extensions and custom contexts
+
+- **Models & AI Providers**
+  - Default: OpenRouter AI SDK provider setup (preferred)
+  - Direct provider integrations:
+    - OpenAI (GPT-4, GPT-3.5-turbo)
+    - Grok (X.AI models)
+    - Anthropic (Claude models)
+    - Google Gemini (Gemini Pro, Gemini Flash)
+    - Other AI SDK compatible providers
+  - AI SDK providers overview and [complete provider list](https://ai-sdk.dev/providers/ai-sdk-providers)
+  - Model selection strategies and performance considerations
+  - Provider-specific configuration and API keys
+  - Cost optimization across different providers
+  - Fallback and redundancy strategies
+
+- **Behaviors**
+  - How behaviors work in the agent lifecycle
+  - **Message Filtering with `filterMessages`**
+    - `filter.isText()` - Message is text content
+    - `filter.isReply()` - Message is a reply
+    - `filter.isReaction()` - Message is a reaction
+    - `filter.isReaction(emoji, action?)` - Specific emoji/action reactions
+    - `filter.isDM()` - Message is a direct message
+    - `filter.fromSelf()` - Message is from the agent itself
+    - `filter.hasMention(mention)` - Message contains a mention
+    - `filter.hasContent()` - Message has content
+    - `filter.isGroup()` - Message is in a group conversation
+    - `filter.isGroupAdmin()` - Message sender is group admin
+    - `filter.isGroupSuperAdmin()` - Message sender is group super admin
+    - `filter.isRemoteAttachment()` - Message has remote attachment
+    - `filter.isTextReply()` - Message is a text reply
+  - **Automatic Reactions with `reactWith`**
+    - Adding emoji reactions to messages
+    - Reaction timing and behavior
+  - **Threaded Replies with `threadedReply`**
+    - Configuring threaded vs top-level responses
+    - Thread management
+  - **Creating Custom Behaviors**
+    - Behavior lifecycle (before/after/error hooks)
+    - Custom behavior implementation
+
+## XMTP
+*Overview: Decentralized messaging integration and tools*
+
+- **Introduction to XMTP**
+  - What is XMTP and decentralized messaging
+  - XMTP network overview (dev vs production)
+  - Generating XMTP keys
+  - Wallet registration with XMTP network
+  - Testing with XMTP chat interfaces
+
+- **XMTP Tools**
+  - Installing and importing `@hybrd/xmtp`
+  - `sendMessage` - Send messages to XMTP conversations
+  - `sendReply` - Reply to specific messages
+  - `sendReaction` - Send emoji reactions
+  - `getMessage` - Retrieve message details by ID
+  - Content types (text, reactions, replies, attachments)
+  - Group conversation handling
+
+- **Advanced XMTP Features**
+  - Message encryption and security
+  - Connection management and error handling
+  - Address resolution (ENS, BaseName)
+
+## Mini Apps
+*Overview: Mini app integration and development*
+
+- **Mini App Integration**
+  - Mini app integration capabilities
+  - Tool configuration for mini apps
+  - Usage patterns and examples
+
+## Tools
+*Overview: Built-in and extensible tools for agent functionality*
+
+- **Creating Custom Tools**
+  - Using `createTool` for custom functionality
+  - Tool schema validation with Zod
+  - Tool runtime extensions
+  - Combining multiple tool sets
+
+## Blockchain
+*Overview: Blockchain integration and development tools*
+
+- **Blockchain Tools**
+  - `getBalance` - Get native token balance for any address
+  - `sendTransaction` - Send native tokens to another address
+  - `getTransaction` - Get transaction details by hash
+  - `getBlock` - Get blockchain block information
+  - `getGasPrice` - Get current gas prices
+  - `estimateGas` - Estimate gas costs for transactions
+  - Tool configuration and runtime context
+  - Supported chains (Ethereum, Polygon, Arbitrum, Optimism, Base, Sepolia)
+
+- **Ponder Integration**
+  - Installing and importing `@hybrd/ponder`
+  - Ponder plugin for blockchain event handling
+  - Event indexing and forwarding to agents
+  - Configuration and setup
+  - Use cases and examples
+
+- **Foundry Integration**
+  - Working with Foundry for smart contract development
+  - Integration patterns with Hybrid agents
+  - Testing and deployment workflows
+
+- **Multi-chain Support**
+  - Chain configuration and switching
+  - Transaction handling across chains
+  - Gas management strategies
+
+## Developing and Contribution
+*Overview: Contributing to Hybrid framework and advanced development*
+
+- **Contributing to Hybrid**
+  - Setting up development environment
+  - Code contribution guidelines
+  - Pull request process
+  - Issue reporting and feature requests
+  - Community guidelines and code of conduct
+
+- **Framework Development**
+  - Monorepo structure and package organization
+  - Building and testing the framework
+  - Adding new behaviors and tools
+  - Extending the CLI with new commands
+  - Package publishing and release process
+
+- **Plugin System**
+  - Plugin architecture overview
+  - Creating custom plugins
+  - Plugin integration patterns
+  - Publishing plugins to the ecosystem
+
+- **Advanced Development**
+  - Custom agent architectures
+  - Performance optimization strategies
+  - Debugging and troubleshooting
+  - Integration testing patterns
+
+- **Deployment**
+  - Production environment setup
+  - Hosting provider configuration
+  - Environment variable management
+  - Monitoring and logging
+  - Scaling and load balancing
