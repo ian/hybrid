@@ -23,6 +23,51 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - Wallet registration with XMTP network
   - Testing with XMTP chat interfaces
 
+## Core Concepts
+*Overview: Fundamental concepts that make Hybrid agents unique*
+
+- **Keys and Wallet Management**
+  - Every agent has an ECDSA wallet for spending money
+  - How ECDSA keys work in the context of agents
+  - Wallet generation and security best practices
+  - Private key management and storage
+  - Agent financial capabilities and spending controls
+
+- **Messaging Networks and Channels**
+  - XMTP as the primary decentralized messaging network
+  - Understanding messaging protocols and standards
+  - Future support for alternate channels:
+    - Discord integration patterns
+    - Telegram bot capabilities
+    - Twitter/X messaging features
+  - Cross-platform messaging strategies
+  - Channel-specific behavior customization
+
+- **Agent Identity and Authentication**
+  - Wallet-based identity for agents
+  - XMTP network registration and verification
+  - Managing multiple agent identities
+  - Identity persistence across sessions
+
+## Using Hybrid
+*Overview: Command-line tools and development workflow*
+
+- **Key Management**
+  - Generating XMTP keys (`hybrid keys`)
+  - Writing keys to environment files
+  - Key security best practices
+
+- **Development Workflow**
+  - Development server (`hybrid dev`)
+  - Building projects (`hybrid build`)
+  - Project cleanup (`hybrid clean`)
+  - Framework upgrades (`hybrid upgrade`)
+
+- **XMTP Network Operations**
+  - Wallet registration (`hybrid register`)
+  - Revoking installations (`hybrid revoke`)
+  - Managing multiple agent instances
+
 ## Agent Configuration
 *Overview: Configuring your agent's core functionality*
 
@@ -33,12 +78,18 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - Agent runtime extensions and custom contexts
 
 - **Models & AI Providers**
-  - Default: OpenRouter AI SDK provider setup
-  - Using OpenAI directly
-  - Using Grok directly  
-  - Using Anthropic directly
-  - AI SDK providers overview and [provider list reference](https://ai-sdk.dev/providers/ai-sdk-providers)
-  - Model selection and configuration
+  - Default: OpenRouter AI SDK provider setup (preferred)
+  - Direct provider integrations:
+    - OpenAI (GPT-4, GPT-3.5-turbo)
+    - Grok (X.AI models)
+    - Anthropic (Claude models)
+    - Google Gemini (Gemini Pro, Gemini Flash)
+    - Other AI SDK compatible providers
+  - AI SDK providers overview and [complete provider list](https://ai-sdk.dev/providers/ai-sdk-providers)
+  - Model selection strategies and performance considerations
+  - Provider-specific configuration and API keys
+  - Cost optimization across different providers
+  - Fallback and redundancy strategies
 
 - **Behaviors**
   - How behaviors work in the agent lifecycle
@@ -116,25 +167,6 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - Chain configuration and switching
   - Transaction handling across chains
   - Gas management strategies
-
-## CLI Commands
-*Overview: Command-line tools for development workflow*
-
-- **Key Management**
-  - Generating XMTP keys (`hybrid keys`)
-  - Writing keys to environment files
-  - Key security best practices
-
-- **Development Workflow**
-  - Development server (`hybrid dev`)
-  - Building projects (`hybrid build`)
-  - Project cleanup (`hybrid clean`)
-  - Framework upgrades (`hybrid upgrade`)
-
-- **XMTP Network Operations**
-  - Wallet registration (`hybrid register`)
-  - Revoking installations (`hybrid revoke`)
-  - Managing multiple agent instances
 
 ## Advanced Topics
 *Overview: Advanced features for sophisticated agent implementations*
