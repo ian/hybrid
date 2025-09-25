@@ -2,29 +2,6 @@
 
 This outline organizes documentation by developer workflow, focusing on actionable features developers can use to build XMTP agents with the Hybrid framework.
 
-## Introduction to Hybrid
-*Overview: Understanding what Hybrid is and why it matters*
-
-- **What is Hybrid and Why?**
-  - Hybrid as a framework for building autonomous agents
-  - Decentralized messaging meets AI agents
-  - Why agents need wallets and financial capabilities
-  - The vision of financially autonomous AI
-
-- **Crypto and Wallet Fundamentals**
-  - Every Hybrid agent gets a wallet address automatically
-  - Agents can spend money and interact with DeFi
-  - ECDSA key generation and wallet security
-  - Understanding gas fees and transaction costs
-  - Agent financial autonomy and spending controls
-
-- **Agent Class Fundamentals**
-  - Basic Agent class structure and configuration
-  - Quintessential agent example walkthrough
-  - How agents process messages and take actions
-  - Agent lifecycle and runtime behavior
-  - Connecting AI models to blockchain capabilities
-
 ## Quickstart
 *Overview: Speed run through setup, configuration, and deployment*
 
@@ -47,12 +24,25 @@ This outline organizes documentation by developer workflow, focusing on actionab
 ## Core Concepts
 *Overview: Fundamental concepts that make Hybrid agents unique*
 
-- **Keys and Wallet Management**
-  - Every agent has an ECDSA wallet for spending money
-  - How ECDSA keys work in the context of agents
-  - Wallet generation and security best practices
-  - Private key management and storage
-  - Agent financial capabilities and spending controls
+- **What is Hybrid and Why?**
+  - Hybrid as a framework for building autonomous agents
+  - Decentralized messaging meets AI agents
+  - Why agents need wallets and financial capabilities
+  - The vision of financially autonomous AI
+
+- **Crypto and Wallet Fundamentals**
+  - Every Hybrid agent gets a wallet address automatically
+  - Agents can spend money and interact with DeFi
+  - ECDSA key generation and wallet security
+  - Understanding gas fees and transaction costs
+  - Agent financial autonomy and spending controls
+
+- **Agent Class Fundamentals**
+  - Basic Agent class structure and configuration
+  - Quintessential agent example walkthrough
+  - How agents process messages and take actions
+  - Agent lifecycle and runtime behavior
+  - Connecting AI models to blockchain capabilities
 
 - **Messaging Networks and Channels**
   - XMTP as the primary decentralized messaging network
