@@ -128,16 +128,17 @@ This outline organizes documentation by developer workflow, focusing on actionab
     - Behavior lifecycle (before/after/error hooks)
     - Custom behavior implementation
 
-## Tools
-*Overview: Built-in and extensible tools for agent functionality*
+## XMTP
+*Overview: Decentralized messaging integration and tools*
+
+- **Introduction to XMTP**
+  - What is XMTP and decentralized messaging
+  - XMTP network overview (dev vs production)
+  - Generating XMTP keys
+  - Wallet registration with XMTP network
+  - Testing with XMTP chat interfaces
 
 - **XMTP Tools**
-  - **Introduction to XMTP**
-    - What is XMTP and decentralized messaging
-    - XMTP network overview (dev vs production)
-    - Generating XMTP keys
-    - Wallet registration with XMTP network
-    - Testing with XMTP chat interfaces
   - Installing and importing `@hybrd/xmtp`
   - `sendMessage` - Send messages to XMTP conversations
   - `sendReply` - Reply to specific messages
@@ -145,15 +146,22 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - `getMessage` - Retrieve message details by ID
   - Content types (text, reactions, replies, attachments)
   - Group conversation handling
-  - **Advanced XMTP Features**
-    - Message encryption and security
-    - Connection management and error handling
-    - Address resolution (ENS, BaseName)
 
-- **Mini App Tools**
+- **Advanced XMTP Features**
+  - Message encryption and security
+  - Connection management and error handling
+  - Address resolution (ENS, BaseName)
+
+## Mini Apps
+*Overview: Mini app integration and development*
+
+- **Mini App Integration**
   - Mini app integration capabilities
   - Tool configuration for mini apps
   - Usage patterns and examples
+
+## Tools
+*Overview: Built-in and extensible tools for agent functionality*
 
 - **Creating Custom Tools**
   - Using `createTool` for custom functionality
@@ -191,16 +199,38 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - Transaction handling across chains
   - Gas management strategies
 
-## Advanced Topics
-*Overview: Advanced features for sophisticated agent implementations*
+## Developing and Contribution
+*Overview: Contributing to Hybrid framework and advanced development*
+
+- **Contributing to Hybrid**
+  - Setting up development environment
+  - Code contribution guidelines
+  - Pull request process
+  - Issue reporting and feature requests
+  - Community guidelines and code of conduct
+
+- **Framework Development**
+  - Monorepo structure and package organization
+  - Building and testing the framework
+  - Adding new behaviors and tools
+  - Extending the CLI with new commands
+  - Package publishing and release process
 
 - **Plugin System**
   - Plugin architecture overview
   - Creating custom plugins
   - Plugin integration patterns
+  - Publishing plugins to the ecosystem
+
+- **Advanced Development**
+  - Custom agent architectures
+  - Performance optimization strategies
+  - Debugging and troubleshooting
+  - Integration testing patterns
 
 - **Deployment**
   - Production environment setup
   - Hosting provider configuration
   - Environment variable management
   - Monitoring and logging
+  - Scaling and load balancing
