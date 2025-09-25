@@ -155,6 +155,10 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - `getMessage` - Retrieve message details by ID
   - Content types (text, reactions, replies, attachments)
   - Group conversation handling
+  - **Advanced XMTP Features**
+    - Message encryption and security
+    - Connection management and error handling
+    - Address resolution (ENS, BaseName)
 
 - **Mini App Tools**
   - Mini app integration capabilities
@@ -194,11 +198,6 @@ This outline organizes documentation by developer workflow, focusing on actionab
   - Plugin architecture overview
   - Creating custom plugins
   - Plugin integration patterns
-
-- **XMTP Advanced Features**
-  - Message encryption and security
-  - Connection management and error handling
-  - Address resolution (ENS, BaseName)
 
 - **Deployment**
   - Production environment setup
