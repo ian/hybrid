@@ -2,7 +2,7 @@ packages:
   - apps/*
   - config/*
   - packages/*
-  - harness
+  - harness/*
 
 catalog:
   zod: ^3.22.0 || ^4
