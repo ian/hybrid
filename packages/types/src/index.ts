@@ -13,8 +13,7 @@ export type { Agent, AgentMessage } from "./agent"
 // Tool types
 export type {
 	AnyTool,
-	Tool,
-	ToolConfig
+	Tool
 } from "./tool"
 
 // Plugin types

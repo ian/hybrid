@@ -24,6 +24,13 @@ const EXAMPLES: Example[] = [
 		available: true
 	},
 	{
+		name: "miniapp",
+		description:
+			"Hybrid agent with miniapp integration for onchain interactions",
+		path: "miniapp",
+		available: true
+	},
+	{
 		name: "with-ponder",
 		description: "Agent with Ponder integration for indexing blockchain data",
 		path: "with-ponder",
@@ -365,11 +372,10 @@ async function createProject(
 
 		if (REPO.includes("#")) {
 			// REPO is in format "user/repo#branch"
-			// We need to construct: user/repo#branch/examples/basic
-			const [repoWithBranch] = REPO.split("/examples/") // Remove any existing path
-			degitSource = `${repoWithBranch}/examples/${selectedExample.name}`
+			// Correct degit syntax is: user/repo/subdirectory#branch
+			const [userRepo, branch] = REPO.split("#")
+			degitSource = `${userRepo}/examples/${selectedExample.name}#${branch}`
 		} else {
-			// No branch specified, use default format
 			degitSource = `${REPO}/examples/${selectedExample.name}`
 		}
 

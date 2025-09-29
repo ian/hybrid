@@ -30,7 +30,6 @@ import { createTool } from "../core/tool"
  * @returns {Promise<{success: boolean, message?: object, error?: string}>}
  */
 export const getMessageTool = createTool({
-	id: "getMessage",
 	description: "Get a specific message by ID from XMTP",
 	inputSchema: z.object({
 		messageId: z.string().describe("The message ID to retrieve")
@@ -42,7 +41,7 @@ export const getMessageTool = createTool({
 				id: z.string(),
 				conversationId: z.string(),
 				content: z
-					.union([z.string(), z.record(z.unknown()), z.unknown()])
+					.union([z.string(), z.record(z.string(), z.unknown()), z.unknown()])
 					.optional(),
 				senderInboxId: z.string(),
 				sentAt: z.date(),
@@ -143,7 +142,6 @@ export const getMessageTool = createTool({
  * @returns {Promise<{success: boolean, emoji: string, error?: string}>}
  */
 export const sendReactionTool = createTool({
-	id: "sendReaction",
 	description:
 		"Send an emoji reaction to a message to indicate it has been seen",
 	inputSchema: z.object({
@@ -268,7 +266,6 @@ export const sendReactionTool = createTool({
  * @returns {Promise<{success: boolean, messageId?: string, conversationId?: string, error?: string}>}
  */
 export const sendMessageTool = createTool({
-	id: "sendMessage",
 	description: "Send a message to an XMTP conversation",
 	inputSchema: z
 		.object({
@@ -333,7 +330,7 @@ export const sendMessageTool = createTool({
 
 			// Send the message using the XMTP client
 			const sendStartTime = performance.now()
-			const messageId = await conversation.send(content)
+			const messageId = await conversation.send(content, ContentTypeText)
 			const sendEndTime = performance.now()
 			logger.debug(
 				`💬 [Tool:sendMessage] XMTP client sendMessage completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`
@@ -395,7 +392,6 @@ export const sendMessageTool = createTool({
  * @returns {Promise<{success: boolean, messageId?: string, replyToMessageId?: string, error?: string}>}
  */
 export const sendReplyTool = createTool({
-	id: "sendReply",
 	description: "Send a reply to a specific message in an XMTP conversation",
 	inputSchema: z.object({
 		content: z.string().describe("The reply content to send"),

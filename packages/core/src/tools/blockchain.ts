@@ -8,6 +8,7 @@
  * @module BlockchainTools
  */
 
+import { logger } from "@hybrd/utils"
 import {
 	createPublicClient,
 	createWalletClient,
@@ -28,7 +29,6 @@ import {
 } from "viem/chains"
 import { z } from "zod"
 import { createTool } from "../core/tool"
-import { logger } from "@hybrd/utils"
 
 // Supported chains configuration
 const SUPPORTED_CHAINS = {
@@ -63,7 +63,6 @@ export interface BlockchainRuntimeExtension {
  * @returns {Promise<{success: boolean, balance: string, balanceWei: string, address: string, chain: string, error?: string}>}
  */
 export const getBalanceTool = createTool({
-	id: "getBalance",
 	description:
 		"Get the native token balance for a wallet address on a blockchain",
 	inputSchema: z.object({
@@ -97,7 +96,9 @@ export const getBalanceTool = createTool({
 				transport: http(rpcUrl)
 			})
 
-			logger.debug(`🔍 [getBalance] Checking balance for ${address} on ${chain}`)
+			logger.debug(
+				`🔍 [getBalance] Checking balance for ${address} on ${chain}`
+			)
 
 			const balanceWei = await client.getBalance({
 				address: address as Address
@@ -146,7 +147,6 @@ export const getBalanceTool = createTool({
  * @returns {Promise<{success: boolean, transaction?: object, error?: string}>}
  */
 export const getTransactionTool = createTool({
-	id: "getTransaction",
 	description: "Get transaction details by transaction hash",
 	inputSchema: z.object({
 		hash: z.string().describe("The transaction hash to look up"),
@@ -248,7 +248,6 @@ export const getTransactionTool = createTool({
  * @returns {Promise<{success: boolean, hash?: string, error?: string}>}
  */
 export const sendTransactionTool = createTool({
-	id: "sendTransaction",
 	description: "Send native tokens to another address",
 	inputSchema: z.object({
 		to: z.string().describe("The recipient address"),
@@ -341,7 +340,6 @@ export const sendTransactionTool = createTool({
  * @returns {Promise<{success: boolean, block?: object, error?: string}>}
  */
 export const getBlockTool = createTool({
-	id: "getBlock",
 	description: "Get information about a blockchain block",
 	inputSchema: z.object({
 		blockNumber: z
@@ -428,7 +426,6 @@ export const getBlockTool = createTool({
  * @returns {Promise<{success: boolean, gasPrice?: string, error?: string}>}
  */
 export const getGasPriceTool = createTool({
-	id: "getGasPrice",
 	description: "Get current gas price for a blockchain",
 	inputSchema: z.object({
 		chain: z
@@ -498,7 +495,6 @@ export const getGasPriceTool = createTool({
  * @returns {Promise<{success: boolean, gasEstimate?: string, error?: string}>}
  */
 export const estimateGasTool = createTool({
-	id: "estimateGas",
 	description: "Estimate gas required for a transaction",
 	inputSchema: z.object({
 		to: z.string().describe("The recipient address"),

@@ -4,8 +4,11 @@
 	"private": true,
 	"description": "A Hybrid XMTP agent",
 	"type": "module",
+
+	"engines": {
+		"node": ">=20"
+	},
 	"scripts": {
-		"clean": "hybrid clean",
 		"dev": "hybrid dev",
 		"build": "hybrid build",
 		"start": "hybrid start",
@@ -26,14 +29,9 @@
 		"@hybrd/cli": "latest",
 		"@types/node": "^22.0.0",
 		"concurrently": "^8.2.2",
-		"hybrid": "link:/Users/ian/Projects/01/hybrid/packages/core",
+		"hybrid": "latest",
 		"tsx": "^4.20.5",
 		"typescript": "^5.8.3",
 		"vitest": "^3.2.4"
-	},
-	"engines": {
-		"node": ">=20"
-	},
-	"author": "",
-	"license": "MIT"
+	}
 }

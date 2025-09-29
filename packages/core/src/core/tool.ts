@@ -2,15 +2,14 @@ import type {
 	AgentRuntime,
 	AnyTool,
 	DefaultRuntimeExtension,
-	Tool,
-	ToolConfig
+	Tool
 } from "@hybrd/types"
 import { logger } from "@hybrd/utils"
 import { Tool as AISDKTool, type UIMessage } from "ai"
 import { z } from "zod"
 
 // Re-export types from @hybrd/types for backward compatibility
-export type { AnyTool, DefaultRuntimeExtension, Tool, ToolConfig }
+export type { AnyTool, DefaultRuntimeExtension, Tool }
 
 /**
  * Factory function to create tools with custom runtime extensions.
@@ -21,7 +20,7 @@ export function toolFactory<TRuntimeExtension = DefaultRuntimeExtension>() {
 		TInput extends z.ZodTypeAny = z.ZodTypeAny,
 		TOutput extends z.ZodTypeAny = z.ZodTypeAny
 	>(
-		config: ToolConfig<TInput, TOutput, TRuntimeExtension>
+		config: Tool<TInput, TOutput, TRuntimeExtension>
 	): Tool<TInput, TOutput, TRuntimeExtension> => {
 		return {
 			description: config.description,
