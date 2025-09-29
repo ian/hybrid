@@ -48,9 +48,3 @@ export {
 	sendReplyTool,
 	xmtpTools
 } from "./xmtp"
-
-// Export Miniapp tools
-export {
-	launchMiniappTool,
-	miniAppTools
-} from "./miniapp"
