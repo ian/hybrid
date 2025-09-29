@@ -1,19 +1,9 @@
 {
 	"name": "hybrid",
 	"version": "1.4.2",
-	"keywords": [
-		"xmtp",
-		"agent",
-		"ai",
-		"hybrid",
-		"blockchain",
-		"messaging"
-	],
+	"keywords": ["xmtp", "agent", "ai", "hybrid", "blockchain", "messaging"],
 	"type": "module",
-	"files": [
-		"dist",
-		"src"
-	],
+	"files": ["dist", "src"],
 	"exports": {
 		".": {
 			"types": "./src/index.ts",
@@ -22,13 +12,18 @@
 		},
 		"./behaviors": {
 			"types": "./src/behaviors/index.ts",
-			"import": "./dist/behaviors/index.js",
-			"require": "./dist/behaviors/index.cjs"
+			"import": "./dist/behaviors.js",
+			"require": "./dist/behaviors.cjs"
 		},
 		"./tools": {
 			"types": "./src/tools/index.ts",
-			"import": "./dist/tools/index.js",
-			"require": "./dist/tools/index.cjs"
+			"import": "./dist/tools.js",
+			"require": "./dist/tools.cjs"
+		},
+		"./types": {
+			"types": "./src/types.ts",
+			"import": "./dist/types.js",
+			"require": "./dist/types.cjs"
 		}
 	},
 	"scripts": {

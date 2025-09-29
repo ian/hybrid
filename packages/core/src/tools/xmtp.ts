@@ -81,7 +81,7 @@ export const getMessageTool = createTool({
 			logger.debug(`📜 [getMessage] Retrieving message ${messageId}`)
 
 			const sendStartTime = performance.now()
-			const message = await conversation.getMessageById(messageId)
+			const message = await xmtpClient.conversations.getMessageById(messageId)
 			const sendEndTime = performance.now()
 			logger.debug(
 				`📜 [Tool:getMessage] XMTP client getMessage completed in ${(sendEndTime - sendStartTime).toFixed(2)}ms`
