@@ -1,6 +1,6 @@
 {
 	"name": "@hybrd/cli",
-	"version": "1.4.2",
+	"version": "1.4.3",
 	"type": "module",
 	"bin": {
 		"hybrid": "./dist/cli.js",
