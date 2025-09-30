@@ -7,8 +7,14 @@ export default defineConfig({
 		}
 	],
 	theme: {
-		accentColor: "red"
+		colorScheme: "dark",
+		accentColor: "#FF5C00"
+		// variables: {
+		// 	fontFamily: {
+		// 		default: "Inter",
+		// 		mono: "Inter"
+		// 	}
+		// }
 	},
-	title: "Hybrid",
-	installCommand: "npm create hybrid"
+	title: "Hybrid"
 })
