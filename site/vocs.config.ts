@@ -1,13 +1,14 @@
-import { defineConfig } from 'vocs'
+import { defineConfig } from "vocs"
 
 export default defineConfig({
-  sidebar: [
-    {
-      text: 'Introduction',
-    },
-  ],
-  theme: {
-    accentColor: 'red',
-  },
-  title: 'Hybrid',
+	sidebar: [
+		{
+			text: "Introduction"
+		}
+	],
+	theme: {
+		accentColor: "red"
+	},
+	title: "Hybrid",
+	installCommand: "npm create hybrid"
 })
