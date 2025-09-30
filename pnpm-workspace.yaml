@@ -3,7 +3,7 @@ packages:
   - config/*
   - packages/*
   - harness/*
-  - docs
+  - site
 
 catalog:
   zod: ^3.22.0 || ^4
