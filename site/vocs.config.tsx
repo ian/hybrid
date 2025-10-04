@@ -1,6 +1,15 @@
+import React from "react"
 import { defineConfig } from "vocs"
 
 export default defineConfig({
+	title: "Hybrid",
+	theme: {
+		colorScheme: "dark",
+		accentColor: "#FF5C00"
+	},
+	head: {
+		"/": <a href="https://github.com/hybrid-ai/hybrid">GitHub</a>
+	},
 	sidebar: [
 		{
 			text: "Quickstart",
@@ -106,10 +115,5 @@ export default defineConfig({
 				}
 			]
 		}
-	],
-	theme: {
-		colorScheme: "dark",
-		accentColor: "#FF5C00"
-	},
-	title: "Hybrid"
+	]
 })
