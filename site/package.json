@@ -4,13 +4,11 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vocs dev",
-		"build": "vocs build",
-		"preview": "vocs preview"
+		"dev": "vitepress dev",
+		"build": "vitepress build",
+		"preview": "vitepress preview"
 	},
-	"dependencies": {
-		"vocs": "^1.0.0",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0"
+	"devDependencies": {
+		"vitepress": "^1.6.4"
 	}
 }

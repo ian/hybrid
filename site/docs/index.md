@@ -18,14 +18,14 @@ Get started with Hybrid by following our [Quickstart guide](./quickstart.md).
 
 Explore the documentation to learn more:
 
-- [Core Concepts](./core-concepts.md) - Understanding the fundamentals
-- [Using Hybrid](./using-hybrid.md) - How to use the framework
-- [Agent Configuration](./agent-configuration/) - Configure your agents
-- [XMTP Integration](./xmtp/) - XMTP-specific features
-- [Mini Apps](./mini-apps.md) - Building mini applications
-- [Tools](./tools.md) - Available tools and utilities
-- [Blockchain](./blockchain/) - Blockchain integrations
-- [Development Guide](./developing/) - Contributing and extending
+- [Core Concepts](core-concepts.md) - Understanding the fundamentals
+- [Using Hybrid](using-hybrid.md) - How to use the framework
+- [Agent Configuration](agent-configuration/prompts) - Configure your agents
+- [XMTP Integration](xmtp/introduction) - XMTP-specific features
+- [Mini Apps](mini-apps) - Building mini applications
+- [Tools](tools) - Available tools and utilities
+- [Blockchain](blockchain/tools) - Blockchain integrations
+- [Development Guide](developing/contributing) - Contributing and extending
 
 ## Installation
 

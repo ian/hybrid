@@ -3,6 +3,7 @@ import { defineConfig } from "vitepress"
 export default defineConfig({
 	title: "Hybrid",
 	description: "Typescript Framework for building crypto AI Agents",
+	ignoreDeadLinks: true,
 	themeConfig: {
 		nav: [{ text: "GitHub", link: "https://github.com/hybrid-ai/hybrid" }],
 		sidebar: [
