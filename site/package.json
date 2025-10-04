@@ -4,11 +4,11 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vitepress dev",
-		"build": "vitepress build",
-		"preview": "vitepress preview"
+		"dev": "vocs dev",
+		"build": "vocs build",
+		"preview": "vocs preview"
 	},
 	"devDependencies": {
-		"vitepress": "^1.6.4"
+		"vocs": "^1.0.13"
 	}
 }
