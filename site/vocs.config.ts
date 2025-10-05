@@ -15,6 +15,7 @@ export default defineConfig({
 		light: "/hybrid-logo-light.svg",
 		dark: "/hybrid-logo-dark.svg"
 	},
+	ogImageUrl: "/og.png",
 	// topNav: [
 	// 	{ text: "Guide & API", link: "/docs" },
 	// 	{ text: "Blog", link: "/blog" },
