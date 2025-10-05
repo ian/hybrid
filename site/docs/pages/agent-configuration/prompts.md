@@ -175,156 +175,125 @@ DON'T:
 
 ### Conversation History
 
-Leverage conversation context effectively:
+The AI SDK automatically manages conversation history. You can reference context in instructions:
 
 ```typescript
 const agent = new Agent({
+  name: "My Agent",
+  model: yourModel,
   instructions: `
-  CONVERSATION MANAGEMENT:
-  - Remember user preferences from previous interactions
-  - Reference past transactions and decisions
-  - Build on previous educational topics
-  - Maintain context across sessions
+  You are a helpful crypto assistant. Guidelines:
   
-  CONTEXT USAGE:
-  - Use conversation history to personalize responses
-  - Avoid repeating information already covered
-  - Build on user's demonstrated knowledge level
-  - Reference specific past interactions when relevant
-  `,
+  CONVERSATION:
+  - Remember context from earlier in the conversation
+  - Reference past messages when relevant
+  - Build on previous topics naturally
+  - Avoid repeating information
   
-  contextWindow: 4000, // Token limit for conversation history
-  contextStrategy: "sliding", // How to manage context when limit is reached
+  STYLE:
+  - Be conversational and helpful
+  - Explain complex topics clearly
+  - Ask clarifying questions when needed
+  `
 })
 ```
 
-### Dynamic Context Updates
+### Token Limits
 
-Update context based on user interactions:
-
-```typescript
-agent.on("transaction", (tx) => {
-  agent.updateContext(`User executed transaction: ${tx.hash}`)
-})
-
-agent.on("portfolioChange", (change) => {
-  agent.updateContext(`Portfolio updated: ${change.summary}`)
-})
-```
-
-### Context Prioritization
-
-Manage context when approaching limits:
+Control token usage with `maxTokens`:
 
 ```typescript
 const agent = new Agent({
-  contextStrategy: {
-    type: "priority",
-    priorities: {
-      userPreferences: 1.0,
-      recentTransactions: 0.8,
-      portfolioState: 0.7,
-      generalConversation: 0.3,
-    }
-  }
+  name: "My Agent",
+  model: yourModel,
+  instructions: "...",
+  maxTokens: 2000,     // Max tokens for AI response
+  temperature: 0.7     // Response randomness (0-1)
 })
 ```
 
-## Agent Runtime Extensions and Custom Contexts
+## Agent Runtime Extensions
 
-### Custom Context Providers
+### Custom Runtime Context
 
-Create specialized context providers:
+You can extend the runtime context with `createRuntime`:
 
 ```typescript
-class PortfolioContextProvider {
-  async getContext(userId: string) {
-    const portfolio = await this.getPortfolio(userId)
-    return {
-      totalValue: portfolio.totalValue,
-      topHoldings: portfolio.topHoldings.slice(0, 5),
-      riskScore: portfolio.riskScore,
-      lastUpdate: portfolio.lastUpdate,
-    }
+interface MyRuntimeExtension {
+  apiKey: string
+  userPreferences: {
+    theme: string
+    notifications: boolean
   }
 }
 
-const agent = new Agent({
-  contextProviders: [
-    new PortfolioContextProvider(),
-    new MarketDataProvider(),
-    new TransactionHistoryProvider(),
-  ]
+const agent = new Agent<MyRuntimeExtension>({
+  name: "My Agent",
+  model: yourModel,
+  instructions: "...",
+  tools: { /* your tools */ },
+  
+  createRuntime: (runtime) => ({
+    // Add custom properties
+    apiKey: process.env.MY_API_KEY!,
+    userPreferences: {
+      theme: "dark",
+      notifications: true
+    }
+  })
 })
 ```
 
-### Runtime Context Updates
+### Dynamic Instructions
 
-Update agent context during runtime:
-
-```typescript
-// Update context based on market conditions
-agent.updateContext("market", {
-  trend: "bullish",
-  volatility: "high",
-  majorEvents: ["ETH upgrade", "Fed announcement"],
-})
-
-// Update context based on user actions
-agent.updateContext("user", {
-  riskTolerance: "moderate",
-  experienceLevel: "intermediate",
-  preferredProtocols: ["Uniswap", "Aave", "Compound"],
-})
-```
-
-### Conditional Instructions
-
-Adapt instructions based on context:
+Instructions can be functions that use runtime context:
 
 ```typescript
 const agent = new Agent({
-  instructions: `
-  BASE INSTRUCTIONS: You are a DeFi assistant.
+  name: "My Agent",
+  model: yourModel,
   
-  CONDITIONAL BEHAVIOR:
-  
-  IF user.experienceLevel === "beginner":
-    - Provide detailed explanations for all concepts
-    - Suggest starting with simple, low-risk protocols
-    - Include educational resources in responses
-    - Ask if they need clarification frequently
-  
-  IF user.experienceLevel === "advanced":
-    - Focus on advanced strategies and optimizations
-    - Provide technical details and data
-    - Suggest complex multi-protocol strategies
-    - Assume familiarity with DeFi concepts
-  
-  IF market.volatility === "high":
-    - Emphasize risk management
-    - Suggest reducing position sizes
-    - Recommend stable, established protocols
-    - Warn about potential liquidation risks
-  `,
+  // Dynamic instructions based on runtime
+  instructions: async ({ runtime, messages }) => {
+    const user = (runtime as any).user
+    
+    let baseInstructions = "You are a helpful crypto assistant."
+    
+    // Customize based on user data
+    if (user?.experienceLevel === "beginner") {
+      baseInstructions += "\n\nProvide detailed explanations and avoid jargon."
+    } else if (user?.experienceLevel === "advanced") {
+      baseInstructions += "\n\nProvide technical details and advanced strategies."
+    }
+    
+    return baseInstructions
+  }
 })
 ```
 
-### Extension Hooks
+### Dynamic Tools
 
-Create hooks for runtime behavior modification:
+Tools can also be functions:
 
 ```typescript
-agent.addHook("beforeResponse", async (context) => {
-  // Add market sentiment to all responses
-  const sentiment = await getMarketSentiment()
-  context.marketSentiment = sentiment
-  return context
-})
-
-agent.addHook("afterTransaction", async (transaction) => {
-  // Update user risk profile after transactions
-  await updateUserRiskProfile(transaction.userId, transaction)
+const agent = new Agent({
+  name: "My Agent",
+  model: yourModel,
+  
+  // Dynamic tools based on runtime
+  tools: async ({ runtime, messages }) => {
+    const baseTools = { ...blockchainTools }
+    
+    // Add additional tools based on context
+    if ((runtime as any).isPremiumUser) {
+      return {
+        ...baseTools,
+        ...premiumTools
+      }
+    }
+    
+    return baseTools
+  }
 })
 ```
 

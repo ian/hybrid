@@ -11,12 +11,12 @@ Understanding the fundamental concepts behind Hybrid agents and how they differ 
 
 ### Hybrid as a Framework
 
-Hybrid is a framework for building autonomous agents that combine AI capabilities with blockchain functionality. Unlike traditional chatbots, Hybrid agents:
+Hybrid is a TypeScript framework for building AI agents with blockchain integration and decentralized messaging. Hybrid agents:
 
-- Have their own wallet addresses and can spend money
-- Communicate through decentralized messaging protocols
-- Can interact with DeFi protocols and smart contracts
-- Operate autonomously with financial capabilities
+- Communicate through XMTP (decentralized messaging protocol)
+- Can interact with blockchain networks (read/write)
+- Use AI models for intelligent responses
+- Are extensible with custom tools and behaviors
 
 ### Decentralized Messaging Meets AI
 
@@ -27,164 +27,159 @@ Traditional AI agents are limited to centralized platforms. Hybrid agents use XM
 - **End-to-end encryption** - Secure message transmission
 - **Cross-platform compatibility** - Works with any XMTP-compatible client
 
-### Why Agents Need Wallets
+### Why Blockchain Integration?
 
-Financial autonomy enables agents to:
+Blockchain integration enables agents to:
 
-- Pay for their own API calls and infrastructure
-- Participate in DeFi protocols
-- Execute transactions on behalf of users
-- Earn revenue through services
-- Manage their own operational costs
+- Check wallet balances and transaction history
+- Read blockchain state (blocks, transactions, gas prices)
+- Execute transactions (with configured private key)
+- Interact with DeFi protocols
+- Provide crypto-native experiences
 
-### The Vision of Financially Autonomous AI
+## XMTP Identity and Wallets
 
-Hybrid enables a future where AI agents can:
+### Wallet-Based Identity
 
-- Operate independently without human financial oversight
-- Earn money through providing services
-- Invest and manage their own portfolios
-- Pay for resources and scale automatically
-- Create new economic models for AI services
+Hybrid agents use Ethereum wallets for XMTP identity:
 
-## Crypto and Wallet Fundamentals
+- **Generate keys** - Use `npx hybrid keys` to generate wallet and encryption keys
+- **Wallet address** - Agent is identified by its Ethereum address
+- **XMTP identity** - Cryptographic identity for messaging
+- **Persistent identity** - Same wallet = same agent identity
 
-### Automatic Wallet Creation
+### Key Generation
 
-Every Hybrid agent automatically receives:
+Generate keys for your agent:
 
-- **Ethereum wallet address** - Unique identity on the blockchain
-- **Private key management** - Securely stored and managed
-- **Multi-chain support** - Works across Ethereum, Polygon, Base, etc.
-- **Gas management** - Automatic gas estimation and payment
-
-### Agent Financial Capabilities
-
-Agents can interact with DeFi through:
-
-```typescript
-import { blockchainTools } from "@hybrd/core/tools"
-
-agent.use(blockchainTools({
-  chains: ["ethereum", "polygon", "base"],
-  maxGasPrice: "50000000000", // 50 gwei
-}))
+```bash
+npx hybrid keys --write
 ```
 
-### ECDSA Key Generation and Security
+This creates:
+- **XMTP_WALLET_KEY** - Private key for XMTP identity
+- **XMTP_DB_ENCRYPTION_KEY** - Key for encrypting local message database
 
-- **Secure key generation** using cryptographically secure random number generation
-- **Key derivation** following BIP-44 standards
-- **Environment-based storage** with encryption
-- **Key rotation** capabilities for enhanced security
+### Optional: Blockchain Transaction Capabilities
 
-### Understanding Gas Fees and Transaction Costs
-
-Agents automatically handle:
-
-- **Gas estimation** for optimal transaction costs
-- **Dynamic fee adjustment** based on network conditions
-- **Transaction retry logic** for failed transactions
-- **Cost optimization** across multiple chains
-
-### Agent Financial Autonomy
-
-Configure spending controls:
+If you want your agent to send transactions, configure a private key:
 
 ```typescript
 const agent = new Agent({
-  wallet: {
-    maxDailySpend: "0.1", // 0.1 ETH per day
-    allowedContracts: ["0x..."], // Whitelist contracts
-    requireConfirmation: true, // Require user confirmation for large transactions
-  }
+  name: "My Agent",
+  model: yourModel,
+  instructions: "...",
+  tools: {
+    ...blockchainTools
+  },
+  createRuntime: (runtime) => ({
+    privateKey: process.env.PRIVATE_KEY, // For sending transactions
+    rpcUrl: process.env.RPC_URL,        // Optional custom RPC
+    defaultChain: "mainnet"             // Optional default chain
+  })
 })
 ```
+
+**Note:** Private key is only needed for transaction-sending tools. Read-only operations (balance checks, etc.) don't require it.
 
 ## Agent Class Fundamentals
 
 ### Basic Agent Structure
 
 ```typescript
-import { Agent } from "@hybrd/core"
+import { Agent } from "hybrid"
+import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 
 const agent = new Agent({
+  name: "My Agent",
   model: yourAIModel,
   instructions: "Your agent's personality and behavior",
-  behaviors: [/* message processing behaviors */],
-  tools: [/* available tools and capabilities */],
+  tools: {/* optional tools */},
+  maxTokens: 2000, // optional
+  temperature: 0.7 // optional
 })
 ```
 
-### Quintessential Agent Example
+### Complete Agent Example
 
 ```typescript
-import { Agent } from "@hybrd/core"
+import { Agent } from "hybrid"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { filterMessages, reactWith } from "@hybrd/core/behaviors"
-import { blockchainTools, xmtpTools } from "@hybrd/core/tools"
+import { filterMessages, reactWith, threadedReply } from "hybrid/behaviors"
+import { blockchainTools, xmtpTools } from "hybrid/tools"
+
+const openrouter = createOpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY
+})
 
 const agent = new Agent({
-  model: createOpenRouter({
-    apiKey: process.env.OPENROUTER_API_KEY,
-  })("openai/gpt-4"),
+  name: "Crypto Agent",
+  model: openrouter("openai/gpt-4"),
   
   instructions: `You are a helpful crypto AI agent. You can:
   - Check wallet balances and transaction history
-  - Send transactions and interact with DeFi
-  - Provide market insights and analysis
+  - Send messages and replies through XMTP
+  - Provide information about blockchain transactions
   - Help users navigate the crypto ecosystem`,
   
-  behaviors: [
-    filterMessages(filter => filter.isText() && !filter.fromSelf()),
-    reactWith("🤖"),
-  ],
+  tools: {
+    ...blockchainTools,
+    ...xmtpTools
+  },
   
-  tools: [
-    blockchainTools(),
-    xmtpTools(),
-  ],
+  createRuntime: (runtime) => ({
+    privateKey: process.env.PRIVATE_KEY,
+    rpcUrl: process.env.RPC_URL
+  })
+})
+
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    filterMessages((filter) => filter.isText() && !filter.fromSelf()),
+    reactWith("👀"),
+    threadedReply()
+  ]
 })
 ```
 
-### Message Processing Lifecycle
+### How It Works
 
-1. **Message Reception** - Agent receives message through XMTP
-2. **Behavior Filtering** - Behaviors determine if message should be processed
-3. **AI Processing** - Message is sent to AI model with context
-4. **Tool Execution** - Agent can call tools based on AI response
-5. **Response Generation** - Agent sends response back through XMTP
+1. **XMTP Plugin** - Automatically connects to XMTP network using your wallet key
+2. **Message Reception** - Agent receives messages through XMTP stream
+3. **Behavior Processing** - Behaviors filter and process messages (before/after hooks)
+4. **AI Processing** - Message is sent to AI model with available tools
+5. **Tool Execution** - AI can call tools (blockchain, messaging, etc.)
+6. **Response** - Agent sends response back through XMTP
 
-### Agent Runtime Behavior
+### Agent Listen Method
 
-Agents operate in a continuous loop:
+The `listen` method starts the agent server:
 
 ```typescript
-// Simplified agent lifecycle
-while (agent.isRunning) {
-  const messages = await agent.checkForNewMessages()
-  
-  for (const message of messages) {
-    if (await agent.shouldProcess(message)) {
-      const response = await agent.processMessage(message)
-      await agent.sendResponse(response)
-    }
-  }
-  
-  await agent.sleep(1000) // Check every second
-}
+await agent.listen({
+  port: "8454",                    // HTTP server port
+  behaviors: [/* behaviors */],    // Message processing behaviors
+  plugins: [/* plugins */]         // Optional additional plugins
+})
 ```
+
+This:
+- Starts an HTTP server
+- Connects to XMTP network
+- Listens for messages in background
+- Processes messages through behaviors → AI → tools → response
 
 ### Connecting AI Models to Blockchain
 
-Agents bridge AI and blockchain through:
+Agents connect AI and blockchain through:
 
-- **Tool integration** - AI can call blockchain functions
-- **Context awareness** - AI understands wallet state and transaction history
-- **Smart contract interaction** - AI can read and write to contracts
-- **DeFi integration** - AI can participate in lending, trading, etc.
+- **Tool integration** - AI calls tools using AI SDK tool calling
+- **Runtime context** - Tools access runtime config (keys, RPC, etc.)
+- **Type-safe schemas** - Tools define input/output with Zod
+- **Streaming support** - Real-time responses with tool execution
 
-## Messaging Networks and Channels
+## Messaging with XMTP
 
 ### XMTP as Primary Network
 
@@ -195,104 +190,86 @@ XMTP provides:
 - **End-to-end encryption** - Secure communication
 - **Cross-client compatibility** - Works with any XMTP client
 
-### Understanding Messaging Protocols
+### Understanding XMTP Concepts
 
 Key concepts:
 
-- **Conversations** - 1:1 or group message threads
-- **Content types** - Text, reactions, replies, attachments
+- **Conversations** - 1:1 (DM) or group message threads
+- **Content types** - Text, reactions, replies, remote attachments
 - **Message encryption** - Automatic encryption/decryption
-- **Message persistence** - Messages stored on XMTP network
+- **Streaming** - Real-time message delivery
+- **Persistence** - Messages stored on XMTP network
 
-### Future Channel Support
+### Available Filter Methods
 
-Planned integrations:
-
-#### Discord Integration Patterns
-- Bot-based messaging through Discord API
-- Slash command integration
-- Server-specific agent deployment
-- Role-based permissions and access
-
-#### Telegram Bot Capabilities
-- Telegram Bot API integration
-- Group chat participation
-- Inline query responses
-- Custom keyboard interactions
-
-#### Twitter/X Messaging Features
-- Direct message automation
-- Tweet monitoring and responses
-- Mention-based interactions
-- Thread participation
-
-### Cross-Platform Messaging Strategies
-
-Design patterns for multi-platform agents:
+The `filterMessages` behavior provides these filter methods:
 
 ```typescript
-const agent = new Agent({
-  channels: {
-    xmtp: { primary: true },
-    discord: { guildIds: ["123..."] },
-    telegram: { botToken: process.env.TELEGRAM_TOKEN },
-  }
-})
-```
-
-### Channel-Specific Behavior Customization
-
-```typescript
-agent.use(filterMessages(filter => {
-  if (filter.channel === "discord") {
-    return filter.hasPrefix("!")
-  }
-  if (filter.channel === "telegram") {
-    return filter.isCommand()
-  }
-  return filter.isText()
-}))
-```
-
-## Agent Identity and Authentication
-
-### Wallet-Based Identity
-
-Agents are identified by:
-
-- **Ethereum address** - Unique identifier across all platforms
-- **ENS name** - Human-readable names (e.g., `myagent.eth`)
-- **XMTP identity** - Cryptographic identity for messaging
-- **Reputation score** - Built over time through interactions
-
-### XMTP Network Registration
-
-```bash
-# Register agent wallet with XMTP network
-hybrid register
-
-# Verify registration
-hybrid status
-```
-
-### Managing Multiple Agent Identities
-
-```typescript
-const agentManager = new AgentManager({
-  agents: [
-    { name: "trading-bot", wallet: "0x123..." },
-    { name: "support-agent", wallet: "0x456..." },
-    { name: "defi-advisor", wallet: "0x789..." },
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    filterMessages((filter) => {
+      // Message type checks
+      filter.isText()           // Is text message
+      filter.isReaction()       // Is reaction
+      filter.isReply()          // Is reply
+      filter.isTextReply()      // Is text reply
+      filter.isRemoteAttachment() // Has attachment
+      filter.hasContent()       // Has any content
+      
+      // Conversation type checks
+      filter.isDM()             // Is direct message (1:1)
+      filter.isGroup()          // Is group conversation
+      
+      // Sender checks
+      filter.fromSelf()         // From agent itself
+      filter.isGroupAdmin()     // Sender is group admin
+      filter.isGroupSuperAdmin() // Sender is super admin
+      filter.hasMention(text)   // Contains mention
+      
+      return true // or false to filter out
+    })
   ]
 })
 ```
 
-### Identity Persistence Across Sessions
+### XMTP Environment
 
-- **Key storage** in encrypted environment variables
-- **Session management** with automatic reconnection
-- **State persistence** across restarts
-- **Identity verification** on startup
+Configure XMTP network environment:
+
+```bash
+# Use production XMTP network (default)
+XMTP_ENV=production
+
+# Use development XMTP network
+XMTP_ENV=dev
+```
+
+## Agent Identity
+
+### Wallet-Based Identity
+
+Each agent is identified by:
+
+- **Ethereum address** - Derived from `XMTP_WALLET_KEY`
+- **XMTP identity** - Cryptographic identity for messaging
+- **Persistent identity** - Same wallet = same agent across sessions
+
+### XMTP Network Registration
+
+For production deployments, register your wallet:
+
+```bash
+npx hybrid register
+```
+
+This creates the agent's XMTP identity on the network. Registration is not required for development.
+
+### Identity Persistence
+
+- **Keys stored** in environment variables (`.env`)
+- **Automatic reconnection** on server restart
+- **Message history** persists on XMTP network
 
 ## Next Steps
 

@@ -14,10 +14,11 @@ OpenRouter provides access to multiple AI models through a single API, making it
 ### Basic OpenRouter Setup
 
 ```typescript
-import { Agent } from "@hybrd/core"
+import { Agent } from "hybrid"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 
 const agent = new Agent({
+  name: "My Agent",
   model: createOpenRouter({
     apiKey: process.env.OPENROUTER_API_KEY,
   })("openai/gpt-4"),

@@ -7,31 +7,42 @@ description: Configure message processing behaviors and filters for your agents
 
 Learn how to configure behaviors that control how your agent processes and responds to messages.
 
-## How Behaviors Work in the Agent Lifecycle
+## How Behaviors Work
 
-Behaviors are middleware functions that process messages before they reach your agent's AI model. They can:
+Behaviors are hooks that process messages in the agent lifecycle. They run:
 
-- **Filter messages** - Determine which messages to process
-- **Transform messages** - Modify message content or context
-- **Add reactions** - Automatically react to messages
-- **Control threading** - Manage conversation threading
-- **Implement custom logic** - Add specialized processing
+- **Before** - Before AI processes the message (filter, react)
+- **After** - After AI generates response (threading)
 
-### Behavior Execution Order
+Behaviors are passed to `agent.listen()`:
 
 ```typescript
-import { Agent } from "@hybrd/core"
-import { filterMessages, reactWith, threadedReply } from "@hybrd/core/behaviors"
+import { Agent } from "hybrid"
+import { filterMessages, reactWith, threadedReply } from "hybrid/behaviors"
 
 const agent = new Agent({
+  name: "My Agent",
+  model: yourModel,
+  instructions: "..."
+})
+
+await agent.listen({
+  port: "8454",
   behaviors: [
-    filterMessages(/* filter logic */), // 1. Filter first
-    reactWith("👍"),                    // 2. React to valid messages
-    threadedReply(),                    // 3. Configure threading
-    // Custom behaviors...              // 4. Additional processing
+    filterMessages(/* filter logic */), // Runs first
+    reactWith("👀"),                     // Runs if message passes filter
+    threadedReply()                      // Configures response threading
   ]
 })
 ```
+
+### Behavior Lifecycle
+
+1. **Message received** from XMTP
+2. **Before hooks** run (filterMessages, reactWith)
+3. **AI processing** (if not filtered out)
+4. **After hooks** run (threadedReply)
+5. **Response sent** to XMTP
 
 ## Message Filtering with `filterMessages`
 
@@ -161,378 +172,203 @@ agent.use(filterMessages(filter => {
 
 ## Automatic Reactions with `reactWith`
 
-The `reactWith` behavior automatically adds emoji reactions to messages.
+The `reactWith` behavior automatically adds emoji reactions to messages that pass the filter.
 
-### Basic Reactions
+### Basic Usage
 
 ```typescript
-import { reactWith } from "@hybrd/core/behaviors"
+import { reactWith } from "hybrid/behaviors"
 
-// React with thumbs up to all processed messages
-agent.use(reactWith("👍"))
+// React with eyes emoji to all processed messages
+reactWith("👀")
 
-// React with multiple emojis
-agent.use(reactWith(["👍", "🤖", "✅"]))
+// React with thumbs up
+reactWith("👍")
+
+// React with robot emoji
+reactWith("🤖")
 ```
 
-### Conditional Reactions
+### Options
 
 ```typescript
-// React based on message content
-agent.use(reactWith((message) => {
-  if (message.content.includes("help")) {
-    return "🆘"
-  }
-  if (message.content.includes("thanks")) {
-    return "🙏"
-  }
-  return "👍" // Default reaction
-}))
+// Enable/disable reactWith
+reactWith("👀", {
+  enabled: true  // default: true
+})
 
-// React based on sentiment analysis
-agent.use(reactWith(async (message) => {
-  const sentiment = await analyzeSentiment(message.content)
-  
-  if (sentiment > 0.5) return "😊"
-  if (sentiment < -0.5) return "😔"
-  return "🤔"
-}))
+// React to all messages (even filtered ones)
+reactWith("👀", {
+  reactToAll: true  // default: true
+})
 ```
 
-### Reaction Timing and Behavior
+### When Reactions Happen
+
+Reactions are sent during the `before` hook, which means:
+- They happen **before** AI processing
+- They acknowledge message receipt
+- They don't depend on AI response
+
+### Example Usage
 
 ```typescript
-// Configure reaction timing
-agent.use(reactWith("👍", {
-  delay: 1000, // Wait 1 second before reacting
-  probability: 0.8, // Only react 80% of the time
-}))
-
-// React only to specific message types
-agent.use(reactWith("🎉", {
-  condition: (message) => message.content.includes("celebration")
-}))
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    // Only process certain messages
+    filterMessages((filter) => filter.isDM() || filter.hasMention("@agent")),
+    
+    // React to acknowledge we're processing it
+    reactWith("👀"),
+    
+    // Reply in threads
+    threadedReply()
+  ]
+})
 ```
 
 ## Threaded Replies with `threadedReply`
 
-The `threadedReply` behavior controls how your agent handles conversation threading.
+The `threadedReply` behavior configures the agent to reply in threads instead of sending top-level messages.
 
-### Basic Threading Configuration
+### Basic Usage
 
 ```typescript
-import { threadedReply } from "@hybrd/core/behaviors"
+import { threadedReply } from "hybrid/behaviors"
 
 // Always reply in threads
-agent.use(threadedReply())
+threadedReply()
 
-// Never use threads (always top-level)
-agent.use(threadedReply({ enabled: false }))
+// Disable threading (reply at top level)
+threadedReply({ enabled: false })
 ```
 
-### Conditional Threading
+### How It Works
+
+When enabled, `threadedReply`:
+- Sets `sendOptions.threaded = true` in the `after` hook
+- Makes agent reply to the original message instead of sending new top-level message
+- Keeps conversations organized
+
+### Example Usage
 
 ```typescript
-// Use threads for group conversations, top-level for DMs
-agent.use(threadedReply({
-  condition: (message) => message.conversation.isGroup
-}))
-
-// Use threads for long conversations
-agent.use(threadedReply({
-  condition: (message) => message.conversation.messageCount > 10
-}))
-
-// Use threads based on message content
-agent.use(threadedReply({
-  condition: (message) => {
-    // Thread for technical discussions
-    const technicalKeywords = ["code", "debug", "error", "implementation"]
-    return technicalKeywords.some(keyword => 
-      message.content.toLowerCase().includes(keyword)
-    )
-  }
-}))
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    filterMessages((filter) => filter.isText() && !filter.fromSelf()),
+    reactWith("👀"),
+    threadedReply()  // Always thread replies
+  ]
+})
 ```
 
-### Thread Management
+**With threading:**
+```
+User: Hey agent, what's my balance?
+  └─ Agent: Your balance is 1.5 ETH
+```
 
-```typescript
-// Configure thread behavior
-agent.use(threadedReply({
-  maxThreadDepth: 5, // Limit thread nesting
-  autoCreateThread: true, // Create thread if none exists
-  inheritContext: true, // Include thread context in responses
-}))
-
-// Custom thread naming
-agent.use(threadedReply({
-  threadName: (message) => {
-    if (message.content.includes("bug")) {
-      return "Bug Discussion"
-    }
-    if (message.content.includes("feature")) {
-      return "Feature Request"
-    }
-    return "General Discussion"
-  }
-}))
+**Without threading:**
+```
+User: Hey agent, what's my balance?
+Agent: Your balance is 1.5 ETH
 ```
 
 ## Creating Custom Behaviors
 
-### Basic Custom Behavior
+Custom behaviors follow the `BehaviorObject` interface with `before` and `after` hooks.
+
+### BehaviorObject Interface
 
 ```typescript
-import { Behavior, BehaviorContext } from "@hybrd/core/behaviors"
-
-class CustomLoggerBehavior implements Behavior {
-  async process(context: BehaviorContext) {
-    console.log(`Processing message from ${context.message.sender}`)
-    console.log(`Content: ${context.message.content}`)
-    
-    // Continue to next behavior
-    return context
+interface BehaviorObject {
+  id: string
+  config: {
+    enabled: boolean
+    config?: Record<string, unknown>
   }
+  before?(context: BehaviorContext): Promise<void>
+  after?(context: BehaviorContext): Promise<void>
 }
-
-agent.use(new CustomLoggerBehavior())
 ```
 
-### Behavior with Configuration
+### Custom Behavior Example
 
 ```typescript
-class RateLimitBehavior implements Behavior {
-  private limits = new Map<string, number>()
-  
-  constructor(private maxMessages: number = 10, private windowMs: number = 60000) {}
-  
-  async process(context: BehaviorContext) {
-    const senderId = context.message.sender
-    const now = Date.now()
-    
-    // Clean old entries
-    this.cleanOldEntries(now)
-    
-    // Check rate limit
-    const count = this.limits.get(senderId) || 0
-    if (count >= this.maxMessages) {
-      // Block message processing
-      context.shouldProcess = false
-      return context
+import type { BehaviorObject, BehaviorContext } from "hybrid/behaviors"
+
+function customLogger(): BehaviorObject {
+  return {
+    id: "custom-logger",
+    config: {
+      enabled: true
+    },
+    async before(context: BehaviorContext) {
+      console.log(`📥 Message from: ${context.message.senderInboxId}`)
+      console.log(`📝 Content: ${context.message.content}`)
+    },
+    async after(context: BehaviorContext) {
+      console.log(`✅ Response sent`)
     }
-    
-    // Increment counter
-    this.limits.set(senderId, count + 1)
-    
-    return context
-  }
-  
-  private cleanOldEntries(now: number) {
-    // Implementation for cleaning old rate limit entries
   }
 }
 
-agent.use(new RateLimitBehavior(5, 30000)) // 5 messages per 30 seconds
-```
-
-### Async Behavior with External APIs
-
-```typescript
-class SentimentAnalysisBehavior implements Behavior {
-  async process(context: BehaviorContext) {
-    const sentiment = await this.analyzeSentiment(context.message.content)
-    
-    // Add sentiment to context for other behaviors/AI
-    context.metadata.sentiment = sentiment
-    
-    // React based on sentiment
-    if (sentiment.score < -0.5) {
-      context.reactions.push("😔")
-    } else if (sentiment.score > 0.5) {
-      context.reactions.push("😊")
-    }
-    
-    return context
-  }
-  
-  private async analyzeSentiment(text: string) {
-    // Call external sentiment analysis API
-    const response = await fetch("https://api.sentiment.com/analyze", {
-      method: "POST",
-      body: JSON.stringify({ text }),
-      headers: { "Content-Type": "application/json" }
-    })
-    
-    return response.json()
-  }
-}
-```
-
-## Behavior Lifecycle (Before/After/Error Hooks)
-
-### Lifecycle Hooks
-
-```typescript
-class AdvancedBehavior implements Behavior {
-  async before(context: BehaviorContext) {
-    // Called before main processing
-    console.log("Before processing message")
-    context.startTime = Date.now()
-  }
-  
-  async process(context: BehaviorContext) {
-    // Main behavior logic
-    return context
-  }
-  
-  async after(context: BehaviorContext) {
-    // Called after successful processing
-    const duration = Date.now() - context.startTime
-    console.log(`Processing took ${duration}ms`)
-  }
-  
-  async onError(error: Error, context: BehaviorContext) {
-    // Called when an error occurs
-    console.error("Behavior error:", error)
-    
-    // Optionally recover or modify context
-    context.shouldProcess = false
-    return context
-  }
-}
-```
-
-### Error Handling Strategies
-
-```typescript
-class ResilientBehavior implements Behavior {
-  async process(context: BehaviorContext) {
-    try {
-      // Risky operation
-      const result = await this.riskyOperation(context.message)
-      context.metadata.result = result
-    } catch (error) {
-      // Graceful degradation
-      console.warn("Risky operation failed, using fallback")
-      context.metadata.result = this.getFallbackResult()
-    }
-    
-    return context
-  }
-  
-  async onError(error: Error, context: BehaviorContext) {
-    // Log error for monitoring
-    this.logError(error, context)
-    
-    // Don't block other behaviors
-    return context
-  }
-}
-```
-
-## Behavior Composition and Chaining
-
-### Combining Multiple Behaviors
-
-```typescript
-// Create a behavior chain for customer support
-const supportBehaviors = [
-  filterMessages(filter => 
-    filter.isText() && 
-    !filter.fromSelf() && 
-    (filter.isDM() || filter.hasMention(agent.address))
-  ),
-  new SentimentAnalysisBehavior(),
-  new TicketCreationBehavior(),
-  reactWith((message, context) => {
-    if (context.metadata.sentiment?.score < -0.5) {
-      return "🆘" // Urgent support needed
-    }
-    return "👍" // Acknowledged
-  }),
-  threadedReply({
-    condition: (message) => message.conversation.isGroup
-  }),
-]
-
-supportBehaviors.forEach(behavior => agent.use(behavior))
-```
-
-### Conditional Behavior Chains
-
-```typescript
-// Different behavior chains for different contexts
-agent.use(async (context) => {
-  if (context.message.conversation.isGroup) {
-    // Group conversation behaviors
-    await new ModerationBehavior().process(context)
-    await new GroupAnalyticsBehavior().process(context)
-  } else {
-    // Direct message behaviors
-    await new PersonalizationBehavior().process(context)
-    await new PrivacyBehavior().process(context)
-  }
-  
-  return context
+// Use it
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    customLogger(),
+    filterMessages((filter) => filter.isText()),
+    reactWith("👀")
+  ]
 })
 ```
 
-## Advanced Behavior Patterns
+### Behavior Context
 
-### State Management in Behaviors
+The `BehaviorContext` provides access to:
 
 ```typescript
-class ConversationStateBehavior implements Behavior {
-  private conversationStates = new Map<string, any>()
-  
-  async process(context: BehaviorContext) {
-    const conversationId = context.message.conversation.id
-    const state = this.conversationStates.get(conversationId) || {}
-    
-    // Update state based on message
-    state.lastMessage = context.message.content
-    state.messageCount = (state.messageCount || 0) + 1
-    state.lastActivity = Date.now()
-    
-    // Add state to context
-    context.conversationState = state
-    
-    // Save updated state
-    this.conversationStates.set(conversationId, state)
-    
-    return context
+interface BehaviorContext {
+  message: Message          // The incoming XMTP message
+  conversation: Conversation // The XMTP conversation
+  client: XmtpClient        // The XMTP client instance
+  sendOptions?: {
+    threaded?: boolean      // Set by threadedReply
+    filtered?: boolean      // Set by filterMessages
   }
+  next?: () => Promise<void> // Call to continue behavior chain
 }
 ```
 
-### Behavior Dependencies
+### Stopping the Behavior Chain
+
+To stop processing (filter out a message), set `filtered` and don't call `next()`:
 
 ```typescript
-class DependentBehavior implements Behavior {
-  constructor(private dependencies: string[]) {}
-  
-  async process(context: BehaviorContext) {
-    // Check if required behaviors have run
-    for (const dep of this.dependencies) {
-      if (!context.metadata[dep]) {
-        throw new Error(`Required behavior ${dep} has not run`)
+function customFilter(): BehaviorObject {
+  return {
+    id: "custom-filter",
+    config: { enabled: true },
+    async before(context: BehaviorContext) {
+      // Filter out messages containing "spam"
+      if (typeof context.message.content === "string" && 
+          context.message.content.includes("spam")) {
+        if (!context.sendOptions) {
+          context.sendOptions = {}
+        }
+        context.sendOptions.filtered = true
+        // Don't call next() - stops the chain
+        return
       }
+      
+      // Continue to next behavior
+      await context.next?.()
     }
-    
-    // Process with dependency data
-    const sentimentData = context.metadata.sentiment
-    const userProfile = context.metadata.userProfile
-    
-    // Your logic here...
-    
-    return context
   }
 }
-
-agent.use(new SentimentAnalysisBehavior()) // Provides 'sentiment'
-agent.use(new UserProfileBehavior())       // Provides 'userProfile'
-agent.use(new DependentBehavior(['sentiment', 'userProfile']))
 ```
 
 ## Next Steps
