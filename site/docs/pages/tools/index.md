@@ -199,42 +199,77 @@ const estimate = await agent.call("estimateGas", {
 
 ## Creating Custom Tools
 
-Extend your agent with custom tools:
+Extend your agent with custom tools using `createTool`. Here's a real-world example of a tool that launches a miniapp:
 
 ```typescript
-import { createTool } from "hybrid"
+import { Agent, createTool } from "hybrid"
 import { z } from "zod"
 
-const customTool = createTool({
-  description: "Your custom tool description",
+/**
+ * Launch Miniapp Tool
+ * 
+ * Launches a Base miniapp by sending its URL via XMTP message.
+ * This enables agents to deliver and launch miniapps from chat conversations.
+ */
+const launchMiniappTool = createTool({
+  description: "Launch a Base miniapp by sending its URL via XMTP. Only ever call this tool once.",
   
   inputSchema: z.object({
-    param: z.string()
+    message: z.string()
+      .optional()
+      .describe("Optional accompanying message text")
   }),
   
   outputSchema: z.object({
-    result: z.string()
+    success: z.boolean(),
+    messageId: z.string().optional(),
+    content: z.string(),
+    error: z.string().optional()
   }),
   
   execute: async ({ input, runtime }) => {
-    // Access runtime context
-    const apiKey = (runtime as any).myApiKey
+    const miniappUrl = process.env.MINIAPP_URL || "http://localhost:3000"
     
-    // Implement your logic
-    return { result: "success" }
+    try {
+      const { message } = input
+      const { conversation } = runtime
+      
+      // Send miniapp URL to conversation
+      await conversation.send(miniappUrl)
+      
+      return {
+        success: true,
+        content: message ?? "Opening miniapp..."
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      
+      return {
+        success: false,
+        content: "Error opening miniapp",
+        error: errorMessage
+      }
+    }
   }
 })
 
-// Add to agent
+// Add custom tool to agent
 const agent = new Agent({
+  name: "Miniapp Agent",
+  model: yourModel,
   tools: {
-    ...blockchainTools,
-    myCustomTool: customTool
-  }
+    launchMiniappTool
+  },
+  instructions: `You can launch miniapps for users when requested.`
 })
 ```
 
-[Learn more about creating custom tools →](/tools#creating-custom-tools)
+### Key Concepts
+
+- **Type Safety**: Zod schemas validate inputs and outputs
+- **Runtime Access**: Access conversation, message, and custom runtime properties
+- **Error Handling**: Return errors in output schema instead of throwing
+- **Descriptive Schemas**: Use `.describe()` to help AI understand parameters
 
 ## Best Practices
 

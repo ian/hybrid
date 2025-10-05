@@ -3,6 +3,10 @@ import { defineConfig } from "vocs"
 export default defineConfig({
 	// rootDir: 'site',
 	title: "hybrid",
+	description: "Typescript Framework for building crypto AI Agents",
+	theme: {
+		accentColor: "#F87400"
+	},
 	iconUrl: {
 		light: "/hybrid.svg",
 		dark: "/hybrid.svg"
@@ -11,6 +15,23 @@ export default defineConfig({
 		light: "/hybrid-logo-light.svg",
 		dark: "/hybrid-logo-dark.svg"
 	},
+	// topNav: [
+	//   { text: 'Guide & API', link: '/docs' },
+	//   { text: 'Blog', link: '/blog' },
+	//   {
+	//     text: version,
+	//     items: [
+	//       {
+	//         text: 'Changelog',
+	//         link: 'https://github.com/wevm/vocs/blob/main/src/CHANGELOG.md',
+	//       },
+	//       {
+	//         text: 'Contributing',
+	//         link: 'https://github.com/wevm/vocs/blob/main/.github/CONTRIBUTING.md',
+	//       },
+	//     ],
+	//   },
+	// ],
 	socials: [
 		// {
 		// 	icon: "discord",
@@ -25,7 +46,6 @@ export default defineConfig({
 			link: "https://twitter.com/hybrid_npm"
 		}
 	],
-
 	sidebar: [
 		{
 			text: "Getting Started",

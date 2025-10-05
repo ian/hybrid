@@ -220,7 +220,7 @@ The Hybrid CLI provides several commands to manage your agent development workfl
 
 ```bash
 # Initialize a new agent project
-npm create hybrid@latest my-agent
+npm create hybrid
 
 # Use the CLI
 hybrid keys
