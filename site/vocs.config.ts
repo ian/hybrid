@@ -40,7 +40,7 @@ export default defineConfig({
 		// },
 		{
 			icon: "github",
-			link: "https://github.com/hybrid-npm/hybrid"
+			link: "https://github.com/ian/hybrid"
 		},
 		{
 			icon: "x",
