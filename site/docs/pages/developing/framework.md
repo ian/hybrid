@@ -978,7 +978,6 @@ pnpm changeset publish
 
 ## Next Steps
 
-- Learn about [Plugin System](/developing/plugins) for extending functionality
-- Explore [Advanced Development](/developing/advanced) for complex scenarios
-- Check out [Deployment](/developing/deployment) for production deployment
 - See [Contributing](/developing/contributing) for contribution guidelines
+- Check out [Using Hybrid](/using-hybrid) for development workflow
+- Explore [Core Concepts](/core-concepts) for framework fundamentals

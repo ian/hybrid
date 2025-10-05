@@ -604,6 +604,5 @@ pnpm test
 ## Next Steps
 
 - Learn about [Framework Development](/developing/framework) for core development
-- Explore [Plugin System](/developing/plugins) for extending functionality
-- Check out [Advanced Development](/developing/advanced) for complex scenarios
-- See [Deployment](/developing/deployment) for production deployment
+- Check out [Using Hybrid](/using-hybrid) for development workflow
+- Explore [Agent Configuration](/agent/prompts) for customizing behavior

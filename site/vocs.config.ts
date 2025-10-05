@@ -107,15 +107,15 @@ export default defineConfig({
 				}
 			]
 		},
-		{
-			text: "Deployment",
-			items: [
-				{
-					text: "Cloudflare",
-					link: "/deployment/cloudflare"
-				}
-			]
-		},
+		// {
+		// 	text: "Deployment",
+		// 	items: [
+		// 		{
+		// 			text: "Cloudflare",
+		// 			link: "/deployment/cloudflare"
+		// 		}
+		// 	]
+		// },
 		{
 			text: "How To",
 			items: [
@@ -148,18 +148,6 @@ export default defineConfig({
 				{
 					text: "Framework",
 					link: "/developing/framework"
-				},
-				{
-					text: "Plugins",
-					link: "/developing/plugins"
-				},
-				{
-					text: "Advanced",
-					link: "/developing/advanced"
-				},
-				{
-					text: "Deployment",
-					link: "/developing/deployment"
 				},
 				{
 					text: "Contributing",

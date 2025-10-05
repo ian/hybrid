@@ -583,4 +583,3 @@ try {
 - Explore [Agent Behaviors](/agent/behaviors) for message processing
 - Check out [Blockchain Tools](/tools/blockchain) for crypto functionality
 - See [Tools Standard Library](/tools) for overview and custom tools
-- Learn about [Deployment](/developing/deployment) for production setup
