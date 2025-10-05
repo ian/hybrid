@@ -35,10 +35,10 @@ export default defineConfig({
 	// 	}
 	// ],
 	socials: [
-		// {
-		// 	icon: "discord",
-		// 	link: "https://discord.gg/JUrRkGweXV"
-		// },
+		{
+			icon: "discord",
+			link: "https://discord.gg/2GVrTwR4XT"
+		},
 		{
 			icon: "github",
 			link: "https://github.com/ian/hybrid"
