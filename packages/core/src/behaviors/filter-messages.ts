@@ -41,6 +41,9 @@ export function filterMessages(
 				`🔍 [filter-messages] Processing message: ${messageContent}...`
 			)
 
+			// Create AddressResolver instance for reuse across multiple isFrom() calls
+			const resolver = new AddressResolver(context.client)
+
 			// Create filter API wrapper
 			const filterAPI: FilterAPI = {
 				fromSelf: () =>
@@ -99,32 +102,31 @@ export function filterMessages(
 				},
 				isFromSelf: () =>
 					context.message.senderInboxId === context.client.inboxId,
-				isFrom: async (address: `0x${string}`) => {
-					const normalizedAddress = address.toLowerCase()
-					const resolver = new AddressResolver(context.client)
+			isFrom: async (address: `0x${string}`) => {
+				const normalizedAddress = address.toLowerCase()
 
-					try {
-						const senderAddress = await resolver.resolveAddress(
-							context.message.senderInboxId,
-							context.conversation.id
-						)
+				try {
+					const senderAddress = await resolver.resolveAddress(
+						context.message.senderInboxId,
+						context.conversation.id
+					)
 
-						if (!senderAddress) {
-							logger.debug(
-								`⚠️ [filter-messages] Could not resolve address for inbox ${context.message.senderInboxId}`
-							)
-							return false
-						}
-
-						return senderAddress.toLowerCase() === normalizedAddress
-					} catch (error) {
-						logger.error(
-							`❌ [filter-messages] Error resolving address for isFrom:`,
-							error
+					if (!senderAddress) {
+						logger.debug(
+							`⚠️ [filter-messages] Could not resolve address for inbox ${context.message.senderInboxId}`
 						)
 						return false
 					}
+
+					return senderAddress.toLowerCase() === normalizedAddress
+				} catch (error) {
+					logger.error(
+						`❌ [filter-messages] Error resolving address for isFrom:`,
+						error
+					)
+					return false
 				}
+			}
 			}
 
 			try {
