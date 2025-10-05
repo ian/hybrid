@@ -4,11 +4,11 @@ import type {
 	XmtpConversation,
 	XmtpMessage
 } from "@hybrd/types"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { filterMessages } from "./filter-messages"
 
 // Import the mocked filter
-import { filter as xmtpFilter } from "@hybrd/xmtp"
+import { filter as xmtpFilter, AddressResolver } from "@hybrd/xmtp"
 
 // Mock the XMTP filter
 vi.mock("@hybrd/xmtp", () => ({
@@ -24,7 +24,10 @@ vi.mock("@hybrd/xmtp", () => ({
 		isReply: vi.fn(() => false),
 		isText: vi.fn(() => true),
 		isTextReply: vi.fn(() => false)
-	}
+	},
+	AddressResolver: vi.fn().mockImplementation(() => ({
+		resolveAddress: vi.fn()
+	}))
 }))
 
 // Mock XMTP types
@@ -417,4 +420,234 @@ describe("Filter Messages Behavior", () => {
 
 		expect(context.sendOptions?.filtered).toBe(true)
 	})
+
+describe("isFromSelf filter", () => {
+	it("should return true when message is from self", async () => {
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: { inboxId: "agent-inbox" } as any,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "agent-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) => filter.isFromSelf())
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should return false when message is not from self", async () => {
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: { inboxId: "agent-inbox" } as any,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "other-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) => !filter.isFromSelf())
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should filter out message when isFromSelf returns false and filter expects true", async () => {
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: { inboxId: "agent-inbox" } as any,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "other-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) => filter.isFromSelf())
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+})
+
+describe("isFrom filter", () => {
+	let mockResolveAddress: ReturnType<typeof vi.fn>
+
+	beforeEach(() => {
+		vi.clearAllMocks()
+		mockResolveAddress = vi.fn()
+		vi.mocked(AddressResolver).mockImplementation(
+			() =>
+				({
+					resolveAddress: mockResolveAddress
+				}) as any
+		)
+	})
+
+	it("should filter messages from specific address", async () => {
+		mockResolveAddress.mockResolvedValue(
+			"0x1234567890123456789012345678901234567890"
+		)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				await filter.isFrom("0x1234567890123456789012345678901234567890")
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+		expect(mockResolveAddress).toHaveBeenCalledWith("sender-inbox", "conv-1")
+	})
+
+	it("should handle address resolution failure gracefully", async () => {
+		mockResolveAddress.mockResolvedValue(null)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				await filter.isFrom("0x1234567890123456789012345678901234567890")
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+
+	it("should perform case-insensitive address comparison", async () => {
+		mockResolveAddress.mockResolvedValue(
+			"0xABCD1234567890123456789012345678901234EF"
+		)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				await filter.isFrom("0xabcd1234567890123456789012345678901234ef")
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should filter out messages not from specified address", async () => {
+		mockResolveAddress.mockResolvedValue(
+			"0x9999999999999999999999999999999999999999"
+		)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				await filter.isFrom("0x1234567890123456789012345678901234567890")
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+
+	it("should handle errors during address resolution", async () => {
+		mockResolveAddress.mockRejectedValue(new Error("Resolution failed"))
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				await filter.isFrom("0x1234567890123456789012345678901234567890")
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+
+	it("should work in combination with other filters", async () => {
+		vi.mocked(xmtpFilter.isText).mockReturnValue(true)
+		mockResolveAddress.mockResolvedValue(
+			"0x1234567890123456789012345678901234567890"
+		)
+
+		const context: BehaviorContext = {
+			runtime: {} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				filter.isText() &&
+				!(await filter.isFrom("0x1234567890123456789012345678901234567890"))
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+})
+
 })

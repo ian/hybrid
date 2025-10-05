@@ -1,10 +1,11 @@
 import type { BehaviorContext, BehaviorObject } from "@hybrd/types"
 import { logger } from "@hybrd/utils"
-import { filter } from "@hybrd/xmtp"
+import { filter, AddressResolver } from "@hybrd/xmtp"
 
 // Filter interface that matches XMTP SDK signatures
 interface FilterAPI {
 	fromSelf(): boolean
+	isFromSelf(): boolean
 	hasContent(): boolean
 	isDM(): boolean
 	isGroup(): boolean
@@ -17,10 +18,11 @@ interface FilterAPI {
 	isText(): boolean
 	isTextReply(): boolean
 	hasMention(mention: string): boolean
+	isFrom(address: `0x${string}`): Promise<boolean>
 }
 
 export function filterMessages(
-	filters: (api: FilterAPI) => boolean
+	filters: (api: FilterAPI) => boolean | Promise<boolean>
 ): BehaviorObject {
 	return {
 		id: "filter-messages",
@@ -94,11 +96,39 @@ export function filterMessages(
 							? context.message.content
 							: String(context.message.content || "")
 					return content.includes(mention)
+				},
+				isFromSelf: () =>
+					context.message.senderInboxId === context.client.inboxId,
+				isFrom: async (address: `0x${string}`) => {
+					const normalizedAddress = address.toLowerCase()
+					const resolver = new AddressResolver(context.client)
+
+					try {
+						const senderAddress = await resolver.resolveAddress(
+							context.message.senderInboxId,
+							context.conversation.id
+						)
+
+						if (!senderAddress) {
+							logger.debug(
+								`⚠️ [filter-messages] Could not resolve address for inbox ${context.message.senderInboxId}`
+							)
+							return false
+						}
+
+						return senderAddress.toLowerCase() === normalizedAddress
+					} catch (error) {
+						logger.error(
+							`❌ [filter-messages] Error resolving address for isFrom:`,
+							error
+						)
+						return false
+					}
 				}
 			}
 
 			try {
-				const passes = filters(filterAPI)
+				const passes = await filters(filterAPI)
 
 				if (!passes) {
 					logger.debug(

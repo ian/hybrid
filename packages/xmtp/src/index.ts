@@ -29,6 +29,10 @@ export {
 export type { XMTPConnectionConfig } from "./client"
 
 // ===================================================================
+// ===================================================================
+export { AddressResolver } from "./resolver/address-resolver"
+
+// ===================================================================
 // XMTP Plugin for Agent Integration
 // ===================================================================
 export { XMTPPlugin } from "./plugin"
