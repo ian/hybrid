@@ -74,12 +74,7 @@ await agent.listen({
 	port: process.env.PORT || "8454",
 	behaviors: [
 		filterMessages((filters) => {
-			return (
-				filters.isReply() ||
-				filters.isDM() ||
-				filters.hasMention("@agent") ||
-				filters.isReaction("👍")
-			)
+			return filters.isDM() || filters.hasMention("@agent")
 		}),
 
 		reactWith("👀"),

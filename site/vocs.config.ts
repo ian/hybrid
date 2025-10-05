@@ -16,21 +16,22 @@ export default defineConfig({
 		dark: "/hybrid-logo-dark.svg"
 	},
 	// topNav: [
-	//   { text: 'Guide & API', link: '/docs' },
-	//   { text: 'Blog', link: '/blog' },
-	//   {
-	//     text: version,
-	//     items: [
-	//       {
-	//         text: 'Changelog',
-	//         link: 'https://github.com/wevm/vocs/blob/main/src/CHANGELOG.md',
-	//       },
-	//       {
-	//         text: 'Contributing',
-	//         link: 'https://github.com/wevm/vocs/blob/main/.github/CONTRIBUTING.md',
-	//       },
-	//     ],
-	//   },
+	// 	{ text: "Guide & API", link: "/docs" },
+	// 	{ text: "Blog", link: "/blog" },
+	// 	{
+	// 		// text: version,
+	// 		text: "1234",
+	// 		items: [
+	// 			{
+	// 				text: "Changelog",
+	// 				link: "https://github.com/wevm/vocs/blob/main/src/CHANGELOG.md"
+	// 			},
+	// 			{
+	// 				text: "Contributing",
+	// 				link: "https://github.com/wevm/vocs/blob/main/.github/CONTRIBUTING.md"
+	// 			}
+	// 		]
+	// 	}
 	// ],
 	socials: [
 		// {
@@ -120,7 +121,7 @@ export default defineConfig({
 			items: [
 				{
 					text: "Mini Apps",
-					link: "/mini-apps"
+					link: "/howto/mini-apps"
 				}
 			]
 		},
