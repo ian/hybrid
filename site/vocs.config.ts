@@ -72,16 +72,20 @@ export default defineConfig({
 			text: "Agent Configuration",
 			items: [
 				{
-					text: "Behaviors",
-					link: "/agent-configuration/behaviors"
+					text: "Prompts",
+					link: "/agent-configuration/prompts"
 				},
 				{
 					text: "Models",
 					link: "/agent-configuration/models"
 				},
 				{
-					text: "Prompts",
-					link: "/agent-configuration/prompts"
+					text: "Behaviors",
+					link: "/agent-configuration/behaviors"
+				},
+				{
+					text: "Runtimes",
+					link: "/agent-configuration/runtime"
 				}
 			]
 		},
@@ -103,7 +107,7 @@ export default defineConfig({
 			]
 		},
 		{
-			text: "Features",
+			text: "How To",
 			items: [
 				{
 					text: "Mini Apps",
@@ -128,23 +132,23 @@ export default defineConfig({
 				}
 			]
 		},
-		{
-			text: "XMTP Integration",
-			items: [
-				{
-					text: "Introduction",
-					link: "/xmtp/introduction"
-				},
-				{
-					text: "Advanced",
-					link: "/xmtp/advanced"
-				},
-				{
-					text: "Tools",
-					link: "/xmtp/tools"
-				}
-			]
-		},
+		// {
+		// 	text: "XMTP Integration",
+		// 	items: [
+		// 		{
+		// 			text: "Introduction",
+		// 			link: "/xmtp/introduction"
+		// 		},
+		// 		{
+		// 			text: "Advanced",
+		// 			link: "/xmtp/advanced"
+		// 		},
+		// 		{
+		// 			text: "Tools",
+		// 			link: "/xmtp/tools"
+		// 		}
+		// 	]
+		// },
 		{
 			text: "Development",
 			items: [
