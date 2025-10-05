@@ -15,6 +15,7 @@ export default defineConfig({
 		light: "/hybrid-logo-light.svg",
 		dark: "/hybrid-logo-dark.svg"
 	},
+	ogImageUrl: "/og.png",
 	// topNav: [
 	// 	{ text: "Guide & API", link: "/docs" },
 	// 	{ text: "Blog", link: "/blog" },
@@ -34,10 +35,10 @@ export default defineConfig({
 	// 	}
 	// ],
 	socials: [
-		// {
-		// 	icon: "discord",
-		// 	link: "https://discord.gg/JUrRkGweXV"
-		// },
+		{
+			icon: "discord",
+			link: "https://discord.gg/2GVrTwR4XT"
+		},
 		{
 			icon: "github",
 			link: "https://github.com/ian/hybrid"
