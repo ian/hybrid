@@ -813,6 +813,6 @@ contract AgentWorkflowTest is Test {
 ## Next Steps
 
 - Learn about [Multi-chain Support](/blockchain/multi-chain) for cross-chain operations
-- Explore [XMTP Tools](/xmtp/tools) for messaging capabilities
+- Explore [XMTP Tools](/tools/xmtp) for messaging capabilities
 - Check out [Tools](/tools) for creating custom agent capabilities
 - See [Developing](/developing/contributing) for advanced development

@@ -368,5 +368,5 @@ WHEN user request is unclear:
 
 - Learn about [Models & AI Providers](/agent-configuration/models) for AI configuration
 - Explore [Behaviors](/agent-configuration/behaviors) for message processing
-- Check out [XMTP Tools](/xmtp/tools) for messaging capabilities
-- See [Blockchain Tools](/blockchain/tools) for crypto functionality
+- Check out [XMTP Tools](/tools/xmtp) for messaging capabilities
+- See [Blockchain Tools](/tools/blockchain) for crypto functionality

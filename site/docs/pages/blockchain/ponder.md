@@ -753,5 +753,5 @@ class BatchEventProcessor {
 
 - Learn about [Foundry Integration](/blockchain/foundry) for smart contract development
 - Explore [Multi-chain Support](/blockchain/multi-chain) for cross-chain operations
-- Check out [XMTP Tools](/xmtp/tools) for messaging capabilities
+- Check out [XMTP Tools](/tools/xmtp) for messaging capabilities
 - See [Tools](/tools) for creating custom agent capabilities

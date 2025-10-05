@@ -703,6 +703,6 @@ class XMTPConnectionPool {
 ## Next Steps
 
 - Learn about [Mini Apps](/mini-apps) for mini app integration
-- Explore [Blockchain Tools](/blockchain/tools) for crypto functionality
+- Explore [Blockchain Tools](/tools/blockchain) for crypto functionality
 - Check out [Tools](/tools) for creating custom agent capabilities
 - See [Developing](/developing/contributing) for advanced development

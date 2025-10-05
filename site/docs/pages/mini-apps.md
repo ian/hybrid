@@ -134,7 +134,7 @@ Mini apps (interactive UI components that work with agents) are planned for futu
 
 ## Next Steps
 
-- Learn about [Tools](/tools) for extending agent capabilities
+- Learn about [Tools Standard Library](/tools) for extending agent capabilities
 - Explore [Behaviors](/agent-configuration/behaviors) for message processing
-- Check out [Blockchain Tools](/blockchain/tools) for crypto functionality
-- See [XMTP Tools](/xmtp/tools) for messaging features
+- Check out [Blockchain Tools](/tools/blockchain) for crypto functionality
+- See [XMTP Tools](/tools/xmtp) for messaging features

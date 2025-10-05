@@ -808,4 +808,4 @@ class GasOptimizer {
 - Learn about [Ponder Integration](/blockchain/ponder) for blockchain event handling
 - Explore [Foundry Integration](/blockchain/foundry) for smart contract development
 - Check out [Multi-chain Support](/blockchain/multi-chain) for advanced cross-chain operations
-- See [XMTP Tools](/xmtp/tools) for messaging capabilities
+- See [XMTP Tools](/tools/xmtp) for messaging capabilities

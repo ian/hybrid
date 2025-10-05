@@ -229,5 +229,5 @@ my-agent/
 
 - Learn about [Agent Configuration](/agent-configuration/prompts) for customizing behavior
 - Explore [Behaviors](/agent-configuration/behaviors) for message processing
-- Check out [Blockchain Tools](/blockchain/tools) for crypto functionality
+- Check out [Blockchain Tools](/tools/blockchain) for crypto functionality
 - See [XMTP](/xmtp/introduction) for messaging capabilities

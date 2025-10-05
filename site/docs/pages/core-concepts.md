@@ -106,7 +106,7 @@ const agent = new Agent({
 import { Agent } from "hybrid"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { filterMessages, reactWith, threadedReply } from "hybrid/behaviors"
-import { blockchainTools, xmtpTools } from "hybrid/tools"
+import { blockchainTools } from "hybrid/tools"
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY
@@ -122,10 +122,8 @@ const agent = new Agent({
   - Provide information about blockchain transactions
   - Help users navigate the crypto ecosystem`,
   
-  tools: {
-    ...blockchainTools,
-    ...xmtpTools
-  },
+  // XMTP tools are automatically included when agent.listen() is called
+  tools: blockchainTools,
   
   createRuntime: (runtime) => ({
     privateKey: process.env.PRIVATE_KEY,
@@ -278,4 +276,4 @@ Now that you understand the core concepts, explore:
 - [Using Hybrid](/using-hybrid) - CLI commands and development workflow
 - [Agent Configuration](/agent-configuration/prompts) - Detailed agent setup
 - [XMTP](/xmtp/introduction) - Deep dive into messaging capabilities
-- [Blockchain](/blockchain/tools) - Blockchain integration and tools
+- [Blockchain Tools](/tools/blockchain) - Blockchain tools and operations

@@ -56,7 +56,8 @@ export const launchMiniappTool = createTool({
 
 const agent = new Agent({
 	name: "Miniapp Agent",
-	model: openrouter("inception/mercury"),
+	// For a list of models, see: https://openrouter.ai/models?order=latency-low-to-high&fmt=cards&supported_parameters=tools
+	model: openrouter("google/gemini-2.5-flash-lite"),
 	tools: {
 		launchMiniappTool
 	},

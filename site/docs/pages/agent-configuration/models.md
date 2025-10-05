@@ -434,6 +434,6 @@ class CryptoSpecializedModel {
 ## Next Steps
 
 - Learn about [Behaviors](/agent-configuration/behaviors) for message processing
-- Explore [XMTP Tools](/xmtp/tools) for messaging capabilities
-- Check out [Blockchain Tools](/blockchain/tools) for crypto functionality
+- Explore [XMTP Tools](/tools/xmtp) for messaging capabilities
+- Check out [Blockchain Tools](/tools/blockchain) for crypto functionality
 - See [Tools](/tools) for creating custom agent capabilities

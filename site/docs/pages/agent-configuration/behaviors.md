@@ -373,7 +373,7 @@ function customFilter(): BehaviorObject {
 
 ## Next Steps
 
-- Learn about [XMTP Tools](/xmtp/tools) for messaging capabilities
-- Explore [Blockchain Tools](/blockchain/tools) for crypto functionality
+- Learn about [XMTP Tools](/tools/xmtp) for messaging capabilities
+- Explore [Blockchain Tools](/tools/blockchain) for crypto functionality
 - Check out [Tools](/tools) for creating custom agent capabilities
 - See [Mini Apps](/mini-apps) for mini app integration

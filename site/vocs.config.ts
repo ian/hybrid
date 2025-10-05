@@ -1,7 +1,31 @@
 import { defineConfig } from "vocs"
 
 export default defineConfig({
-	title: "Hybrid",
+	// rootDir: 'site',
+	title: "hybrid",
+	iconUrl: {
+		light: "/hybrid.svg",
+		dark: "/hybrid.svg"
+	},
+	logoUrl: {
+		light: "/hybrid-logo-light.svg",
+		dark: "/hybrid-logo-dark.svg"
+	},
+	socials: [
+		// {
+		// 	icon: "discord",
+		// 	link: "https://discord.gg/JUrRkGweXV"
+		// },
+		{
+			icon: "github",
+			link: "https://github.com/hybrid-npm/hybrid"
+		},
+		{
+			icon: "x",
+			link: "https://twitter.com/hybrid_npm"
+		}
+	],
+
 	sidebar: [
 		{
 			text: "Getting Started",
@@ -42,12 +66,25 @@ export default defineConfig({
 			]
 		},
 		{
-			text: "Tools & Features",
+			text: "Tools Standard Library",
 			items: [
 				{
-					text: "Tools",
+					text: "Overview",
 					link: "/tools"
 				},
+				{
+					text: "Blockchain Tools",
+					link: "/tools/blockchain"
+				},
+				{
+					text: "XMTP Tools",
+					link: "/tools/xmtp"
+				}
+			]
+		},
+		{
+			text: "Features",
+			items: [
 				{
 					text: "Mini Apps",
 					link: "/mini-apps"
@@ -57,10 +94,6 @@ export default defineConfig({
 		{
 			text: "Blockchain Integration",
 			items: [
-				{
-					text: "Overview",
-					link: "/blockchain/tools"
-				},
 				{
 					text: "Foundry",
 					link: "/blockchain/foundry"

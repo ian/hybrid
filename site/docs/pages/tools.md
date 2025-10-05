@@ -29,14 +29,14 @@ blockchainTools.estimateGas      // Estimate gas for transaction
 
 ### XMTP Tools
 
-```typescript
-import { xmtpTools } from "hybrid/tools"
+XMTP tools are automatically included when your agent starts listening for messages. These tools are available to your agent without needing to explicitly include them:
 
-// Available tools:
-xmtpTools.getMessage      // Get message by ID
-xmtpTools.sendMessage     // Send message to conversation
-xmtpTools.sendReply       // Send threaded reply
-xmtpTools.sendReaction    // Send emoji reaction
+```typescript
+// Automatically available tools:
+// getMessage      // Get message by ID
+// sendMessage     // Send message to conversation
+// sendReply       // Send threaded reply
+// sendReaction    // Send emoji reaction
 ```
 
 ### Using Built-in Tools
@@ -44,18 +44,15 @@ xmtpTools.sendReaction    // Send emoji reaction
 ```typescript
 import { Agent } from "hybrid"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import { blockchainTools, xmtpTools } from "hybrid/tools"
+import { blockchainTools } from "hybrid/tools"
 
 const agent = new Agent({
   name: "Crypto Agent",
   model: createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY })("openai/gpt-4"),
   instructions: "You can check balances, send messages, and help with crypto tasks.",
   
-  // Add tools
-  tools: {
-    ...blockchainTools,
-    ...xmtpTools
-  },
+  // Add blockchain tools (XMTP tools are automatically included)
+  tools: blockchainTools,
   
   // Optional: Configure runtime for blockchain tools
   createRuntime: (runtime) => ({
@@ -285,19 +282,19 @@ const agent = new Agent<MyRuntimeExtension>({
 ## Adding Tools to Agent
 
 ```typescript
-// Option 1: Spread existing tool sets
+// Option 1: Spread blockchain tools with custom tools
+// (XMTP tools are automatically included)
 const agent = new Agent({
   name: "My Agent",
   model: yourModel,
   tools: {
     ...blockchainTools,
-    ...xmtpTools,
     weather: weatherTool,
     queryUser: queryUserTool
   }
 })
 
-// Option 2: Individual tools
+// Option 2: Individual tools only
 const agent = new Agent({
   name: "My Agent",
   model: yourModel,
@@ -348,7 +345,7 @@ outputSchema: z.object({
 
 ## Next Steps
 
-- Learn about [Blockchain Tools](/blockchain/tools) for detailed crypto functionality
-- Explore [XMTP Tools](/xmtp/tools) for messaging capabilities
+- Learn about [Blockchain Tools](/tools/blockchain) for detailed crypto functionality
+- Explore [XMTP Tools](/tools/xmtp) for messaging capabilities
 - Check out [Behaviors](/agent-configuration/behaviors) for message processing
 - See [Agent Configuration](/agent-configuration/prompts) for customizing your agent
