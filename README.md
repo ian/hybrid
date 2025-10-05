@@ -184,18 +184,9 @@ const agent = new Agent({
 
 **Supported Chains:** Ethereum, Polygon, Arbitrum, Optimism, Base, and Sepolia testnet
 
-### XMTP Tools (`xmtpTools`)
+### XMTP Tools
 
-```typescript
-import { xmtpTools } from "hybrid/tools"
-
-const agent = new Agent({
-  name: "messaging-agent", 
-  model: myModel,
-  tools: xmtpTools,
-  instructions: "You can send messages, replies, and reactions in XMTP conversations."
-})
-```
+The XMTP plugin automatically includes the following tools when your agent starts listening for messages:
 
 **Available Tools:**
 - `sendMessage` - Send messages to XMTP conversations
@@ -203,19 +194,23 @@ const agent = new Agent({
 - `sendReaction` - Send emoji reactions
 - `getMessage` - Retrieve message details by ID
 
-### Combined Usage
+These tools are automatically available to your agent without needing to explicitly include them in your agent configuration.
+
+### Using Blockchain Tools
 
 ```typescript
 import { Agent } from "hybrid"
-import { blockchainTools, xmtpTools } from "hybrid/tools"
+import { blockchainTools } from "hybrid/tools"
 
 const agent = new Agent({
-  name: "combo-agent",
+  name: "blockchain-agent",
   model: myModel,
-  tools: {
-    ...blockchainTools,
-    ...xmtpTools
-  }
+  tools: blockchainTools,
+  createRuntime: () => ({
+    rpcUrl: process.env.RPC_URL,
+    privateKey: process.env.PRIVATE_KEY as `0x${string}` | undefined,
+    defaultChain: "mainnet" as const
+  })
 })
 ```
 
@@ -225,7 +220,7 @@ The Hybrid CLI provides several commands to manage your agent development workfl
 
 ```bash
 # Initialize a new agent project
-npm create hybrid@latest my-agent
+npm create hybrid
 
 # Use the CLI
 hybrid keys

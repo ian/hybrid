@@ -57,6 +57,7 @@ The Hybrid Tools standard library provides ready-to-use tools for crypto agents:
 - **estimateGas**: Gas cost estimation
 
 ### XMTP Tools
+XMTP tools are automatically included when your agent starts listening. No need to manually add them:
 - **sendMessage**: Send messages to conversations
 - **sendReply**: Reply to specific messages
 - **sendReaction**: Send emoji reactions
@@ -68,20 +69,19 @@ The Hybrid Tools standard library provides ready-to-use tools for crypto agents:
 
 ### Usage Patterns
 
-**Individual Tools:**
+**Individual Blockchain Tools:**
 ```typescript
-import { getBalanceTool, sendMessageTool } from "hybrid/tools"
+import { getBalanceTool, sendTransactionTool } from "hybrid/tools"
 ```
 
-**Tool Collections:**
+**Blockchain Tool Collection:**
 ```typescript
-import { blockchainTools, xmtpTools } from "hybrid/tools"
-```
+import { blockchainTools } from "hybrid/tools"
 
-**All Tools:**
-```typescript
-import { allTools } from "hybrid/tools"
-const tools = await allTools()
+const agent = new Agent({
+  tools: blockchainTools,
+  // XMTP tools are automatically included
+})
 ```
 
 ## 📖 Learning Path

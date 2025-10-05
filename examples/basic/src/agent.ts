@@ -8,7 +8,8 @@ export const openrouter = createOpenRouter({
 
 const agent = new Agent({
 	name: "My Agent",
-	model: openrouter("x-ai/grok-4"),
+	// For a list of models, see: https://openrouter.ai/models?order=latency-low-to-high&fmt=cards&supported_parameters=tools
+	model: openrouter("google/gemini-2.5-flash-lite"),
 	instructions:
 		"You a witty AI agent that likes responding to everyone. Always be helpful and conversational."
 })

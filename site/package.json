@@ -1,7 +1,7 @@
 {
-  "name": "docs",
-  "version": "0.0.0",
+  "name": "site",
   "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vocs dev",
@@ -9,8 +9,12 @@
     "preview": "vocs preview"
   },
   "dependencies": {
-    "vocs": "^1.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "latest",
+    "react-dom": "latest",
+    "vocs": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "typescript": "latest"
   }
 }
