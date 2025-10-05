@@ -959,11 +959,11 @@ await agent.plugins.install(plugin)
 
 ## Configuration
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `apiKey` | `string` | - | API key for the service |
-| `timeout` | `number` | `5000` | Request timeout in milliseconds |
-| `retries` | `number` | `3` | Number of retry attempts |
+| Option    | Type     | Default | Description                     |
+| --------- | -------- | ------- | ------------------------------- |
+| `apiKey`  | `string` | -       | API key for the service         |
+| `timeout` | `number` | `5000`  | Request timeout in milliseconds |
+| `retries` | `number` | `3`     | Number of retry attempts        |
 
 ## Examples
 
@@ -993,7 +993,7 @@ Installs the plugin on the specified agent.
 
 ## Contributing
 
-Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTING.md) for details.
+Contributions are welcome! Please read our [contributing guidelines](/developing/contributing) for details.
 
 ## License
 
