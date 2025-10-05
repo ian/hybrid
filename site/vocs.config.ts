@@ -90,7 +90,7 @@ export default defineConfig({
 			]
 		},
 		{
-			text: "Tools Standard Library",
+			text: "Tools",
 			items: [
 				{
 					text: "Overview",
@@ -107,6 +107,15 @@ export default defineConfig({
 			]
 		},
 		{
+			text: "Deployment",
+			items: [
+				{
+					text: "Cloudflare",
+					link: "/deployment/cloudflare"
+				}
+			]
+		},
+		{
 			text: "How To",
 			items: [
 				{
@@ -115,37 +124,20 @@ export default defineConfig({
 				}
 			]
 		},
-		{
-			text: "Blockchain Integration",
-			items: [
-				{
-					text: "Foundry",
-					link: "/blockchain/foundry"
-				},
-				{
-					text: "Multi-chain",
-					link: "/blockchain/multi-chain"
-				},
-				{
-					text: "Ponder",
-					link: "/blockchain/ponder"
-				}
-			]
-		},
 		// {
-		// 	text: "XMTP Integration",
+		// 	text: "Blockchain",
 		// 	items: [
 		// 		{
-		// 			text: "Introduction",
-		// 			link: "/xmtp/introduction"
+		// 			text: "Foundry",
+		// 			link: "/blockchain/foundry"
 		// 		},
+		// 		// {
+		// 		// 	text: "Multi-chain",
+		// 		// 	link: "/blockchain/multi-chain"
+		// 		// },
 		// 		{
-		// 			text: "Advanced",
-		// 			link: "/xmtp/advanced"
-		// 		},
-		// 		{
-		// 			text: "Tools",
-		// 			link: "/xmtp/tools"
+		// 			text: "Ponder",
+		// 			link: "/blockchain/ponder"
 		// 		}
 		// 	]
 		// },

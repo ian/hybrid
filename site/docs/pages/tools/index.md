@@ -5,11 +5,9 @@ description: Built-in tools for blockchain operations, XMTP messaging, and exten
 
 # Tools Standard Library
 
-Hybrid includes a comprehensive standard library of tools that enable your agents to interact with blockchain networks, send messages through XMTP, and perform various crypto-native operations. These tools are production-ready, type-safe, and designed to work seamlessly with AI language models.
+Hybrid includes a comprehensive standard library of tools that enable your agents to interact with blockchain networks, send messages through XMTP, and perform crypto-native operations. These tools are production-ready, type-safe, and designed to work seamlessly with AI language models.
 
 ## Overview
-
-The Hybrid Tools Standard Library provides two main categories of tools:
 
 ### 🔗 Blockchain Tools
 Native blockchain interactions for multi-chain operations:
@@ -20,14 +18,16 @@ Native blockchain interactions for multi-chain operations:
 
 [View Blockchain Tools →](/tools/blockchain)
 
-### 💬 XMTP Tools (Automatically Included)
-Decentralized messaging capabilities:
+### 💬 XMTP Tools
+Decentralized messaging capabilities (automatically included):
 - **Message Sending** - Send messages to XMTP conversations
 - **Threaded Replies** - Reply to specific messages in context
 - **Reactions** - Add emoji reactions for quick acknowledgments
 - **Message Retrieval** - Query message details and history
 
-**Note:** XMTP tools are automatically included when your agent starts listening for messages. No manual configuration required.
+:::info
+XMTP tools are automatically included when your agent starts listening for messages. No manual configuration required.
+:::
 
 [View XMTP Tools →](/tools/xmtp)
 
