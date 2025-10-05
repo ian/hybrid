@@ -161,7 +161,7 @@ npx hybrid register
 
 - Learn about [Core Concepts](/core-concepts) to understand how Hybrid agents work
 - Explore [Agent Configuration](/agent/prompts) for customizing behavior
-- Check out [XMTP](/xmtp/introduction) for messaging capabilities
+- Check out [XMTP Tools](/tools/xmtp) for messaging capabilities
 - Add [Blockchain Tools](/tools/blockchain) for crypto functionality
 
 ## Quick Reference

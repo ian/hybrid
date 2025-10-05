@@ -275,5 +275,5 @@ Now that you understand the core concepts, explore:
 
 - [Using Hybrid](/using-hybrid) - CLI commands and development workflow
 - [Agent Configuration](/agent/prompts) - Detailed agent setup
-- [XMTP](/xmtp/introduction) - Deep dive into messaging capabilities
+- [XMTP Tools](/tools/xmtp) - Deep dive into messaging capabilities
 - [Blockchain Tools](/tools/blockchain) - Blockchain tools and operations

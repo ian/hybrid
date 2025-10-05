@@ -370,6 +370,6 @@ async function notifyUsers(users: string[], message: string) {
 ## Resources
 
 - **[GitHub Examples](https://github.com/hybrid-npm/hybrid/tree/main/examples)** - Working code examples
-- **[API Reference](/api)** - Complete API documentation
+- **[Agent Configuration](/agent/prompts)** - Configure your agents
 - **[Community Discord](https://discord.gg/hybrid)** - Get help and share ideas
 

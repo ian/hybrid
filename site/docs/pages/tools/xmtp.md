@@ -580,7 +580,7 @@ try {
 
 ## Next Steps
 
-- Learn about [Advanced XMTP Features](/xmtp/advanced) for encryption and security
-- Explore [Agent Configuration](/agent/behaviors) for message processing
+- Explore [Agent Behaviors](/agent/behaviors) for message processing
 - Check out [Blockchain Tools](/tools/blockchain) for crypto functionality
 - See [Tools Standard Library](/tools) for overview and custom tools
+- Learn about [Deployment](/developing/deployment) for production setup
