@@ -337,5 +337,5 @@ const agent = new Agent({
 
 - Learn about [XMTP Tools](/tools/xmtp) for sending messages and reactions
 - Explore [Advanced XMTP Features](/xmtp/advanced) for encryption and security
-- Check out [Agent Configuration](/agent-configuration/behaviors) for message processing
+- Check out [Agent Configuration](/agent/behaviors) for message processing
 - See [Blockchain Tools](/tools/blockchain) for crypto functionality

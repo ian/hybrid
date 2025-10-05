@@ -359,4 +359,4 @@ class GasManager {
 - Learn about [Developing and Contribution](/developing/contributing) for advanced development
 - Explore [XMTP Tools](/tools/xmtp) for messaging capabilities
 - Check out [Tools](/tools) for creating custom agent capabilities
-- See [Agent Configuration](/agent-configuration/behaviors) for message processing
+- See [Agent Configuration](/agent/behaviors) for message processing

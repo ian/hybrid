@@ -274,6 +274,6 @@ This creates the agent's XMTP identity on the network. Registration is not requi
 Now that you understand the core concepts, explore:
 
 - [Using Hybrid](/using-hybrid) - CLI commands and development workflow
-- [Agent Configuration](/agent-configuration/prompts) - Detailed agent setup
+- [Agent Configuration](/agent/prompts) - Detailed agent setup
 - [XMTP](/xmtp/introduction) - Deep dive into messaging capabilities
 - [Blockchain Tools](/tools/blockchain) - Blockchain tools and operations

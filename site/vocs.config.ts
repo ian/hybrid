@@ -69,23 +69,23 @@ export default defineConfig({
 			]
 		},
 		{
-			text: "Agent Configuration",
+			text: "Agents",
 			items: [
 				{
 					text: "Prompts",
-					link: "/agent-configuration/prompts"
+					link: "/agent/prompts"
 				},
 				{
 					text: "Models",
-					link: "/agent-configuration/models"
+					link: "/agent/models"
 				},
 				{
 					text: "Behaviors",
-					link: "/agent-configuration/behaviors"
+					link: "/agent/behaviors"
 				},
 				{
 					text: "Runtimes",
-					link: "/agent-configuration/runtime"
+					link: "/agent/runtime"
 				}
 			]
 		},

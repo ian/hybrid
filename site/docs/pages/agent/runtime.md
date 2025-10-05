@@ -413,7 +413,7 @@ createRuntime: (runtime) => {
 ## Next Steps
 
 - Learn about [Tools](/tools) to create custom capabilities
-- Explore [Behaviors](/agent-configuration/behaviors) for message processing
-- Check out [Prompts](/agent-configuration/prompts) for dynamic instructions
+- Explore [Behaviors](/agent/behaviors) for message processing
+- Check out [Prompts](/agent/prompts) for dynamic instructions
 - See [XMTP Tools](/tools/xmtp) for messaging capabilities
 

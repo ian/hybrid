@@ -363,8 +363,8 @@ async function notifyUsers(users: string[], message: string) {
 
 - **[Blockchain Tools](/tools/blockchain)** - Complete blockchain tool reference
 - **[XMTP Tools](/tools/xmtp)** - XMTP messaging capabilities
-- **[Agent Configuration](/agent-configuration/prompts)** - Configure your agent
-- **[Behaviors](/agent-configuration/behaviors)** - Message processing behaviors
+- **[Agent Configuration](/agent/prompts)** - Configure your agent
+- **[Behaviors](/agent/behaviors)** - Message processing behaviors
 - **[Custom Tools](/tools#creating-custom-tools)** - Build your own tools
 
 ## Resources

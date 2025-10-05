@@ -347,5 +347,5 @@ outputSchema: z.object({
 
 - Learn about [Blockchain Tools](/tools/blockchain) for detailed crypto functionality
 - Explore [XMTP Tools](/tools/xmtp) for messaging capabilities
-- Check out [Behaviors](/agent-configuration/behaviors) for message processing
-- See [Agent Configuration](/agent-configuration/prompts) for customizing your agent
+- Check out [Behaviors](/agent/behaviors) for message processing
+- See [Agent Configuration](/agent/prompts) for customizing your agent
