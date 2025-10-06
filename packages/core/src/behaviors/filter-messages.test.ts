@@ -4,11 +4,11 @@ import type {
 	XmtpConversation,
 	XmtpMessage
 } from "@hybrd/types"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { filterMessages } from "./filter-messages"
 
 // Import the mocked filter
-import { filter as xmtpFilter, AddressResolver } from "@hybrd/xmtp"
+import { filter as xmtpFilter } from "@hybrd/xmtp"
 
 // Mock the XMTP filter
 vi.mock("@hybrd/xmtp", () => ({
@@ -24,10 +24,7 @@ vi.mock("@hybrd/xmtp", () => ({
 		isReply: vi.fn(() => false),
 		isText: vi.fn(() => true),
 		isTextReply: vi.fn(() => false)
-	},
-	AddressResolver: vi.fn().mockImplementation(() => ({
-		resolveAddress: vi.fn()
-	}))
+	}
 }))
 
 // Mock XMTP types
@@ -424,7 +421,14 @@ describe("Filter Messages Behavior", () => {
 describe("isFromSelf filter", () => {
 	it("should return true when message is from self", async () => {
 		const context: BehaviorContext = {
-			runtime: {} as any,
+			runtime: {
+				sender: {
+					address: "0x1234567890123456789012345678901234567890",
+					inboxId: "agent-inbox",
+					name: "Agent"
+				},
+				subjects: {}
+			} as any,
 			client: { inboxId: "agent-inbox" } as any,
 			conversation: mockConversation,
 			message: {
@@ -443,7 +447,14 @@ describe("isFromSelf filter", () => {
 
 	it("should return false when message is not from self", async () => {
 		const context: BehaviorContext = {
-			runtime: {} as any,
+			runtime: {
+				sender: {
+					address: "0x9999999999999999999999999999999999999999",
+					inboxId: "other-inbox",
+					name: "Other User"
+				},
+				subjects: {}
+			} as any,
 			client: { inboxId: "agent-inbox" } as any,
 			conversation: mockConversation,
 			message: {
@@ -462,7 +473,14 @@ describe("isFromSelf filter", () => {
 
 	it("should filter out message when isFromSelf returns false and filter expects true", async () => {
 		const context: BehaviorContext = {
-			runtime: {} as any,
+			runtime: {
+				sender: {
+					address: "0x9999999999999999999999999999999999999999",
+					inboxId: "other-inbox",
+					name: "Other User"
+				},
+				subjects: {}
+			} as any,
 			client: { inboxId: "agent-inbox" } as any,
 			conversation: mockConversation,
 			message: {
@@ -481,26 +499,17 @@ describe("isFromSelf filter", () => {
 })
 
 describe("isFrom filter", () => {
-	let mockResolveAddress: ReturnType<typeof vi.fn>
-
-	beforeEach(() => {
-		vi.clearAllMocks()
-		mockResolveAddress = vi.fn()
-		vi.mocked(AddressResolver).mockImplementation(
-			() =>
-				({
-					resolveAddress: mockResolveAddress
-				}) as any
-		)
-	})
 
 	it("should filter messages from specific address", async () => {
-		mockResolveAddress.mockResolvedValue(
-			"0x1234567890123456789012345678901234567890"
-		)
-
 		const context: BehaviorContext = {
-			runtime: {} as any,
+			runtime: {
+				sender: {
+					address: "0x1234567890123456789012345678901234567890",
+					inboxId: "sender-inbox",
+					name: "Test Sender"
+				},
+				subjects: {}
+			} as any,
 			client: mockClient,
 			conversation: { id: "conv-1" } as XmtpConversation,
 			message: {
@@ -518,14 +527,18 @@ describe("isFrom filter", () => {
 		await behavior.before?.(context)
 
 		expect(context.sendOptions?.filtered).toBeUndefined()
-		expect(mockResolveAddress).toHaveBeenCalledWith("sender-inbox", "conv-1")
 	})
 
-	it("should handle address resolution failure gracefully", async () => {
-		mockResolveAddress.mockResolvedValue(null)
-
+	it("should handle missing sender address gracefully", async () => {
 		const context: BehaviorContext = {
-			runtime: {} as any,
+			runtime: {
+				sender: {
+					address: undefined,
+					inboxId: "sender-inbox",
+					name: "Unknown"
+				},
+				subjects: {}
+			} as any,
 			client: mockClient,
 			conversation: { id: "conv-1" } as XmtpConversation,
 			message: {
@@ -546,12 +559,15 @@ describe("isFrom filter", () => {
 	})
 
 	it("should perform case-insensitive address comparison", async () => {
-		mockResolveAddress.mockResolvedValue(
-			"0xABCD1234567890123456789012345678901234EF"
-		)
-
 		const context: BehaviorContext = {
-			runtime: {} as any,
+			runtime: {
+				sender: {
+					address: "0xABCD1234567890123456789012345678901234EF",
+					inboxId: "sender-inbox",
+					name: "Test Sender"
+				},
+				subjects: {}
+			} as any,
 			client: mockClient,
 			conversation: { id: "conv-1" } as XmtpConversation,
 			message: {
@@ -572,12 +588,15 @@ describe("isFrom filter", () => {
 	})
 
 	it("should filter out messages not from specified address", async () => {
-		mockResolveAddress.mockResolvedValue(
-			"0x9999999999999999999999999999999999999999"
-		)
-
 		const context: BehaviorContext = {
-			runtime: {} as any,
+			runtime: {
+				sender: {
+					address: "0x9999999999999999999999999999999999999999",
+					inboxId: "sender-inbox",
+					name: "Other Sender"
+				},
+				subjects: {}
+			} as any,
 			client: mockClient,
 			conversation: { id: "conv-1" } as XmtpConversation,
 			message: {
@@ -597,11 +616,16 @@ describe("isFrom filter", () => {
 		expect(context.sendOptions?.filtered).toBe(true)
 	})
 
-	it("should handle errors during address resolution", async () => {
-		mockResolveAddress.mockRejectedValue(new Error("Resolution failed"))
-
+	it("should work with valid sender address", async () => {
 		const context: BehaviorContext = {
-			runtime: {} as any,
+			runtime: {
+				sender: {
+					address: "0x1234567890123456789012345678901234567890",
+					inboxId: "sender-inbox",
+					name: "Test Sender"
+				},
+				subjects: {}
+			} as any,
 			client: mockClient,
 			conversation: { id: "conv-1" } as XmtpConversation,
 			message: {
@@ -618,17 +642,21 @@ describe("isFrom filter", () => {
 		)
 		await behavior.before?.(context)
 
-		expect(context.sendOptions?.filtered).toBe(true)
+		expect(context.sendOptions?.filtered).toBeUndefined()
 	})
 
 	it("should work in combination with other filters", async () => {
 		vi.mocked(xmtpFilter.isText).mockReturnValue(true)
-		mockResolveAddress.mockResolvedValue(
-			"0x1234567890123456789012345678901234567890"
-		)
 
 		const context: BehaviorContext = {
-			runtime: {} as any,
+			runtime: {
+				sender: {
+					address: "0x1234567890123456789012345678901234567890",
+					inboxId: "sender-inbox",
+					name: "Test Sender"
+				},
+				subjects: {}
+			} as any,
 			client: mockClient,
 			conversation: { id: "conv-1" } as XmtpConversation,
 			message: {

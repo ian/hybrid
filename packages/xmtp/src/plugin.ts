@@ -2,7 +2,9 @@ import {
 	Agent as XmtpAgent,
 	XmtpEnv,
 	createSigner,
-	createUser
+	createUser,
+	type Client,
+	type DecodedMessage
 } from "@xmtp/agent-sdk"
 
 import type {
@@ -14,15 +16,81 @@ import type {
 	PluginContext,
 	XmtpClient,
 	XmtpConversation,
-	XmtpMessage
+	XmtpMessage,
+	XmtpSender,
+	XmtpSubjects
 } from "@hybrd/types"
 import { logger } from "@hybrd/utils"
 import { randomUUID } from "node:crypto"
 import { createXMTPClient, getDbPath } from "./client"
 import { ContentTypeReply, ContentTypeText, type Reply } from "./index"
+import { AddressResolver } from "./resolver/address-resolver"
+import { BasenameResolver } from "./resolver/basename-resolver"
+import { ENSResolver } from "./resolver/ens-resolver"
+import { extractSubjects } from "./lib/subjects"
+import { createPublicClient, http } from "viem"
+import { mainnet, base } from "viem/chains"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
+
+// Create public clients for resolver instances (reused across messages)
+const mainnetClient = createPublicClient({
+	chain: mainnet,
+	transport: http()
+})
+
+const baseClient = createPublicClient({
+	chain: base,
+	transport: http()
+})
+
+/**
+ * Resolve sender information from message
+ * @param message - The XMTP message
+ * @param client - XMTP client instance
+ * @returns XmtpSender object with address, inboxId, name, and optional basename
+ */
+async function resolveSender(
+	message: DecodedMessage<unknown>,
+	client: Client<unknown>
+): Promise<XmtpSender> {
+	const addressResolver = new AddressResolver(client as any)
+	const basenameResolver = new BasenameResolver({
+		publicClient: baseClient as any
+	})
+
+	const address = await addressResolver.resolveAddress(
+		message.senderInboxId,
+		""
+	)
+
+	if (!address) {
+		logger.warn(
+			`⚠️ Could not resolve address for inbox ${message.senderInboxId}`
+		)
+		return {
+			address: "0x0000000000000000000000000000000000000000",
+			inboxId: message.senderInboxId,
+			name: "Unknown"
+		}
+	}
+
+	let basename: string | undefined
+	try {
+		const resolvedBasename = await basenameResolver.getBasename(address as `0x${string}`)
+		basename = resolvedBasename || undefined
+	} catch (err) {
+		logger.debug(`Could not resolve basename for ${address}`)
+	}
+
+	return {
+		address,
+		inboxId: message.senderInboxId,
+		name: basename || address.slice(0, 8),
+		basename
+	}
+}
 
 /**
  * Send a response with threading support
@@ -139,15 +207,30 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 									role: "user",
 									parts: [{ type: "text", text: content }]
 								}
-							]
+						]
 
-							const baseRuntime: AgentRuntime = {
-								conversation: conversation as unknown as XmtpConversation,
-								message: msg,
-								xmtpClient
-							}
+						const basenameResolver = new BasenameResolver({
+							publicClient: baseClient as any
+						})
+						const ensResolver = new ENSResolver({
+							mainnetClient: mainnetClient as any
+						})
 
-							const runtime = await agent.createRuntimeContext(baseRuntime)
+						const sender = await resolveSender(msg as any, xmtpClient as any)
+						const subjects: XmtpSubjects =
+							typeof content === "string"
+								? await extractSubjects(content, basenameResolver, ensResolver)
+								: {}
+
+						const baseRuntime: AgentRuntime = {
+							conversation: conversation as unknown as XmtpConversation,
+							message: msg,
+							sender,
+							subjects,
+							xmtpClient
+						}
+
+						const runtime = await agent.createRuntimeContext(baseRuntime)
 
 							// Execute pre-response behaviors
 							if (pluginContext.behaviors) {
@@ -230,9 +313,16 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						}
 					]
 
+					const sender = await resolveSender(
+						message as unknown as DecodedMessage<unknown>,
+						xmtpClient as any
+					)
+
 					const baseRuntime: AgentRuntime = {
 						conversation: conversation as unknown as XmtpConversation,
 						message: message as unknown as XmtpMessage,
+						sender,
+						subjects: {},
 						xmtpClient
 					}
 
@@ -304,9 +394,24 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						}
 					]
 
+				const basenameResolver = new BasenameResolver({
+					publicClient: baseClient as any
+				})
+				const ensResolver = new ENSResolver({
+					mainnetClient: mainnetClient as any
+				})
+
+				const sender = await resolveSender(
+					message as unknown as DecodedMessage<unknown>,
+					xmtpClient as any
+				)
+					const subjects = await extractSubjects(text, basenameResolver, ensResolver)
+
 					const baseRuntime: AgentRuntime = {
 						conversation: conversation as unknown as XmtpConversation,
 						message: message as unknown as XmtpMessage,
+						sender,
+						subjects,
 						xmtpClient
 					}
 
@@ -381,17 +486,32 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 			xmtp.on("text", async ({ conversation, message }) => {
 				try {
 					const text = message.content
-					const messages: AgentMessage[] = [
-						{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }
-					]
+				const messages: AgentMessage[] = [
+					{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }
+			]
 
-					const baseRuntime: AgentRuntime = {
-						conversation: conversation as unknown as XmtpConversation,
-						message: message as unknown as XmtpMessage,
-						xmtpClient
-					}
+			const basenameResolver = new BasenameResolver({
+				publicClient: baseClient as any
+			})
+			const ensResolver = new ENSResolver({
+				mainnetClient: mainnetClient as any
+			})
 
-					const runtime = await agent.createRuntimeContext(baseRuntime)
+			const sender = await resolveSender(
+				message as unknown as DecodedMessage<unknown>,
+				xmtpClient as any
+			)
+			const subjects = await extractSubjects(text, basenameResolver, ensResolver)
+
+				const baseRuntime: AgentRuntime = {
+					conversation: conversation as unknown as XmtpConversation,
+					message: message as unknown as XmtpMessage,
+					sender,
+					subjects,
+					xmtpClient
+				}
+
+				const runtime = await agent.createRuntimeContext(baseRuntime)
 
 					// Execute pre-response behaviors
 					let behaviorContext: BehaviorContext | undefined

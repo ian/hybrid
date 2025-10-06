@@ -1,6 +1,6 @@
 import type { BehaviorContext, BehaviorObject } from "@hybrd/types"
 import { logger } from "@hybrd/utils"
-import { filter, AddressResolver } from "@hybrd/xmtp"
+import { filter } from "@hybrd/xmtp"
 
 // Filter interface that matches XMTP SDK signatures
 interface FilterAPI {
@@ -40,9 +40,6 @@ export function filterMessages(
 			logger.debug(
 				`🔍 [filter-messages] Processing message: ${messageContent}...`
 			)
-
-			// Create AddressResolver instance for reuse across multiple isFrom() calls
-			const resolver = new AddressResolver(context.client)
 
 			// Create filter API wrapper
 			const filterAPI: FilterAPI = {
@@ -102,31 +99,12 @@ export function filterMessages(
 				},
 				isFromSelf: () =>
 					context.message.senderInboxId === context.client.inboxId,
-			isFrom: async (address: `0x${string}`) => {
-				const normalizedAddress = address.toLowerCase()
+				isFrom: async (address: `0x${string}`) => {
+					const normalizedAddress = address.toLowerCase()
+					const senderAddress = context.runtime.sender?.address?.toLowerCase()
 
-				try {
-					const senderAddress = await resolver.resolveAddress(
-						context.message.senderInboxId,
-						context.conversation.id
-					)
-
-					if (!senderAddress) {
-						logger.debug(
-							`⚠️ [filter-messages] Could not resolve address for inbox ${context.message.senderInboxId}`
-						)
-						return false
-					}
-
-					return senderAddress.toLowerCase() === normalizedAddress
-				} catch (error) {
-					logger.error(
-						`❌ [filter-messages] Error resolving address for isFrom:`,
-						error
-					)
-					return false
+					return senderAddress === normalizedAddress
 				}
-			}
 			}
 
 			try {

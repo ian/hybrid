@@ -1,8 +1,7 @@
 import type {
 	XmtpClient,
-	// XmtpClient,
-	// XmtpSender,
-	// XmtpSubjects
+	XmtpSender,
+	XmtpSubjects,
 	XmtpConversation,
 	XmtpMessage
 } from "./xmtp"
@@ -18,10 +17,8 @@ import type {
 export interface AgentRuntime {
 	conversation: XmtpConversation
 	message: XmtpMessage
-	// parentMessage?: XmtpMessage
-	// rootMessage: XmtpMessage
-	// sender: XmtpSender
-	// subjects: XmtpSubjects
+	sender: XmtpSender
+	subjects: XmtpSubjects
 	xmtpClient: XmtpClient
 }
 
