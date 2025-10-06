@@ -87,7 +87,7 @@ export function filterMessages(
 				isText: () => filter.isText(context.message as any),
 				isTextReply: () => filter.isTextReply(context.message as any),
 				isFromSelf: () =>
-					filter.fromSelf(context.message as any, context.client as any),
+					context.message.senderInboxId === context.client.inboxId,
 				hasMention: (mention: string) => {
 					const content =
 						typeof context.message.content === "string"
