@@ -1,9 +1,5 @@
-import {
-	Agent as XmtpAgent,
-	XmtpEnv,
-	createSigner,
-	createUser
-} from "@xmtp/agent-sdk"
+import { Agent as XmtpAgent, XmtpEnv } from "@xmtp/agent-sdk"
+import { createSigner, createUser } from "@xmtp/agent-sdk/user"
 
 import type {
 	AgentMessage,
@@ -18,12 +14,12 @@ import type {
 } from "@hybrd/types"
 import { logger } from "@hybrd/utils"
 import { randomUUID } from "node:crypto"
+import { createPublicClient, http } from "viem"
+import { base, mainnet } from "viem/chains"
 import { createXMTPClient, getDbPath } from "./client"
 import { ContentTypeReply, ContentTypeText, type Reply } from "./index"
-import { Resolver } from "./resolver/resolver"
 import { extractSubjects } from "./lib/subjects"
-import { createPublicClient, http } from "viem"
-import { mainnet, base } from "viem/chains"
+import { Resolver } from "./resolver/resolver"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
@@ -108,54 +104,53 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				throw new Error("XMTP_DB_ENCRYPTION_KEY must be set")
 			}
 
-		const user = createUser(XMTP_WALLET_KEY as `0x${string}`)
-		const signer = createSigner(user)
+			const user = createUser(XMTP_WALLET_KEY as `0x${string}`)
+			const signer = createSigner(user)
 
-		const xmtpClient = await createXMTPClient(
-			XMTP_WALLET_KEY as `0x${string}`
-		)
+			const xmtpClient = await createXMTPClient(
+				XMTP_WALLET_KEY as `0x${string}`
+			)
 
-		const address = user.account.address.toLowerCase()
-		const agentDbPath = await getDbPath(
-			`agent-${XMTP_ENV || "dev"}-${address}`
-		)
-		logger.debug(`📁 Using database path: ${agentDbPath}`)
+			const address = user.account.address.toLowerCase()
+			const agentDbPath = await getDbPath(
+				`agent-${XMTP_ENV || "dev"}-${address}`
+			)
+			logger.debug(`📁 Using database path: ${agentDbPath}`)
 
 			const xmtp = await XmtpAgent.create(signer, {
 				env: XMTP_ENV as XmtpEnv,
 				dbPath: agentDbPath
 			})
-		// Create unified resolver for all address/name resolution
-		const resolver = new Resolver({
-			xmtpClient: xmtpClient as any,
-			mainnetClient: mainnetClient as any,
-			baseClient: baseClient as any
-		})
-
+			// Create unified resolver for all address/name resolution
+			const resolver = new Resolver({
+				xmtpClient: xmtpClient as any,
+				mainnetClient: mainnetClient as any,
+				baseClient: baseClient as any
+			})
 
 			xmtp.on("reaction", async ({ conversation, message }) => {
 				try {
 					const text = message.content.content
-				const messages: AgentMessage[] = [
-					{
-						id: randomUUID(),
-						role: "user",
-						parts: [{ type: "text", text }]
+					const messages: AgentMessage[] = [
+						{
+							id: randomUUID(),
+							role: "user",
+							parts: [{ type: "text", text }]
+						}
+					]
+
+					const sender = await resolver.createXmtpSender(
+						message.senderInboxId,
+						conversation.id
+					)
+
+					const baseRuntime: AgentRuntime = {
+						conversation: conversation as unknown as XmtpConversation,
+						message: message as unknown as XmtpMessage,
+						sender,
+						subjects: {},
+						xmtpClient
 					}
-				]
-
-				const sender = await resolver.createXmtpSender(
-					message.senderInboxId,
-					conversation.id
-				)
-
-				const baseRuntime: AgentRuntime = {
-					conversation: conversation as unknown as XmtpConversation,
-					message: message as unknown as XmtpMessage,
-					sender,
-					subjects: {},
-					xmtpClient
-				}
 
 					const runtime = await agent.createRuntimeContext(baseRuntime)
 
@@ -217,27 +212,27 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				try {
 					// TODO - why isn't this typed better?
 					const text = message.content.content as string
-				const messages: AgentMessage[] = [
-					{
-						id: randomUUID(),
-						role: "user",
-						parts: [{ type: "text", text }]
+					const messages: AgentMessage[] = [
+						{
+							id: randomUUID(),
+							role: "user",
+							parts: [{ type: "text", text }]
+						}
+					]
+
+					const sender = await resolver.createXmtpSender(
+						message.senderInboxId,
+						conversation.id
+					)
+					const subjects = await extractSubjects(text, resolver)
+
+					const baseRuntime: AgentRuntime = {
+						conversation: conversation as unknown as XmtpConversation,
+						message: message as unknown as XmtpMessage,
+						sender,
+						subjects,
+						xmtpClient
 					}
-				]
-
-			const sender = await resolver.createXmtpSender(
-				message.senderInboxId,
-				conversation.id
-			)
-			const subjects = await extractSubjects(text, resolver)
-
-				const baseRuntime: AgentRuntime = {
-					conversation: conversation as unknown as XmtpConversation,
-					message: message as unknown as XmtpMessage,
-					sender,
-					subjects,
-					xmtpClient
-				}
 
 					const runtime = await agent.createRuntimeContext(baseRuntime)
 
@@ -310,25 +305,25 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 			xmtp.on("text", async ({ conversation, message }) => {
 				try {
 					const text = message.content
-				const messages: AgentMessage[] = [
-					{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }
-			]
+					const messages: AgentMessage[] = [
+						{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }
+					]
 
-			const sender = await resolver.createXmtpSender(
-				message.senderInboxId,
-				conversation.id
-			)
-			const subjects = await extractSubjects(text, resolver)
+					const sender = await resolver.createXmtpSender(
+						message.senderInboxId,
+						conversation.id
+					)
+					const subjects = await extractSubjects(text, resolver)
 
-				const baseRuntime: AgentRuntime = {
-					conversation: conversation as unknown as XmtpConversation,
-					message: message as unknown as XmtpMessage,
-					sender,
-					subjects,
-					xmtpClient
-				}
+					const baseRuntime: AgentRuntime = {
+						conversation: conversation as unknown as XmtpConversation,
+						message: message as unknown as XmtpMessage,
+						sender,
+						subjects,
+						xmtpClient
+					}
 
-				const runtime = await agent.createRuntimeContext(baseRuntime)
+					const runtime = await agent.createRuntimeContext(baseRuntime)
 
 					// Execute pre-response behaviors
 					let behaviorContext: BehaviorContext | undefined
