@@ -15,17 +15,19 @@ export {
 // XMTP Client and Connection Management
 // ===================================================================
 export {
+	XMTPConnectionManager,
 	createXMTPClient,
 	createSigner as createXMTPSigner,
 	logAgentDetails,
-	validateEnvironment,
-	XMTPConnectionManager
+	validateEnvironment
 } from "./client"
 export type { XMTPConnectionConfig } from "./client"
 
 // ===================================================================
+// Resolver Classes
 // ===================================================================
 export { AddressResolver } from "./resolver/address-resolver"
+export { Resolver } from "./resolver/resolver"
 
 // ===================================================================
 // XMTP Plugin for Agent Integration
