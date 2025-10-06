@@ -1,6 +1,6 @@
 {
 	"name": "@hybrd/ponder",
-	"version": "1.4.3",
+	"version": "1.4.4",
 	"type": "module",
 	"files": [
 		"dist",
