@@ -417,4 +417,265 @@ describe("Filter Messages Behavior", () => {
 
 		expect(context.sendOptions?.filtered).toBe(true)
 	})
+
+describe("isFromSelf filter", () => {
+	it("should return true when message is from self", async () => {
+		const context: BehaviorContext = {
+			runtime: {
+				sender: {
+					address: "0x1234567890123456789012345678901234567890",
+					inboxId: "agent-inbox",
+					name: "Agent"
+				},
+				subjects: {}
+			} as any,
+			client: { inboxId: "agent-inbox" } as any,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "agent-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) => filter.isFromSelf())
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should return false when message is not from self", async () => {
+		const context: BehaviorContext = {
+			runtime: {
+				sender: {
+					address: "0x9999999999999999999999999999999999999999",
+					inboxId: "other-inbox",
+					name: "Other User"
+				},
+				subjects: {}
+			} as any,
+			client: { inboxId: "agent-inbox" } as any,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "other-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) => !filter.isFromSelf())
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should filter out message when isFromSelf returns false and filter expects true", async () => {
+		const context: BehaviorContext = {
+			runtime: {
+				sender: {
+					address: "0x9999999999999999999999999999999999999999",
+					inboxId: "other-inbox",
+					name: "Other User"
+				},
+				subjects: {}
+			} as any,
+			client: { inboxId: "agent-inbox" } as any,
+			conversation: mockConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "other-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages((filter) => filter.isFromSelf())
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+})
+
+describe("isFrom filter", () => {
+
+	it("should filter messages from specific address", async () => {
+		const context: BehaviorContext = {
+			runtime: {
+				sender: {
+					address: "0x1234567890123456789012345678901234567890",
+					inboxId: "sender-inbox",
+					name: "Test Sender"
+				},
+				subjects: {}
+			} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				await filter.isFrom("0x1234567890123456789012345678901234567890")
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should handle missing sender address gracefully", async () => {
+		const context: BehaviorContext = {
+			runtime: {
+				sender: {
+					address: undefined,
+					inboxId: "sender-inbox",
+					name: "Unknown"
+				},
+				subjects: {}
+			} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				await filter.isFrom("0x1234567890123456789012345678901234567890")
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+
+	it("should perform case-insensitive address comparison", async () => {
+		const context: BehaviorContext = {
+			runtime: {
+				sender: {
+					address: "0xABCD1234567890123456789012345678901234EF",
+					inboxId: "sender-inbox",
+					name: "Test Sender"
+				},
+				subjects: {}
+			} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				await filter.isFrom("0xabcd1234567890123456789012345678901234ef")
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should filter out messages not from specified address", async () => {
+		const context: BehaviorContext = {
+			runtime: {
+				sender: {
+					address: "0x9999999999999999999999999999999999999999",
+					inboxId: "sender-inbox",
+					name: "Other Sender"
+				},
+				subjects: {}
+			} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				await filter.isFrom("0x1234567890123456789012345678901234567890")
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+
+	it("should work with valid sender address", async () => {
+		const context: BehaviorContext = {
+			runtime: {
+				sender: {
+					address: "0x1234567890123456789012345678901234567890",
+					inboxId: "sender-inbox",
+					name: "Test Sender"
+				},
+				subjects: {}
+			} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				await filter.isFrom("0x1234567890123456789012345678901234567890")
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBeUndefined()
+	})
+
+	it("should work in combination with other filters", async () => {
+		vi.mocked(xmtpFilter.isText).mockReturnValue(true)
+
+		const context: BehaviorContext = {
+			runtime: {
+				sender: {
+					address: "0x1234567890123456789012345678901234567890",
+					inboxId: "sender-inbox",
+					name: "Test Sender"
+				},
+				subjects: {}
+			} as any,
+			client: mockClient,
+			conversation: { id: "conv-1" } as XmtpConversation,
+			message: {
+				id: "test-message",
+				senderInboxId: "sender-inbox",
+				content: "test"
+			} as XmtpMessage,
+			sendOptions: {}
+		}
+
+		const behavior = filterMessages(
+			async (filter) =>
+				filter.isText() &&
+				!(await filter.isFrom("0x1234567890123456789012345678901234567890"))
+		)
+		await behavior.before?.(context)
+
+		expect(context.sendOptions?.filtered).toBe(true)
+	})
+})
+
 })

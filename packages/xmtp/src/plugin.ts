@@ -1,9 +1,5 @@
-import {
-	Agent as XmtpAgent,
-	XmtpEnv,
-	createSigner,
-	createUser
-} from "@xmtp/agent-sdk"
+import { Agent as XmtpAgent, XmtpEnv } from "@xmtp/agent-sdk"
+import { createSigner, createUser } from "@xmtp/agent-sdk/user"
 
 import type {
 	AgentMessage,
@@ -18,11 +14,25 @@ import type {
 } from "@hybrd/types"
 import { logger } from "@hybrd/utils"
 import { randomUUID } from "node:crypto"
+import { createPublicClient, http } from "viem"
+import { base, mainnet } from "viem/chains"
 import { createXMTPClient, getDbPath } from "./client"
 import { ContentTypeReply, ContentTypeText, type Reply } from "./index"
+import { Resolver } from "./resolver/resolver"
 
 // Re-export types from @hybrd/types for backward compatibility
 export type { Plugin }
+
+// Create public clients for resolver instances (reused across messages)
+const mainnetClient = createPublicClient({
+	chain: mainnet,
+	transport: http()
+})
+
+const baseClient = createPublicClient({
+	chain: base,
+	transport: http()
+})
 
 /**
  * Send a response with threading support
@@ -111,6 +121,107 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				dbPath: agentDbPath
 			})
 
+			// Create unified resolver for all address/name resolution
+			const resolver = new Resolver({
+				xmtpClient,
+				mainnetClient,
+				baseClient
+			})
+
+			xmtp.on("text", async ({ conversation, message }) => {
+				try {
+					const text = message.content
+					const messages: AgentMessage[] = [
+						{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }
+					]
+
+					const sender = await resolver.createXmtpSender(
+						message.senderInboxId,
+						conversation.id
+					)
+					const subjects = await resolver.extractSubjects(text)
+
+					console.log({
+						sender,
+						subjects
+					})
+
+					const baseRuntime: AgentRuntime = {
+						conversation: conversation as unknown as XmtpConversation,
+						message: message as unknown as XmtpMessage,
+						sender,
+						subjects,
+						xmtpClient
+					}
+
+					const runtime = await agent.createRuntimeContext(baseRuntime)
+
+					// Execute pre-response behaviors
+					let behaviorContext: BehaviorContext | undefined
+					if (context.behaviors) {
+						behaviorContext = {
+							runtime,
+							client: xmtpClient as unknown as XmtpClient,
+							conversation: conversation as unknown as XmtpConversation,
+							message: message as unknown as XmtpMessage
+						}
+						await context.behaviors.executeBefore(behaviorContext)
+
+						// Check if behaviors were stopped early (e.g., due to filtering)
+						if (behaviorContext.stopped) {
+							logger.debug(
+								`🔇 [XMTP Plugin] Skipping text response due to behavior chain being stopped`
+							)
+							return
+						}
+					}
+
+					const { text: reply } = await agent.generate(messages, { runtime })
+
+					// Execute post-response behaviors
+					if (context.behaviors) {
+						if (!behaviorContext) {
+							behaviorContext = {
+								runtime,
+								client: xmtpClient as unknown as XmtpClient,
+								conversation: conversation as unknown as XmtpConversation,
+								message: message as unknown as XmtpMessage,
+								response: reply
+							}
+						} else {
+							behaviorContext.response = reply
+						}
+						await context.behaviors.executeAfter(behaviorContext)
+
+						// Check if post behaviors were stopped early
+						if (behaviorContext.stopped) {
+							logger.debug(
+								`🔇 [XMTP Plugin] Skipping text response due to post-behavior chain being stopped`
+							)
+							return
+						}
+					} else {
+						// Create minimal context for send options
+						behaviorContext = {
+							runtime,
+							client: xmtpClient as unknown as XmtpClient,
+							conversation: conversation as unknown as XmtpConversation,
+							message: message as unknown as XmtpMessage,
+							response: reply
+						}
+					}
+
+					await sendResponse(
+						conversation as unknown as XmtpConversation,
+						reply,
+						message.id,
+						behaviorContext
+					)
+				} catch (err) {
+					logger.error("❌ Error handling text:", err)
+				}
+			})
+
 			xmtp.on("reaction", async ({ conversation, message }) => {
 				try {
 					const text = message.content.content
@@ -122,9 +233,16 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						}
 					]
 
+					const sender = await resolver.createXmtpSender(
+						message.senderInboxId,
+						conversation.id
+					)
+
 					const baseRuntime: AgentRuntime = {
 						conversation: conversation as unknown as XmtpConversation,
 						message: message as unknown as XmtpMessage,
+						sender,
+						subjects: {},
 						xmtpClient
 					}
 
@@ -196,9 +314,17 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 						}
 					]
 
+					const sender = await resolver.createXmtpSender(
+						message.senderInboxId,
+						conversation.id
+					)
+					const subjects = await resolver.extractSubjects(text)
+
 					const baseRuntime: AgentRuntime = {
 						conversation: conversation as unknown as XmtpConversation,
 						message: message as unknown as XmtpMessage,
+						sender,
+						subjects,
 						xmtpClient
 					}
 
@@ -267,87 +393,6 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					)
 				} catch (err) {
 					logger.error("❌ Error handling reply:", err)
-				}
-			})
-
-			xmtp.on("text", async ({ conversation, message }) => {
-				try {
-					const text = message.content
-					const messages: AgentMessage[] = [
-						{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }
-					]
-
-					const baseRuntime: AgentRuntime = {
-						conversation: conversation as unknown as XmtpConversation,
-						message: message as unknown as XmtpMessage,
-						xmtpClient
-					}
-
-					const runtime = await agent.createRuntimeContext(baseRuntime)
-
-					// Execute pre-response behaviors
-					let behaviorContext: BehaviorContext | undefined
-					if (context.behaviors) {
-						behaviorContext = {
-							runtime,
-							client: xmtpClient as unknown as XmtpClient,
-							conversation: conversation as unknown as XmtpConversation,
-							message: message as unknown as XmtpMessage
-						}
-						await context.behaviors.executeBefore(behaviorContext)
-
-						// Check if behaviors were stopped early (e.g., due to filtering)
-						if (behaviorContext.stopped) {
-							logger.debug(
-								`🔇 [XMTP Plugin] Skipping text response due to behavior chain being stopped`
-							)
-							return
-						}
-					}
-
-					const { text: reply } = await agent.generate(messages, { runtime })
-
-					// Execute post-response behaviors
-					if (context.behaviors) {
-						if (!behaviorContext) {
-							behaviorContext = {
-								runtime,
-								client: xmtpClient as unknown as XmtpClient,
-								conversation: conversation as unknown as XmtpConversation,
-								message: message as unknown as XmtpMessage,
-								response: reply
-							}
-						} else {
-							behaviorContext.response = reply
-						}
-						await context.behaviors.executeAfter(behaviorContext)
-
-						// Check if post behaviors were stopped early
-						if (behaviorContext.stopped) {
-							logger.debug(
-								`🔇 [XMTP Plugin] Skipping text response due to post-behavior chain being stopped`
-							)
-							return
-						}
-					} else {
-						// Create minimal context for send options
-						behaviorContext = {
-							runtime,
-							client: xmtpClient as unknown as XmtpClient,
-							conversation: conversation as unknown as XmtpConversation,
-							message: message as unknown as XmtpMessage,
-							response: reply
-						}
-					}
-
-					await sendResponse(
-						conversation as unknown as XmtpConversation,
-						reply,
-						message.id,
-						behaviorContext
-					)
-				} catch (err) {
-					logger.error("❌ Error handling text:", err)
 				}
 			})
 

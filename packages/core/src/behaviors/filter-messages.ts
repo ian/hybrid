@@ -1,10 +1,14 @@
 import type { BehaviorContext, BehaviorObject } from "@hybrd/types"
 import { logger } from "@hybrd/utils"
-import { filter } from "@hybrd/xmtp"
+import {
+	type Conversation,
+	type DecodedMessage,
+	type Reaction,
+	filter
+} from "@hybrd/xmtp"
 
 // Filter interface that matches XMTP SDK signatures
 interface FilterAPI {
-	fromSelf(): boolean
 	hasContent(): boolean
 	isDM(): boolean
 	isGroup(): boolean
@@ -17,10 +21,12 @@ interface FilterAPI {
 	isText(): boolean
 	isTextReply(): boolean
 	hasMention(mention: string): boolean
+	isFromSelf(): boolean
+	isFrom(address: `0x${string}`): Promise<boolean>
 }
 
 export function filterMessages(
-	filters: (api: FilterAPI) => boolean
+	filters: (api: FilterAPI) => boolean | Promise<boolean>
 ): BehaviorObject {
 	return {
 		id: "filter-messages",
@@ -35,29 +41,37 @@ export function filterMessages(
 				typeof context.message.content === "string"
 					? context.message.content.substring(0, 100)
 					: String(context.message.content || "unknown")
+
 			logger.debug(
 				`🔍 [filter-messages] Processing message: ${messageContent}...`
 			)
 
 			// Create filter API wrapper
 			const filterAPI: FilterAPI = {
-				fromSelf: () =>
-					filter.fromSelf(context.message as any, context.client as any),
-				hasContent: () => filter.hasContent(context.message as any),
-				isDM: () => filter.isDM(context.conversation as any),
-				isGroup: () => filter.isGroup(context.conversation as any),
+				hasContent: () =>
+					filter.hasContent(
+						context.message as unknown as DecodedMessage<unknown>
+					),
+				isDM: () =>
+					filter.isDM(context.conversation as unknown as Conversation<unknown>),
+				isGroup: () =>
+					filter.isGroup(
+						context.conversation as unknown as Conversation<unknown>
+					),
 				isGroupAdmin: () =>
 					filter.isGroupAdmin(
-						context.conversation as any,
-						context.message as any
+						context.conversation as unknown as Conversation<unknown>,
+						context.message as unknown as DecodedMessage<unknown>
 					),
 				isGroupSuperAdmin: () =>
 					filter.isGroupSuperAdmin(
-						context.conversation as any,
-						context.message as any
+						context.conversation as unknown as Conversation<unknown>,
+						context.message as unknown as DecodedMessage<unknown>
 					),
 				isReaction: (emoji?: string, action?: "added" | "removed") => {
-					const isReaction = filter.isReaction(context.message as any)
+					const isReaction = filter.isReaction(
+						context.message as unknown as DecodedMessage<unknown>
+					)
 					if (!isReaction) return false
 
 					// Check if message has reaction content
@@ -67,7 +81,7 @@ export function filterMessages(
 					)
 						return false
 
-					const reactionContent = context.message.content as any
+					const reactionContent = context.message.content as Reaction
 
 					// Validate reaction content structure
 					if (!reactionContent.content) return false
@@ -84,21 +98,35 @@ export function filterMessages(
 					return true
 				},
 				isRemoteAttachment: () =>
-					filter.isRemoteAttachment(context.message as any),
-				isReply: () => filter.isReply(context.message as any),
-				isText: () => filter.isText(context.message as any),
-				isTextReply: () => filter.isTextReply(context.message as any),
+					filter.isRemoteAttachment(
+						context.message as unknown as DecodedMessage<unknown>
+					),
+				isReply: () =>
+					filter.isReply(context.message as unknown as DecodedMessage<unknown>),
+				isText: () =>
+					filter.isText(context.message as unknown as DecodedMessage<unknown>),
+				isTextReply: () =>
+					filter.isTextReply(
+						context.message as unknown as DecodedMessage<unknown>
+					),
 				hasMention: (mention: string) => {
 					const content =
 						typeof context.message.content === "string"
 							? context.message.content
 							: String(context.message.content || "")
 					return content.includes(mention)
+				},
+				isFromSelf: () =>
+					context.message.senderInboxId === context.client.inboxId,
+				isFrom: async (address: `0x${string}`) => {
+					const normalizedAddress = address.toLowerCase()
+					const senderAddress = context.runtime.sender?.address?.toLowerCase()
+					return senderAddress === normalizedAddress
 				}
 			}
 
 			try {
-				const passes = filters(filterAPI)
+				const passes = await filters(filterAPI)
 
 				if (!passes) {
 					logger.debug(

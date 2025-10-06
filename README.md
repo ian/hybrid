@@ -114,6 +114,8 @@ The filter function receives a `filter` object with methods that return boolean 
 - `filter.isReaction(emoji, action?)` - Message is a reaction with specific emoji and/or action ("added" | "removed")
 - `filter.isDM()` - Message is a direct message
 - `filter.fromSelf()` - Message is from the agent itself
+- `filter.isFromSelf()` - Message is from the agent itself (alias for fromSelf)
+- `filter.isFrom(address)` - Message is from a specific Ethereum address (async)
 - `filter.hasMention(mention:string)` - Message contains a mention
 - `filter.hasContent()` - Message has content
 - `filter.isGroup()` - Message is in a group conversation
@@ -121,6 +123,17 @@ The filter function receives a `filter` object with methods that return boolean 
 - `filter.isGroupSuperAdmin()` - Message sender is group super admin
 - `filter.isRemoteAttachment()` - Message has remote attachment
 - `filter.isTextReply()` - Message is a text reply
+
+**Using async filters:**
+
+Filters can now be async to support operations like address resolution:
+
+```typescript
+filterMessages(async (filter) => 
+  !await filter.isFrom("0x1234567890123456789012345678901234567890") && 
+  !filter.isFromSelf()
+)
+```
 
 See XMTP Agent SDK filter docs for all filtering options: [XMTP Agent SDK – Built-in filters](https://github.com/xmtp/xmtp-js/tree/main/sdks/agent-sdk#3-builtin-filters).
 

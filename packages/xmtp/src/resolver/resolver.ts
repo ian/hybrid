@@ -1,3 +1,4 @@
+import { logger } from "@hybrd/utils"
 import { type Address, type PublicClient } from "viem"
 import type { XmtpClient, XmtpMessage, XmtpSender } from "../types"
 import { AddressResolver } from "./address-resolver"
@@ -8,7 +9,6 @@ import {
 } from "./basename-resolver"
 import { ENSResolver } from "./ens-resolver"
 import { XmtpResolver } from "./xmtp-resolver"
-import { logger } from "@hybrd/utils"
 
 interface ResolverOptions {
 	/**
@@ -188,6 +188,76 @@ export class Resolver {
 	 */
 	async findRootMessage(messageId: string): Promise<XmtpMessage | null> {
 		return this.xmtpResolver.findRootMessage(messageId)
+	}
+
+	// === Subject Resolution Methods ===
+
+	/**
+	 * Extract basenames/ENS names from message content using @mention pattern
+	 * @param content The message content to parse
+	 * @returns Array of unique names found in the message
+	 */
+	extractMentionedNames(content: string): string[] {
+		// Match @basename.eth and @basename.base.eth patterns (case insensitive)
+		const nameRegex = /@([a-zA-Z0-9-_]+\.(?:base\.)?eth)\b/gi
+		const matches = content.match(nameRegex)
+
+		if (!matches) {
+			return []
+		}
+
+		// Remove @ symbol and deduplicate
+		const names = matches.map((match) => match.slice(1).toLowerCase())
+		return [...new Set(names)]
+	}
+
+	/**
+	 * Resolve mentioned names to addresses and return as subjects object
+	 * @param mentionedNames Array of names to resolve
+	 * @returns Promise that resolves to subjects object mapping names to addresses
+	 */
+	async resolveSubjects(
+		mentionedNames: string[]
+	): Promise<Record<string, `0x${string}`>> {
+		const subjects: Record<string, `0x${string}`> = {}
+
+		if (mentionedNames.length === 0) {
+			return subjects
+		}
+
+		logger.debug(
+			`🔍 Found ${mentionedNames.length} name mentions:`,
+			mentionedNames
+		)
+
+		for (const mentionedName of mentionedNames) {
+			try {
+				const resolvedAddress = await this.resolveName(mentionedName)
+
+				if (resolvedAddress) {
+					subjects[mentionedName] = resolvedAddress as `0x${string}`
+					logger.debug(`✅ Resolved ${mentionedName} → ${resolvedAddress}`)
+				} else {
+					logger.debug(`❌ Could not resolve address for: ${mentionedName}`)
+				}
+			} catch (error) {
+				console.error(`❌ Error resolving ${mentionedName}:`, error)
+			}
+		}
+
+		return subjects
+	}
+
+	/**
+	 * Extract subjects from message content (combines extraction and resolution)
+	 * @param content The message content to parse
+	 * @returns Promise that resolves to subjects object mapping names to addresses
+	 */
+	async extractSubjects(
+		content: string
+	): Promise<Record<string, `0x${string}`>> {
+		const mentionedNames = this.extractMentionedNames(content)
+		return await this.resolveSubjects(mentionedNames)
 	}
 
 	// === Universal Resolution Methods ===
