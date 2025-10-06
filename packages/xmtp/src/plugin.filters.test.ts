@@ -24,6 +24,7 @@ vi.mock("@xmtp/agent-sdk", () => {
 		Agent: { create: vi.fn(async () => fakeXmtp) },
 		createUser: vi.fn(() => ({ account: { address: "0xabc" } })),
 		createSigner: vi.fn(() => ({})),
+		getTestUrl: vi.fn(() => "http://test"),
 		XmtpEnv: {},
 		__fakeXmtp: fakeXmtp
 	}
@@ -149,7 +150,7 @@ describe("XMTPPlugin behaviors", () => {
 		// Emit a text event
 		await mocked.__fakeXmtp.emit("text", {
 			conversation: { id: "conv1", send: vi.fn(async () => {}) },
-			message: { content: "hello", senderInboxId: "other-inbox" }
+			message: { content: "hello" }
 		})
 
 		expect(agent.generate).toHaveBeenCalledTimes(1)

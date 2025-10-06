@@ -1,5 +1,5 @@
-import { logger } from "@hybrd/utils"
 import type { XmtpClient, XmtpMessage } from "../types"
+import { logger } from "@hybrd/utils"
 
 interface XmtpResolverOptions {
 	/**
@@ -132,9 +132,7 @@ export class XmtpResolver {
 
 			if (message) {
 				this.setCachedMessage(messageId, message)
-				logger.debug(
-					`✅ [XmtpResolver] Found and cached message: ${message.id}`
-				)
+				logger.debug(`✅ [XmtpResolver] Found and cached message: ${message.id}`)
 				return message
 			}
 
@@ -242,41 +240,29 @@ export class XmtpResolver {
 		inboxId: string
 	): Promise<`0x${string}` | null> {
 		try {
-			logger.debug(
-				`🔍 [XmtpResolver] Resolving ${inboxId} from conversation members...`
-			)
 			const members = await conversation.members()
-			logger.debug(
-				`👥 [XmtpResolver] Found ${members.length} conversation members`
-			)
-
 			const sender = members.find(
 				(member: any) => member.inboxId.toLowerCase() === inboxId.toLowerCase()
 			)
 
 			if (sender) {
-				logger.debug(
-					`✅ [XmtpResolver] Found sender in members, checking identifiers...`
-				)
 				const ethIdentifier = sender.accountIdentifiers.find(
 					(id: any) => id.identifierKind === 0 // IdentifierKind.Ethereum
 				)
 				if (ethIdentifier) {
-					logger.debug(
-						`✅ [XmtpResolver] Resolved from conversation: ${ethIdentifier.identifier}`
-					)
 					return ethIdentifier.identifier
+				} else {
+					console.log(
+						`⚠️ [XmtpResolver] No Ethereum identifier found for inbox ${inboxId}`
+					)
 				}
-				logger.warn(
-					`⚠️ [XmtpResolver] No Ethereum identifier found for inbox ${inboxId}, identifierKinds: ${sender.accountIdentifiers.map((id: any) => id.identifierKind).join(", ")}`
-				)
 			} else {
-				logger.warn(
-					`⚠️ [XmtpResolver] Sender ${inboxId} not found in conversation members. Available inboxIds: ${members.map((m: any) => m.inboxId).join(", ")}`
+				console.log(
+					`⚠️ [XmtpResolver] Sender not found in conversation members for inbox ${inboxId}`
 				)
 			}
 		} catch (error) {
-			logger.error(
+			console.error(
 				`❌ [XmtpResolver] Error resolving from conversation members:`,
 				error
 			)
@@ -291,47 +277,20 @@ export class XmtpResolver {
 	private async resolveFromInboxState(
 		inboxId: string
 	): Promise<`0x${string}` | null> {
-		let retries = 0
-		const maxRetries = 2
-
-		while (retries <= maxRetries) {
-			try {
-				const inboxState = await this.client.preferences.inboxStateFromInboxIds(
-					[inboxId]
-				)
-				const firstState = inboxState?.[0]
-				if (firstState?.identifiers && firstState.identifiers.length > 0) {
-					const firstIdentifier = firstState.identifiers[0]
-					return firstIdentifier?.identifier as `0x${string}`
-				}
-				return null
-			} catch (error) {
-				const errorMessage =
-					error instanceof Error ? error.message : String(error)
-
-				if (
-					errorMessage.includes("Missing identity update") &&
-					retries < maxRetries
-				) {
-					logger.debug(
-						`⚠️ [XmtpResolver] Missing identity update, syncing and retrying (attempt ${retries + 1}/${maxRetries})...`
-					)
-					try {
-						await this.client.conversations.sync()
-						await new Promise((resolve) => setTimeout(resolve, 500))
-						retries++
-						continue
-					} catch (syncError) {
-						logger.debug(`❌ [XmtpResolver] Sync failed:`, syncError)
-					}
-				}
-
-				logger.debug(
-					`⚠️ [XmtpResolver] Could not resolve from inbox state for ${inboxId}:`,
-					errorMessage
-				)
-				return null
+		try {
+			const inboxState = await this.client.preferences.inboxStateFromInboxIds([
+				inboxId
+			])
+			const firstState = inboxState?.[0]
+			if (firstState?.identifiers && firstState.identifiers.length > 0) {
+				const firstIdentifier = firstState.identifiers[0]
+				return firstIdentifier?.identifier as `0x${string}`
 			}
+		} catch (error) {
+			console.error(
+				`❌ [XmtpResolver] Error resolving from inbox state:`,
+				error
+			)
 		}
 
 		return null

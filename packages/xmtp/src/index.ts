@@ -1,5 +1,10 @@
-export { Agent, filter } from "@xmtp/agent-sdk"
-export { createSigner, createUser } from "@xmtp/agent-sdk/user"
+export {
+	Agent,
+	createSigner,
+	createUser,
+	filter,
+	getTestUrl
+} from "@xmtp/agent-sdk"
 
 export type * from "./types"
 
@@ -15,19 +20,13 @@ export {
 // XMTP Client and Connection Management
 // ===================================================================
 export {
-	XMTPConnectionManager,
-	createXMTPClient,
-	createSigner as createXMTPSigner,
-	logAgentDetails,
-	validateEnvironment
+    createXMTPClient,
+    createSigner as createXMTPSigner,
+    logAgentDetails,
+    validateEnvironment,
+    XMTPConnectionManager
 } from "./client"
 export type { XMTPConnectionConfig } from "./client"
-
-// ===================================================================
-// Resolver Classes
-// ===================================================================
-export { AddressResolver } from "./resolver/address-resolver"
-export { Resolver } from "./resolver/resolver"
 
 // ===================================================================
 // XMTP Plugin for Agent Integration
@@ -47,10 +46,10 @@ export type { XMTPToolsPayload } from "./lib/jwt"
 export {
 	Client,
 	IdentifierKind,
-	type Conversation,
+	// type Conversation,
 	type DecodedMessage,
 	type Dm,
-	type Group,
+	// type Group,
 	type LogLevel,
 	type Signer,
 	type XmtpEnv

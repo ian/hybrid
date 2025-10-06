@@ -2,7 +2,10 @@
 	"name": "@hybrd/xmtp",
 	"version": "1.4.4",
 	"type": "module",
-	"files": ["dist", "src"],
+	"files": [
+		"dist",
+		"src"
+	],
 	"types": "dist/index.d.ts",
 	"main": "dist/index.cjs",
 	"module": "dist/index.js",
@@ -27,14 +30,14 @@
 	"dependencies": {
 		"@hybrd/types": "workspace:*",
 		"@hybrd/utils": "workspace:*",
-		"@xmtp/agent-sdk": "^1.1.4",
+		"@xmtp/agent-sdk": "0.0.14",
 		"@xmtp/content-type-group-updated": "2.0.2",
 		"@xmtp/content-type-reaction": "2.0.2",
 		"@xmtp/content-type-reply": "2.0.2",
 		"@xmtp/content-type-text": "2.0.2",
 		"@xmtp/content-type-transaction-reference": "2.0.2",
 		"@xmtp/content-type-wallet-send-calls": "2.0.0",
-		"@xmtp/node-sdk": "^4.2.2",
+		"@xmtp/node-sdk": "^4.1.0",
 		"hono": "^4.7.4",
 		"jsonwebtoken": "^9.0.2",
 		"uint8arrays": "^5.1.0",
