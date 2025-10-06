@@ -13,7 +13,7 @@ import { filter as xmtpFilter } from "@hybrd/xmtp"
 // Mock the XMTP filter
 vi.mock("@hybrd/xmtp", () => ({
 	filter: {
-		fromSelf: vi.fn(() => false),
+		isFromSelf: vi.fn(() => false),
 		hasContent: vi.fn(() => true),
 		isDM: vi.fn(() => false),
 		isGroup: vi.fn(() => true),
@@ -124,7 +124,7 @@ describe("Filter Messages Behavior", () => {
 
 	it("should work with callback syntax", () => {
 		const behavior = filterMessages(
-			(filter) => filter.isText() && !filter.fromSelf()
+			(filter) => filter.isText() && !filter.isFromSelf()
 		)
 
 		expect(behavior.id).toBe("filter-messages")
@@ -140,7 +140,7 @@ describe("Filter Messages Behavior", () => {
 		}
 
 		const behavior = filterMessages(
-			(filter) => filter.isText() && !filter.fromSelf()
+			(filter) => filter.isText() && !filter.isFromSelf()
 		)
 
 		await behavior.before?.(context)
@@ -416,5 +416,85 @@ describe("Filter Messages Behavior", () => {
 		await behavior.before?.(context)
 
 		expect(context.sendOptions?.filtered).toBe(true)
+	})
+
+	describe("isFromSelf filter", () => {
+		it("should return true when message is from self", async () => {
+			const context: BehaviorContext = {
+				runtime: {
+					sender: {
+						address: "0x1234567890123456789012345678901234567890",
+						inboxId: "agent-inbox",
+						name: "Agent"
+					},
+					subjects: {}
+				} as any,
+				client: { inboxId: "agent-inbox" } as any,
+				conversation: mockConversation,
+				message: {
+					id: "test-message",
+					senderInboxId: "agent-inbox",
+					content: "test"
+				} as XmtpMessage,
+				sendOptions: {}
+			}
+
+			const behavior = filterMessages((filter) => filter.isFromSelf())
+			await behavior.before?.(context)
+
+			expect(context.sendOptions?.filtered).toBeUndefined()
+		})
+
+		it("should return false when message is not from self", async () => {
+			const context: BehaviorContext = {
+				runtime: {
+					sender: {
+						address: "0x9999999999999999999999999999999999999999",
+						inboxId: "other-inbox",
+						name: "Other User"
+					},
+					subjects: {}
+				} as any,
+				client: { inboxId: "agent-inbox" } as any,
+				conversation: mockConversation,
+				message: {
+					id: "test-message",
+					senderInboxId: "other-inbox",
+					content: "test"
+				} as XmtpMessage,
+				sendOptions: {}
+			}
+
+			const behavior = filterMessages((filter) => !filter.isFromSelf())
+			await behavior.before?.(context)
+
+			expect(context.sendOptions?.filtered).toBeUndefined()
+		})
+
+		it("should filter out message when isFromSelf returns false and filter expects true", async () => {
+			const context: BehaviorContext = {
+				runtime: {
+					sender: {
+						address: "0x9999999999999999999999999999999999999999",
+						inboxId: "other-inbox",
+						name: "Other User"
+					},
+					subjects: {}
+				} as any,
+				client: { inboxId: "agent-inbox" } as any,
+				conversation: mockConversation,
+				message: {
+					id: "test-message",
+					senderInboxId: "other-inbox",
+					content: "test"
+				} as XmtpMessage,
+				sendOptions: {}
+			}
+
+			const behavior = filterMessages((filter) => filter.isFromSelf())
+			await behavior.before?.(context)
+
+			expect(context.sendOptions?.filtered).toBe(true)
+		})
 	})
 })

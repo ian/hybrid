@@ -4,8 +4,6 @@ import { filter } from "@hybrd/xmtp"
 
 // Filter interface that matches XMTP SDK signatures
 interface FilterAPI {
-	fromSelf(): boolean
-	hasContent(): boolean
 	isDM(): boolean
 	isGroup(): boolean
 	isGroupAdmin(): boolean
@@ -16,7 +14,9 @@ interface FilterAPI {
 	isReply(): boolean
 	isText(): boolean
 	isTextReply(): boolean
+	isFromSelf(): boolean
 	hasMention(mention: string): boolean
+	hasContent(): boolean
 }
 
 export function filterMessages(
@@ -41,8 +41,6 @@ export function filterMessages(
 
 			// Create filter API wrapper
 			const filterAPI: FilterAPI = {
-				fromSelf: () =>
-					filter.fromSelf(context.message as any, context.client as any),
 				hasContent: () => filter.hasContent(context.message as any),
 				isDM: () => filter.isDM(context.conversation as any),
 				isGroup: () => filter.isGroup(context.conversation as any),
@@ -88,6 +86,8 @@ export function filterMessages(
 				isReply: () => filter.isReply(context.message as any),
 				isText: () => filter.isText(context.message as any),
 				isTextReply: () => filter.isTextReply(context.message as any),
+				isFromSelf: () =>
+					context.message.senderInboxId === context.client.inboxId,
 				hasMention: (mention: string) => {
 					const content =
 						typeof context.message.content === "string"

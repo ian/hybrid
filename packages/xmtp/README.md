@@ -19,7 +19,7 @@ import { filter } from "hybrid"
 const xmtp = XMTPPlugin({
   filters: [
     filter.isText,
-    filter.not(filter.fromSelf),
+    filter.not(filter.isFromSelf),
     filter.startsWith("@agent")
   ]
 })
