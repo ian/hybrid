@@ -1,9 +1,9 @@
 import type {
 	XmtpClient,
-	XmtpSender,
-	XmtpSubjects,
 	XmtpConversation,
-	XmtpMessage
+	XmtpMessage,
+	XmtpSender,
+	XmtpSubjects
 } from "./xmtp"
 
 /**
@@ -21,8 +21,3 @@ export interface AgentRuntime {
 	subjects: XmtpSubjects
 	xmtpClient: XmtpClient
 }
-
-// export type AgentRuntime = BaseRuntime & {
-// 	chatId?: string
-// 	messages: Array<UIMessage>
-// }
