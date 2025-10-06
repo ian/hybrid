@@ -134,7 +134,7 @@ const agent = new Agent({
 await agent.listen({
   port: "8454",
   behaviors: [
-    filterMessages((filter) => filter.isText() && !filter.fromSelf()),
+    filterMessages((filter) => filter.isText() && !filter.isFromSelf()),
     reactWith("👀"),
     threadedReply()
   ]
@@ -220,7 +220,7 @@ await agent.listen({
       filter.isGroup()          // Is group conversation
       
       // Sender checks
-      filter.fromSelf()         // From agent itself
+      filter.isFromSelf()         // From agent itself
       filter.isGroupAdmin()     // Sender is group admin
       filter.isGroupSuperAdmin() // Sender is super admin
       filter.hasMention(text)   // Contains mention

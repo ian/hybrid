@@ -55,7 +55,7 @@ import { filterMessages, filter } from "@hybrd/core/behaviors"
 
 // Only process text messages that aren't from the agent itself
 agent.use(filterMessages(filter => 
-  filter.isText() && !filter.fromSelf()
+  filter.isText() && !filter.isFromSelf()
 ))
 ```
 
@@ -107,7 +107,7 @@ filter.isGroupSuperAdmin()
 
 ```typescript
 // Message is from the agent itself
-filter.fromSelf()
+filter.isFromSelf()
 
 // Message contains a mention
 filter.hasMention("@username")
@@ -119,7 +119,7 @@ filter.hasMention("0x1234...") // Ethereum address mention
 ```typescript
 // Only process DMs that are text and not from self
 agent.use(filterMessages(filter => 
-  filter.isDM() && filter.isText() && !filter.fromSelf()
+  filter.isDM() && filter.isText() && !filter.isFromSelf()
 ))
 
 // Process group messages that mention the agent
@@ -129,7 +129,7 @@ agent.use(filterMessages(filter =>
 
 // Process reactions but not from the agent itself
 agent.use(filterMessages(filter => 
-  filter.isReaction() && !filter.fromSelf()
+  filter.isReaction() && !filter.isFromSelf()
 ))
 
 // Complex business logic
@@ -139,7 +139,7 @@ agent.use(filterMessages(filter => {
   const isBusinessHours = hour >= 9 && hour <= 17
   
   return filter.isText() && 
-         !filter.fromSelf() && 
+         !filter.isFromSelf() && 
          isBusinessHours
 }))
 ```
@@ -166,7 +166,7 @@ agent.use(filterMessages(filter => {
     return false
   }
   
-  return filter.isText() && !filter.fromSelf()
+  return filter.isText() && !filter.isFromSelf()
 }))
 ```
 
@@ -257,7 +257,7 @@ When enabled, `threadedReply`:
 await agent.listen({
   port: "8454",
   behaviors: [
-    filterMessages((filter) => filter.isText() && !filter.fromSelf()),
+    filterMessages((filter) => filter.isText() && !filter.isFromSelf()),
     reactWith("👀"),
     threadedReply()  // Always thread replies
   ]

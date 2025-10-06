@@ -24,7 +24,7 @@ await agent.listen({
   ],
   filters: [
     filters.isText,
-    filters.not(filters.fromSelf),
+    filters.not(filters.isFromSelf),
     filters.startsWith("@agent")
   ]
 })
