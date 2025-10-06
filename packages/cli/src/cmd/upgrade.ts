@@ -254,16 +254,17 @@ export async function runUpgrade(): Promise<void> {
 	console.log("\n⬆️  Upgrading packages...")
 
 	try {
-		// For pnpm, yarn, and bun, we can upgrade specific packages
 		if (packageManager.name === "pnpm") {
-			await runCommand(["pnpm", "update", ...packagesList], cwd)
+			await runCommand(["pnpm", "update", "--latest", ...packagesList], cwd)
 		} else if (packageManager.name === "yarn") {
-			await runCommand(["yarn", "upgrade", ...packagesList], cwd)
+			await runCommand(["yarn", "upgrade", "--latest", ...packagesList], cwd)
 		} else if (packageManager.name === "bun") {
-			await runCommand(["bun", "update", ...packagesList], cwd)
+			await runCommand(["bun", "update", "--latest", ...packagesList], cwd)
 		} else {
-			// For npm, we need to upgrade all packages since npm update doesn't take package names
-			await runCommand(["npm", "update"], cwd)
+			await runCommand(
+				["npm", "install", ...packagesList.map((pkg) => `${pkg}@latest`)],
+				cwd
+			)
 		}
 
 		console.log("\n🎉 Hybrid packages upgraded successfully!")
