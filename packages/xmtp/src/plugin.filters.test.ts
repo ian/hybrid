@@ -147,11 +147,11 @@ describe("XMTPPlugin behaviors", () => {
 
 		const mocked = (await import("@xmtp/agent-sdk")) as unknown as MockAgentSdk
 
-		// Emit a text event
-		await mocked.__fakeXmtp.emit("text", {
-			conversation: { id: "conv1", send: vi.fn(async () => {}) },
-			message: { content: "hello" }
-		})
+	// Emit a text event
+	await mocked.__fakeXmtp.emit("text", {
+		conversation: { id: "conv1", send: vi.fn(async () => {}) },
+		message: { content: "hello", senderInboxId: "other-inbox" }
+	})
 
 		expect(agent.generate).toHaveBeenCalledTimes(1)
 	})

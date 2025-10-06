@@ -2,9 +2,7 @@ import {
 	Agent as XmtpAgent,
 	XmtpEnv,
 	createSigner,
-	createUser,
-	type Client,
-	type DecodedMessage
+	createUser
 } from "@xmtp/agent-sdk"
 
 import type {
@@ -16,17 +14,13 @@ import type {
 	PluginContext,
 	XmtpClient,
 	XmtpConversation,
-	XmtpMessage,
-	XmtpSender,
-	XmtpSubjects
+	XmtpMessage
 } from "@hybrd/types"
 import { logger } from "@hybrd/utils"
 import { randomUUID } from "node:crypto"
 import { createXMTPClient, getDbPath } from "./client"
 import { ContentTypeReply, ContentTypeText, type Reply } from "./index"
-import { AddressResolver } from "./resolver/address-resolver"
-import { BasenameResolver } from "./resolver/basename-resolver"
-import { ENSResolver } from "./resolver/ens-resolver"
+import { Resolver } from "./resolver/resolver"
 import { extractSubjects } from "./lib/subjects"
 import { createPublicClient, http } from "viem"
 import { mainnet, base } from "viem/chains"
@@ -44,53 +38,6 @@ const baseClient = createPublicClient({
 	chain: base,
 	transport: http()
 })
-
-/**
- * Resolve sender information from message
- * @param message - The XMTP message
- * @param client - XMTP client instance
- * @returns XmtpSender object with address, inboxId, name, and optional basename
- */
-async function resolveSender(
-	message: DecodedMessage<unknown>,
-	client: Client<unknown>
-): Promise<XmtpSender> {
-	const addressResolver = new AddressResolver(client as any)
-	const basenameResolver = new BasenameResolver({
-		publicClient: baseClient as any
-	})
-
-	const address = await addressResolver.resolveAddress(
-		message.senderInboxId,
-		""
-	)
-
-	if (!address) {
-		logger.warn(
-			`⚠️ Could not resolve address for inbox ${message.senderInboxId}`
-		)
-		return {
-			address: "0x0000000000000000000000000000000000000000",
-			inboxId: message.senderInboxId,
-			name: "Unknown"
-		}
-	}
-
-	let basename: string | undefined
-	try {
-		const resolvedBasename = await basenameResolver.getBasename(address as `0x${string}`)
-		basename = resolvedBasename || undefined
-	} catch (err) {
-		logger.debug(`Could not resolve basename for ${address}`)
-	}
-
-	return {
-		address,
-		inboxId: message.senderInboxId,
-		name: basename || address.slice(0, 8),
-		basename
-	}
-}
 
 /**
  * Send a response with threading support
@@ -178,30 +125,37 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				env: XMTP_ENV as XmtpEnv,
 				dbPath: agentDbPath
 			})
+		// Create unified resolver for all address/name resolution
+		const resolver = new Resolver({
+			xmtpClient: xmtpClient as any,
+			mainnetClient: mainnetClient as any,
+			baseClient: baseClient as any
+		})
+
 
 			xmtp.on("reaction", async ({ conversation, message }) => {
 				try {
 					const text = message.content.content
-					const messages: AgentMessage[] = [
-						{
-							id: randomUUID(),
-							role: "user",
-							parts: [{ type: "text", text }]
-						}
-					]
-
-					const sender = await resolveSender(
-						message as unknown as DecodedMessage<unknown>,
-						xmtpClient as any
-					)
-
-					const baseRuntime: AgentRuntime = {
-						conversation: conversation as unknown as XmtpConversation,
-						message: message as unknown as XmtpMessage,
-						sender,
-						subjects: {},
-						xmtpClient
+				const messages: AgentMessage[] = [
+					{
+						id: randomUUID(),
+						role: "user",
+						parts: [{ type: "text", text }]
 					}
+				]
+
+				const sender = await resolver.createXmtpSender(
+					message.senderInboxId,
+					conversation.id
+				)
+
+				const baseRuntime: AgentRuntime = {
+					conversation: conversation as unknown as XmtpConversation,
+					message: message as unknown as XmtpMessage,
+					sender,
+					subjects: {},
+					xmtpClient
+				}
 
 					const runtime = await agent.createRuntimeContext(baseRuntime)
 
@@ -263,34 +217,27 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				try {
 					// TODO - why isn't this typed better?
 					const text = message.content.content as string
-					const messages: AgentMessage[] = [
-						{
-							id: randomUUID(),
-							role: "user",
-							parts: [{ type: "text", text }]
-						}
-					]
-
-				const basenameResolver = new BasenameResolver({
-					publicClient: baseClient as any
-				})
-				const ensResolver = new ENSResolver({
-					mainnetClient: mainnetClient as any
-				})
-
-				const sender = await resolveSender(
-					message as unknown as DecodedMessage<unknown>,
-					xmtpClient as any
-				)
-					const subjects = await extractSubjects(text, basenameResolver, ensResolver)
-
-					const baseRuntime: AgentRuntime = {
-						conversation: conversation as unknown as XmtpConversation,
-						message: message as unknown as XmtpMessage,
-						sender,
-						subjects,
-						xmtpClient
+				const messages: AgentMessage[] = [
+					{
+						id: randomUUID(),
+						role: "user",
+						parts: [{ type: "text", text }]
 					}
+				]
+
+			const sender = await resolver.createXmtpSender(
+				message.senderInboxId,
+				conversation.id
+			)
+			const subjects = await extractSubjects(text, resolver)
+
+				const baseRuntime: AgentRuntime = {
+					conversation: conversation as unknown as XmtpConversation,
+					message: message as unknown as XmtpMessage,
+					sender,
+					subjects,
+					xmtpClient
+				}
 
 					const runtime = await agent.createRuntimeContext(baseRuntime)
 
@@ -367,18 +314,11 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 					{ id: randomUUID(), role: "user", parts: [{ type: "text", text }] }
 			]
 
-			const basenameResolver = new BasenameResolver({
-				publicClient: baseClient as any
-			})
-			const ensResolver = new ENSResolver({
-				mainnetClient: mainnetClient as any
-			})
-
-			const sender = await resolveSender(
-				message as unknown as DecodedMessage<unknown>,
-				xmtpClient as any
+			const sender = await resolver.createXmtpSender(
+				message.senderInboxId,
+				conversation.id
 			)
-			const subjects = await extractSubjects(text, basenameResolver, ensResolver)
+			const subjects = await extractSubjects(text, resolver)
 
 				const baseRuntime: AgentRuntime = {
 					conversation: conversation as unknown as XmtpConversation,

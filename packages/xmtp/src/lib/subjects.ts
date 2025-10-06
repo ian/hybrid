@@ -1,5 +1,4 @@
-import type { BasenameResolver } from "../resolver/basename-resolver"
-import type { ENSResolver } from "../resolver/ens-resolver"
+import type { Resolver } from "../resolver/resolver"
 import { logger } from "@hybrd/utils"
 
 /**
@@ -24,14 +23,12 @@ export function extractMentionedNames(content: string): string[] {
 /**
  * Resolve mentioned names to addresses and return as subjects object
  * @param mentionedNames Array of names to resolve
- * @param basenameResolver Basename resolver instance
- * @param ensResolver ENS resolver instance
+ * @param resolver Unified resolver instance
  * @returns Promise that resolves to subjects object mapping names to addresses
  */
 export async function resolveSubjects(
 	mentionedNames: string[],
-	basenameResolver: BasenameResolver,
-	ensResolver: ENSResolver
+	resolver: Resolver
 ): Promise<Record<string, `0x${string}`>> {
 	const subjects: Record<string, `0x${string}`> = {}
 
@@ -46,18 +43,7 @@ export async function resolveSubjects(
 
 	for (const mentionedName of mentionedNames) {
 		try {
-			let resolvedAddress: string | null = null
-
-			// Check if it's an ENS name (.eth but not .base.eth)
-			if (ensResolver.isENSName(mentionedName)) {
-				logger.debug(`🔍 Resolving ENS name: ${mentionedName}`)
-				resolvedAddress = await ensResolver.resolveENSName(mentionedName)
-			} else {
-				// It's a basename (.base.eth or other format)
-				logger.debug(`🔍 Resolving basename: ${mentionedName}`)
-				resolvedAddress =
-					await basenameResolver.getBasenameAddress(mentionedName)
-			}
+			const resolvedAddress = await resolver.resolveName(mentionedName)
 
 			if (resolvedAddress) {
 				subjects[mentionedName] = resolvedAddress as `0x${string}`
@@ -76,15 +62,13 @@ export async function resolveSubjects(
 /**
  * Extract subjects from message content (combines extraction and resolution)
  * @param content The message content to parse
- * @param basenameResolver Basename resolver instance
- * @param ensResolver ENS resolver instance
+ * @param resolver Unified resolver instance
  * @returns Promise that resolves to subjects object mapping names to addresses
  */
 export async function extractSubjects(
 	content: string,
-	basenameResolver: BasenameResolver,
-	ensResolver: ENSResolver
+	resolver: Resolver
 ): Promise<Record<string, `0x${string}`>> {
 	const mentionedNames = extractMentionedNames(content)
-	return await resolveSubjects(mentionedNames, basenameResolver, ensResolver)
+	return await resolveSubjects(mentionedNames, resolver)
 }
