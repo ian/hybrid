@@ -161,141 +161,18 @@ export function XMTPPlugin(): Plugin<PluginContext> {
 				throw new Error("XMTP_DB_ENCRYPTION_KEY must be set")
 			}
 
-			const user = createUser(XMTP_WALLET_KEY as `0x${string}`)
-			const signer = createSigner(user)
+		const user = createUser(XMTP_WALLET_KEY as `0x${string}`)
+		const signer = createSigner(user)
 
-			const xmtpClient = await createXMTPClient(
-				XMTP_WALLET_KEY as `0x${string}`
-			)
+		const xmtpClient = await createXMTPClient(
+			XMTP_WALLET_KEY as `0x${string}`
+		)
 
-			// Start a reliable node client stream to process incoming messages
-			async function startNodeStream() {
-				try {
-					logger.debug("🎧 XMTP node client stream initializing")
-					const stream = await xmtpClient.conversations.streamAllMessages()
-					logger.debug("🎧 XMTP node client stream started")
-					for await (const msg of stream) {
-						try {
-							if (msg.senderInboxId === xmtpClient.inboxId) continue
-
-							const content =
-								typeof msg.content === "string"
-									? msg.content
-									: (() => {
-											try {
-												return JSON.stringify(msg.content)
-											} catch {
-												return String(msg.content)
-											}
-										})()
-
-							const conversation =
-								await xmtpClient.conversations.getConversationById(
-									msg.conversationId
-								)
-
-							if (!conversation) {
-								logger.warn(
-									`⚠️ XMTP conversation not found: ${msg.conversationId}`
-								)
-								continue
-							}
-
-							const messages: AgentMessage[] = [
-								{
-									id: randomUUID(),
-									role: "user",
-									parts: [{ type: "text", text: content }]
-								}
-						]
-
-						const basenameResolver = new BasenameResolver({
-							publicClient: baseClient as any
-						})
-						const ensResolver = new ENSResolver({
-							mainnetClient: mainnetClient as any
-						})
-
-						const sender = await resolveSender(msg as any, xmtpClient as any)
-						const subjects: XmtpSubjects =
-							typeof content === "string"
-								? await extractSubjects(content, basenameResolver, ensResolver)
-								: {}
-
-						const baseRuntime: AgentRuntime = {
-							conversation: conversation as unknown as XmtpConversation,
-							message: msg,
-							sender,
-							subjects,
-							xmtpClient
-						}
-
-						const runtime = await agent.createRuntimeContext(baseRuntime)
-
-							// Execute pre-response behaviors
-							if (pluginContext.behaviors) {
-								const behaviorContext: BehaviorContext = {
-									runtime,
-									client: xmtpClient as unknown as XmtpClient,
-									conversation: conversation as unknown as XmtpConversation,
-									message: msg as XmtpMessage
-								}
-								await pluginContext.behaviors.executeBefore(behaviorContext)
-
-								// Check if message was filtered out by any behavior
-								if (behaviorContext.sendOptions?.filtered) {
-									continue // Skip processing this message
-								}
-							}
-
-							const { text } = await agent.generate(messages, { runtime })
-
-							// Create behavior context for send options
-							const behaviorContext: BehaviorContext = {
-								runtime,
-								client: xmtpClient as unknown as XmtpClient,
-								conversation: conversation as unknown as XmtpConversation,
-								message: msg as XmtpMessage,
-								response: text
-							}
-
-							// Execute post-response behaviors
-							if (pluginContext.behaviors) {
-								await pluginContext.behaviors.executeAfter(behaviorContext)
-							}
-
-							// Check if message was filtered out by filterMessages behavior
-							if (behaviorContext?.sendOptions?.filtered) {
-								logger.debug(
-									`🔇 [XMTP Plugin] Skipping response due to message being filtered`
-								)
-								return
-							}
-
-							// Send the response with threading support
-							await sendResponse(conversation, text, msg.id, behaviorContext)
-						} catch (err) {
-							logger.error("❌ Error processing XMTP message:", err)
-						}
-					}
-				} catch (err) {
-					logger.error("❌ XMTP node client stream failed:", err)
-				}
-			}
-
-			const enabledFromEnv = process.env.XMTP_ENABLE_NODE_STREAM
-			const isNodeStreamEnabled =
-				enabledFromEnv === undefined
-					? true
-					: !/^(false|0|off|no)$/i.test(String(enabledFromEnv))
-
-			if (isNodeStreamEnabled) void startNodeStream()
-
-			const address = user.account.address.toLowerCase()
-			const agentDbPath = await getDbPath(
-				`agent-${XMTP_ENV || "dev"}-${address}`
-			)
-			logger.debug(`📁 Using agent listener database path: ${agentDbPath}`)
+		const address = user.account.address.toLowerCase()
+		const agentDbPath = await getDbPath(
+			`agent-${XMTP_ENV || "dev"}-${address}`
+		)
+		logger.debug(`📁 Using database path: ${agentDbPath}`)
 
 			const xmtp = await XmtpAgent.create(signer, {
 				env: XMTP_ENV as XmtpEnv,
