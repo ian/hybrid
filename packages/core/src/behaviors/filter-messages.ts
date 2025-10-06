@@ -100,7 +100,6 @@ export function filterMessages(
 				isFrom: async (address: `0x${string}`) => {
 					const normalizedAddress = address.toLowerCase()
 					const senderAddress = context.runtime.sender?.address?.toLowerCase()
-
 					return senderAddress === normalizedAddress
 				}
 			}
