@@ -51,7 +51,7 @@ xmtp-development-*
 .data/
 
 .ponder/
-harness/
+sandbox/
 scratchpad.md
 
 # START Ruler Generated Files

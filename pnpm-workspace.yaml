@@ -2,7 +2,7 @@ packages:
   - apps/*
   - config/*
   - packages/*
-  - harness/*
+  - sandbox/*
   - site
 
 catalog:

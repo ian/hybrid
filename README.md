@@ -470,7 +470,7 @@ hybrid/
 │   ├── utils/             # Utilities (@hybrd/utils)
 │   └── xmtp/              # XMTP client and resolvers (@hybrd/xmtp)
 ├── scripts/               # Repo scripts (version bump, etc.)
-└── test/                  # Test harness
+└── site/                  # Docs website
 ```
 
 ## 🆘 Support
