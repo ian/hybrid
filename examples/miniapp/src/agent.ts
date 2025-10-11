@@ -67,7 +67,11 @@ const agent = new Agent({
 - Helping with Farcaster and XMTP interactions
 - Explaining miniapp functionality and user authentication
 
-You work alongside a MiniKit miniapp that provides onchain interactions through OnchainKit components. Focus on being helpful and informative about the miniapp experience.`
+You work alongside a MiniKit miniapp that provides onchain interactions through OnchainKit components. Focus on being helpful and informative about the miniapp experience.`,
+	onError: (error: Error) => {
+		// Add custom error handling here (e.g., Sentry, DataDog, etc.)
+		// Note: Errors are automatically logged to console
+	}
 })
 
 await agent.listen({

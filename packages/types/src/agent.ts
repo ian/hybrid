@@ -143,6 +143,8 @@ export interface AgentConfig<TRuntimeExtension = DefaultRuntimeExtension> {
 	maxTokens?: number
 	/** Temperature for generation (0.0 to 2.0) */
 	temperature?: number
+	/** Error handler callback for custom error handling (e.g., Sentry) */
+	onError?: (error: Error) => void | Promise<void>
 }
 
 /**

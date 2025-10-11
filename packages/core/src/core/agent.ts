@@ -170,6 +170,23 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension>
 	}
 
 	/**
+	 * Handles errors by logging to console and calling the onError callback if provided, then re-throws.
+	 * @param error - The error to handle
+	 */
+	private async handleError(error: Error): Promise<never> {
+		console.error(`[${this.name}] Agent error:`, error)
+
+		if (this.config.onError) {
+			try {
+				await this.config.onError(error)
+			} catch (handlerError) {
+				console.error("Error in onError handler:", handlerError)
+			}
+		}
+		throw error
+	}
+
+	/**
 	 * Generates a text completion using the agent's configuration.
 	 * @param messages - Conversation messages to generate from
 	 * @param options - Generation options including runtime context
@@ -179,39 +196,44 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension>
 		messages: UIMessage[],
 		options: GenerateOptions<TRuntimeExtension>
 	) {
-		// Ensure runtime is properly extended with createRuntime function
-		const extendedRuntime = await this.createRuntimeContext(options.runtime)
+		try {
+			const extendedRuntime = await this.createRuntimeContext(options.runtime)
 
-		const { model, tools, instructions } = await this.resolveConfig(
-			messages,
-			extendedRuntime
-		)
+			const { model, tools, instructions } = await this.resolveConfig(
+				messages,
+				extendedRuntime
+			)
 
-		const preparedMessages = this.prepareMessages(messages, instructions)
+			const preparedMessages = this.prepareMessages(messages, instructions)
 
-		const { runtime, maxTokens, telemetry, prompt, ...aiSdkOptions } = options
+			const { runtime, maxTokens, telemetry, prompt, ...aiSdkOptions } = options
 
-		const aiSDKTools = tools
-			? toAISDKTools<TRuntimeExtension>(
-					tools,
-					extendedRuntime,
-					preparedMessages
-				)
-			: undefined
+			const aiSDKTools = tools
+				? toAISDKTools<TRuntimeExtension>(
+						tools,
+						extendedRuntime,
+						preparedMessages
+					)
+				: undefined
 
-		const result = await generateText({
-			...this.generationDefaults,
-			...aiSdkOptions,
-			model,
-			messages: convertToModelMessages(preparedMessages),
-			tools: aiSDKTools,
-			toolChoice:
-				aiSDKTools && Object.keys(aiSDKTools).length > 0 ? "auto" : undefined,
-			stopWhen: [stepCountIs(this.config.maxSteps ?? 5)],
-			maxOutputTokens: maxTokens
-		})
+			const result = await generateText({
+				...this.generationDefaults,
+				...aiSdkOptions,
+				model,
+				messages: convertToModelMessages(preparedMessages),
+				tools: aiSDKTools,
+				toolChoice:
+					aiSDKTools && Object.keys(aiSDKTools).length > 0 ? "auto" : undefined,
+				stopWhen: [stepCountIs(this.config.maxSteps ?? 5)],
+				maxOutputTokens: maxTokens
+			})
 
-		return result
+			return result
+		} catch (error) {
+			return await this.handleError(
+				error instanceof Error ? error : new Error(String(error))
+			)
+		}
 	}
 
 	/**
@@ -224,44 +246,55 @@ export class Agent<TRuntimeExtension = DefaultRuntimeExtension>
 		messages: UIMessage[],
 		options: StreamOptions<TRuntimeExtension>
 	) {
-		// Ensure runtime is properly extended with createRuntime function
-		const extendedRuntime = await this.createRuntimeContext(options.runtime)
+		try {
+			const extendedRuntime = await this.createRuntimeContext(options.runtime)
 
-		const { model, tools, instructions } = await this.resolveConfig(
-			messages,
-			extendedRuntime
-		)
+			const { model, tools, instructions } = await this.resolveConfig(
+				messages,
+				extendedRuntime
+			)
 
-		const preparedMessages = this.prepareMessages(messages, instructions)
+			const preparedMessages = this.prepareMessages(messages, instructions)
 
-		const { runtime, onFinish, maxTokens, telemetry, prompt, ...aiSdkOptions } =
-			options
+			const {
+				runtime,
+				onFinish,
+				maxTokens,
+				telemetry,
+				prompt,
+				...aiSdkOptions
+			} = options
 
-		const aiSDKTools = tools
-			? toAISDKTools<TRuntimeExtension>(
-					tools,
-					extendedRuntime,
-					preparedMessages
-				)
-			: undefined
+			const aiSDKTools = tools
+				? toAISDKTools<TRuntimeExtension>(
+						tools,
+						extendedRuntime,
+						preparedMessages
+					)
+				: undefined
 
-		const result = await streamText({
-			...this.streamDefaults,
-			...aiSdkOptions,
-			model,
-			messages: convertToModelMessages(preparedMessages),
-			tools: aiSDKTools,
-			toolChoice:
-				aiSDKTools && Object.keys(aiSDKTools).length > 0 ? "auto" : undefined,
-			stopWhen: [stepCountIs(this.config.maxSteps ?? 5)],
-			experimental_transform: smoothStream(),
-			maxOutputTokens: maxTokens
-		})
+			const result = await streamText({
+				...this.streamDefaults,
+				...aiSdkOptions,
+				model,
+				messages: convertToModelMessages(preparedMessages),
+				tools: aiSDKTools,
+				toolChoice:
+					aiSDKTools && Object.keys(aiSDKTools).length > 0 ? "auto" : undefined,
+				stopWhen: [stepCountIs(this.config.maxSteps ?? 5)],
+				experimental_transform: smoothStream(),
+				maxOutputTokens: maxTokens
+			})
 
-		return result.toUIMessageStreamResponse({
-			originalMessages: messages,
-			onFinish
-		})
+			return result.toUIMessageStreamResponse({
+				originalMessages: messages,
+				onFinish
+			})
+		} catch (error) {
+			return await this.handleError(
+				error instanceof Error ? error : new Error(String(error))
+			)
+		}
 	}
 
 	/**
