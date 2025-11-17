@@ -51,12 +51,16 @@ The `filterMessages` behavior determines which messages your agent should proces
 ### Basic Text Filtering
 
 ```typescript
-import { filterMessages, filter } from "@hybrd/core/behaviors"
+import { filterMessages } from "hybrid/behaviors"
 
-// Only process text messages that aren't from the agent itself
-agent.use(filterMessages(filter => 
-  filter.isText() && !filter.isFromSelf()
-))
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    filterMessages((filter) => 
+      filter.isText() && !filter.isFromSelf()
+    )
+  ]
+})
 ```
 
 ### Available Filter Methods
@@ -117,57 +121,86 @@ filter.hasMention("0x1234...") // Ethereum address mention
 ### Complex Filter Combinations
 
 ```typescript
-// Only process DMs that are text and not from self
-agent.use(filterMessages(filter => 
-  filter.isDM() && filter.isText() && !filter.isFromSelf()
-))
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    // Only process DMs that are text and not from self
+    filterMessages((filter) => 
+      filter.isDM() && filter.isText() && !filter.isFromSelf()
+    )
+  ]
+})
 
 // Process group messages that mention the agent
-agent.use(filterMessages(filter => 
-  filter.isGroup() && filter.hasMention(agent.address)
-))
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    filterMessages((filter) => 
+      filter.isGroup() && filter.hasMention("@agent")
+    )
+  ]
+})
 
 // Process reactions but not from the agent itself
-agent.use(filterMessages(filter => 
-  filter.isReaction() && !filter.isFromSelf()
-))
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    filterMessages((filter) => 
+      filter.isReaction() && !filter.isFromSelf()
+    )
+  ]
+})
 
 // Complex business logic
-agent.use(filterMessages(filter => {
-  // Only process during business hours
-  const hour = new Date().getHours()
-  const isBusinessHours = hour >= 9 && hour <= 17
-  
-  return filter.isText() && 
-         !filter.isFromSelf() && 
-         isBusinessHours
-}))
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    filterMessages((filter) => {
+      const hour = new Date().getHours()
+      const isBusinessHours = hour >= 9 && hour <= 17
+      
+      return filter.isText() && 
+             !filter.isFromSelf() && 
+             isBusinessHours
+    })
+  ]
+})
 ```
 
 ### Custom Filter Logic
 
+Custom filtering logic requires direct access to message content through custom behaviors:
+
 ```typescript
-agent.use(filterMessages(filter => {
-  // Custom spam detection
-  if (filter.content?.includes("spam") || 
-      filter.content?.includes("promotion")) {
-    return false
+import type { BehaviorObject, BehaviorContext } from "hybrid/behaviors"
+
+function customSpamFilter(): BehaviorObject {
+  return {
+    id: "spam-filter",
+    config: { enabled: true },
+    async before(context: BehaviorContext) {
+      const content = typeof context.message.content === "string" 
+        ? context.message.content 
+        : ""
+      
+      if (content.includes("spam") || content.includes("promotion")) {
+        if (!context.sendOptions) context.sendOptions = {}
+        context.sendOptions.filtered = true
+        return
+      }
+      
+      await context.next?.()
+    }
   }
-  
-  // Rate limiting per sender
-  const senderId = filter.sender
-  if (this.isRateLimited(senderId)) {
-    return false
-  }
-  
-  // Only process if user has sufficient reputation
-  const reputation = this.getUserReputation(senderId)
-  if (reputation < 10) {
-    return false
-  }
-  
-  return filter.isText() && !filter.isFromSelf()
-}))
+}
+
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    customSpamFilter(),
+    filterMessages((filter) => filter.isText() && !filter.isFromSelf())
+  ]
+})
 ```
 
 ## Automatic Reactions with `reactWith`
@@ -332,14 +365,19 @@ The `BehaviorContext` provides access to:
 
 ```typescript
 interface BehaviorContext {
-  message: Message          // The incoming XMTP message
-  conversation: Conversation // The XMTP conversation
+  runtime: AgentRuntime     // The base runtime context
+  message: XmtpMessage      // The incoming XMTP message
+  conversation: XmtpConversation // The XMTP conversation
   client: XmtpClient        // The XMTP client instance
+  response?: string         // The agent's response (available in after hooks)
   sendOptions?: {
     threaded?: boolean      // Set by threadedReply
     filtered?: boolean      // Set by filterMessages
+    contentType?: string    // Content type override
+    metadata?: Record<string, unknown> // Additional metadata
   }
   next?: () => Promise<void> // Call to continue behavior chain
+  stopped?: boolean         // Whether the chain was stopped early
 }
 ```
 
