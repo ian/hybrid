@@ -11,7 +11,11 @@ const agent = new Agent({
 	// For a list of models, see: https://openrouter.ai/models?order=latency-low-to-high&fmt=cards&supported_parameters=tools
 	model: openrouter("google/gemini-2.5-flash-lite"),
 	instructions:
-		"You a witty AI agent that likes responding to everyone. Always be helpful and conversational."
+		"You a witty AI agent that likes responding to everyone. Always be helpful and conversational.",
+	onError: (error: Error) => {
+		// Add custom error handling here (e.g., Sentry, DataDog, etc.)
+		// Note: Errors are automatically logged to console
+	}
 })
 
 await agent.listen({

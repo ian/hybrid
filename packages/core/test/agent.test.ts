@@ -277,6 +277,36 @@ describe("Agent with xmtpTools", () => {
 		expect(dynamicAgent).toBeDefined()
 		expect(dynamicAgent.name).toBe("Dynamic Instructions Agent")
 	})
+
+	it("should accept onError callback", () => {
+		const mockErrorHandler = vi.fn()
+
+		const agent = new Agent({
+			name: "Error Handler Agent",
+			model: mockModel,
+			tools: xmtpTools,
+			instructions: "Test instructions",
+			onError: mockErrorHandler
+		})
+
+		expect(agent).toBeDefined()
+		expect(agent.name).toBe("Error Handler Agent")
+	})
+
+	it("should accept async onError callback", () => {
+		const mockAsyncErrorHandler = vi.fn().mockResolvedValue(undefined)
+
+		const agent = new Agent({
+			name: "Async Error Handler Agent",
+			model: mockModel,
+			tools: xmtpTools,
+			instructions: "Test instructions",
+			onError: mockAsyncErrorHandler
+		})
+
+		expect(agent).toBeDefined()
+		expect(agent.name).toBe("Async Error Handler Agent")
+	})
 })
 
 describe("Tool Type Compatibility", () => {
