@@ -37,224 +37,229 @@ await agent.listen({
 
 ### `sendMessage` - Send Messages to XMTP Conversations
 
-Send messages to existing conversations or start new ones.
+Send messages to existing conversations or start new ones. This tool is automatically invoked by the AI model during conversations.
 
-#### Basic Usage
+#### How It Works
 
-```typescript
-// Agent can use this tool automatically
-const response = await agent.call("sendMessage", {
-  to: "0x1234567890abcdef1234567890abcdef12345678",
-  content: "Hello! How can I help you today?"
-})
-```
-
-#### Advanced Message Sending
+The AI model automatically calls this tool when it needs to send messages. You can access the runtime directly in custom tools:
 
 ```typescript
-// Send with additional options
-await agent.call("sendMessage", {
-  to: "0x1234567890abcdef1234567890abcdef12345678",
-  content: "Here's your portfolio analysis...",
-  metadata: {
-    type: "portfolio-report",
-    timestamp: Date.now(),
-    urgent: false
+import { createTool } from "hybrid"
+import { z } from "zod"
+
+const customTool = createTool({
+  description: "Send a custom message",
+  inputSchema: z.object({
+    content: z.string()
+  }),
+  execute: async ({ input, runtime }) => {
+    const { conversation } = runtime
+    
+    await conversation.send(input.content)
+    
+    return { success: true }
   }
 })
-
-// Send to multiple recipients
-const recipients = [
-  "0x1111111111111111111111111111111111111111",
-  "0x2222222222222222222222222222222222222222"
-]
-
-for (const recipient of recipients) {
-  await agent.call("sendMessage", {
-    to: recipient,
-    content: "Market update: ETH is up 5% today!"
-  })
-}
 ```
 
-#### Message Templates
+#### Using Runtime in Custom Tools
+
+Access XMTP conversation directly through the runtime:
 
 ```typescript
-// Create reusable message templates
-const templates = {
-  welcome: (name: string) => `Welcome ${name}! I'm your crypto assistant.`,
-  balance: (token: string, amount: string) => `Your ${token} balance: ${amount}`,
-  error: (error: string) => `Sorry, I encountered an error: ${error}`
-}
-
-// Use in agent
-await agent.call("sendMessage", {
-  to: userAddress,
-  content: templates.welcome("Alice")
+const notifyTool = createTool({
+  description: "Send notifications",
+  inputSchema: z.object({
+    message: z.string(),
+    recipients: z.array(z.string())
+  }),
+  execute: async ({ input, runtime }) => {
+    const { xmtpClient } = runtime
+    
+    for (const recipient of input.recipients) {
+      const conversation = await xmtpClient.conversations.newConversation(recipient)
+      await conversation.send(input.message)
+    }
+    
+    return { success: true }
+  }
 })
 ```
 
 ### `sendReply` - Reply to Specific Messages
 
-Reply to specific messages in a conversation thread.
+Reply to specific messages in a conversation thread. The AI model automatically uses this tool when appropriate, or you can send replies directly through the runtime in custom tools.
 
-#### Basic Reply
+#### Using Runtime to Send Replies
 
-```typescript
-// Reply to a specific message
-await agent.call("sendReply", {
-  originalMessageId: "message-123",
-  content: "Thanks for your question! Here's the answer..."
-})
-```
-
-#### Contextual Replies
+Access the conversation from runtime to send threaded replies:
 
 ```typescript
-// Agent automatically handles replies in conversation context
-// When processing a message, agent can reply directly
-agent.on("message", async (message) => {
-  if (message.content.includes("help")) {
-    await agent.call("sendReply", {
-      originalMessageId: message.id,
-      content: `I can help you with:
-      • Checking balances
-      • Swapping tokens  
-      • DeFi strategies
-      • Market analysis
-      
-      What would you like to do?`
-    })
+import { createTool } from "hybrid"
+import { z } from "zod"
+import { ContentTypeReply, ContentTypeText } from "@xmtp/content-type-reply"
+
+const replyTool = createTool({
+  description: "Send a threaded reply",
+  inputSchema: z.object({
+    content: z.string(),
+    replyToMessageId: z.string()
+  }),
+  execute: async ({ input, runtime }) => {
+    const { conversation } = runtime
+    
+    const reply = {
+      reference: input.replyToMessageId,
+      contentType: ContentTypeText,
+      content: input.content
+    }
+    
+    await conversation.send(reply, ContentTypeReply)
+    
+    return { success: true }
   }
 })
 ```
 
-#### Thread Management
+#### Automatic Threading with Behaviors
+
+Use the `threadedReply` behavior to automatically thread all agent responses:
 
 ```typescript
-// Reply with thread context
-await agent.call("sendReply", {
-  originalMessageId: message.id,
-  content: "Continuing our discussion about yield farming...",
-  threadContext: {
-    topic: "yield-farming",
-    previousMessages: 3,
-    participants: ["0x1111...", "0x2222..."]
-  }
+import { Agent } from "hybrid"
+import { threadedReply } from "hybrid/behaviors"
+
+const agent = new Agent({
+  name: "My Agent",
+  model: yourModel,
+  instructions: "You are a helpful assistant"
+})
+
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    threadedReply()
+  ]
 })
 ```
 
 ### `sendReaction` - Send Emoji Reactions
 
-Add emoji reactions to messages for quick acknowledgment.
+Add emoji reactions to messages for quick acknowledgment. The AI model automatically uses this tool, or you can send reactions through the runtime in custom tools.
 
-#### Basic Reactions
+#### Using Runtime to Send Reactions
 
-```typescript
-// React with emoji
-await agent.call("sendReaction", {
-  messageId: "message-123",
-  emoji: "👍"
-})
-
-// React with multiple emojis
-const reactions = ["👍", "🤖", "✅"]
-for (const emoji of reactions) {
-  await agent.call("sendReaction", {
-    messageId: message.id,
-    emoji: emoji
-  })
-}
-```
-
-#### Conditional Reactions
+Access the conversation from runtime to send reactions:
 
 ```typescript
-// React based on message content
-agent.on("message", async (message) => {
-  if (message.content.includes("thanks")) {
-    await agent.call("sendReaction", {
-      messageId: message.id,
-      emoji: "🙏"
-    })
-  } else if (message.content.includes("help")) {
-    await agent.call("sendReaction", {
-      messageId: message.id,
-      emoji: "🆘"
-    })
-  } else {
-    await agent.call("sendReaction", {
-      messageId: message.id,
-      emoji: "👍"
-    })
+import { createTool } from "hybrid"
+import { z } from "zod"
+import { ContentTypeReaction } from "@xmtp/content-type-reaction"
+
+const reactionTool = createTool({
+  description: "Send an emoji reaction",
+  inputSchema: z.object({
+    emoji: z.string(),
+    messageId: z.string()
+  }),
+  execute: async ({ input, runtime }) => {
+    const { conversation } = runtime
+    
+    const reaction = {
+      reference: input.messageId,
+      action: "added",
+      schema: "unicode",
+      content: input.emoji
+    }
+    
+    await conversation.send(reaction, ContentTypeReaction)
+    
+    return { success: true }
   }
 })
 ```
 
-#### Sentiment-Based Reactions
+#### Automatic Reactions with Behaviors
+
+Use the `reactWith` behavior to automatically react to messages:
 
 ```typescript
-// React based on sentiment analysis
-import { analyzeSentiment } from "./sentiment"
+import { Agent } from "hybrid"
+import { reactWith } from "hybrid/behaviors"
 
-agent.on("message", async (message) => {
-  const sentiment = await analyzeSentiment(message.content)
-  
-  let emoji = "🤔" // Default
-  
-  if (sentiment.score > 0.7) emoji = "😊"
-  else if (sentiment.score > 0.3) emoji = "🙂"
-  else if (sentiment.score < -0.7) emoji = "😔"
-  else if (sentiment.score < -0.3) emoji = "😐"
-  
-  await agent.call("sendReaction", {
-    messageId: message.id,
-    emoji: emoji
-  })
+const agent = new Agent({
+  name: "My Agent",
+  model: yourModel,
+  instructions: "You are a helpful assistant"
+})
+
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    reactWith("👀")
+  ]
 })
 ```
 
 ### `getMessage` - Retrieve Message Details
 
-Get detailed information about specific messages.
+Get detailed information about specific messages. This tool is automatically invoked by the AI model when it needs message details.
 
-#### Basic Message Retrieval
+#### Using Runtime to Access Messages
+
+The current message is already available in the runtime:
 
 ```typescript
-// Get message details
-const messageDetails = await agent.call("getMessage", {
-  messageId: "message-123"
-})
+import { createTool } from "hybrid"
+import { z } from "zod"
 
-console.log("Message:", messageDetails.content)
-console.log("Sender:", messageDetails.sender)
-console.log("Timestamp:", messageDetails.timestamp)
+const analyzeMessageTool = createTool({
+  description: "Analyze the current message",
+  inputSchema: z.object({
+    action: z.string()
+  }),
+  execute: async ({ input, runtime }) => {
+    const { message, xmtpClient } = runtime
+    
+    console.log("Current message:", message.content)
+    console.log("Sender:", message.senderInboxId)
+    console.log("Conversation:", message.conversationId)
+    
+    const isUrgent = 
+      message.content.toLowerCase().includes("urgent") ||
+      message.content.includes("emergency")
+    
+    return { 
+      success: true, 
+      isUrgent,
+      sender: message.senderInboxId
+    }
+  }
+})
 ```
 
-#### Message Analysis
+#### Retrieving Other Messages
+
+Use the XMTP client to retrieve specific messages by ID:
 
 ```typescript
-// Analyze message for context
-const message = await agent.call("getMessage", {
-  messageId: messageId
+const getMessageTool = createTool({
+  description: "Get a specific message by ID",
+  inputSchema: z.object({
+    messageId: z.string()
+  }),
+  execute: async ({ input, runtime }) => {
+    const { xmtpClient } = runtime
+    
+    const message = await xmtpClient.conversations.getMessageById(input.messageId)
+    
+    return {
+      success: !!message,
+      content: message?.content,
+      sender: message?.senderInboxId
+    }
+  }
 })
-
-// Check if message needs urgent response
-const isUrgent = message.content.toLowerCase().includes("urgent") ||
-                message.content.includes("emergency") ||
-                message.metadata?.priority === "high"
-
-if (isUrgent) {
-  await agent.call("sendReaction", {
-    messageId: messageId,
-    emoji: "🚨"
-  })
-  
-  await agent.call("sendReply", {
-    originalMessageId: messageId,
-    content: "I see this is urgent. Let me help you right away!"
-  })
-}
 ```
 
 ## Content Types
@@ -263,32 +268,43 @@ XMTP supports various content types for rich messaging experiences.
 
 ### Text Content
 
+Send text messages using the runtime in custom tools:
+
 ```typescript
-// Simple text message
-await agent.call("sendMessage", {
-  to: userAddress,
-  content: "Hello! How can I help you?"
-})
+import { createTool } from "hybrid"
+import { z } from "zod"
 
-// Formatted text with markdown
-await agent.call("sendMessage", {
-  to: userAddress,
-  content: `
-**Portfolio Summary**
+const portfolioTool = createTool({
+  description: "Send portfolio summary",
+  inputSchema: z.object({
+    ethBalance: z.number(),
+    usdcBalance: z.number()
+  }),
+  execute: async ({ input, runtime }) => {
+    const { conversation } = runtime
+    
+    const message = `**Portfolio Summary**
 
-• ETH: 2.5 ETH ($4,250)
-• USDC: 1,000 USDC
-• Total: $5,250
+• ETH: ${input.ethBalance} ETH
+• USDC: ${input.usdcBalance} USDC
+• Total: $${(input.ethBalance * 1700) + input.usdcBalance}
 
-*Last updated: ${new Date().toLocaleString()}*
-  `
+*Last updated: ${new Date().toLocaleString()}*`
+    
+    await conversation.send(message)
+    
+    return { success: true }
+  }
 })
 ```
 
 ### Reactions
 
+Send reactions using the runtime:
+
 ```typescript
-// Standard emoji reactions
+import { ContentTypeReaction } from "@xmtp/content-type-reaction"
+
 const commonReactions = {
   acknowledge: "👍",
   celebrate: "🎉", 
@@ -299,41 +315,49 @@ const commonReactions = {
   robot: "🤖"
 }
 
-await agent.call("sendReaction", {
-  messageId: messageId,
-  emoji: commonReactions.acknowledge
+const reactTool = createTool({
+  description: "React to message",
+  inputSchema: z.object({
+    type: z.enum(["acknowledge", "celebrate", "thinking"])
+  }),
+  execute: async ({ input, runtime }) => {
+    const { conversation, message } = runtime
+    
+    await conversation.send({
+      reference: message.id,
+      action: "added",
+      schema: "unicode",
+      content: commonReactions[input.type]
+    }, ContentTypeReaction)
+    
+    return { success: true }
+  }
 })
 ```
 
 ### Replies
 
+Send threaded replies using the runtime:
+
 ```typescript
-// Thread replies maintain conversation context
-await agent.call("sendReply", {
-  originalMessageId: originalMessage.id,
-  content: "Following up on your question about DeFi yields...",
-  reference: {
-    type: "follow-up",
-    topic: "defi-yields",
-    context: "previous-discussion"
+import { ContentTypeReply, ContentTypeText } from "@xmtp/content-type-reply"
+
+const threadReplyTool = createTool({
+  description: "Send threaded reply",
+  inputSchema: z.object({
+    content: z.string()
+  }),
+  execute: async ({ input, runtime }) => {
+    const { conversation, message } = runtime
+    
+    await conversation.send({
+      reference: message.id,
+      contentType: ContentTypeText,
+      content: input.content
+    }, ContentTypeReply)
+    
+    return { success: true }
   }
-})
-```
-
-### Attachments (Future)
-
-```typescript
-// Future support for attachments
-await agent.call("sendMessage", {
-  to: userAddress,
-  content: "Here's your portfolio report",
-  attachments: [
-    {
-      type: "application/pdf",
-      url: "https://reports.example.com/portfolio-123.pdf",
-      name: "Portfolio Report.pdf"
-    }
-  ]
 })
 ```
 
@@ -341,241 +365,253 @@ await agent.call("sendMessage", {
 
 ### Group Message Processing
 
+Use behaviors to filter and handle group conversations:
+
 ```typescript
-// Handle group conversations differently
-agent.on("message", async (message) => {
-  if (message.conversation.isGroup) {
-    // Only respond when mentioned
-    if (message.content.includes(agent.address) || 
-        message.content.includes("@agent")) {
-      
-      await agent.call("sendMessage", {
-        to: message.conversation.id,
-        content: "Hello everyone! How can I help the group?"
-      })
-    }
-  } else {
-    // Always respond in DMs
-    await agent.processDirectMessage(message)
-  }
+import { Agent } from "hybrid"
+import { filterMessages } from "hybrid/behaviors"
+
+const agent = new Agent({
+  name: "My Agent",
+  model: yourModel,
+  instructions: `You are a helpful assistant. 
+  You respond to group messages only when mentioned with @agent.
+  You always respond to direct messages.`
+})
+
+await agent.listen({
+  port: "8454",
+  behaviors: [
+    filterMessages((filters) => {
+      return filters.isDM() || filters.hasMention("@agent")
+    })
+  ]
 })
 ```
 
-### Group Administration
+### Custom Group Handling Tool
+
+Create a tool to handle group-specific functionality:
 
 ```typescript
-// Handle group admin functions
-agent.on("message", async (message) => {
-  if (message.conversation.isGroup && message.sender.isAdmin) {
-    if (message.content.startsWith("/admin")) {
-      const command = message.content.split(" ")[1]
-      
-      switch (command) {
-        case "stats":
-          await agent.call("sendMessage", {
-            to: message.conversation.id,
-            content: await getGroupStats(message.conversation.id)
-          })
-          break
-          
-        case "summary":
-          await agent.call("sendMessage", {
-            to: message.conversation.id,
-            content: await generateGroupSummary(message.conversation.id)
-          })
-          break
-      }
+import { createTool } from "hybrid"
+import { z } from "zod"
+
+const groupAdminTool = createTool({
+  description: "Handle group admin commands",
+  inputSchema: z.object({
+    command: z.enum(["stats", "summary"]),
+    groupId: z.string()
+  }),
+  execute: async ({ input, runtime }) => {
+    const { conversation } = runtime
+    
+    let response: string
+    
+    if (input.command === "stats") {
+      response = await getGroupStats(input.groupId)
+    } else {
+      response = await generateGroupSummary(input.groupId)
     }
+    
+    await conversation.send(response)
+    
+    return { success: true }
   }
 })
-```
 
-### Group Notifications
-
-```typescript
-// Send notifications to group members
-async function notifyGroup(groupId: string, notification: string) {
-  await agent.call("sendMessage", {
-    to: groupId,
-    content: `📢 **Group Notification**\n\n${notification}`,
-    metadata: {
-      type: "notification",
-      priority: "normal",
-      timestamp: Date.now()
-    }
-  })
+async function getGroupStats(groupId: string): Promise<string> {
+  return "Group stats here..."
 }
 
-// Usage
-await notifyGroup("group-123", "Market alert: ETH has reached $3,000!")
+async function generateGroupSummary(groupId: string): Promise<string> {
+  return "Group summary here..."
+}
 ```
 
 ## Advanced XMTP Tool Usage
 
-### Message Queuing
+### Message Queuing Tool
+
+Create a tool to send multiple messages efficiently:
 
 ```typescript
-// Queue messages for batch sending
-class MessageQueue {
-  private queue: Array<{to: string, content: string}> = []
-  
-  add(to: string, content: string) {
-    this.queue.push({ to, content })
-  }
-  
-  async flush() {
-    const promises = this.queue.map(msg => 
-      agent.call("sendMessage", msg)
+import { createTool } from "hybrid"
+import { z } from "zod"
+
+const batchMessageTool = createTool({
+  description: "Send multiple messages efficiently",
+  inputSchema: z.object({
+    messages: z.array(z.object({
+      content: z.string(),
+      recipientAddress: z.string()
+    }))
+  }),
+  execute: async ({ input, runtime }) => {
+    const { xmtpClient } = runtime
+    
+    const results = await Promise.all(
+      input.messages.map(async (msg) => {
+        const conversation = await xmtpClient.conversations.newConversation(
+          msg.recipientAddress
+        )
+        await conversation.send(msg.content)
+        return { recipient: msg.recipientAddress, sent: true }
+      })
     )
     
-    await Promise.all(promises)
-    this.queue = []
+    return { success: true, results }
   }
-}
-
-const messageQueue = new MessageQueue()
-
-// Add messages to queue
-messageQueue.add("0x1111...", "Market update 1")
-messageQueue.add("0x2222...", "Market update 2")
-
-// Send all at once
-await messageQueue.flush()
+})
 ```
 
-### Message Scheduling
+### Scheduled Message Tool
+
+Create a tool to schedule delayed messages:
 
 ```typescript
-// Schedule messages for later delivery
-class MessageScheduler {
-  private scheduled = new Map<string, NodeJS.Timeout>()
-  
-  schedule(to: string, content: string, delayMs: number) {
-    const timeoutId = setTimeout(async () => {
-      await agent.call("sendMessage", { to, content })
-      this.scheduled.delete(to)
-    }, delayMs)
+const scheduleMessageTool = createTool({
+  description: "Schedule a message to be sent after a delay",
+  inputSchema: z.object({
+    content: z.string(),
+    delayMinutes: z.number()
+  }),
+  execute: async ({ input, runtime }) => {
+    const { conversation } = runtime
     
-    this.scheduled.set(to, timeoutId)
-  }
-  
-  cancel(to: string) {
-    const timeoutId = this.scheduled.get(to)
-    if (timeoutId) {
-      clearTimeout(timeoutId)
-      this.scheduled.delete(to)
+    setTimeout(async () => {
+      await conversation.send(input.content)
+    }, input.delayMinutes * 60 * 1000)
+    
+    return { 
+      success: true, 
+      scheduledFor: new Date(Date.now() + input.delayMinutes * 60 * 1000)
     }
   }
-}
-
-const scheduler = new MessageScheduler()
-
-// Schedule reminder for 1 hour
-scheduler.schedule(
-  userAddress,
-  "Reminder: Your DeFi position expires in 1 hour!",
-  60 * 60 * 1000 // 1 hour
-)
+})
 ```
 
-### Message Templates with Variables
+### Message Templates Tool
+
+Create reusable message templates in your tools:
 
 ```typescript
-// Dynamic message templates
-class MessageTemplates {
-  static portfolio(data: any) {
-    return `
-🏦 **Portfolio Summary**
+const portfolioTool = createTool({
+  description: "Send portfolio summary",
+  inputSchema: z.object({
+    totalValue: z.number(),
+    change24h: z.number(),
+    holdings: z.array(z.object({
+      symbol: z.string(),
+      amount: z.number(),
+      percentage: z.number()
+    }))
+  }),
+  execute: async ({ input, runtime }) => {
+    const { conversation } = runtime
+    
+    const message = `🏦 **Portfolio Summary**
 
-💰 Total Value: $${data.totalValue.toLocaleString()}
-📈 24h Change: ${data.change24h > 0 ? '+' : ''}${data.change24h.toFixed(2)}%
+💰 Total Value: $${input.totalValue.toLocaleString()}
+📈 24h Change: ${input.change24h > 0 ? '+' : ''}${input.change24h.toFixed(2)}%
 
 **Top Holdings:**
-${data.holdings.map((h: any) => 
+${input.holdings.map(h => 
   `• ${h.symbol}: ${h.amount} (${h.percentage}%)`
 ).join('\n')}
 
-*Last updated: ${new Date().toLocaleString()}*
-    `
+*Last updated: ${new Date().toLocaleString()}*`
+    
+    await conversation.send(message)
+    
+    return { success: true }
   }
-  
-  static transaction(tx: any) {
-    return `
-✅ **Transaction Confirmed**
-
-🔗 Hash: ${tx.hash}
-💸 Amount: ${tx.amount} ${tx.token}
-⛽ Gas Used: ${tx.gasUsed}
-🕐 Time: ${new Date(tx.timestamp).toLocaleString()}
-
-View on Etherscan: https://etherscan.io/tx/${tx.hash}
-    `
-  }
-}
-
-// Usage
-await agent.call("sendMessage", {
-  to: userAddress,
-  content: MessageTemplates.portfolio(portfolioData)
 })
 ```
 
 ## Error Handling and Reliability
 
-### Retry Logic
+### Retry Logic in Tools
+
+Implement retry logic within your custom tools:
 
 ```typescript
-// Implement retry logic for failed messages
-async function sendMessageWithRetry(
-  to: string, 
+import { createTool } from "hybrid"
+import { z } from "zod"
+
+async function sendWithRetry(
+  conversation: unknown, 
   content: string, 
   maxRetries = 3
-) {
+): Promise<void> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      await agent.call("sendMessage", { to, content })
-      return // Success
+      await (conversation as { send: (content: string) => Promise<string> }).send(content)
+      return
     } catch (error) {
-      console.warn(`Message send attempt ${attempt} failed:`, error)
+      console.warn(`Attempt ${attempt} failed:`, error)
       
       if (attempt === maxRetries) {
-        throw new Error(`Failed to send message after ${maxRetries} attempts`)
+        throw new Error(`Failed after ${maxRetries} attempts`)
       }
       
-      // Exponential backoff
       await new Promise(resolve => 
         setTimeout(resolve, Math.pow(2, attempt) * 1000)
       )
     }
   }
 }
+
+const reliableMessageTool = createTool({
+  description: "Send a message with retry logic",
+  inputSchema: z.object({
+    content: z.string()
+  }),
+  execute: async ({ input, runtime }) => {
+    const { conversation } = runtime
+    
+    try {
+      await sendWithRetry(conversation, input.content)
+      return { success: true }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : String(error)
+      }
+    }
+  }
+})
 ```
 
-### Message Validation
+### Message Validation in Tools
+
+Validate input before sending messages:
 
 ```typescript
-// Validate messages before sending
-function validateMessage(to: string, content: string) {
-  if (!to || !to.match(/^0x[a-fA-F0-9]{40}$/)) {
-    throw new Error("Invalid recipient address")
+const validatedMessageTool = createTool({
+  description: "Send a validated message",
+  inputSchema: z.object({
+    content: z.string().min(1).max(10000),
+    recipientAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/)
+  }),
+  execute: async ({ input, runtime }) => {
+    const { xmtpClient } = runtime
+    
+    try {
+      const conversation = await xmtpClient.conversations.newConversation(
+        input.recipientAddress
+      )
+      await conversation.send(input.content)
+      
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to send message"
+      }
+    }
   }
-  
-  if (!content || content.trim().length === 0) {
-    throw new Error("Message content cannot be empty")
-  }
-  
-  if (content.length > 10000) {
-    throw new Error("Message too long (max 10,000 characters)")
-  }
-}
-
-// Use validation
-try {
-  validateMessage(userAddress, messageContent)
-  await agent.call("sendMessage", { to: userAddress, content: messageContent })
-} catch (error) {
-  console.error("Message validation failed:", error.message)
-}
+})
 ```
 
 ## Next Steps
