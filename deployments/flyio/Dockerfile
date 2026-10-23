@@ -1,4 +1,4 @@
-FROM node:22-slim
+FROM node:22.23.4-slim
 
 # rename existing node:node to app:app (1000:1000) so tests pass
 RUN groupmod -n app node \
